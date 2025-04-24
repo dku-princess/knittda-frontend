@@ -8,7 +8,7 @@ class MoreMenu extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Padding(
-          padding: EdgeInsets.only(left: 8.0, top: 8.0), // 원하는 만큼 조절 가능
+          padding: EdgeInsets.only(left: 8.0, top: 8.0),
           child: Text(
             "더보기",
             style: TextStyle(
@@ -27,6 +27,5 @@ class MoreMenu extends StatelessWidget {
         ],
       ),
     );
-
   }
 }
