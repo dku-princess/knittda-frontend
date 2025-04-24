@@ -15,6 +15,10 @@ class MyApp extends StatelessWidget {
         '/': (context) => Home(),
       },
 
+      theme: ThemeData(
+        fontFamily: 'Pretendard',
+      ),
+
     );
   }
 }
