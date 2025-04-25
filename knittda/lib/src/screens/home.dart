@@ -50,6 +50,7 @@ class _HomeState extends State<Home> {
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: PRIMARY_COLOR,
         unselectedItemColor: Colors.grey,
+        
         items: myTabs,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,

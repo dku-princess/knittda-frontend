@@ -19,6 +19,8 @@ class MyApp extends StatelessWidget {
       //모든 항목에서 pretendard 폰트 사용
       theme: ThemeData(
         fontFamily: 'Pretendard',
+        splashColor: Colors.transparent, //클릭시 퍼지는 효과 제거
+        //highlightColor: Colors.transparent, //클릭시 원형 효과 제거
       ),
 
     );

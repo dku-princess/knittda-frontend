@@ -9,7 +9,7 @@ class Mypage extends StatelessWidget {
         title: Padding(
           padding: EdgeInsets.only(left: 8.0, top: 8.0),
           child: Text(
-            "마이 페이지",
+            '마이 페이지',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w600,
