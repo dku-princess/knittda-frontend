@@ -7,7 +7,7 @@ class Mypage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Padding(
-          padding: EdgeInsets.only(left: 8.0, top: 8.0), // 원하는 만큼 조절 가능
+          padding: EdgeInsets.only(left: 8.0, top: 8.0),
           child: Text(
             "마이 페이지",
             style: TextStyle(
@@ -17,7 +17,7 @@ class Mypage extends StatelessWidget {
           ),
         ),
       ),
-      body: UserListItem(name: "홍길동", email: "loveyou@dankook.ac.kr"),
+      body: UserMypage(name: "홍길동", email: "loveyou@dankook.ac.kr"),
     );
   }
 }
