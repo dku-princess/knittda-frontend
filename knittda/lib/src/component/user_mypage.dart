@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class UserListItem extends StatelessWidget {
+class UserMypage extends StatelessWidget {
   final String name;
   final String email;
 
-  UserListItem({
+  UserMypage({
     required this.name,
     required this.email,
   });
@@ -12,19 +12,22 @@ class UserListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start, //가로방향: 좌측정렬
+
       children: [
         SizedBox(height: 20),
         Container(
           padding: const EdgeInsets.only(top:16.0, right: 24.0, left: 24.0, bottom: 16.0),
           decoration: BoxDecoration(
             border: Border(
-              bottom: BorderSide(color: Colors.grey.shade300),
+              bottom: BorderSide(color: Colors.grey.shade300), //bottom 외각선
             ),
           ),
+
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween, //프로필 사진과 프로필 수정 버튼 양쪽 끝에 배치
             children: [
+              //프로필 사진과 이름
               Row(
                 children: [
                   CircleAvatar(
@@ -39,6 +42,7 @@ class UserListItem extends StatelessWidget {
                   ),
                 ],
               ),
+              // 프로필 수정 버튼
               ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
@@ -61,11 +65,14 @@ class UserListItem extends StatelessWidget {
             ],
           ),
         ),
+
         SizedBox(height: 26),
+
+        // 연결된 계정
         Padding(
           padding: EdgeInsets.only(left: 24.0, right: 24.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start, //가로방향: 좌측정렬
             children: [
               Text(
                 "연결된 계정",

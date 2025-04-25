@@ -10,11 +10,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
 
+      //앱 처음 실행할 때 접속할 페이지
       initialRoute: '/',
       routes: {
         '/': (context) => Home(),
       },
 
+      //모든 항목에서 pretendard 폰트 사용
       theme: ThemeData(
         fontFamily: 'Pretendard',
       ),

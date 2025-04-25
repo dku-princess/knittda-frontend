@@ -5,6 +5,7 @@ import 'work_list.dart';
 import 'more_menu.dart';
 import 'mypage.dart';
 
+// 바텀네비게이션 리스트
 final List<BottomNavigationBarItem> myTabs = <BottomNavigationBarItem>[
   BottomNavigationBarItem(
     icon: Icon(Icons.edit_note), // 텍스트 제거
@@ -20,6 +21,7 @@ final List<BottomNavigationBarItem> myTabs = <BottomNavigationBarItem>[
   ),
 ];
 
+//바텀네비게이션 클릭 시 이동할 페이지 목록
 final List<Widget> _widgetOptions = <Widget>[
   WorkList(),
   Mypage(),
