@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/component/work_state_button.dart';
+import 'package:knittda/src/component/work_list_item.dart';
 
 class WorkList extends StatelessWidget {
   @override
@@ -22,6 +23,8 @@ class WorkList extends StatelessWidget {
         children: [
           SizedBox(height: 20),
           WorkStateButton(),
+          SizedBox(height: 20),
+          WorkListItem(url: null, name: "모비스웨터", date: "3일전"),
         ],
       ),
     );
