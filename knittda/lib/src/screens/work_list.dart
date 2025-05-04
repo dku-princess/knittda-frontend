@@ -9,6 +9,12 @@ final List<Widget> worklist = <Widget>[
   WorkListItem(url: null, name: "브이넥 조끼", date: "3일전"),
 ];
 
+final List<Widget> worklist = <Widget>[
+  WorkListItem(url: null, name: "벤쿠버 가디건", date: "3일전"),
+  WorkListItem(url: null, name: "블랙베리 아란 스웨터", date: "3일전"),
+  WorkListItem(url: null, name: "브이넥 조끼", date: "3일전"),
+];
+
 class WorkList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
