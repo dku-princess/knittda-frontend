@@ -23,11 +23,10 @@ class WorkListItem extends StatelessWidget {
           bottom: BorderSide(color: Colors.grey.shade300), //bottom 외각선
         ),
       ),
-
       child: Row(
         children: [
           ImageBox(url),
-          SizedBox(width: 20),//이미지와 Column 사이에 Sized Box 사용해서 공간 추가
+          SizedBox(width: 20), // 이미지와 텍스트 사이 여백 추가
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -40,9 +39,31 @@ class WorkListItem extends StatelessWidget {
               ),
             ],
           ),
+          Spacer(), // 오른쪽 끝으로 버튼을 밀어줌
+          GestureDetector( //추가 버튼
+            onTap: () {
+              /*
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddDiaryPage()),
+              );*/
+            },
+            child: Container(
+              width: 40,
+              height: 28,
+              decoration: BoxDecoration(
+                color: Colors.grey[300], // 배경 색상
+                borderRadius: BorderRadius.circular(10),
+              ),
+              alignment: Alignment.center, // 텍스트 중앙 정렬
+              child: Text(
+                '추가',
+                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              ),
+            ),
+          ),
         ],
       ),
-
     );
   }
 }
