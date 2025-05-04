@@ -15,54 +15,58 @@ class WorkListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print("test");
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 24.0),
-      padding: EdgeInsets.all(10.0),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Colors.grey.shade300), //bottom 외각선
-        ),
-      ),
-      child: Row(
-        children: [
-          ImageBox(url),
-          SizedBox(width: 20), // 이미지와 텍스트 사이 여백 추가
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 24.0),
+      child: InkWell(
+        onTap: (){
+          //작품 상세 페이지로 이동
+        },
+        child: Container(
+          padding: EdgeInsets.all(10.0),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: Colors.grey.shade300), //bottom 외각선
+            ),
+          ),
+          child: Row(
             children: [
-              Text(name),
-              Row(
+              ImageBox(url),
+              SizedBox(width: 10), // 이미지와 텍스트 사이 여백 추가
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("기록일", style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-                  Text(date, style: TextStyle(fontSize: 12)),
+                  Text(name),
+                  SizedBox(height:14),
+                  Row(
+                    children: [
+                      Text("기록일", style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                      SizedBox(width: 4),
+                      Text(date, style: TextStyle(fontSize: 12)),
+                    ],
+                  ),
                 ],
+              ),
+              Spacer(), // 오른쪽 끝으로 버튼을 밀어줌
+              TextButton(
+                onPressed: (){
+                  //작품 기록 추가로 이동
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.grey[300],
+                  minimumSize: Size(0, 0), // 최소 크기 제거
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap, // 터치 영역 최소화
+                  shape: RoundedRectangleBorder(
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  ),
+                ),
+                child: Text(
+                  '추가',
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                ),
               ),
             ],
           ),
-          Spacer(), // 오른쪽 끝으로 버튼을 밀어줌
-          GestureDetector( //추가 버튼
-            onTap: () {
-              /*
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddDiaryPage()),
-              );*/
-            },
-            child: Container(
-              width: 40,
-              height: 28,
-              decoration: BoxDecoration(
-                color: Colors.grey[300], // 배경 색상
-                borderRadius: BorderRadius.circular(10),
-              ),
-              alignment: Alignment.center, // 텍스트 중앙 정렬
-              child: Text(
-                '추가',
-                style: TextStyle(color: Colors.grey[600], fontSize: 14),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -5,6 +5,4 @@ import './src/app.dart';
 void main() {
   runApp(const MyApp());
   print("test 수정 완료");
-  prnt("merge없이..");
-
 }

@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/component/work_state_button.dart';
 import 'package:knittda/src/component/work_list_item.dart';
 
+final List<Widget> worklist = <Widget>[
+  WorkListItem(url: null, name: "벤쿠버 가디건", date: "3일전"),
+  WorkListItem(url: null, name: "블랙베리 아란 스웨터", date: "3일전"),
+  WorkListItem(url: null, name: "브이넥 조끼", date: "3일전"),
+];
+
 class WorkList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -24,8 +30,19 @@ class WorkList extends StatelessWidget {
           SizedBox(height: 20),
           WorkStateButton(),
           SizedBox(height: 20),
-          WorkListItem(url: null, name: "모비스웨터", date: "3일전"),
-
+          Expanded(
+            child: ListView.builder(
+              itemCount: worklist.length + 1,
+              itemBuilder: (context, index){
+                if(index < worklist.length){
+                  final list = worklist[index];
+                  return list;
+                } else {
+                  return Text("text");
+                }
+              },
+            ),
+          ),
         ],
       ),
     );
