@@ -27,6 +27,7 @@ class WorkListItem extends StatelessWidget {
       child: Row(
         children: [
           ImageBox(url),
+          SizedBox(width: 20),//이미지와 Column 사이에 Sized Box 사용해서 공간 추가
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
