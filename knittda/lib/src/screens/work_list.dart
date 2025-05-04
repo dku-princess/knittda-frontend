@@ -25,6 +25,7 @@ class WorkList extends StatelessWidget {
           WorkStateButton(),
           SizedBox(height: 20),
           WorkListItem(url: null, name: "모비스웨터", date: "3일전"),
+
         ],
       ),
     );
