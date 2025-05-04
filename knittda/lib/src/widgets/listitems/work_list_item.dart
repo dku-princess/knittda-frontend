@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'image_box.dart';
+import '../image_box.dart';
 
 class WorkListItem extends StatelessWidget {
   final String? url;

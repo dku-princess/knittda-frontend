@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/component/more_menu_list.dart';
+import 'package:knittda/src/widgets/listitems/more_menu_list.dart';
 
 class MoreMenu extends StatelessWidget {
 

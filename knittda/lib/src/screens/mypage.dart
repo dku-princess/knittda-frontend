@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/component/user_mypage.dart';
+import 'package:knittda/src/widgets/listitems/user_mypage.dart';
 
 class Mypage extends StatelessWidget {
   @override
