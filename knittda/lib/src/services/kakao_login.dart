@@ -4,33 +4,25 @@ import 'package:knittda/src/services/social_login.dart';
 
 class KaKaoLogin implements SocialLogin {
   @override
-  Future<bool> login() async {
-    if (await isKakaoTalkInstalled()) {
-      try {
-        await UserApi.instance.loginWithKakaoTalk();
-        print('카카오톡으로 로그인 성공');
-        return true;
-
-      } catch (error) {
+  Future<String?> login() async {
+    try {
+      OAuthToken token;
+      if (await isKakaoTalkInstalled()) {
+        token = await UserApi.instance.loginWithKakaoTalk();
+      } else {
+        token = await UserApi.instance.loginWithKakaoAccount();
+      }
+      return token.accessToken;
+    } catch (error) {
         print('카카오톡으로 로그인 실패 $error');
-        return false;
-      }
-    } else {
-      try {
-        await UserApi.instance.loginWithKakaoAccount();
-        print('카카오계정으로 로그인 성공');
-        return true;
-      } catch (error) {
-        print('카카오계정으로 로그인 실패 $error');
-        return false;
-      }
+        return null;
     }
   }
 
   @override
   Future<bool> logout() async {
     try {
-      await UserApi.instance.unlink();
+      await UserApi.instance.logout();
       print('연결 끊기 성공, SDK에서 토큰 폐기');
       return true;
     } catch (error) {

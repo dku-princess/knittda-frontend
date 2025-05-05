@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
 import 'package:knittda/src/viewmodels/login_view_model.dart';
 import 'home.dart';
@@ -20,8 +19,6 @@ class Login extends StatelessWidget {
               ),
             ),
           ),
-          if (loginViewModel.isLogined)
-            Text("환영합니다, ${loginViewModel.user?.kakaoAccount?.profile?.nickname ?? '사용자'}"),
           Padding(
             padding: const EdgeInsets.only(bottom: 150),
             child: GestureDetector(
