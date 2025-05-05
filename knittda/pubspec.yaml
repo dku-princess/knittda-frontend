@@ -12,6 +12,8 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.8
+  kakao_flutter_sdk_user: ^1.9.7+3
+  provider: ^6.1.5
 
 dev_dependencies:
   flutter_test:
@@ -24,6 +26,7 @@ flutter:
 
   assets:
     - assets/font/ # Pretendard 폰트 경로 추가
+    - assets/image/ #image 경로 추가
 
   fonts:
     - family: Pretendard

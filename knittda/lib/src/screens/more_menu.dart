@@ -1,7 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/widgets/listitems/more_menu_list.dart';
 
+import 'package:provider/provider.dart';
+import 'package:knittda/src/viewmodels/login_view_model.dart';
+import 'login.dart';
+
 class MoreMenu extends StatelessWidget {
+
+  void onLogout (BuildContext context) async{
+    final loginViewModel = context.read<LoginViewModel>();
+    await loginViewModel.logout();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => Login()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +36,9 @@ class MoreMenu extends StatelessWidget {
       body: Column(
         children: [
           SizedBox(height: 20),
-          MoreMenuList(title: '로그아웃'),
-          MoreMenuList(title: '문의하기'),
-          MoreMenuList(title: '회원탈퇴'),
+          MoreMenuList(title: '로그아웃', onTab: () => onLogout(context)),
+          MoreMenuList(title: '문의하기', onTab: () =>()),
+          MoreMenuList(title: '회원탈퇴', onTab: () =>()),
         ],
       ),
     );
