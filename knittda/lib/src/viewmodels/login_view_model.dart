@@ -11,7 +11,6 @@ class LoginViewModel extends ChangeNotifier {
   final AuthRepository _authRepository;
 
   UserModel? user;
-  bool isLogined = false;
 
   LoginViewModel(this._socialLogin, this._authRepository);
 
@@ -19,18 +18,15 @@ class LoginViewModel extends ChangeNotifier {
     final token = await _socialLogin.login();
     if (token == null) return false;
 
-    final fetchedUser = await _authRepository.authenticateWithKakao(token);
-    if (fetchedUser == null) return false;
+    user = await _authRepository.authenticateWithKakao(token);
+    if (user == null) return false;
 
-    user = fetchedUser;
-    isLogined = true;
     notifyListeners();
     return true;
   }
 
-  Future logout() async {
+  Future<void> logout() async {
     await _socialLogin.logout();
-    isLogined = false;
     user = null;
     notifyListeners();
   }
