@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/widgets/image_box.dart';
 
+import 'info.dart';
+
 final List<Tab> myTabs = <Tab>[
   Tab(text:'정보'),
   Tab(text:'다이어리'),
@@ -8,7 +10,7 @@ final List<Tab> myTabs = <Tab>[
 ];
 
 final List<Widget> myTabItems = [
-  Center(child: Text('정보'),),
+  Info(),
   Center(child: Text('다이어리'),),
   Center(child: Text('리포트'),),
 ];
