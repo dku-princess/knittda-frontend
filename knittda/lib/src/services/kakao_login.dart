@@ -20,6 +20,7 @@ class KaKaoLogin implements SocialLogin {
           return token.accessToken;
         } catch (error) {
           print('카카오계정으로 로그인 실패 $error');
+          return null;
         }
       }
     } else {
@@ -29,6 +30,7 @@ class KaKaoLogin implements SocialLogin {
         return token.accessToken;
       } catch (error) {
         print('카카오계정으로 로그인 실패 $error');
+        return null;
       }
     }
   }

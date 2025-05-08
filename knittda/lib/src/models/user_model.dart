@@ -1,19 +1,22 @@
 class UserModel {
-  final int id;
-  final String name;
+  final int kakaoId;
   final String email;
+  final String nickname;
+  final String profileImageUrl;
 
   UserModel({
-    required this.id,
-    required this.name,
+    required this.kakaoId,
     required this.email,
+    required this.nickname,
+    required this.profileImageUrl,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'],
-      name: json['name'],
+      kakaoId: json['kakaoId'],
       email: json['email'],
+      nickname: json['nickname'],
+      profileImageUrl: json['profileImageUrl'],
     );
   }
 }

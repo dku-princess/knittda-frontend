@@ -6,54 +6,34 @@ import 'package:knittda/src/models/user_model.dart';
 
 import 'package:knittda/src/repositories/auth_repository.dart';
 
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
 class AuthViewModel extends ChangeNotifier {
   final SocialLogin _socialLogin;
   final AuthRepository _authRepository;
 
   UserModel? user;
-  String? accessToken;
-  String? refreshToken;
+  String? jwt;
 
   AuthViewModel(this._socialLogin, this._authRepository);
 
-  //토큰 업데이트 함수
-  update({
-    String? refreshToken,
-    String? accessToken,
-  }) {
-    if (refreshToken != null) {
-      this.refreshToken = refreshToken;
-    }
-
-    if (accessToken != null) {
-      this.accessToken = accessToken;
-    }
-
-    notifyListeners();
-  }
-
   Future<bool> loginWithKakao() async {
-    final token = await _socialLogin.login();
-    if (token == null) return false;
+    try {
+      final token = await _socialLogin.login();
+      if (token == null) {
+        return false; // 소셜 로그인 실패
+      }
 
-    final res = await _authRepository.loginWithKakao(token);
+      await _authRepository.loginWithKakao(token);
 
-    update(
-      refreshToken: res.refreshToken,
-      accessToken: res.accessToken,
-    );
-
-    notifyListeners();
-    return true;
+      notifyListeners();
+      return true; // 로그인 성공
+    } catch (e) {
+      debugPrint('카카오 로그인 실패: $e');
+      return false;
+    }
   }
 
   Future<void> logout() async {
     await _socialLogin.logout();
-    accessToken = null;
-    refreshToken = null;
-    user = null;
     notifyListeners();
   }
 }
