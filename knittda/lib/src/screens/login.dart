@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:knittda/src/viewmodels/login_view_model.dart';
+import 'package:knittda/src/viewmodels/auth_view_model.dart';
 import 'home.dart';
 
 class Login extends StatelessWidget {
+  const Login({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final loginViewModel = context.watch<LoginViewModel>();
+    final loginViewModel = context.read<AuthViewModel>();
 
     return Scaffold(
       body: Column(
@@ -23,15 +25,13 @@ class Login extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 150),
             child: GestureDetector(
               onTap: () async {
-                final success = await loginViewModel.login();
+                final success = await loginViewModel.loginWithKakao();
                 if (success) {
-                  print("로그인 성공");
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => Home()),
+                  //네비게이션 스택 완전 초기화
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const Home()),
+                        (route) => false,
                   );
-                } else {
-                  print("로그인 실패");
                 }
               },
               child: Image.asset(

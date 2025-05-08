@@ -4,9 +4,10 @@ import './src/app.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 
 import 'package:provider/provider.dart';
-import 'package:knittda/src/viewmodels/login_view_model.dart';
+import 'package:knittda/src/viewmodels/auth_view_model.dart';
 import 'package:knittda/src/services/kakao_login.dart';
 import 'package:knittda/src/repositories/auth_repository.dart';
+import 'package:knittda/src/shared/token_storage.dart';
 
 // 앱 실행
 void main() {
@@ -22,7 +23,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => LoginViewModel(KaKaoLogin(),AuthRepository()),
+          create: (_) => AuthViewModel(KaKaoLogin(),AuthRepository(),TokenStorage()),
         ),
       ],
       child: const MyApp(),

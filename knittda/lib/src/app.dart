@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/viewmodels/auth_view_model.dart';
+import 'package:provider/provider.dart';
 
 import 'screens/login.dart';
-import 'screens/work_details.dart';
+import 'screens/home.dart';
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -11,12 +14,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
 
-      //앱 처음 실행할 때 접속할 페이지
-      initialRoute: '/',
-      routes: {
-        '/': (context) => WorkDetails(),
-      },
-
       //모든 항목에서 pretendard 폰트 사용
       theme: ThemeData(
         fontFamily: 'Pretendard',
@@ -24,6 +21,28 @@ class MyApp extends StatelessWidget {
         //highlightColor: Colors.transparent, //클릭시 원형 효과 제거
       ),
 
+      home: Consumer<AuthViewModel>(
+        builder: (_, auth, __) {
+          switch (auth.status) {
+            case AuthStatus.loading:
+              return const SplashScreen();
+            case AuthStatus.authenticated:
+              return const Home();
+            case AuthStatus.unauthenticated:
+              return const Login();
+          }
+        },
+      ),
+    );
+  }
+}
+
+class SplashScreen extends StatelessWidget {
+  const SplashScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(child: CircularProgressIndicator()),
     );
   }
 }
