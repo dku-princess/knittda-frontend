@@ -3,6 +3,7 @@ import 'package:knittda/src/widgets/image_box.dart';
 
 import 'info.dart';
 import 'diary.dart';
+import 'report.dart';
 
 class WorkDetails extends StatelessWidget {
 
@@ -15,7 +16,7 @@ class WorkDetails extends StatelessWidget {
   final List<Widget> pages = [
     Info(),
     Diary(),
-    Center(child: Text('리포트'),),
+    Report(),
   ];
 
   @override
