@@ -8,6 +8,8 @@ import 'package:knittda/src/repositories/auth_repository.dart';
 
 import '../shared/token_storage.dart';
 
+enum AuthStatus { loading, authenticated, unauthenticated }
+
 class AuthViewModel extends ChangeNotifier {
   final SocialLogin _socialLogin;
   final AuthRepository _authRepository;
@@ -16,23 +18,19 @@ class AuthViewModel extends ChangeNotifier {
   String? jwt;
   UserModel? user;
 
-  /// 첫 초기화(자동 로그인 시도)가 끝났는지 여부
-  bool _initialized = false;
-  bool get initialized => _initialized;
+//현재 인증 상태
+  AuthStatus status = AuthStatus.loading;
 
   AuthViewModel(
       this._socialLogin,
       this._authRepository,
       this._tokenStorage,
       ) {
-    // 생성자에서 비동기로 자동 로그인 시도
-    _init();
+    _init(); //생성되자마자 자동 로그인 시도
   }
 
   Future<void> _init() async {
-    await tryAutoLogin();   // 토큰이 있으면 사용자 정보까지 조회
-    _initialized = true;    // 최초 초기화 끝
-    notifyListeners();
+    await tryAutoLogin();
   }
 
   Future<bool> loginWithKakao() async {
@@ -48,6 +46,7 @@ class AuthViewModel extends ChangeNotifier {
       // 상태갱신
       jwt  = result.jwt;
       user = result.user;
+      status = AuthStatus.authenticated;
       notifyListeners();
 
       // 디바이스에 저장
@@ -57,6 +56,7 @@ class AuthViewModel extends ChangeNotifier {
 
       return true;
     } catch (e) {
+      status = AuthStatus.unauthenticated;
       debugPrint('카카오 로그인 실패: $e');
       return false;
     }
@@ -64,23 +64,29 @@ class AuthViewModel extends ChangeNotifier {
 
   Future<void> tryAutoLogin() async {
     jwt = await _tokenStorage.read();
+
     if(jwt != null){
       try {
         final result = await _authRepository.me(jwt!);
         user = result.user;
+        status = AuthStatus.authenticated;
         debugPrint('사용자 정보 조회 성공');
       } catch(e) {
+        status = AuthStatus.unauthenticated;
         debugPrint('사용자 정보 조회 실패: $e');
       }
+    } else {
+      status = AuthStatus.unauthenticated;
     }
     notifyListeners();
   }
 
   Future<void> logout() async {
     await _socialLogin.logout();
+    await _tokenStorage.delete();
     jwt = null;
     user = null;
-    await _tokenStorage.delete();
+    status = AuthStatus.unauthenticated;
     notifyListeners();
   }
 }

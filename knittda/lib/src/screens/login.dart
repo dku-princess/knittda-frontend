@@ -4,9 +4,11 @@ import 'package:knittda/src/viewmodels/auth_view_model.dart';
 import 'home.dart';
 
 class Login extends StatelessWidget {
+  const Login({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final loginViewModel = context.watch<AuthViewModel>();
+    final loginViewModel = context.read<AuthViewModel>();
 
     return Scaffold(
       body: Column(
@@ -25,9 +27,10 @@ class Login extends StatelessWidget {
               onTap: () async {
                 final success = await loginViewModel.loginWithKakao();
                 if (success) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => Home()),
+                  //네비게이션 스택 완전 초기화
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const Home()),
+                        (route) => false,
                   );
                 }
               },

@@ -22,13 +22,14 @@ class MyApp extends StatelessWidget {
 
       home: Consumer<AuthViewModel>(
         builder: (_, auth, __) {
-          // 아직 초기화(토큰 체크)가 끝나지 않았다면 Splash
-          if (!auth.initialized) {
-            return const SplashScreen();
+          switch (auth.status) {
+            case AuthStatus.loading:
+              return const SplashScreen();
+            case AuthStatus.authenticated:
+              return const Home();
+            case AuthStatus.unauthenticated:
+              return const Login();
           }
-
-          // 초기화 끝 → 토큰이 있으면 Home, 없으면 Login
-          return auth.jwt == null ? Login() : const Home();
         },
       ),
     );
