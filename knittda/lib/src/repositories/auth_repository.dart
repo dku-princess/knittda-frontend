@@ -14,19 +14,30 @@ class AuthRepository {
     ),
   );
 
-  Future<UserModel> authenticateWithKakao(String accessToken) async {
+  Future<({String refreshToken, String accessToken, UserModel user})> loginWithKakao(String token) async {
     try {
       final res = await _dio.post<Map<String, dynamic>>(
         '/kakao',
-        data: {'access_token': accessToken},
+        data: {'kakao_token': token},
       );
 
       final data = res.data;
+
       if (data == null) {
         throw Exception('빈 응답을 받았습니다.');
       }
 
-      return UserModel.fromJson(data);
+      if (data['accessToken'] == null ||
+          data['refreshToken'] == null ||
+          data['user'] == null) {
+        throw Exception('로그인 응답이 불완전합니다.');
+      }
+
+      return (
+      refreshToken: data['refreshToken'] as String,
+      accessToken: data['accessToken'] as String,
+      user: UserModel.fromJson(data['user'])
+      );
     } on DioException catch (e) {
       // 로그 또는 기본 에러 메시지 처리
       throw Exception('서버 요청 실패: ${e.message}');

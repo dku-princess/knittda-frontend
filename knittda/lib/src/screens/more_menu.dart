@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/widgets/listitems/more_menu_list.dart';
 
 import 'package:provider/provider.dart';
-import 'package:knittda/src/viewmodels/login_view_model.dart';
+import 'package:knittda/src/viewmodels/auth_view_model.dart';
 import 'login.dart';
 
 class MoreMenu extends StatelessWidget {
 
   void onLogout (BuildContext context) async{
-    final loginViewModel = context.read<LoginViewModel>();
+    final loginViewModel = context.read<AuthViewModel>();
     await loginViewModel.logout();
     Navigator.pushReplacement(
       context,
