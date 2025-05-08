@@ -10,8 +10,8 @@ class AuthViewModel extends ChangeNotifier {
   final SocialLogin _socialLogin;
   final AuthRepository _authRepository;
 
-  UserModel? user;
   String? jwt;
+  UserModel? user;
 
   AuthViewModel(this._socialLogin, this._authRepository);
 
@@ -22,7 +22,12 @@ class AuthViewModel extends ChangeNotifier {
         return false; // 소셜 로그인 실패
       }
 
-      await _authRepository.loginWithKakao(token);
+      // ───────── 서버 요청 ─────────
+      final result = await _authRepository.loginWithKakao(token);
+
+      // ───────── 상태 갱신 ─────────
+      jwt  = result.jwt;
+      user = result.user;
 
       notifyListeners();
       return true; // 로그인 성공
