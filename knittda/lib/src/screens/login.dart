@@ -25,13 +25,10 @@ class Login extends StatelessWidget {
               onTap: () async {
                 final success = await loginViewModel.loginWithKakao();
                 if (success) {
-                  print("로그인 성공");
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (_) => Home()),
                   );
-                } else {
-                  print("로그인 실패");
                 }
               },
               child: Image.asset(

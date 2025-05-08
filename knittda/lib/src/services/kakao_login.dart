@@ -41,10 +41,10 @@ class KaKaoLogin implements SocialLogin {
   Future<bool> logout() async {
     try {
       await UserApi.instance.logout();
-      print('연결 끊기 성공, SDK에서 토큰 폐기');
+      debugPrint('연결 끊기 성공, SDK에서 토큰 폐기');
       return true;
     } catch (error) {
-      print('연결 끊기 실패 $error');
+      debugPrint('연결 끊기 실패 $error');
       return false;
     }
   }
