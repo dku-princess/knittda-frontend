@@ -2,26 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/widgets/image_box.dart';
 
 import 'info.dart';
-
-final List<Tab> myTabs = <Tab>[
-  Tab(text:'정보'),
-  Tab(text:'다이어리'),
-  Tab(text:'리포트'),
-];
-
-final List<Widget> myTabItems = [
-  Info(),
-  Center(child: Text('다이어리'),),
-  Center(child: Text('리포트'),),
-];
+import 'diary.dart';
 
 class WorkDetails extends StatelessWidget {
+
+  final List<Tab> tabs = <Tab>[
+    Tab(text:'정보'),
+    Tab(text:'다이어리'),
+    Tab(text:'리포트'),
+  ];
+
+  final List<Widget> pages = [
+    Info(),
+    Diary(),
+    Center(child: Text('리포트'),),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top; //상태바 높이
 
     return DefaultTabController(
-      length: myTabs.length,
+      length: tabs.length,
       child: Scaffold(
         body: NestedScrollView(
           headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -51,15 +53,15 @@ class WorkDetails extends StatelessWidget {
                   ),
                 ),
                 bottom: TabBar(
+                  tabs: tabs,
                   indicatorColor: Colors.black87, //tabbar 밑줄 색상
                   labelColor: Colors.black87, //선택된 영역 글자 색
                   unselectedLabelColor: Colors.grey, //선택 안된 영역 글자색
-                  tabs: myTabs,
                 ),
               ),
             ];
           },
-          body: TabBarView(children: myTabItems),
+          body: TabBarView(children: pages),
         ),
       ),
     );
