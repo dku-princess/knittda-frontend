@@ -6,13 +6,16 @@ import 'package:knittda/src/viewmodels/auth_view_model.dart';
 import 'login.dart';
 
 class MoreMenu extends StatelessWidget {
+  const MoreMenu({super.key});
 
   void onLogout (BuildContext context) async{
     final loginViewModel = context.read<AuthViewModel>();
     await loginViewModel.logout();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => Login()),
+
+    //네비게이션 스택 완전 초기화
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const Login()),
+          (route) => false,
     );
   }
 

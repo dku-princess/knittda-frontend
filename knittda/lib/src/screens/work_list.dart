@@ -9,6 +9,8 @@ final List<Widget> worklist = <Widget>[
 ];
 
 class WorkList extends StatelessWidget {
+  const WorkList({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
