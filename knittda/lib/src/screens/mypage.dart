@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../viewmodels/user_view_model.dart';
 
 class Mypage extends StatelessWidget {
+  const Mypage({super.key});
+
   @override
   Widget build(BuildContext context) {
+    final userViewModel = context.watch<UserViewModel>();
+
+    if (!userViewModel.isReady) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Padding(
@@ -33,12 +45,13 @@ class Mypage extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      CircleAvatar(
-                        backgroundColor: Colors.grey,
-                      ),
+                  CircleAvatar(
+                    backgroundImage: userViewModel.profileImage,
+                    backgroundColor: Colors.grey,
+                  ),
                       const SizedBox(width: 12),
                       Text(
-                        "홍길동",
+                        userViewModel.nickname,
                         style: TextStyle(
                           fontSize: 16,
                         ),
@@ -74,9 +87,7 @@ class Mypage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 16),
-            Text(
-              "test@test.com",
-            ),
+            Text(userViewModel.email),
           ],
         ),
       )
