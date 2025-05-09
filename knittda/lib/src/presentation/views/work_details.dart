@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/widgets/image_box.dart';
+import 'package:knittda/src/presentation/views/diary.dart';
+import 'package:knittda/src/presentation/views/info.dart';
+import 'package:knittda/src/presentation/views/report.dart';
+import 'package:knittda/src/presentation/widgets/image_box.dart';
 
-import 'info.dart';
-import 'diary.dart';
-import 'report.dart';
 
 class WorkDetails extends StatelessWidget {
 

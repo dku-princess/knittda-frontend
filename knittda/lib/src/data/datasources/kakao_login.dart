@@ -1,6 +1,6 @@
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
-import 'package:knittda/src/services/social_login.dart';
+import 'package:knittda/src/data/datasources/social_login.dart';
 
 import 'package:flutter/material.dart';
 

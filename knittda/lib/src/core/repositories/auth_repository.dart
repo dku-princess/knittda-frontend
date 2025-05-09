@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import '../models/user_model.dart';
+import '../../data/models/user_model.dart';
 
 class AuthRepository {
   static final baseUrl = 'http://13.125.122.193:8080/';
