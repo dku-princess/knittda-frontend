@@ -8,6 +8,7 @@ import 'package:knittda/src/viewmodels/auth_view_model.dart';
 import 'package:knittda/src/services/kakao_login.dart';
 import 'package:knittda/src/repositories/auth_repository.dart';
 import 'package:knittda/src/shared/token_storage.dart';
+import 'package:knittda/src/viewmodels/user_view_model.dart';
 
 // 앱 실행
 void main() {
@@ -24,6 +25,11 @@ void main() {
       providers: [
         ChangeNotifierProvider(
           create: (_) => AuthViewModel(KaKaoLogin(),AuthRepository(),TokenStorage()),
+        ),
+        ChangeNotifierProxyProvider<AuthViewModel, UserViewModel>(
+          create: (context) => UserViewModel(context.read<AuthViewModel>()),
+          update: (context, authViewModel, previous) =>
+          previous!..update(authViewModel),
         ),
       ],
       child: const MyApp(),

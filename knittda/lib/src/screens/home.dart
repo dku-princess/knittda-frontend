@@ -23,9 +23,9 @@ final List<BottomNavigationBarItem> myTabs = <BottomNavigationBarItem>[
 
 //바텀네비게이션 클릭 시 이동할 페이지 목록
 final List<Widget> _widgetOptions = <Widget>[
-  WorkList(),
-  Mypage(),
-  MoreMenu(),
+  const WorkList(),
+  const Mypage(),
+  const MoreMenu(),
 ];
 
 class Home extends StatefulWidget {
