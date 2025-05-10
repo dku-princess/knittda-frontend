@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/presentation/screens/add_work_page.dart';
+import 'package:knittda/src/presentation/screens/search_patterns.dart';
 import 'package:knittda/src/presentation/widgets/buttons/work_state_button.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
 
@@ -53,7 +53,7 @@ class WorkList extends StatelessWidget {
                             // 버튼 클릭 동작
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => AddWorkPage()),
+                              MaterialPageRoute(builder: (context) => AddWorkPage1()),
                             );//임시 추가, push할 시 지워
                           },
                           style: TextButton.styleFrom(
