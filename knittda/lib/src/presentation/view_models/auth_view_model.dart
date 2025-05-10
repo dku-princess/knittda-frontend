@@ -7,8 +7,6 @@ import 'package:knittda/src/data/models/user_model.dart';
 
 import 'package:knittda/src/data/repositories/auth_repository.dart';
 
-
-
 enum AuthStatus { loading, authenticated, unauthenticated }
 
 class AuthViewModel extends ChangeNotifier {

@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 
 class CustomTextField extends StatelessWidget {
   final String? label;// 텍스트 필드 제목
-  final String hintText;
+  final String? hintText;
   final int maxLines;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
@@ -15,7 +15,7 @@ class CustomTextField extends StatelessWidget {
 
   const CustomTextField({
     this.label,
-    required this.hintText,
+    this.hintText,
 
     this.maxLines = 1,
     this.keyboardType,
@@ -37,14 +37,20 @@ class CustomTextField extends StatelessWidget {
           Text( label!,
               style: TextStyle(fontSize: 16)
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 10),
         ],
         TextFormField(
           style: const TextStyle(fontSize: 14),
 
           decoration: InputDecoration(
             hintText: hintText,
-            border: InputBorder.none, // 테두리 삭제
+            isDense: true,
+            filled: true,
+            fillColor: Colors.grey[200],
+            border:  OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8), // ← 여기!
+            borderSide: BorderSide.none, // 테두리 없애고 배경만 보이게
+            ),
           ),
 
           maxLines: maxLines,

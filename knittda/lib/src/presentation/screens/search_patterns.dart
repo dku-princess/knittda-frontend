@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:knittda/src/presentation/widgets/form/custom_text_field.dart';
+import 'package:knittda/src/presentation/screens/add_work.dart';
 
-class AddWorkPage1 extends StatelessWidget {
+class SearchPatterns extends StatelessWidget {
+  const SearchPatterns({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,14 +18,7 @@ class AddWorkPage1 extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
         child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: CustomTextField(hintText: "검색"),
-            ),
+            CustomTextField(hintText: "검색"),
             Expanded(
               child: Center(
                 child: Column(
@@ -46,7 +41,10 @@ class AddWorkPage1 extends StatelessWidget {
                       height: 44,
                       child: TextButton(
                         onPressed: () {
-
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => AddWorkPage()),
+                          );
                         },
                         style: TextButton.styleFrom(
                           backgroundColor: Color(0xFFE9F9F5),

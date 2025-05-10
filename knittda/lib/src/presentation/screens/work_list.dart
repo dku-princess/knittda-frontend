@@ -53,7 +53,7 @@ class WorkList extends StatelessWidget {
                             // 버튼 클릭 동작
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => AddWorkPage1()),
+                              MaterialPageRoute(builder: (context) => const SearchPatterns()),
                             );//임시 추가, push할 시 지워
                           },
                           style: TextButton.styleFrom(
