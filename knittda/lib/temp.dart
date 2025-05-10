@@ -1,9 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:knittda/src/presentation/widgets/form/custom_text_field.dart';
-import 'package:knittda/src/presentation/view_models/add_work_view_model.dart';
-import 'package:provider/provider.dart';
-import 'package:knittda/src/core/constants/color.dart';
-
 class AddWorkPage extends StatelessWidget {
 
   @override
@@ -36,7 +30,7 @@ class AddWorkPage extends StatelessWidget {
                       width: 110,
                       decoration: BoxDecoration(
                         color: Colors.grey[350],
-                          borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       child: Icon(
                         Icons.add,
@@ -54,38 +48,20 @@ class AddWorkPage extends StatelessWidget {
                             onSaved: (String? val) {
                               addWorkViewModel.nickname = val;
                             },
-                            validator: addWorkViewModel.nicknameValidator,
                           ),
                           SizedBox(height: 10),
-                          FormField<String>(
-                            initialValue: addWorkViewModel.goalDate,
-                            validator: addWorkViewModel.goalDateValidator,
-                            builder: (FormFieldState<String> field) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  TextButton(
-                                    onPressed: () async {
-                                      await addWorkViewModel.pickGoalDate(context);
-                                      field.didChange(addWorkViewModel.goalDate); // 중요: 상태 갱신
-                                    },
-                                    style: TextButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        side: BorderSide(color: PRIMARY_COLOR),
-                                      ),
-                                      foregroundColor: PRIMARY_COLOR,
-                                    ),
-                                    child: Text(addWorkViewModel.goalDate ?? "목표 날짜"),
-                                  ),
-                                  if (field.hasError)
-                                    Text(
-                                      field.errorText ?? '',
-                                      style: TextStyle(color: Colors.red, fontSize: 12),
-                                    ),
-                                ],
-                              );
-                            },
+                          TextButton(
+                            onPressed: () => addWorkViewModel.pickGoalDate(context),
+                            style: TextButton.styleFrom(
+                              //padding: EdgeInsets.zero,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                side: BorderSide(color: PRIMARY_COLOR),
+                              ),
+                              foregroundColor: PRIMARY_COLOR, // 텍스트 색상
+                              backgroundColor: Colors.transparent, // 배경 투명
+                            ),
+                            child: Text(addWorkViewModel.goalDate ?? "목표 날짜"),
                           ),
                         ],
                       ),
@@ -94,33 +70,59 @@ class AddWorkPage extends StatelessWidget {
                 ),
                 SizedBox(height: 50),
                 Text(
-                  "정보",
+                  "뜨개 정보",
                   style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'Pretendard', fontWeight: FontWeight.w500),
                 ),
+                // SizedBox(height: 20,),
+                // CustomTextField(label: "도안",),
+                // SizedBox(height: 16,),
+                // CustomTextField(label: "작가",),
                 SizedBox(height: 16,),
+                // CustomTextField(label: "사이즈",),
+                // SizedBox(height: 16,),
                 CustomTextField(
                   label: "실",
                   onSaved: (String? val) {
                     addWorkViewModel.customYarnInfo = val;
                   },
-                  validator: addWorkViewModel.yarnValidator,
                 ),
                 SizedBox(height: 16,),
+                // Row(
+                //   children: [
+                //     SizedBox(
+                //       width: 80,
+                //       child: Text("실 사용량"),
+                //     ),
+                //     Expanded(
+                //       child: CustomTextField(),
+                //     ),
+                //   ],
+                // ),
+                // SizedBox(height: 16,),
+                // Row(
+                //   children: [
+                //     SizedBox(
+                //       width: 80,
+                //       child: Text("게이지"),
+                //     ),
+                //     Expanded(
+                //       child: CustomTextField(),
+                //     ),
+                //   ],
+                // ),
+                // SizedBox(height: 16,),
                 CustomTextField(
                   label: "바늘",
                   onSaved: (String? val) {
                     addWorkViewModel.customNeedleInfo = val;
                   },
-                  validator: addWorkViewModel.needleValidator,
                 ),
                 SizedBox(height: 40,),
                 SizedBox(
                   width: double.infinity,
                   height: 44,
                   child: TextButton(
-                    onPressed: () {
-                      addWorkViewModel.onSavePressed(context);
-                    },
+                    onPressed: () { },
                     style: TextButton.styleFrom(
                       backgroundColor: PRIMARY_COLOR,
                       foregroundColor: Colors.white,

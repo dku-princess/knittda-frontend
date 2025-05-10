@@ -9,7 +9,6 @@ import 'package:knittda/src/data/datasources/kakao_login.dart';
 import 'package:knittda/src/data/repositories/auth_repository.dart';
 import 'package:knittda/src/core/storage/token_storage.dart';
 import 'package:knittda/src/presentation/view_models/user_view_model.dart';
-import 'package:knittda/src/presentation/view_models/add_work_view_model.dart';
 
 // 앱 실행
 void main() {
@@ -32,7 +31,6 @@ void main() {
           update: (context, authViewModel, previous) =>
           previous!..update(authViewModel),
         ),
-        ChangeNotifierProvider(create: (_) => AddWorkViewModel()),
       ],
       child: const MyApp(),
     ),

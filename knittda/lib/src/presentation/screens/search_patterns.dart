@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/view_models/add_work_view_model.dart';
 
 import 'package:knittda/src/presentation/widgets/form/custom_text_field.dart';
 import 'package:knittda/src/presentation/screens/add_work.dart';
+import 'package:provider/provider.dart';
 
 class SearchPatterns extends StatelessWidget {
   const SearchPatterns({super.key});
@@ -43,7 +45,12 @@ class SearchPatterns extends StatelessWidget {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => AddWorkPage()),
+                            MaterialPageRoute(
+                              builder: (_) => ChangeNotifierProvider.value(
+                                value: context.read<AddWorkViewModel>(),
+                                child: AddWorkPage(),
+                              ),
+                            ),
                           );
                         },
                         style: TextButton.styleFrom(
