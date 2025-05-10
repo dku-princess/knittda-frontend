@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/viewmodels/auth_view_model.dart';
+import 'package:knittda/src/presentation/views/home.dart';
+import 'package:knittda/src/presentation/views/login.dart';
+import 'package:knittda/src/presentation/viewmodels/auth_view_model.dart';
 import 'package:provider/provider.dart';
 
-import 'screens/login.dart';
-import 'screens/home.dart';
 
 
 class MyApp extends StatelessWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:knittda/src/viewmodels/auth_view_model.dart';
-import 'home.dart';
+import 'package:knittda/src/presentation/viewmodels/auth_view_model.dart';
+import 'package:knittda/src/presentation/views/home.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/widgets/buttons/work_state_button.dart';
-import 'package:knittda/src/widgets/listitems/work_list_item.dart';
-import 'package:knittda/src/screens/add_work_page.dart';
+import 'package:knittda/src/presentation/widgets/buttons/work_state_button.dart';
+import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
+
 final List<Widget> worklist = <Widget>[
   WorkListItem(url: null, name: "벤쿠버 가디건", date: "3일전"),
   WorkListItem(url: null, name: "블랙베리 아란 스웨터", date: "3일전"),
