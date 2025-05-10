@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/widgets/buttons/work_state_button.dart';
 import 'package:knittda/src/widgets/listitems/work_list_item.dart';
-
+import 'package:knittda/src/screens/add_work_page.dart';
 final List<Widget> worklist = <Widget>[
   WorkListItem(url: null, name: "벤쿠버 가디건", date: "3일전"),
   WorkListItem(url: null, name: "블랙베리 아란 스웨터", date: "3일전"),
-  WorkListItem(url: null, name: "브이넥 조끼", date: "3일전"),
+  WorkListItem(url: null, name: "브이넥 조끼", date: "3일전")
 ];
 
 class WorkList extends StatelessWidget {
@@ -48,6 +48,10 @@ class WorkList extends StatelessWidget {
                         child: TextButton(
                           onPressed: () {
                             // 버튼 클릭 동작
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => AddWorkPage()),
+                            );//임시 추가, push할 시 지워
                           },
                           style: TextButton.styleFrom(
                             backgroundColor: Colors.grey[300],
