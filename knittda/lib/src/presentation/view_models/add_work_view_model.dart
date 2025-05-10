@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/data/models/work_model.dart';
 import 'package:knittda/src/presentation/screens/home.dart';
+import 'package:provider/provider.dart';
+import 'work_view_model.dart';
 
 class AddWorkViewModel extends ChangeNotifier {
   final formKey = GlobalKey<FormState>();
@@ -17,6 +20,15 @@ class AddWorkViewModel extends ChangeNotifier {
 
   String _formatDate(DateTime date) {
     return "${date.year}.${date.month.toString().padLeft(2, '0')}.${date.day.toString().padLeft(2, '0')}";
+  }
+
+  DateTime _parseDotDate(String date) {
+    final parts = date.split('.');
+    return DateTime(
+      int.parse(parts[0]),
+      int.parse(parts[1]),
+      int.parse(parts[2]),
+    );
   }
 
   Future<void> pickGoalDate(BuildContext context) async {
@@ -40,12 +52,16 @@ class AddWorkViewModel extends ChangeNotifier {
       // ➊ 폼 검증하기
       formKey.currentState!.save(); // ➋ 폼 저장하기
 
-      print("작품 이름: $nickname");
-      print("목표 날짜: $goalDate");
-      print("시작 날짜: $startDate");
-      print("종료 날짜: $endDate");
-      print("실 정보: $customYarnInfo");
-      print("바늘 정보: $customNeedleInfo");
+      final work = WorkModel.forCreate(
+        nickname: nickname!,
+        customYarnInfo: customYarnInfo!,
+        customNeedleInfo: customNeedleInfo!,
+        startDate: _parseDotDate(startDate!),
+        endDate: _parseDotDate(endDate!),
+        goalDate: _parseDotDate(goalDate!),
+      );
+
+      await context.read<WorkViewModel>().createWork(work: work);
 
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const Home()),

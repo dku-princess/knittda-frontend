@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/data/repositories/work_repositories.dart';
+import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import './src/app.dart';
 
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
@@ -28,6 +30,11 @@ void main() {
         ),
         ChangeNotifierProxyProvider<AuthViewModel, UserViewModel>(
           create: (context) => UserViewModel(context.read<AuthViewModel>()),
+          update: (context, authViewModel, previous) =>
+          previous!..update(authViewModel),
+        ),
+        ChangeNotifierProxyProvider<AuthViewModel, WorkViewModel>(
+          create: (context) => WorkViewModel(context.read<AuthViewModel>(),WorkRepositories()),
           update: (context, authViewModel, previous) =>
           previous!..update(authViewModel),
         ),

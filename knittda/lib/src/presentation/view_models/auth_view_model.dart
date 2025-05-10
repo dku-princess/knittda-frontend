@@ -70,6 +70,7 @@ class AuthViewModel extends ChangeNotifier {
         user = result.user;
         status = AuthStatus.authenticated;
         debugPrint('사용자 정보 조회 성공');
+        debugPrint(jwt);
       } catch(e) {
         status = AuthStatus.unauthenticated;
         debugPrint('사용자 정보 조회 실패: $e');

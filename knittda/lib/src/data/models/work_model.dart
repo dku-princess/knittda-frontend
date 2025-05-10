@@ -64,6 +64,45 @@ class WorkModel {
     };
   }
 
+  factory WorkModel.forCreate({
+    required String nickname,
+    required String customYarnInfo,
+    required String customNeedleInfo,
+    required DateTime startDate,
+    required DateTime endDate,
+    required DateTime goalDate,
+  }) {
+    return WorkModel(
+      id: 0,
+      designId: 0,
+      userId: 0,
+      status: null,
+      nickname: nickname,
+      customYarnInfo: customYarnInfo,
+      customNeedleInfo: customNeedleInfo,
+      lastRecordAt: null,
+      createdAt: null,
+      startDate: startDate,
+      endDate: endDate,
+      goalDate: goalDate,
+    );
+  }
+
+  Map<String, dynamic> toCreateJson() {
+    String formatDate(DateTime date) =>
+        "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+
+    return {
+      'designId': designId,
+      'nickname': nickname,
+      'customYarnInfo': customYarnInfo,
+      'customNeedleInfo': customNeedleInfo,
+      'startDate': formatDate(startDate),
+      'endDate': formatDate(endDate),
+      'goalDate': formatDate(goalDate),
+    };
+  }
+
   WorkModel copyWith({
     int? id,
     int? designId,

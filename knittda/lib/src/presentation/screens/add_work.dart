@@ -70,6 +70,7 @@ class AddWorkPage extends StatelessWidget {
                                       field.didChange(addWorkViewModel.goalDate); // 중요: 상태 갱신
                                     },
                                     style: TextButton.styleFrom(
+                                      //padding: EdgeInsets.zero,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
                                         side: BorderSide(color: PRIMARY_COLOR),
@@ -106,6 +107,7 @@ class AddWorkPage extends StatelessWidget {
                   validator: addWorkViewModel.yarnValidator,
                 ),
                 SizedBox(height: 16,),
+
                 CustomTextField(
                   label: "바늘",
                   onSaved: (String? val) {
