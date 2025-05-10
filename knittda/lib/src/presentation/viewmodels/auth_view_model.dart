@@ -5,7 +5,7 @@ import 'package:knittda/src/core/storage/token_storage.dart';
 
 import 'package:knittda/src/data/models/user_model.dart';
 
-import 'package:knittda/src/core/repositories/auth_repository.dart';
+import 'package:knittda/src/data/repositories/auth_repository.dart';
 
 
 

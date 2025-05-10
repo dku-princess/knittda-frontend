@@ -6,7 +6,7 @@ import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/presentation/viewmodels/auth_view_model.dart';
 import 'package:knittda/src/data/datasources/kakao_login.dart';
-import 'package:knittda/src/core/repositories/auth_repository.dart';
+import 'package:knittda/src/data/repositories/auth_repository.dart';
 import 'package:knittda/src/core/storage/token_storage.dart';
 import 'package:knittda/src/presentation/viewmodels/user_view_model.dart';
 
