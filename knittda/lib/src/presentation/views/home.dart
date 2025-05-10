@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/constants/color.dart';
+import 'package:knittda/src/core/constants/color.dart';
 
-import 'work_list.dart';
-import 'more_menu.dart';
-import 'mypage.dart';
+import 'package:knittda/src/presentation/views/more_menu.dart';
+import 'package:knittda/src/presentation/views/mypage.dart';
+import 'package:knittda/src/presentation/views/work_list.dart';
+
 
 // 바텀네비게이션 리스트
 final List<BottomNavigationBarItem> myTabs = <BottomNavigationBarItem>[

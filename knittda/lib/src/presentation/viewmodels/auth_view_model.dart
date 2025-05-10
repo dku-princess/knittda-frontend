@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
-import 'package:knittda/src/services/social_login.dart';
+import 'package:knittda/src/data/datasources/social_login.dart';
+import 'package:knittda/src/core/storage/token_storage.dart';
 
-import 'package:knittda/src/models/user_model.dart';
+import 'package:knittda/src/data/models/user_model.dart';
 
-import 'package:knittda/src/repositories/auth_repository.dart';
+import 'package:knittda/src/data/repositories/auth_repository.dart';
 
-import '../shared/token_storage.dart';
+
 
 enum AuthStatus { loading, authenticated, unauthenticated }
 

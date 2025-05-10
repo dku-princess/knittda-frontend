@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/widgets/listitems/more_menu_list.dart';
+
+import 'package:knittda/src/presentation/views/login.dart';
+import 'package:knittda/src/presentation/widgets/listitems/more_menu_list.dart';
 
 import 'package:provider/provider.dart';
-import 'package:knittda/src/viewmodels/auth_view_model.dart';
-import 'login.dart';
+import 'package:knittda/src/presentation/viewmodels/auth_view_model.dart';
+
 
 class MoreMenu extends StatelessWidget {
   const MoreMenu({super.key});

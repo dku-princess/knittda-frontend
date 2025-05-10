@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/constants/color.dart';
+import 'package:knittda/src/core/constants/color.dart';
 
 class WorkStateButton extends StatefulWidget {
   const WorkStateButton({super.key});
