@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/presentation/views/home.dart';
-import 'package:knittda/src/presentation/views/login.dart';
-import 'package:knittda/src/presentation/viewmodels/auth_view_model.dart';
+import 'package:knittda/src/presentation/screens/home.dart';
+import 'package:knittda/src/presentation/screens/login.dart';
+import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:provider/provider.dart';
 
 
