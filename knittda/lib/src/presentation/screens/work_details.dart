@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/presentation/views/diary.dart';
-import 'package:knittda/src/presentation/views/info.dart';
-import 'package:knittda/src/presentation/views/report.dart';
+import 'package:knittda/src/presentation/screens/diary.dart';
+import 'package:knittda/src/presentation/screens/info.dart';
+import 'package:knittda/src/presentation/screens/report.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
 
 

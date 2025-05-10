@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/widgets/listitems/design_list_item.dart';
-import 'package:knittda/src/screens/add_work_page_final.dart'; // 직접 입력 페이지 import
+import 'package:knittda/src/presentation/screens/add_work_page_final.dart';
+import 'package:knittda/src/presentation/widgets/listitems/design_list_item.dart';
+
 
 class AddWorkPage extends StatefulWidget {
   @override
