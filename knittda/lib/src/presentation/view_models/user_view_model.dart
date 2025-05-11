@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'auth_view_model.dart';
 
 class UserViewModel extends ChangeNotifier {
-  late AuthViewModel _authViewModel;
+  AuthViewModel _authViewModel;
 
   UserViewModel(this._authViewModel);
 
@@ -12,7 +12,8 @@ class UserViewModel extends ChangeNotifier {
   }
 
   bool get isReady =>
-      _authViewModel.status == AuthStatus.authenticated && _authViewModel.user != null;
+      _authViewModel.status == AuthStatus.authenticated &&
+          _authViewModel.user != null;
 
   String get nickname => _authViewModel.user?.nickname ?? '이름 없음';
 

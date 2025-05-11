@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/data/models/work_model.dart';
 import '../image_box.dart';
+import 'package:knittda/src/core/utils/date_utils.dart';
 
 class WorkListItem extends StatelessWidget {
-  final String? url;
-  final String name;
-  final String date;
+  final WorkModel work;
 
-  WorkListItem({
-    required this.url,
-    required this.name,
-    required this.date,
-  });
+  const WorkListItem({super.key, required this.work});
 
   @override
   Widget build(BuildContext context) {
@@ -27,20 +23,20 @@ class WorkListItem extends StatelessWidget {
         ),
         child: Row(
           children: [
-            ImageBox(url),
+            ImageBox(null),
             SizedBox(width: 10), // 이미지와 텍스트 사이 여백 추가
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name),
+                Text(work.nickname),
                 SizedBox(height:14),
-                Row(
-                  children: [
-                    Text("기록일", style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-                    SizedBox(width: 4),
-                    Text(date, style: TextStyle(fontSize: 12)),
-                  ],
-                ),
+                // Row(
+                //   children: [
+                //     Text("기록일", style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                //     SizedBox(width: 4),
+                //     Text(DateUtilsHelper.toDotFormat(work.lastRecordAt), style: TextStyle(fontSize: 12)),
+                //   ],
+                // ),
               ],
             ),
             Spacer(), // 오른쪽 끝으로 버튼을 밀어줌

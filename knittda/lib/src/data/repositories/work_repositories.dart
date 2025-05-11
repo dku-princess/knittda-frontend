@@ -53,7 +53,9 @@ class WorkRepositories {
   Future<({WorkModel work})> createWork(String accessToken, WorkModel work) async{
     try{
       final json = work.toCreateJson();
-      debugPrint(jsonEncode(json));
+
+      debugPrint('Authorization: Bearer $accessToken');
+      debugPrint('보낸 내용${jsonEncode(json)}');
 
       final res = await _dio.post<Map<String, dynamic>>(
         '/api/v1/projects/',

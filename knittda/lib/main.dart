@@ -26,15 +26,23 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => AuthViewModel(KaKaoLogin(),AuthRepository(),TokenStorage()),
+          create: (_) => AuthViewModel(
+            KaKaoLogin(),
+            AuthRepository(),
+            TokenStorage(),
+          ),
         ),
+
         ChangeNotifierProxyProvider<AuthViewModel, UserViewModel>(
-          create: (context) => UserViewModel(context.read<AuthViewModel>()),
+          create: (context) =>
+              UserViewModel(context.read<AuthViewModel>()),
           update: (context, authViewModel, previous) =>
           previous!..update(authViewModel),
         ),
+
         ChangeNotifierProxyProvider<AuthViewModel, WorkViewModel>(
-          create: (context) => WorkViewModel(context.read<AuthViewModel>(),WorkRepositories()),
+          create: (context) =>
+              WorkViewModel(context.read<AuthViewModel>(), WorkRepositories()),
           update: (context, authViewModel, previous) =>
           previous!..update(authViewModel),
         ),

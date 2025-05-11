@@ -1,5 +1,7 @@
+import 'package:knittda/src/core/utils/date_utils.dart';
+
 class WorkModel {
-  final int id;
+  final int? id;
   final int designId;
   final int? userId;
   final String nickname;
@@ -13,21 +15,21 @@ class WorkModel {
   final DateTime goalDate;
 
   WorkModel({
-    required this.id,
+    this.id,
     required this.designId,
-    this.userId,//
+    this.userId,
     required this.nickname,
-    this.status,//
+    this.status,
     required this.customYarnInfo,
     required this.customNeedleInfo,
-    this.lastRecordAt,//
-    this.createdAt,//
+    this.lastRecordAt,
+    this.createdAt,
     required this.startDate,
     required this.endDate,
     required this.goalDate,
-
   });
 
+  //서버에서 json 형식으로 돌려주면 map으로 저장
   factory WorkModel.fromJson(Map<String, dynamic> json) {
     return WorkModel(
       id: json['id'],
@@ -37,15 +39,20 @@ class WorkModel {
       status: json['status'],
       customYarnInfo: json['customYarnInfo'],
       customNeedleInfo: json['customNeedleInfo'],
-      lastRecordAt: json['lastRecordAt'] != null ? DateTime.parse(json['lastRecordAt']) : null,
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      lastRecordAt: json['lastRecordAt'] != null
+          ? DateTime.parse(json['lastRecordAt'])
+          : null,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : null,
       startDate: DateTime.parse(json['startDate']),
       endDate: DateTime.parse(json['endDate']),
       goalDate: DateTime.parse(json['goalDate']),
     );
   }
 
-  Map<String, dynamic> toJson() {  // ➋ 모델을 다시 JSON으로 변환하는 함수
+  // map으로 된 정보를 json으로 변형해서 서버로 전송
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'designId': designId,
@@ -55,16 +62,16 @@ class WorkModel {
       'customYarnInfo': customYarnInfo,
       'customNeedleInfo': customNeedleInfo,
       'lastRecordAt': lastRecordAt?.toIso8601String(),
-      'createdAt': createdAt != null
-          ? '${createdAt!.year}${createdAt!.month.toString().padLeft(2, '0')}${createdAt!.day.toString().padLeft(2, '0')}'
-          : null,
-      'startDate': '${startDate.year}${startDate.month.toString().padLeft(2, '0')}${startDate.day.toString().padLeft(2, '0')}',
-      'endDate': '${endDate.year}${endDate.month.toString().padLeft(2, '0')}${endDate.day.toString().padLeft(2, '0')}',
-      'goalDate': '${goalDate.year}${goalDate.month.toString().padLeft(2, '0')}${goalDate.day.toString().padLeft(2, '0')}',
+      'createdAt': createdAt?.toIso8601String(),
+      'startDate': DateUtilsHelper.toHyphenFormat(startDate),
+      'endDate': DateUtilsHelper.toHyphenFormat(endDate),
+      'goalDate': DateUtilsHelper.toHyphenFormat(goalDate),
     };
   }
 
+  /// 작품 생성 전용
   factory WorkModel.forCreate({
+    required int designId,
     required String nickname,
     required String customYarnInfo,
     required String customNeedleInfo,
@@ -73,9 +80,9 @@ class WorkModel {
     required DateTime goalDate,
   }) {
     return WorkModel(
-      id: 0,
-      designId: 0,
-      userId: 0,
+      id: null,
+      designId: designId,
+      userId: null,
       status: null,
       nickname: nickname,
       customYarnInfo: customYarnInfo,
@@ -88,18 +95,16 @@ class WorkModel {
     );
   }
 
+  /// map으로 된 정보를 json으로 변형해서 서버로 전송, 작품 생성시 사용
   Map<String, dynamic> toCreateJson() {
-    String formatDate(DateTime date) =>
-        "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
-
     return {
       'designId': designId,
       'nickname': nickname,
       'customYarnInfo': customYarnInfo,
       'customNeedleInfo': customNeedleInfo,
-      'startDate': formatDate(startDate),
-      'endDate': formatDate(endDate),
-      'goalDate': formatDate(goalDate),
+      'startDate': DateUtilsHelper.toHyphenFormat(startDate),
+      'endDate': DateUtilsHelper.toHyphenFormat(endDate),
+      'goalDate': DateUtilsHelper.toHyphenFormat(goalDate),
     };
   }
 

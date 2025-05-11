@@ -51,10 +51,8 @@ class AddWorkPage extends StatelessWidget {
                         children: [
                           CustomTextField(
                             hintText: "작품이름",
-                            onSaved: (String? val) {
-                              addWorkViewModel.nickname = val;
-                            },
-                            validator: addWorkViewModel.nicknameValidator,
+                            controller: addWorkViewModel.nicknameController,
+                            validator: (val) => addWorkViewModel.nicknameValidator(val),
                           ),
                           SizedBox(height: 10),
                           FormField<String>(
@@ -101,19 +99,15 @@ class AddWorkPage extends StatelessWidget {
                 SizedBox(height: 16,),
                 CustomTextField(
                   label: "실",
-                  onSaved: (String? val) {
-                    addWorkViewModel.customYarnInfo = val;
-                  },
-                  validator: addWorkViewModel.yarnValidator,
+                  controller: addWorkViewModel.yarnController,
+                  validator: (val) => addWorkViewModel.yarnValidator(val),
                 ),
                 SizedBox(height: 16,),
 
                 CustomTextField(
                   label: "바늘",
-                  onSaved: (String? val) {
-                    addWorkViewModel.customNeedleInfo = val;
-                  },
-                  validator: addWorkViewModel.needleValidator,
+                  controller: addWorkViewModel.needleController,
+                  validator: (val) => addWorkViewModel.needleValidator(val),
                 ),
                 SizedBox(height: 40,),
                 SizedBox(

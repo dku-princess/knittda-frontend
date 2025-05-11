@@ -4,7 +4,7 @@ import 'package:knittda/src/data/models/work_model.dart';
 import 'package:knittda/src/data/repositories/work_repositories.dart';
 
 class WorkViewModel extends ChangeNotifier {
-  late AuthViewModel _authViewModel;
+  AuthViewModel _authViewModel;
   final WorkRepositories workRepositories;
 
   WorkViewModel(this._authViewModel, this.workRepositories);

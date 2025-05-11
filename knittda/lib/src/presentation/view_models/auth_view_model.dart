@@ -25,10 +25,10 @@ class AuthViewModel extends ChangeNotifier {
       this._authRepository,
       this._tokenStorage,
       ) {
-    _init(); //생성되자마자 자동 로그인 시도
+    _initializeAuth(); //생성되자마자 자동 로그인 시도
   }
 
-  Future<void> _init() async {
+  Future<void> _initializeAuth() async {
     await tryAutoLogin();
   }
 
@@ -56,6 +56,7 @@ class AuthViewModel extends ChangeNotifier {
       return true;
     } catch (e) {
       status = AuthStatus.unauthenticated;
+      notifyListeners();
       debugPrint('카카오 로그인 실패: $e');
       return false;
     }
