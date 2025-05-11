@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/presentation/screens/add_work_page.dart';
+import 'package:knittda/src/presentation/screens/search_patterns.dart';
 import 'package:knittda/src/presentation/widgets/buttons/work_state_button.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
+import 'package:provider/provider.dart';
+
+import '../view_models/add_work_view_model.dart';
 
 final List<Widget> worklist = <Widget>[
   WorkListItem(url: null, name: "벤쿠버 가디건", date: "3일전"),
@@ -53,8 +56,14 @@ class WorkList extends StatelessWidget {
                             // 버튼 클릭 동작
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => AddWorkPage()),
-                            );//임시 추가, push할 시 지워
+                              MaterialPageRoute(
+                                builder: (_) => ChangeNotifierProvider(
+                                  create: (_) => AddWorkViewModel(),
+                                  child: SearchPatterns(),
+                                ),
+                              ),
+                            );
+
                           },
                           style: TextButton.styleFrom(
                             backgroundColor: Colors.grey[300],
