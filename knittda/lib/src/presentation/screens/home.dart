@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 
-import 'package:knittda/src/presentation/screens/more_menu.dart';
-import 'package:knittda/src/presentation/screens/mypage.dart';
-import 'package:knittda/src/presentation/screens/work_list.dart';
+import 'package:knittda/src/presentation/screens/main_page/more_menu.dart';
+import 'package:knittda/src/presentation/screens/main_page/mypage.dart';
+import 'package:knittda/src/presentation/screens/main_page/work_list.dart';
 
 
 // 바텀네비게이션 리스트

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/view_models/add_work_view_model.dart';
 
 import 'package:knittda/src/presentation/widgets/form/custom_text_field.dart';
-import 'package:knittda/src/presentation/screens/add_work.dart';
+import 'package:knittda/src/presentation/screens/add_work_page/add_work.dart';
 import 'package:provider/provider.dart';
 
 class SearchPatterns extends StatelessWidget {

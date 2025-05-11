@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/presentation/screens/search_patterns.dart';
+import 'package:knittda/src/presentation/screens/add_work_page/search_patterns.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import 'package:knittda/src/presentation/widgets/buttons/work_state_button.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
 import 'package:provider/provider.dart';
-import '../view_models/add_work_view_model.dart';
+import '../../view_models/add_work_view_model.dart';
 
 class WorkList extends StatefulWidget {
   const WorkList({super.key});
