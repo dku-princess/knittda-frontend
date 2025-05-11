@@ -47,7 +47,7 @@ class SearchPatterns extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (_) => ChangeNotifierProvider.value(
-                                value: context.read<AddWorkViewModel>(),
+                                value: context.read<AddWorkViewModel>(), // 현재 생성된 인스턴스 전달
                                 child: AddWorkPage(),
                               ),
                             ),

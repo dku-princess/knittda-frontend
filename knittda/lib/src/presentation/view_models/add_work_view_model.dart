@@ -1,34 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/work_model.dart';
 import 'package:knittda/src/presentation/screens/home.dart';
-import 'package:provider/provider.dart';
 import 'work_view_model.dart';
+import 'package:knittda/src/core/utils/date_utils.dart';
 
 class AddWorkViewModel extends ChangeNotifier {
+  final WorkViewModel _workViewModel;
   final formKey = GlobalKey<FormState>();
 
-  String? nickname;
+  final nicknameController = TextEditingController();
+  final yarnController = TextEditingController();
+  final needleController = TextEditingController();
+
   String? startDate;
   String? endDate;
   String? goalDate;
-  String? customYarnInfo;
-  String? customNeedleInfo;
 
-  AddWorkViewModel() {
-    startDate = _formatDate(DateTime.now());
+  AddWorkViewModel(this._workViewModel) {
+    final today = DateTime.now();
+    startDate = DateUtilsHelper.toDotFormat(today);
   }
 
-  String _formatDate(DateTime date) {
-    return "${date.year}.${date.month.toString().padLeft(2, '0')}.${date.day.toString().padLeft(2, '0')}";
-  }
-
-  DateTime _parseDotDate(String date) {
-    final parts = date.split('.');
-    return DateTime(
-      int.parse(parts[0]),
-      int.parse(parts[1]),
-      int.parse(parts[2]),
-    );
+  @override
+  void dispose() {
+    nicknameController.dispose();
+    yarnController.dispose();
+    needleController.dispose();
+    super.dispose();
   }
 
   Future<void> pickGoalDate(BuildContext context) async {
@@ -41,27 +39,30 @@ class AddWorkViewModel extends ChangeNotifier {
     );
 
     if (picked != null) {
-      goalDate = _formatDate(picked);
-      endDate = _formatDate(picked);
+      goalDate = DateUtilsHelper.toDotFormat(picked);
+      endDate = DateUtilsHelper.toDotFormat(picked);
       notifyListeners();
     }
   }
 
   void onSavePressed(BuildContext context) async {
-      if (formKey.currentState!.validate()) {
-      // ➊ 폼 검증하기
-      formKey.currentState!.save(); // ➋ 폼 저장하기
+    if (formKey.currentState!.validate()) {
+      // Save text values
+      final nickname = nicknameController.text;
+      final customYarnInfo = yarnController.text;
+      final customNeedleInfo = needleController.text;
 
       final work = WorkModel.forCreate(
-        nickname: nickname!,
-        customYarnInfo: customYarnInfo!,
-        customNeedleInfo: customNeedleInfo!,
-        startDate: _parseDotDate(startDate!),
-        endDate: _parseDotDate(endDate!),
-        goalDate: _parseDotDate(goalDate!),
+        designId: 1,
+        nickname: nickname,
+        customYarnInfo: customYarnInfo,
+        customNeedleInfo: customNeedleInfo,
+        startDate: DateUtilsHelper.fromDotFormat(startDate!),
+        endDate: DateUtilsHelper.fromDotFormat(endDate!),
+        goalDate: DateUtilsHelper.fromDotFormat(goalDate!),
       );
 
-      await context.read<WorkViewModel>().createWork(work: work);
+      await _workViewModel.createWork(work: work);
 
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const Home()),
@@ -71,10 +72,17 @@ class AddWorkViewModel extends ChangeNotifier {
   }
 
   String? nicknameValidator(String? val) {
-    if (val == null || val.isEmpty) {
-      return '작품이름을 입력해주세요';
-    }
+    if (val == null || val.isEmpty) return '작품이름을 입력해주세요';
+    return null;
+  }
 
+  String? yarnValidator(String? val) {
+    if (val == null || val.isEmpty) return '실 정보를 입력해주세요';
+    return null;
+  }
+
+  String? needleValidator(String? val) {
+    if (val == null || val.isEmpty) return '바늘 정보를 입력해주세요';
     return null;
   }
 
@@ -84,9 +92,8 @@ class AddWorkViewModel extends ChangeNotifier {
     }
 
     try {
-      final goal = DateTime.parse(val.replaceAll('.', '-'));
-      final start = DateTime.parse(startDate!.replaceAll('.', '-'));
-
+      final goal = DateUtilsHelper.fromDotFormat(val);
+      final start = DateUtilsHelper.fromDotFormat(startDate!);
       if (goal.isBefore(start)) {
         return '목표 날짜는 시작 날짜 이후여야 합니다';
       }
@@ -96,21 +103,4 @@ class AddWorkViewModel extends ChangeNotifier {
 
     return null;
   }
-
-  String? yarnValidator(String? val) {
-    if (val == null || val.isEmpty) {
-      return '실 정보를 입력해주세요';
-    }
-
-    return null;
-  }
-
-  String? needleValidator(String? val) {
-    if (val == null || val.isEmpty) {
-      return '바늘 정보를 입력해주세요';
-    }
-
-    return null;
-  }
-
 }
