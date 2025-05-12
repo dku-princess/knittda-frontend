@@ -14,6 +14,36 @@ class WorkRepositories {
     ),
   );
 
+  //서버에서 작품 삭제하기
+  Future<void> deleteWork(String accessToken, int projectId) async {
+    try{
+      final res = await _dio.get<Map<String, dynamic>>(
+        '/api/v1/projects/$projectId',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'projectId': '$projectId'
+          },
+        ),
+      );
+
+      if (res.statusCode != 200) {
+        throw Exception('서버 오류: ${res.statusCode}');
+      }
+
+      debugPrint('서버 응답: ${res.data}');
+
+      final body = res.data;
+      if (body == null || body['success'] != true) {
+        throw Exception(body?['message'] ?? '알 수 없는 오류');
+      }
+
+    } on DioException catch (e) {
+      throw Exception('네트워크 오류: ${e.message}');
+    } catch (e) {
+      throw Exception('작품 생성하기 중 오류: $e');
+    }
+  }
   //서버에서 작품 단건 조회하기
   Future<({WorkModel work})> getWork(String accessToken, int projectId) async {
     try{

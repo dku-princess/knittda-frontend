@@ -4,8 +4,6 @@ import 'package:knittda/src/presentation/screens/main_page/login.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:provider/provider.dart';
 
-import 'package:knittda/src/presentation/screens/work_detail/work_details.dart';
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 

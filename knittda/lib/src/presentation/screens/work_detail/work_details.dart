@@ -90,23 +90,53 @@ class _WorkDetailsState extends State<WorkDetails> {
                 actions: [
                   PopupMenuButton<String>(
                     icon: Icon(Icons.more_vert, color: Colors.black),
-                    onSelected: (value) {
+                    onSelected: (value) async {
                       if (value == 'edit') {
                         // 수정 동작
                       } else if (value == 'delete') {
-                        // 삭제 동작
+                        // 삭제 확인 다이얼로그
+                        final confirmed = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('작품 삭제'),
+                            content: Text('정말 이 작품을 삭제하시겠습니까?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: Text('취소'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                child: Text('삭제', style: TextStyle(color: Colors.red)),
+                              ),
+                            ],
+                          ),
+                        );
+
+                        if (confirmed == true) {
+                          try {
+                            final workViewModel = context.read<WorkViewModel>();
+                            await workViewModel.deleteWork(widget.projectId);
+
+                            if (context.mounted) {
+                              Navigator.pop(context); // 삭제 후 상세 페이지 닫기
+                            }
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('삭제 중 오류가 발생했습니다')),
+                            );
+                          }
+                        }
                       }
                     },
                     itemBuilder: (context) => [
                       PopupMenuItem(
                         value: 'edit',
                         child: Text('수정'),
-                        onTap: (){},
                       ),
                       PopupMenuItem(
                         value: 'delete',
                         child: Text('삭제'),
-                        onTap: (){},
                       ),
                     ],
                   ),
