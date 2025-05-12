@@ -12,6 +12,8 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController? controller;
   final FormFieldSetter<String>? onSaved;
   final FormFieldValidator<String>? validator;
+  final Function(String)? onSubmitted;
+  final TextInputAction? textInputAction;
 
   const CustomTextField({
     this.label,
@@ -23,7 +25,8 @@ class CustomTextField extends StatelessWidget {
     this.controller,
     this.onSaved,
     this.validator,
-
+    this.onSubmitted,
+    this.textInputAction,
 
     Key? key
   }) : super(key: key);
@@ -56,10 +59,11 @@ class CustomTextField extends StatelessWidget {
           maxLines: maxLines,
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
-
+          onFieldSubmitted: onSubmitted,
           controller: controller, //텍스트 컨트롤러
           onSaved: onSaved, // 폼 저장시 실행할 함수
           validator: validator, //폼 검증시 실행할 함수
+          textInputAction: textInputAction,
         ),
       ],
     );

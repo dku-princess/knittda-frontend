@@ -3,11 +3,13 @@ import '../image_box.dart';
 
 class DesignListItem extends StatelessWidget {
   final String? url;
-  final String name;
+  final String title;
+  final String designer;
 
   DesignListItem({
-    required this.url,
-    required this.name,
+    this.url,
+    required this.title,
+    required this.designer,
   });
 
   @override
@@ -25,16 +27,28 @@ class DesignListItem extends StatelessWidget {
         ),
         child: Row(
           children: [
-            ImageBox(url),
-            SizedBox(width: 10), // 이미지와 텍스트 사이 여백 추가
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(name),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16
+                    ),
+                  ),
+                  SizedBox(height:9),
+                  Text(
+                    designer,
+                    style: TextStyle(
+                        fontSize: 14
+                    ),
+                  ),
+                ],
+              ),
             ),
-            Spacer(), // 오른쪽 끝으로 버튼을 밀어줌
-
+            SizedBox(width: 10),
+            ImageBox(url),
           ],
         ),
       ),
