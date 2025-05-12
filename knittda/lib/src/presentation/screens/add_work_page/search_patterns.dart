@@ -35,8 +35,9 @@ class _SearchPatternsState extends State<SearchPatterns> {
 
   @override
   void dispose() {
-    _debounce?.cancel(); // 🔹 타이머 정리
+    _debounce?.cancel();
     _searchController.dispose();
+    context.read<SearchViewModel>().clear();
     super.dispose();
   }
 

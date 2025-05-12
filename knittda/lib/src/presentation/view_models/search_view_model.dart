@@ -15,8 +15,7 @@ class SearchViewModel extends ChangeNotifier {
 
   Future<void> search(String keyword) async {
     if (keyword.isEmpty) {
-      _designs = [];
-      notifyListeners();
+      clear();
       return;
     }
 
@@ -28,7 +27,7 @@ class SearchViewModel extends ChangeNotifier {
       _designs = result;
     } catch (e) {
       debugPrint("검색 오류: $e");
-      _designs = [];
+      clear();
     } finally {
       _isLoading = false;
       notifyListeners();
