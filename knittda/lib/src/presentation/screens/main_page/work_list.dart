@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/search_patterns.dart';
+import 'package:knittda/src/presentation/screens/work_detail/work_details.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import 'package:knittda/src/presentation/widgets/buttons/work_state_button.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
@@ -53,7 +54,17 @@ class _WorkListState extends State<WorkList> {
                 itemBuilder: (context, index) {
                   if (index < workViewModel.works.length) {
                     final work = workViewModel.works[index];
-                    return WorkListItem(work: work);
+                    return WorkListItem(
+                      work: work,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => WorkDetails(projectId: work.id!),
+                          ),
+                        );
+                      },
+                    );
                   } else {
                     return _addWorkButton(context);
                   }

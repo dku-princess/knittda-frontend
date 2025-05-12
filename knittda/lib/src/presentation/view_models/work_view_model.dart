@@ -15,11 +15,26 @@ class WorkViewModel extends ChangeNotifier {
   }
 
   List<WorkModel> works = [];
+  WorkModel? work;
+
+  bool isLoading = false;
 
   bool get isReady =>
       _authViewModel.status == AuthStatus.authenticated && _authViewModel.user != null;
 
   String get accessToken => _authViewModel.jwt ?? '';
+
+  //작품 단건 가져오기
+  Future<void> getWork(int projectId) async {
+    try {
+      final result = await workRepositories.getWork(accessToken, projectId);
+      work = result.work;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("작품 조회 중 오류: $e");
+      rethrow;
+    }
+  }
 
   /// 작품 리스트 가져오기
   Future<void> getWorks() async {

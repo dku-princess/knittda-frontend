@@ -5,15 +5,14 @@ import 'package:knittda/src/core/utils/date_utils.dart';
 
 class WorkListItem extends StatelessWidget {
   final WorkModel work;
+  final VoidCallback? onTap;
 
-  const WorkListItem({super.key, required this.work});
+  const WorkListItem({super.key, required this.work, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: (){
-        //작품 상세 페이지로 이동
-      },
+      onTap: onTap,
       child: Container(
         padding: EdgeInsets.all(10.0),
         decoration: BoxDecoration(
