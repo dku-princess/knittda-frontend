@@ -98,6 +98,20 @@ class AddWorkPage extends StatelessWidget {
                 ),
                 SizedBox(height: 16,),
                 CustomTextField(
+                  label: "도안",
+                  controller: addWorkViewModel.yarnController,
+                  validator: (val) => addWorkViewModel.yarnValidator(val),
+                ),
+                SizedBox(height: 16,),
+
+                CustomTextField(
+                  label: "작가",
+                  controller: addWorkViewModel.yarnController,
+                  validator: (val) => addWorkViewModel.yarnValidator(val),
+                ),
+                SizedBox(height: 16,),
+
+                CustomTextField(
                   label: "실",
                   controller: addWorkViewModel.yarnController,
                   validator: (val) => addWorkViewModel.yarnValidator(val),

@@ -4,8 +4,6 @@ import 'package:knittda/src/presentation/screens/main_page/login.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:provider/provider.dart';
 
-
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -19,6 +17,10 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Pretendard',
         splashColor: Colors.transparent, //클릭시 퍼지는 효과 제거
         //highlightColor: Colors.transparent, //클릭시 원형 효과 제거
+
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Color(0xFFF2F2F7),
+        ),
       ),
 
       home: Consumer<AuthViewModel>(
@@ -27,7 +29,7 @@ class MyApp extends StatelessWidget {
             case AuthStatus.loading:
               return const SplashScreen();
             case AuthStatus.authenticated:
-              return const Home();
+              return Home();
             case AuthStatus.unauthenticated:
               return const Login();
           }
