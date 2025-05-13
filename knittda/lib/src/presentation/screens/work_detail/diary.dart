@@ -3,6 +3,12 @@ import 'package:flutter/material.dart';
 class Diary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('다이어리'));
+    return Center(
+      child: Column(
+        children: [
+          Text("2025.03.22 12:48am"),
+        ],
+      ),
+    );
   }
 }

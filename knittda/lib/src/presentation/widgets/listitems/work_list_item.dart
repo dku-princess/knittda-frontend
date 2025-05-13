@@ -6,8 +6,9 @@ import 'package:knittda/src/core/utils/date_utils.dart';
 class WorkListItem extends StatelessWidget {
   final WorkModel work;
   final VoidCallback? onTap;
+  final Function()? onPressed;
 
-  const WorkListItem({super.key, required this.work, this.onTap});
+  const WorkListItem({super.key, required this.work, this.onTap, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -39,23 +40,22 @@ class WorkListItem extends StatelessWidget {
               ],
             ),
             Spacer(), // 오른쪽 끝으로 버튼을 밀어줌
-            TextButton(
-              onPressed: (){
-                //작품 기록 추가로 이동
-              },
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.grey[300],
-                minimumSize: Size(0, 0), // 최소 크기 제거
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap, // 터치 영역 최소화
-                shape: RoundedRectangleBorder(
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+            if (onPressed != null) // ✅ showButton 없이 이 조건만으로 제어
+              TextButton(
+                onPressed: onPressed,
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.grey[300],
+                  minimumSize: const Size(0, 0),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  '추가',
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
                 ),
               ),
-              child: Text(
-                '추가',
-                style: TextStyle(color: Colors.grey[600], fontSize: 14),
-              ),
-            ),
           ],
         ),
       ),

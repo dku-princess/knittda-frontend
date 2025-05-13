@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/repositories/design_repositories.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/search_patterns.dart';
+import 'package:knittda/src/presentation/screens/work_detail/add_diary.dart';
 import 'package:knittda/src/presentation/screens/work_detail/work_details.dart';
 import 'package:knittda/src/presentation/view_models/search_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
@@ -63,6 +64,14 @@ class _WorkListState extends State<WorkList> {
                           context,
                           MaterialPageRoute(
                             builder: (_) => WorkDetails(projectId: work.id!),
+                          ),
+                        );
+                      },
+                      onPressed: (){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => AddDiary(work: work),
                           ),
                         );
                       },
