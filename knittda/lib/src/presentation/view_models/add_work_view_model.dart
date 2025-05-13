@@ -1,20 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/data/models/design_model.dart';
 import 'package:knittda/src/data/models/work_model.dart';
 import 'package:knittda/src/presentation/screens/home.dart';
 import 'work_view_model.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 
 class AddWorkViewModel extends ChangeNotifier {
+  DesignModel? _design;
+  DesignModel? get design => _design;
+
   final WorkViewModel _workViewModel;
   final formKey = GlobalKey<FormState>();
 
   final nicknameController = TextEditingController();
+  final designController = TextEditingController();
+  final designerController = TextEditingController();
   final yarnController = TextEditingController();
   final needleController = TextEditingController();
 
   String? startDate;
   String? endDate;
   String? goalDate;
+
+  void setDesign(DesignModel design){
+    _design = design;
+    designController.text = design.title ?? '';
+    designerController.text = design.designer ?? '';
+    notifyListeners();
+  }
 
   AddWorkViewModel(this._workViewModel) {
     final today = DateTime.now();

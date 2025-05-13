@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/presentation/widgets/form/custom_text_field.dart';
+import 'package:knittda/src/data/models/design_model.dart';
 import 'package:knittda/src/presentation/view_models/add_work_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/core/constants/color.dart';
 
 class AddWorkPage extends StatelessWidget {
+  final DesignModel? design;
+  const AddWorkPage({super.key, this.design});
 
   @override
   Widget build(BuildContext context) {
     final addWorkViewModel = context.watch<AddWorkViewModel>();
+
+    // design이 주어졌고 아직 초기화되지 않았을 때
+    if (design != null && addWorkViewModel.design != design) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        addWorkViewModel.setDesign(design!);
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -49,49 +58,70 @@ class AddWorkPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            height: 44,
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: Colors.grey, // 테두리 색상
-                              ),
-                            ),
-                            child: CustomTextField(
-                              hintText: "작품이름",
-                              controller: addWorkViewModel.nicknameController,
-                              validator: (val) => addWorkViewModel.nicknameValidator(val),
-                            ),
+                          TextFormField(
+                             controller: addWorkViewModel.nicknameController,
+                             validator: (val) => addWorkViewModel.nicknameValidator(val),
+                             decoration: InputDecoration(
+                               isDense: true,
+                               hintText: "작품이름",
+                               contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                               border: OutlineInputBorder(
+                                 borderRadius: BorderRadius.circular(8),
+                               ),
+                               enabledBorder: OutlineInputBorder(
+                                 borderRadius: BorderRadius.circular(8),
+                                 borderSide: const BorderSide(color: Colors.grey),
+                               ),
+                               focusedBorder: OutlineInputBorder(
+                                 borderRadius: BorderRadius.circular(8),
+                                 borderSide: const BorderSide(color: Colors.blue),
+                               ),
+                               errorBorder: OutlineInputBorder(
+                                 borderRadius: BorderRadius.circular(8),
+                                 borderSide: const BorderSide(color: Colors.red),
+                               ),
+                               focusedErrorBorder: OutlineInputBorder(
+                                 borderRadius: BorderRadius.circular(8),
+                                 borderSide: const BorderSide(color: Colors.red),
+                               ),
+                               errorStyle: const TextStyle(height: 0, fontSize: 0), // 숨기기
+                             ),
+                             style: const TextStyle(fontSize: 14),
                           ),
                           SizedBox(height: 10),
                           FormField<String>(
                             initialValue: addWorkViewModel.goalDate,
                             validator: addWorkViewModel.goalDateValidator,
                             builder: (FormFieldState<String> field) {
+                              final hasError = field.hasError;
+
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   TextButton(
                                     onPressed: () async {
                                       await addWorkViewModel.pickGoalDate(context);
-                                      field.didChange(addWorkViewModel.goalDate); // 중요: 상태 갱신
+                                      field.didChange(addWorkViewModel.goalDate); // 선택 후 상태 갱신
                                     },
                                     style: TextButton.styleFrom(
-                                      //padding: EdgeInsets.zero,
+                                      padding: const EdgeInsets.symmetric(horizontal: 16),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
-                                        side: BorderSide(color: PRIMARY_COLOR),
+                                        side: BorderSide(
+                                          color: hasError ? Colors.red : PRIMARY_COLOR, // ✅ 테두리 색
+                                        ),
                                       ),
-                                      foregroundColor: PRIMARY_COLOR,
+                                      foregroundColor: hasError ? Colors.red : PRIMARY_COLOR, // ✅ 텍스트 색
                                     ),
                                     child: Text(addWorkViewModel.goalDate ?? "목표 날짜"),
                                   ),
-                                  if (field.hasError)
-                                    Text(
-                                      field.errorText ?? '',
-                                      style: TextStyle(color: Colors.red, fontSize: 12),
-                                    ),
+                                  // if (hasError)
+                                  //   const SizedBox(height: 4), // 에러 메시지 숨기고 싶으면 지워도 됨
+                                  // // if (hasError)
+                                  // //   Text(
+                                  // //     field.errorText ?? '',
+                                  // //     style: const TextStyle(color: Colors.red, fontSize: 12),
+                                  // //   ),
                                 ],
                               );
                             },
@@ -113,16 +143,27 @@ class AddWorkPage extends StatelessWidget {
                   style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'Pretendard', fontWeight: FontWeight.w500),
                 ),
                 SizedBox(height: 10),
-                Container(
-                  height: 44,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: Colors.grey, // 테두리 색상
+                TextField(
+                  controller: addWorkViewModel.designerController,
+                  readOnly: addWorkViewModel.design != null,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    filled: addWorkViewModel.design != null,
+                    fillColor: Colors.grey[200],
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.blue),
                     ),
                   ),
-                  child: CustomTextField(),
+                  style: const TextStyle(fontSize: 14),
                 ),
                 SizedBox(height: 16),
 
@@ -131,118 +172,161 @@ class AddWorkPage extends StatelessWidget {
                   style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'Pretendard', fontWeight: FontWeight.w500),
                 ),
                 SizedBox(height: 10),
-                Container(
-                  height: 44,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: Colors.grey, // 테두리 색상
+                TextField(
+                  controller: addWorkViewModel.designerController,
+                  readOnly: addWorkViewModel.design != null,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    filled: addWorkViewModel.design != null,
+                    fillColor: Colors.grey[200],
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.blue),
                     ),
                   ),
-                  child: CustomTextField(),
+                  style: const TextStyle(fontSize: 14),
                 ),
                 SizedBox(height: 16),
 
-                Text(
-                  "사이즈",
-                  style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'Pretendard', fontWeight: FontWeight.w500),
-                ),
-                SizedBox(height: 10),
-                Container(
-                  height: 44,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: Colors.grey, // 테두리 색상
-                    ),
-                  ),
-                  child: CustomTextField(),
-                ),
-                SizedBox(height: 16),
+                // Text(
+                //   "사이즈",
+                //   style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'Pretendard', fontWeight: FontWeight.w500),
+                // ),
+                // SizedBox(height: 10),
+                // Container(
+                //   height: 44,
+                //   padding: const EdgeInsets.symmetric(horizontal: 8),
+                //   decoration: BoxDecoration(
+                //     borderRadius: BorderRadius.circular(8),
+                //     border: Border.all(
+                //       color: Colors.grey, // 테두리 색상
+                //     ),
+                //   ),
+                //   child: CustomTextField(),
+                // ),
+                // SizedBox(height: 16),
 
                 Text(
                   "실",
                   style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'Pretendard', fontWeight: FontWeight.w500),
                 ),
                 SizedBox(height: 10),
-                Container(
-                  height: 44,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: Colors.grey, // 테두리 색상
+                TextFormField(
+                  controller: addWorkViewModel.yarnController,
+                  validator: (val) => addWorkViewModel.yarnValidator(val),
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.blue),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.red),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.red),
+                    ),
+                    errorStyle: const TextStyle(height: 0, fontSize: 0),
                   ),
-                  child: CustomTextField(
-
-                  ),
+                  style: const TextStyle(fontSize: 14),
                 ),
                 SizedBox(height: 16),
-                Row(
-                   children: [
-                     SizedBox(
-                       width: 80,
-                       child: Text("실 사용량"),
-                     ),
-                     Expanded(
-                       child: Container(
-                         height: 44,
-                         padding: const EdgeInsets.symmetric(horizontal: 8),
-                         decoration: BoxDecoration(
-                           borderRadius: BorderRadius.circular(8),
-                           border: Border.all(
-                             color: Colors.grey, // 테두리 색상
-                           ),
-                         ),
-                         child: CustomTextField(),
-                       ),
-                     ),
-                   ],
-                 ),
-                 SizedBox(height: 16,),
-                 Row(
-                   children: [
-                     SizedBox(
-                       width: 80,
-                       child: Text("게이지"),
-                     ),
-                     Expanded(
-                       child: Container(
-                         height: 44,
-                         padding: const EdgeInsets.symmetric(horizontal: 8),
-                         decoration: BoxDecoration(
-                           borderRadius: BorderRadius.circular(8),
-                           border: Border.all(
-                             color: Colors.grey, // 테두리 색상
-                           ),
-                         ),
-                         child: CustomTextField(),
-                       ),
-                     ),
-                   ],
-                 ),
-                 SizedBox(height: 16,),
+                // Row(
+                //    children: [
+                //      SizedBox(
+                //        width: 80,
+                //        child: Text("실 사용량"),
+                //      ),
+                //      Expanded(
+                //        child: Container(
+                //          height: 44,
+                //          padding: const EdgeInsets.symmetric(horizontal: 8),
+                //          decoration: BoxDecoration(
+                //            borderRadius: BorderRadius.circular(8),
+                //            border: Border.all(
+                //              color: Colors.grey, // 테두리 색상
+                //            ),
+                //          ),
+                //          child: CustomTextField(),
+                //        ),
+                //      ),
+                //    ],
+                //  ),
+                //  SizedBox(height: 16,),
+                //  Row(
+                //    children: [
+                //      SizedBox(
+                //        width: 80,
+                //        child: Text("게이지"),
+                //      ),
+                //      Expanded(
+                //        child: Container(
+                //          height: 44,
+                //          padding: const EdgeInsets.symmetric(horizontal: 8),
+                //          decoration: BoxDecoration(
+                //            borderRadius: BorderRadius.circular(8),
+                //            border: Border.all(
+                //              color: Colors.grey, // 테두리 색상
+                //            ),
+                //          ),
+                //          child: CustomTextField(),
+                //        ),
+                //      ),
+                //    ],
+                //  ),
+                //  SizedBox(height: 16,),
 
                 Text(
                   "바늘",
                   style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'Pretendard', fontWeight: FontWeight.w500),
                 ),
                 SizedBox(height: 10),
-                Container(
-                  height: 44,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: Colors.grey, // 테두리 색상
+                TextFormField(
+                  controller: addWorkViewModel.needleController,
+                  validator: (val) => addWorkViewModel.needleValidator(val),
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.blue),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.red),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.red),
+                    ),
+                    errorStyle: const TextStyle(height: 0, fontSize: 0),
                   ),
-                  child: CustomTextField(
-
-                  ),
+                  style: const TextStyle(fontSize: 14),
                 ),
 
                 SizedBox(height: 40,),

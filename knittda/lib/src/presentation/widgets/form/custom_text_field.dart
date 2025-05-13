@@ -13,6 +13,7 @@ class CustomTextField extends StatelessWidget {
   final FormFieldValidator<String>? validator;
   final Function(String)? onSubmitted;
   final TextInputAction? textInputAction;
+  final bool readOnly;
 
   const CustomTextField({
     this.hintText,
@@ -24,6 +25,7 @@ class CustomTextField extends StatelessWidget {
     this.validator,
     this.onSubmitted,
     this.textInputAction,
+    this.readOnly = false,
 
     Key? key
   }) : super(key: key);
@@ -46,6 +48,7 @@ class CustomTextField extends StatelessWidget {
         onSaved: onSaved,
         validator: validator,
         textInputAction: textInputAction,
+        readOnly: readOnly
       ),
     );
   }

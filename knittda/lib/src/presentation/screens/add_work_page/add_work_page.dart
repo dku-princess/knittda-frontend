@@ -11,9 +11,9 @@ class AddWorkPage extends StatefulWidget {
 class _AddWorkPageState extends State<AddWorkPage> {
   final TextEditingController _searchController = TextEditingController();
   final List<Widget> worklist = <Widget>[
-    DesignListItem(url: null, title: "벤쿠버 가디건", designer: "김대리" ),
-    DesignListItem(url: null, title: "블랙베리 아란 스웨터", designer: "김대리" ),
-    DesignListItem(url: null, title: "브이넥 조끼", designer: "김대리" ),
+    DesignListItem(url: null, title: "벤쿠버 가디건", designer: "김대리" ,onTap: (){},),
+    DesignListItem(url: null, title: "블랙베리 아란 스웨터", designer: "김대리",onTap: (){} ),
+    DesignListItem(url: null, title: "브이넥 조끼", designer: "김대리",onTap: (){} ),
   ];
 
   List<Widget> filteredList = [];

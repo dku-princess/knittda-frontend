@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/view_models/add_work_view_model.dart';
 import 'package:knittda/src/presentation/view_models/search_view_model.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/add_work.dart';
-import 'package:knittda/src/presentation/widgets/form/custom_text_field.dart';
 import 'package:knittda/src/presentation/widgets/listitems/design_list_item.dart';
 import 'package:provider/provider.dart';
 
 class SearchPatterns extends StatefulWidget {
+  const SearchPatterns({super.key});
   @override
   _SearchPatternsState createState() => _SearchPatternsState();
 }
@@ -43,7 +43,7 @@ class _SearchPatternsState extends State<SearchPatterns> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('도안 검색'),
+        title: const Text('도안 검색', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
         centerTitle: true,
       ),
       body: Padding(
@@ -57,10 +57,17 @@ class _SearchPatternsState extends State<SearchPatterns> {
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: CustomTextField(
-                hintText: "검색",
-                controller: _searchController,
-                textInputAction: TextInputAction.search,
+              child: Center(
+                child: TextField(
+                  controller: _searchController,
+                  textInputAction: TextInputAction.search,
+                  decoration: const InputDecoration(
+                    hintText: "검색",
+                    isDense: true,
+                    border: InputBorder.none,
+                  ),
+                  style: TextStyle(fontSize: 14),
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -87,6 +94,19 @@ class _SearchPatternsState extends State<SearchPatterns> {
                         url: design.imageUrl,
                         title: design.title!,
                         designer: design.designer!,
+                        onTap: (){
+                          final addWorkVeiwModel = context.read<AddWorkViewModel>();
+                          addWorkVeiwModel.setDesign(design);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChangeNotifierProvider.value(
+                                value: addWorkVeiwModel,
+                                child: AddWorkPage(design: design),
+                              ),
+                            ),
+                          );
+                        },
                       );
                     },
                   );

@@ -5,19 +5,19 @@ class DesignListItem extends StatelessWidget {
   final String? url;
   final String title;
   final String designer;
+  final VoidCallback onTap;
 
   DesignListItem({
     this.url,
     required this.title,
     required this.designer,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: (){
-        //작품 추가 페이지로 이동
-      },
+      onTap: onTap,
       child: Container(
         padding: EdgeInsets.all(10.0),
         decoration: BoxDecoration(
