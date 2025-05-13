@@ -2,7 +2,7 @@ import 'package:knittda/src/core/utils/date_utils.dart';
 
 class WorkModel {
   final int? id;
-  final int designId;
+  final int? designId;
   final int? userId;
   final String nickname;
   final String? status;
@@ -13,10 +13,12 @@ class WorkModel {
   final DateTime startDate;
   final DateTime endDate;
   final DateTime goalDate;
+  final String? customDesign;
+  final String? customDesigner;
 
   WorkModel({
     this.id,
-    required this.designId,
+    this.designId,
     this.userId,
     required this.nickname,
     this.status,
@@ -27,6 +29,8 @@ class WorkModel {
     required this.startDate,
     required this.endDate,
     required this.goalDate,
+    this.customDesign,
+    this.customDesigner,
   });
 
   //서버에서 json 형식으로 돌려주면 map으로 저장
@@ -71,27 +75,26 @@ class WorkModel {
 
   /// 작품 생성 전용
   factory WorkModel.forCreate({
-    required int designId,
+    required int? designId,
     required String nickname,
     required String customYarnInfo,
     required String customNeedleInfo,
     required DateTime startDate,
     required DateTime endDate,
     required DateTime goalDate,
+    required String customDesign,
+    required String customDesigner,
   }) {
     return WorkModel(
-      id: null,
       designId: designId,
-      userId: null,
-      status: null,
       nickname: nickname,
       customYarnInfo: customYarnInfo,
       customNeedleInfo: customNeedleInfo,
-      lastRecordAt: null,
-      createdAt: null,
       startDate: startDate,
       endDate: endDate,
       goalDate: goalDate,
+      customDesign: customDesign,
+      customDesigner: customDesigner,
     );
   }
 
@@ -121,6 +124,8 @@ class WorkModel {
     DateTime? startDate,
     DateTime? endDate,
     DateTime? goalDate,
+    String? customDesign,
+    String? customDesigner,
   }) {
     return WorkModel(
       id: id ?? this.id,
@@ -135,6 +140,8 @@ class WorkModel {
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
       goalDate: goalDate ?? this.goalDate,
+      customDesign: customDesign ?? this.customDesign,
+      customDesigner: customDesigner ?? this.customDesigner,
     );
   }
 }

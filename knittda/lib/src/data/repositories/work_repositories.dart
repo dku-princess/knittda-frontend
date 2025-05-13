@@ -17,7 +17,7 @@ class WorkRepositories {
   //서버에서 작품 삭제하기
   Future<void> deleteWork(String accessToken, int projectId) async {
     try{
-      final res = await _dio.get<Map<String, dynamic>>(
+      final res = await _dio.delete<Map<String, dynamic>>(
         '/api/v1/projects/$projectId',
         options: Options(
           headers: {

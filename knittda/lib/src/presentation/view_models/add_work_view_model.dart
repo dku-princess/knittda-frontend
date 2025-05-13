@@ -21,9 +21,11 @@ class AddWorkViewModel extends ChangeNotifier {
   String? startDate;
   String? endDate;
   String? goalDate;
+  int? designId;
 
   void setDesign(DesignModel design){
     _design = design;
+    designId = design.id;
     designController.text = design.title ?? '';
     designerController.text = design.designer ?? '';
     notifyListeners();
@@ -64,8 +66,11 @@ class AddWorkViewModel extends ChangeNotifier {
       final nickname = nicknameController.text;
       final customYarnInfo = yarnController.text;
       final customNeedleInfo = needleController.text;
+      final customDesign = designController.text;
+      final customDesigner = designerController.text;
 
       final work = WorkModel.forCreate(
+        //designId: designId,
         designId: 1,
         nickname: nickname,
         customYarnInfo: customYarnInfo,
@@ -73,6 +78,8 @@ class AddWorkViewModel extends ChangeNotifier {
         startDate: DateUtilsHelper.fromDotFormat(startDate!),
         endDate: DateUtilsHelper.fromDotFormat(endDate!),
         goalDate: DateUtilsHelper.fromDotFormat(goalDate!),
+        customDesign: customDesign,
+        customDesigner: customDesigner,
       );
 
       await _workViewModel.createWork(work: work);
