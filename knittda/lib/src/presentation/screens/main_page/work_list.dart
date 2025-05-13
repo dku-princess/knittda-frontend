@@ -21,10 +21,13 @@ class _WorkListState extends State<WorkList> {
   @override
   void initState() {
     super.initState();
-    final workViewModel = context.read<WorkViewModel>();
-    if (workViewModel.isReady && workViewModel.works.isEmpty) {
-      workViewModel.getWorks();
-    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final workViewModel = context.read<WorkViewModel>();
+      if (workViewModel.isReady && workViewModel.works.isEmpty) {
+        workViewModel.getWorks();
+      }
+    });
   }
 
   @override
@@ -50,63 +53,46 @@ class _WorkListState extends State<WorkList> {
             const WorkStateButton(),
             const SizedBox(height: 20),
             Expanded(
-              child: Builder(
-                builder: (context) {
-                  if (workViewModel.isLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (workViewModel.works.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text(
-                            '작품이 없습니다.',
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
+              child: workViewModel.isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : workViewModel.works.isEmpty
+                  ? Center(
+                child: Text(
+                  '작품이 없습니다.\n작품을 추가해주세요.',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+              )
+                  : ListView.builder(
+                itemCount: workViewModel.works.length + 1,
+                itemBuilder: (context, index) {
+                  if (index < workViewModel.works.length) {
+                    final work = workViewModel.works[index];
+                    return WorkListItem(
+                      work: work,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => WorkDetails(projectId: work.id!),
                           ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            '작품을 추가해 주세요.',
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
+                        );
+                      },
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => AddDiary(work: work),
                           ),
-                          const SizedBox(height: 20),
-                          _addWorkButton(context),
-                        ],
-                      ),
-                    );
-                  } else {
-                    return ListView.builder(
-                      itemCount: workViewModel.works.length + 1,
-                      itemBuilder: (context, index) {
-                        if (index < workViewModel.works.length) {
-                          final work = workViewModel.works[index];
-                          return WorkListItem(
-                            work: work,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => WorkDetails(projectId: work.id!),
-                                ),
-                              );
-                            },
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => AddDiary(work: work),
-                                ),
-                              );
-                            },
-                          );
-                        } else {
-                          return _addWorkButton(context);
-                        }
+                        );
                       },
                     );
+                  } else {
+                    return _addWorkButton(context);
                   }
                 },
               ),
-            ),
+            )
           ],
         ),
       ),
@@ -139,7 +125,7 @@ class _WorkListState extends State<WorkList> {
             );
           },
           style: TextButton.styleFrom(
-            backgroundColor: Colors.grey[800], // 대비 개선
+            backgroundColor: Colors.grey[300], // 대비 개선
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(5),
             ),

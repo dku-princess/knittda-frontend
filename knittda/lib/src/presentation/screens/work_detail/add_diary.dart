@@ -25,58 +25,28 @@ class _AddDiaryState extends State<AddDiary> {
   final ImagePicker _picker = ImagePicker();
   List<XFile> _images = [];
 
-  Future<void> _showImageSourceDialog() async {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.camera_alt),
-                title: const Text('카메라로 촬영'),
-                onTap: () async {
-                  Navigator.pop(context);
-                  final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
-                  if (photo != null) {
-                    setState(() {
-                      _images.add(photo);
-                    });
-                  }
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.photo_library),
-                title: const Text('갤러리에서 선택'),
-                onTap: () async {
-                  Navigator.pop(context);
-                  final List<XFile>? picked = await _picker.pickMultiImage();
-                  if (picked != null && picked.isNotEmpty) {
-                    setState(() {
-                      _images.addAll(picked);
-                    });
-                  }
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
+  Future<void> _pickImageFromGallery() async {
+    if (_images.length >= 5) return;
+
+    final XFile? picked = await _picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      setState(() {
+        _images.add(picked);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("기록 추가"),
+        title: const Text("기록 추가"),
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. 상단 Work + 감정 선택
+            // 1. 작품 정보 + 감정 선택
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
@@ -84,10 +54,7 @@ class _AddDiaryState extends State<AddDiary> {
                 children: [
                   WorkListItem(work: widget.work),
                   const SizedBox(height: 35),
-                  const Text(
-                    "오늘은 어떠셨어요?",
-                    style: TextStyle(fontSize: 20),
-                  ),
+                  const Text("오늘은 어떠셨어요?", style: TextStyle(fontSize: 20)),
                   const SizedBox(height: 16),
                   Wrap(
                     spacing: 10,
@@ -129,98 +96,95 @@ class _AddDiaryState extends State<AddDiary> {
               ),
             ),
 
-            // Divider
-            const Divider(
-              color: Color(0xFFE0E0E0),
-              thickness: 8,
-              height: 40,
-            ),
+            const Divider(color: Color(0xFFE0E0E0), thickness: 8, height: 40),
 
-            // 2. 사진 추가 섹션
+            // 2. 사진 추가 영역
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const Text("사진을 추가해주세요", style: TextStyle(fontSize: 20)),
                   const SizedBox(height: 16),
-                  const Text(
-                    "사진을 추가해주세요",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton.icon(
-                    onPressed: _showImageSourceDialog,
-                    icon: const Icon(Icons.add_a_photo),
-                    label: const Text("사진 추가"),
-                  ),
-                  const SizedBox(height: 12),
-                  if (_images.isNotEmpty)
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 10,
-                      children: _images.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final image = entry.value;
-                        return Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.file(
-                                File(image.path),
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _images.removeAt(index);
-                                  });
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(2),
-                                  decoration: const BoxDecoration(
-                                    color: Colors.black54,
-                                    shape: BoxShape.circle,
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        ..._images.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final image = entry.value;
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.file(
+                                    File(image.path),
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
                                   ),
-                                  child: const Icon(Icons.close, size: 18, color: Colors.white),
                                 ),
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _images.removeAt(index);
+                                      });
+                                    },
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        color: Colors.black54,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      padding: const EdgeInsets.all(2),
+                                      child: const Icon(Icons.close, size: 16, color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+
+                        // + 버튼
+                        if (_images.length < 5)
+                          GestureDetector(
+                            onTap: _pickImageFromGallery,
+                            child: Container(
+                              width: 100,
+                              height: 100,
+                              margin: const EdgeInsets.only(right: 10),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.grey),
                               ),
-                            )
-                          ],
-                        );
-                      }).toList(),
+                              child: const Icon(Icons.add, color: Colors.grey, size: 30),
+                            ),
+                          ),
+                      ],
                     ),
+                  ),
                   const SizedBox(height: 26),
                 ],
               ),
             ),
 
-            // Divider
-            const Divider(
-              color: Color(0xFFE0E0E0),
-              thickness: 8,
-              height: 40,
-            ),
+            const Divider(color: Color(0xFFE0E0E0), thickness: 8, height: 40),
 
-            // 3. 텍스트 기록 섹션
+            // 3. 텍스트 입력
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 16),
-                  const Text(
-                    "기록을 남겨주세요",
-                    style: TextStyle(fontSize: 20),
-                  ),
+                  const Text("기록을 남겨주세요", style: TextStyle(fontSize: 20)),
                   const SizedBox(height: 16),
                   TextField(
-                    maxLines: null,
+                    maxLines: 8,
                     keyboardType: TextInputType.multiline,
                     decoration: InputDecoration(
                       hintText: "내용을 입력하세요",
