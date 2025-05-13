@@ -49,10 +49,20 @@ class AddWorkPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          CustomTextField(
-                            hintText: "작품이름",
-                            controller: addWorkViewModel.nicknameController,
-                            validator: (val) => addWorkViewModel.nicknameValidator(val),
+                          Container(
+                            height: 44,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: Colors.grey, // 테두리 색상
+                              ),
+                            ),
+                            child: CustomTextField(
+                              hintText: "작품이름",
+                              controller: addWorkViewModel.nicknameController,
+                              validator: (val) => addWorkViewModel.nicknameValidator(val),
+                            ),
                           ),
                           SizedBox(height: 10),
                           FormField<String>(
@@ -96,33 +106,145 @@ class AddWorkPage extends StatelessWidget {
                   "정보",
                   style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'Pretendard', fontWeight: FontWeight.w500),
                 ),
-                SizedBox(height: 16,),
-                CustomTextField(
-                  label: "도안",
-                  controller: addWorkViewModel.yarnController,
-                  validator: (val) => addWorkViewModel.yarnValidator(val),
-                ),
-                SizedBox(height: 16,),
+                SizedBox(height: 16),
 
-                CustomTextField(
-                  label: "작가",
-                  controller: addWorkViewModel.yarnController,
-                  validator: (val) => addWorkViewModel.yarnValidator(val),
+                Text(
+                  "도안",
+                  style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'Pretendard', fontWeight: FontWeight.w500),
                 ),
-                SizedBox(height: 16,),
+                SizedBox(height: 10),
+                Container(
+                  height: 44,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Colors.grey, // 테두리 색상
+                    ),
+                  ),
+                  child: CustomTextField(),
+                ),
+                SizedBox(height: 16),
 
-                CustomTextField(
-                  label: "실",
-                  controller: addWorkViewModel.yarnController,
-                  validator: (val) => addWorkViewModel.yarnValidator(val),
+                Text(
+                  "작가",
+                  style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'Pretendard', fontWeight: FontWeight.w500),
                 ),
-                SizedBox(height: 16,),
+                SizedBox(height: 10),
+                Container(
+                  height: 44,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Colors.grey, // 테두리 색상
+                    ),
+                  ),
+                  child: CustomTextField(),
+                ),
+                SizedBox(height: 16),
 
-                CustomTextField(
-                  label: "바늘",
-                  controller: addWorkViewModel.needleController,
-                  validator: (val) => addWorkViewModel.needleValidator(val),
+                Text(
+                  "사이즈",
+                  style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'Pretendard', fontWeight: FontWeight.w500),
                 ),
+                SizedBox(height: 10),
+                Container(
+                  height: 44,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Colors.grey, // 테두리 색상
+                    ),
+                  ),
+                  child: CustomTextField(),
+                ),
+                SizedBox(height: 16),
+
+                Text(
+                  "실",
+                  style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'Pretendard', fontWeight: FontWeight.w500),
+                ),
+                SizedBox(height: 10),
+                Container(
+                  height: 44,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Colors.grey, // 테두리 색상
+                    ),
+                  ),
+                  child: CustomTextField(
+
+                  ),
+                ),
+                SizedBox(height: 16),
+                Row(
+                   children: [
+                     SizedBox(
+                       width: 80,
+                       child: Text("실 사용량"),
+                     ),
+                     Expanded(
+                       child: Container(
+                         height: 44,
+                         padding: const EdgeInsets.symmetric(horizontal: 8),
+                         decoration: BoxDecoration(
+                           borderRadius: BorderRadius.circular(8),
+                           border: Border.all(
+                             color: Colors.grey, // 테두리 색상
+                           ),
+                         ),
+                         child: CustomTextField(),
+                       ),
+                     ),
+                   ],
+                 ),
+                 SizedBox(height: 16,),
+                 Row(
+                   children: [
+                     SizedBox(
+                       width: 80,
+                       child: Text("게이지"),
+                     ),
+                     Expanded(
+                       child: Container(
+                         height: 44,
+                         padding: const EdgeInsets.symmetric(horizontal: 8),
+                         decoration: BoxDecoration(
+                           borderRadius: BorderRadius.circular(8),
+                           border: Border.all(
+                             color: Colors.grey, // 테두리 색상
+                           ),
+                         ),
+                         child: CustomTextField(),
+                       ),
+                     ),
+                   ],
+                 ),
+                 SizedBox(height: 16,),
+
+                Text(
+                  "바늘",
+                  style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'Pretendard', fontWeight: FontWeight.w500),
+                ),
+                SizedBox(height: 10),
+                Container(
+                  height: 44,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Colors.grey, // 테두리 색상
+                    ),
+                  ),
+                  child: CustomTextField(
+
+                  ),
+                ),
+
                 SizedBox(height: 40,),
                 SizedBox(
                   width: double.infinity,

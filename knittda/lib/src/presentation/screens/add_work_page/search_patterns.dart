@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/view_models/add_work_view_model.dart';
 import 'package:knittda/src/presentation/view_models/search_view_model.dart';
-
-import 'package:knittda/src/presentation/widgets/form/custom_text_field.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/add_work.dart';
+import 'package:knittda/src/presentation/widgets/form/custom_text_field.dart';
 import 'package:knittda/src/presentation/widgets/listitems/design_list_item.dart';
 import 'package:provider/provider.dart';
 
@@ -37,7 +36,6 @@ class _SearchPatternsState extends State<SearchPatterns> {
   void dispose() {
     _debounce?.cancel();
     _searchController.dispose();
-    context.read<SearchViewModel>().clear();
     super.dispose();
   }
 
@@ -52,10 +50,18 @@ class _SearchPatternsState extends State<SearchPatterns> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            CustomTextField(
-              hintText: "검색",
-              controller: _searchController,
-              textInputAction: TextInputAction.search,
+            Container(
+              height: 44,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: CustomTextField(
+                hintText: "검색",
+                controller: _searchController,
+                textInputAction: TextInputAction.search,
+              ),
             ),
             const SizedBox(height: 16),
             Expanded(
