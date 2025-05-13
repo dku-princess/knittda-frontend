@@ -24,19 +24,11 @@ class WorkViewModel extends ChangeNotifier {
 
   String get accessToken => _authViewModel.jwt ?? '';
 
-  //작품 삭제하기
   Future<void> deleteWork(int projectId) async {
     try {
       await workRepositories.deleteWork(accessToken, projectId);
-
-      // 삭제 후 목록 최신화
       works.removeWhere((w) => w.id == projectId);
-
-      // 상세 화면에서 사용 중일 경우 null 처리
-      if (work?.id == projectId) {
-        work = null;
-      }
-
+      if (work?.id == projectId) work = null;
       notifyListeners();
     } catch (e) {
       debugPrint("작품 삭제 중 오류: $e");
@@ -48,13 +40,10 @@ class WorkViewModel extends ChangeNotifier {
     try {
       final result = await workRepositories.getWork(accessToken, projectId);
       work = result.work;
-
-      // 기존 목록에 존재하면 업데이트
       final index = works.indexWhere((w) => w.id == projectId);
       if (index != -1) {
         works[index] = work!;
       }
-
       notifyListeners();
     } catch (e) {
       debugPrint("작품 조회 중 오류: $e");
@@ -62,23 +51,26 @@ class WorkViewModel extends ChangeNotifier {
     }
   }
 
-  /// 작품 리스트 가져오기
   Future<void> getWorks() async {
+    isLoading = true;
+    notifyListeners();
+
     try {
       final result = await workRepositories.getWorks(accessToken);
       works = result;
-      notifyListeners();
     } catch (e) {
       debugPrint("작품 조회 중 오류: $e");
       rethrow;
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
   }
 
-  /// 작품 생성하기
   Future<WorkModel> createWork(WorkModel work) async {
     try {
       final result = await workRepositories.createWork(accessToken, work);
-      works.add(result.work); // 리스트에 추가
+      works.add(result.work);
       notifyListeners();
       return result.work;
     } catch (e) {

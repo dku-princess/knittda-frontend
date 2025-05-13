@@ -35,49 +35,74 @@ class _WorkListState extends State<WorkList> {
       appBar: AppBar(
         toolbarHeight: 90,
         title: Padding(
-          padding: EdgeInsets.only(left: 8.0, top: 8.0),
-          child: Text(
+          padding: const EdgeInsets.only(left: 8.0, top: 8.0),
+          child: const Text(
             '나의\n작품',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
           ),
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           children: [
-            SizedBox(height: 20),
-            WorkStateButton(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
+            const WorkStateButton(),
+            const SizedBox(height: 20),
             Expanded(
-              child: workViewModel.works.isEmpty
-                  ? Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                itemCount: workViewModel.works.length + 1,
-                itemBuilder: (context, index) {
-                  if (index < workViewModel.works.length) {
-                    final work = workViewModel.works[index];
-                    return WorkListItem(
-                      work: work,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => WorkDetails(projectId: work.id!),
+              child: Builder(
+                builder: (context) {
+                  if (workViewModel.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (workViewModel.works.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            '작품이 없습니다.',
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
                           ),
-                        );
-                      },
-                      onPressed: (){
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => AddDiary(work: work),
+                          const SizedBox(height: 8),
+                          const Text(
+                            '작품을 추가해 주세요.',
+                            style: TextStyle(fontSize: 14, color: Colors.grey),
                           ),
-                        );
-                      },
+                          const SizedBox(height: 20),
+                          _addWorkButton(context),
+                        ],
+                      ),
                     );
                   } else {
-                    return _addWorkButton(context);
+                    return ListView.builder(
+                      itemCount: workViewModel.works.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index < workViewModel.works.length) {
+                          final work = workViewModel.works[index];
+                          return WorkListItem(
+                            work: work,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => WorkDetails(projectId: work.id!),
+                                ),
+                              );
+                            },
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => AddDiary(work: work),
+                                ),
+                              );
+                            },
+                          );
+                        } else {
+                          return _addWorkButton(context);
+                        }
+                      },
+                    );
                   }
                 },
               ),
@@ -90,7 +115,7 @@ class _WorkListState extends State<WorkList> {
 
   Widget _addWorkButton(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: 10),
       child: SizedBox(
         width: double.infinity,
         height: 36,
@@ -114,13 +139,13 @@ class _WorkListState extends State<WorkList> {
             );
           },
           style: TextButton.styleFrom(
-            backgroundColor: Colors.grey[300],
+            backgroundColor: Colors.grey[800], // 대비 개선
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(5),
             ),
             padding: EdgeInsets.zero,
           ),
-          child: Icon(Icons.add, color: Colors.white, size: 24),
+          child: const Icon(Icons.add, color: Colors.white, size: 24),
         ),
       ),
     );
