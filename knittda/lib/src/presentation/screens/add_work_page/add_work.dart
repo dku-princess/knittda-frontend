@@ -13,9 +13,12 @@ class AddWorkPage extends StatelessWidget {
     final addWorkViewModel = context.watch<AddWorkViewModel>();
 
     // design이 주어졌고 아직 초기화되지 않았을 때
-    if (design != null && addWorkViewModel.design != design) {
+    if (design != null &&
+        (addWorkViewModel.design == null || addWorkViewModel.design!.id != design!.id)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        addWorkViewModel.setDesign(design!);
+        Future.microtask(() {
+          addWorkViewModel.setDesign(design!);
+        });
       });
     }
 
@@ -144,7 +147,7 @@ class AddWorkPage extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
                 TextField(
-                  controller: addWorkViewModel.designerController,
+                  controller: addWorkViewModel.designController,
                   readOnly: addWorkViewModel.design != null,
                   decoration: InputDecoration(
                     isDense: true,

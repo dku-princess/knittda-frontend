@@ -75,11 +75,12 @@ class WorkViewModel extends ChangeNotifier {
   }
 
   /// 작품 생성하기
-  Future<void> createWork({required WorkModel work}) async {
+  Future<WorkModel> createWork({required WorkModel work}) async {
     try {
       final result = await workRepositories.createWork(accessToken, work);
       works.add(result.work); // 리스트에 추가
       notifyListeners();
+      return result.work;
     } catch (e) {
       debugPrint("작품 생성 중 오류: $e");
       rethrow;

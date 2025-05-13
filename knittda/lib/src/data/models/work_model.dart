@@ -82,8 +82,8 @@ class WorkModel {
     required DateTime startDate,
     required DateTime endDate,
     required DateTime goalDate,
-    required String customDesign,
-    required String customDesigner,
+    required String? customDesign,
+    required String? customDesigner,
   }) {
     return WorkModel(
       designId: designId,
