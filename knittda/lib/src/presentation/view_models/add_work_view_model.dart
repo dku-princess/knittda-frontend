@@ -1,20 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/core/storage/work_local_storage.dart';
+import 'package:knittda/src/data/models/design_model.dart';
 import 'package:knittda/src/data/models/work_model.dart';
 import 'package:knittda/src/presentation/screens/home.dart';
 import 'work_view_model.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 
 class AddWorkViewModel extends ChangeNotifier {
+  DesignModel? _design;
+  DesignModel? get design => _design;
+
   final WorkViewModel _workViewModel;
   final formKey = GlobalKey<FormState>();
 
   final nicknameController = TextEditingController();
+  final designController = TextEditingController();
+  final designerController = TextEditingController();
   final yarnController = TextEditingController();
   final needleController = TextEditingController();
 
   String? startDate;
   String? endDate;
   String? goalDate;
+  int? designId;
+
+  void setDesign(DesignModel design){
+    _design = design;
+    designId = design.id;
+    designController.text = design.title ?? '';
+    designerController.text = design.designer ?? '';
+    notifyListeners();
+  }
 
   AddWorkViewModel(this._workViewModel) {
     final today = DateTime.now();
@@ -47,27 +63,48 @@ class AddWorkViewModel extends ChangeNotifier {
 
   void onSavePressed(BuildContext context) async {
     if (formKey.currentState!.validate()) {
-      // Save text values
       final nickname = nicknameController.text;
       final customYarnInfo = yarnController.text;
       final customNeedleInfo = needleController.text;
+      final customDesign = designController.text.trim();
+      final customDesigner = designerController.text.trim();
 
       final work = WorkModel.forCreate(
-        designId: 1,
+        designId: designId ?? 1,
         nickname: nickname,
         customYarnInfo: customYarnInfo,
         customNeedleInfo: customNeedleInfo,
         startDate: DateUtilsHelper.fromDotFormat(startDate!),
         endDate: DateUtilsHelper.fromDotFormat(endDate!),
         goalDate: DateUtilsHelper.fromDotFormat(goalDate!),
+        customDesign: designId == null ? customDesign : null,
+        customDesigner: designId == null ? customDesigner : null,
       );
 
-      await _workViewModel.createWork(work: work);
+      try {
+        final createdWork = await _workViewModel.createWork(work);
 
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const Home()),
-            (route) => false,
-      );
+        if (customDesign.isNotEmpty &&
+            customDesigner.isNotEmpty &&
+            designId == null &&
+            createdWork.id != null) {
+          await WorkLocalStorageHelper.saveCustomInfo(
+            workId: createdWork.id!,
+            customDesign: customDesign,
+            customDesigner: customDesigner,
+          );
+        }
+
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const Home()),
+              (route) => false,
+        );
+      } catch (e) {
+        debugPrint('작품 생성 실패: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('작품 생성에 실패했습니다. 다시 시도해주세요.')),
+        );
+      }
     }
   }
 
