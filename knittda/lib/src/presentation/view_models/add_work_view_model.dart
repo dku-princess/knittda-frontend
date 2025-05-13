@@ -82,7 +82,7 @@ class AddWorkViewModel extends ChangeNotifier {
       );
 
       try {
-        final createdWork = await _workViewModel.createWork(work: work);
+        final createdWork = await _workViewModel.createWork(work);
 
         if (customDesign.isNotEmpty &&
             customDesigner.isNotEmpty &&

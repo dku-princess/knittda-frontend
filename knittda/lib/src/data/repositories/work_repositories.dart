@@ -120,16 +120,16 @@ class WorkRepositories {
   }
 
   //작품 생성하기
-  Future<({WorkModel work})> createWork(String accessToken, WorkModel work) async{
-    try{
-      final json = work.toCreateJson();
+  Future<({WorkModel work})> createWork(String accessToken, WorkModel work) async {
+    try {
+      final requestBody =  work.toCreateJson();
 
-      debugPrint('Authorization: Bearer $accessToken');
-      debugPrint('보낸 내용${jsonEncode(json)}');
+      // 요청 디버그 출력
+      debugPrint('보낸 내용: ${jsonEncode(requestBody)}');
 
       final res = await _dio.post<Map<String, dynamic>>(
         '/api/v1/projects/',
-        data: json,
+        data: requestBody,
         options: Options(
           headers: {
             'Authorization': 'Bearer $accessToken',
@@ -141,24 +141,27 @@ class WorkRepositories {
         throw Exception('서버 오류: ${res.statusCode}');
       }
 
-      debugPrint('서버 응답: ${res.data}');
+      final responseBody = res.data;
+      debugPrint('서버 응답: $responseBody');
 
-      final body = res.data;
-      if (body == null || body['success'] != true) {
-        throw Exception(body?['message'] ?? '알 수 없는 오류');
+      if (responseBody == null || responseBody['success'] != true) {
+        throw Exception(responseBody?['message'] ?? '알 수 없는 오류');
       }
 
-      final data = body['data'] as Map<String, dynamic>?;
+      final data = responseBody['data'] as Map<String, dynamic>?;
       if (data == null) {
         throw Exception('잘못된 응답 형식');
       }
 
-      return (work: WorkModel.fromJson(data));
+      final createdWork = WorkModel.fromJson(data);
+      return (work: createdWork);
 
     } on DioException catch (e) {
+      debugPrint('네트워크 오류: ${e.response?.data ?? e.message}');
       throw Exception('네트워크 오류: ${e.message}');
     } catch (e) {
-      throw Exception('작품 생성하기 중 오류: $e');
+      debugPrint('작품 생성 중 예외: $e');
+      throw Exception('작품 생성 중 오류: $e');
     }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:knittda/src/core/utils/date_utils.dart';
+import 'package:knittda/src/data/models/image_model.dart';
 
 class WorkModel {
   final int? id;
@@ -13,6 +14,7 @@ class WorkModel {
   final DateTime startDate;
   final DateTime endDate;
   final DateTime goalDate;
+  final ImageModel? image;
   final String? customDesign;
   final String? customDesigner;
 
@@ -29,6 +31,7 @@ class WorkModel {
     required this.startDate,
     required this.endDate,
     required this.goalDate,
+    this.image,
     this.customDesign,
     this.customDesigner,
   });
@@ -52,6 +55,7 @@ class WorkModel {
       startDate: DateTime.parse(json['startDate']),
       endDate: DateTime.parse(json['endDate']),
       goalDate: DateTime.parse(json['goalDate']),
+      image: json['image'] != null ? ImageModel.fromJson(json['image']) : null,
     );
   }
 
@@ -70,6 +74,7 @@ class WorkModel {
       'startDate': DateUtilsHelper.toHyphenFormat(startDate),
       'endDate': DateUtilsHelper.toHyphenFormat(endDate),
       'goalDate': DateUtilsHelper.toHyphenFormat(goalDate),
+      'image': image?.toJson(),
     };
   }
 
@@ -101,13 +106,16 @@ class WorkModel {
   /// map으로 된 정보를 json으로 변형해서 서버로 전송, 작품 생성시 사용
   Map<String, dynamic> toCreateJson() {
     return {
-      'designId': designId,
-      'nickname': nickname,
-      'customYarnInfo': customYarnInfo,
-      'customNeedleInfo': customNeedleInfo,
-      'startDate': DateUtilsHelper.toHyphenFormat(startDate),
-      'endDate': DateUtilsHelper.toHyphenFormat(endDate),
-      'goalDate': DateUtilsHelper.toHyphenFormat(goalDate),
+      'project': {
+        'designId': designId,
+        'nickname': nickname,
+        'customYarnInfo': customYarnInfo,
+        'customNeedleInfo': customNeedleInfo,
+        'startDate': DateUtilsHelper.toHyphenFormat(startDate),
+        'endDate': DateUtilsHelper.toHyphenFormat(endDate),
+        'goalDate': DateUtilsHelper.toHyphenFormat(goalDate),
+      },
+      'file': 'test',
     };
   }
 
@@ -124,6 +132,7 @@ class WorkModel {
     DateTime? startDate,
     DateTime? endDate,
     DateTime? goalDate,
+    ImageModel? image,
     String? customDesign,
     String? customDesigner,
   }) {
@@ -140,6 +149,7 @@ class WorkModel {
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
       goalDate: goalDate ?? this.goalDate,
+      image: image ?? this.image,
       customDesign: customDesign ?? this.customDesign,
       customDesigner: customDesigner ?? this.customDesigner,
     );

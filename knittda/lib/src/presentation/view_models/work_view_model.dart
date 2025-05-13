@@ -75,7 +75,7 @@ class WorkViewModel extends ChangeNotifier {
   }
 
   /// 작품 생성하기
-  Future<WorkModel> createWork({required WorkModel work}) async {
+  Future<WorkModel> createWork(WorkModel work) async {
     try {
       final result = await workRepositories.createWork(accessToken, work);
       works.add(result.work); // 리스트에 추가
