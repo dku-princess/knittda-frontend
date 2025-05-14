@@ -34,17 +34,19 @@ void main() {
         ),
 
         ChangeNotifierProxyProvider<AuthViewModel, UserViewModel>(
-          create: (context) =>
-              UserViewModel(context.read<AuthViewModel>()),
+          create: (context) => UserViewModel(context.read<AuthViewModel>()),
           update: (context, authViewModel, previous) =>
-          previous!..update(authViewModel),
+          (previous ?? UserViewModel(authViewModel))..update(authViewModel),
         ),
 
         ChangeNotifierProxyProvider<AuthViewModel, WorkViewModel>(
-          create: (context) =>
-              WorkViewModel(context.read<AuthViewModel>(), WorkRepositories()),
+          create: (context) => WorkViewModel(
+            context.read<AuthViewModel>(),
+            WorkRepositories(),
+          ),
           update: (context, authViewModel, previous) =>
-          previous!..update(authViewModel),
+          (previous ?? WorkViewModel(authViewModel, WorkRepositories()))
+            ..update(authViewModel),
         ),
       ],
       child: const MyApp(),

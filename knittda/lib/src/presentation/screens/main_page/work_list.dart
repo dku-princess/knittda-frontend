@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/repositories/design_repositories.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/search_patterns.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_diary.dart';
@@ -64,76 +65,64 @@ class _WorkListState extends State<WorkList> {
                 ),
               )
                   : ListView.builder(
-                itemCount: workViewModel.works.length + 1,
+                itemCount: workViewModel.works.length,
                 itemBuilder: (context, index) {
-                  if (index < workViewModel.works.length) {
-                    final work = workViewModel.works[index];
-                    return WorkListItem(
-                      work: work,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => WorkDetails(projectId: work.id!),
-                          ),
-                        );
-                      },
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => AddDiary(work: work),
-                          ),
-                        );
-                      },
-                    );
-                  } else {
-                    return _addWorkButton(context);
-                  }
+                  final work = workViewModel.works[index];
+                  return WorkListItem(
+                    work: work,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              WorkDetails(projectId: work.id!),
+                        ),
+                      );
+                    },
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AddDiary(work: work),
+                        ),
+                      );
+                    },
+                  );
                 },
               ),
-            )
+            ),
           ],
         ),
       ),
+      floatingActionButton: _addWorkFloatingButton(context),
+      //floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
-  Widget _addWorkButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: SizedBox(
-        width: double.infinity,
-        height: 36,
-        child: TextButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => MultiProvider(
-                  providers: [
-                    ChangeNotifierProvider(
-                      create: (_) => AddWorkViewModel(context.read<WorkViewModel>()),
-                    ),
-                    ChangeNotifierProvider(
-                      create: (_) => SearchViewModel(DesignRepositories()),
-                    ),
-                  ],
-                  child: SearchPatterns(),
+  Widget _addWorkFloatingButton(BuildContext context) {
+    return FloatingActionButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => MultiProvider(
+              providers: [
+                ChangeNotifierProvider(
+                  create: (_) =>
+                      AddWorkViewModel(context.read<WorkViewModel>()),
                 ),
-              ),
-            );
-          },
-          style: TextButton.styleFrom(
-            backgroundColor: Colors.grey[300], // 대비 개선
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5),
+                ChangeNotifierProvider(
+                  create: (_) => SearchViewModel(DesignRepositories()),
+                ),
+              ],
+              child: SearchPatterns(),
             ),
-            padding: EdgeInsets.zero,
           ),
-          child: const Icon(Icons.add, color: Colors.white, size: 24),
-        ),
-      ),
+        );
+      },
+      backgroundColor: PRIMARY_COLOR,
+      child: Icon(Icons.add, color: Colors.white),
+      tooltip: '작품 추가',
     );
   }
 }

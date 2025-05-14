@@ -22,7 +22,13 @@ class WorkViewModel extends ChangeNotifier {
   bool get isReady =>
       _authViewModel.status == AuthStatus.authenticated && _authViewModel.user != null;
 
-  String get accessToken => _authViewModel.jwt ?? '';
+  String get accessToken {
+    final token = _authViewModel.jwt;
+    if (token == null || token.isEmpty) {
+      throw Exception("Access token is not available");
+    }
+    return token;
+  }
 
   Future<void> deleteWork(int projectId) async {
     try {
@@ -52,6 +58,7 @@ class WorkViewModel extends ChangeNotifier {
   }
 
   Future<void> getWorks() async {
+    if (!isReady) return;
     isLoading = true;
     notifyListeners();
 
