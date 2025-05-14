@@ -25,7 +25,9 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
+        /// 앱 시작 직후 바로 tryAutoLogin() 이 실행되도록 lazy: false
+        ChangeNotifierProvider<AuthViewModel>(
+          lazy: false,
           create: (_) => AuthViewModel(
             KaKaoLogin(),
             AuthRepository(),
@@ -33,20 +35,24 @@ void main() {
           ),
         ),
 
+        /// Auth 상태 변화만 받을 수 있도록 update() 최적화
         ChangeNotifierProxyProvider<AuthViewModel, UserViewModel>(
-          create: (context) => UserViewModel(context.read<AuthViewModel>()),
-          update: (context, authViewModel, previous) =>
-          (previous ?? UserViewModel(authViewModel))..update(authViewModel),
+          create: (ctx) => UserViewModel(ctx.read<AuthViewModel>()),
+          update: (ctx, auth, prev) {
+            prev?.update(auth);
+            return prev ?? UserViewModel(auth);
+          },
         ),
 
         ChangeNotifierProxyProvider<AuthViewModel, WorkViewModel>(
-          create: (context) => WorkViewModel(
-            context.read<AuthViewModel>(),
+          create: (ctx) => WorkViewModel(
+            ctx.read<AuthViewModel>(),
             WorkRepositories(),
           ),
-          update: (context, authViewModel, previous) =>
-          (previous ?? WorkViewModel(authViewModel, WorkRepositories()))
-            ..update(authViewModel),
+          update: (ctx, auth, prev) {
+            prev?.update(auth);
+            return prev ?? WorkViewModel(auth, WorkRepositories());
+          },
         ),
       ],
       child: const MyApp(),

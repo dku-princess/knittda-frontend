@@ -4,85 +4,68 @@ import 'package:knittda/src/data/models/work_model.dart';
 import 'package:knittda/src/data/repositories/work_repositories.dart';
 
 class WorkViewModel extends ChangeNotifier {
-  AuthViewModel _authViewModel;
-  final WorkRepositories workRepositories;
+  AuthViewModel _auth;
+  final WorkRepositories _repo;
 
-  WorkViewModel(this._authViewModel, this.workRepositories);
+  WorkViewModel(this._auth, this._repo);
 
-  void update(AuthViewModel authViewModel) {
-    _authViewModel = authViewModel;
-    notifyListeners();
-  }
+  void update(AuthViewModel auth) => _auth = auth;
 
-  List<WorkModel> works = [];
-  WorkModel? work;
 
-  bool isLoading = false;
+  final List<WorkModel> _works = [];
+  WorkModel? _selected;
+  bool _loading = false;
+
+  List<WorkModel> get works     => List.unmodifiable(_works);
+  WorkModel? get work       => _selected;
+  bool get isLoading  => _loading;
 
   bool get isReady =>
-      _authViewModel.status == AuthStatus.authenticated && _authViewModel.user != null;
+      _auth.status == AuthStatus.authenticated && _auth.user != null;
 
-  String get accessToken {
-    final token = _authViewModel.jwt;
-    if (token == null || token.isEmpty) {
-      throw Exception("Access token is not available");
-    }
-    return token;
-  }
-
-  Future<void> deleteWork(int projectId) async {
-    try {
-      await workRepositories.deleteWork(accessToken, projectId);
-      works.removeWhere((w) => w.id == projectId);
-      if (work?.id == projectId) work = null;
-      notifyListeners();
-    } catch (e) {
-      debugPrint("작품 삭제 중 오류: $e");
-      rethrow;
-    }
-  }
-
-  Future<void> getWork(int projectId) async {
-    try {
-      final result = await workRepositories.getWork(accessToken, projectId);
-      work = result.work;
-      final index = works.indexWhere((w) => w.id == projectId);
-      if (index != -1) {
-        works[index] = work!;
-      }
-      notifyListeners();
-    } catch (e) {
-      debugPrint("작품 조회 중 오류: $e");
-      rethrow;
-    }
+  String get _token {
+    final t = _auth.jwt;
+    if (t == null || t.isEmpty) throw Exception('Access token 없음');
+    return t;
   }
 
   Future<void> getWorks() async {
-    if (!isReady) return;
-    isLoading = true;
+    if (!isReady || _loading) return;
+    _loading = true;
     notifyListeners();
 
     try {
-      final result = await workRepositories.getWorks(accessToken);
-      works = result;
-    } catch (e) {
-      debugPrint("작품 조회 중 오류: $e");
-      rethrow;
+      final results = await _repo.getWorks(_token);
+      _works
+        ..clear()
+        ..addAll(results);
     } finally {
-      isLoading = false;
+      _loading = false;
       notifyListeners();
     }
   }
 
   Future<WorkModel> createWork(WorkModel work) async {
-    try {
-      final result = await workRepositories.createWork(accessToken, work);
-      works.add(result.work);
-      notifyListeners();
-      return result.work;
-    } catch (e) {
-      debugPrint("작품 생성 중 오류: $e");
-      rethrow;
-    }
+    final result = await _repo.createWork(_token, work);
+    _works.add(result.work);
+    notifyListeners();
+    return result.work;
+  }
+
+  Future<void> getWork(int id) async {
+    final result = await _repo.getWork(_token, id);
+    _selected = result.work;
+
+    final i = _works.indexWhere((w) => w.id == id);
+    if (i != -1) _works[i] = _selected!;
+    notifyListeners();
+  }
+
+  Future<void> deleteWork(int id) async {
+    await _repo.deleteWork(_token, id);
+
+    _works.removeWhere((w) => w.id == id);
+    if (_selected?.id == id) _selected = null;
+    notifyListeners();
   }
 }
