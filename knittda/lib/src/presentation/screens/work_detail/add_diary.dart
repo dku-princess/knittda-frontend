@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
-//import 'package:knittda/src/core/utils/base64_util.dart';
 import 'package:knittda/src/data/models/records_model.dart';
 import 'package:knittda/src/data/models/work_model.dart';
 import 'package:knittda/src/presentation/view_models/add_record_view_model.dart';
@@ -12,6 +11,7 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+//기록 상태
 enum RecordStatus {
   NOT_STARTED,
   STARTED,
@@ -30,12 +30,12 @@ class AddDiary extends StatefulWidget {
 }
 
 class _AddDiaryState extends State<AddDiary> {
-  final List<String> _options = [
+  final List<String> _tags = [
     "푸르시오", "지쳤어요", "실수했어요", "함뜨했어요", "완벽 해요",
     "실이 부족해요", "무한 메리야스 뜨기", "무늬 뜨기", "배색 뜨기",
     "뿌듯해요", "힘들어요", "성공했어요"
   ];
-  final Set<String> _selectedOptions = {};
+  final Set<String> _selectedTags = {};
   final ImagePicker _picker = ImagePicker();
   List<XFile> _images = [];
 
@@ -80,20 +80,19 @@ class _AddDiaryState extends State<AddDiary> {
                   Wrap(
                     spacing: 10,
                     runSpacing: 10,
-                    children: _options.map((option) {
-                      final isSelected = _selectedOptions.contains(option);
+                    children: _tags.map((option) {
+                      final isSelected = _selectedTags.contains(option);
                       return GestureDetector(
                         onTap: () {
                           setState(() {
                             isSelected
-                                ? _selectedOptions.remove(option)
-                                : _selectedOptions.add(option);
+                                ? _selectedTags.remove(option)
+                                : _selectedTags.add(option);
                           });
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                           decoration: BoxDecoration(
-                            //color: isSelected ? Colors.teal.shade50 : Colors.transparent,
                             border: Border.all(
                               color: isSelected ? PRIMARY_COLOR : Colors.grey.shade600,
                               width: 1,
@@ -285,30 +284,37 @@ class _AddDiaryState extends State<AddDiary> {
                       return;
                     }
 
-                    final List<String> b64Files = [];
-                    for (final img in _images) {
-                      final bytes = await File(img.path).readAsBytes();
-                      b64Files.add(base64Encode(bytes));
-                    }
-
-                    final record = RecordsModel.forCreate(
-                      projectId   : widget.work.id!,
-                      recordStatus: _selectedStatus!.name,
-                      tags        : _selectedOptions.toList(),
-                      comment     : _commentController.text.trim(),
-                      recordedAt  : DateTime.now(),
-                      files       : [],      // ← 이제 타입 일치
-                    );
-
-                    final success = await addRecordVM.addRecord(record);
-
-                    if (!success) {
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text(addRecordVM.errorMessage ?? '알 수 없는 오류')));
+                    if (_selectedTags.isEmpty &&
+                        _commentController.text.trim().isEmpty &&
+                        _images.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('태그를 선택하거나 사진 또는 기록을 남겨주세요.')),
+                      );
                       return;
                     }
 
-                    Navigator.pop(context, addRecordVM.createdRecord); // 성공
+                    final createRecord = RecordsModel.forCreate(
+                      projectId   : widget.work.id!,
+                      recordStatus: _selectedStatus!.name,
+                      tags        : _selectedTags.toList(),
+                      comment     : _commentController.text.trim(),
+                      recordedAt  : DateTime.now(),
+                      files       : _images,
+                    );
+
+                    if (await addRecordVM.addRecord(createRecord)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('저장 완료!')),
+                      );
+                      addRecordVM.reset();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(addRecordVM.errorMessage ?? '알 수 없는 오류')),
+                      );
+                    }
+                    final record = addRecordVM.createdRecord;
+                    Navigator.pop(context, record);
+                    addRecordVM.reset();
                   },
                   style: TextButton.styleFrom(
                     backgroundColor: PRIMARY_COLOR,

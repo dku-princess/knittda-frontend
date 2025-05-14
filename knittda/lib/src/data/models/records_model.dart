@@ -8,7 +8,7 @@ class RecordsModel {
   final List<String> tags;
   final String comment;
   final DateTime? recordedAt;
-  final List<String>? files;
+  final List<XFile>? files;
 
   final int? id;
   final WorkModel? projectDto;
@@ -45,7 +45,7 @@ class RecordsModel {
     );
   }
 
-  Map<String, dynamic> toJson({bool includeFiles = true}) => {
+  Map<String, dynamic> toJson() => {
     'record': {
       'projectId'   : projectId,
       'recordStatus': recordStatus,
@@ -54,7 +54,6 @@ class RecordsModel {
       'recordedAt'  : recordedAt?.toIso8601String() ??
           DateTime.now().toIso8601String(),
     },
-    if (includeFiles && files != null && files!.isNotEmpty)
       'files': files,
   };
 
@@ -64,7 +63,7 @@ class RecordsModel {
     required List<String> tags,
     required String comment,
     DateTime? recordedAt,
-    List<String>? files,
+    List<XFile>? files,
   }) {
     return RecordsModel(
       projectId: projectId,
@@ -88,7 +87,7 @@ class RecordsModel {
     List<String>? tags,
     String? comment,
     DateTime? recordedAt,
-    List<String>? files,
+    List<XFile>? files,
     int? id,
     WorkModel? projectDto,
     DateTime? createdAt,

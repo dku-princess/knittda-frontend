@@ -87,27 +87,7 @@ class _WorkListState extends State<WorkList> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => MultiProvider(
-                            providers: [
-                              ChangeNotifierProxyProvider<AuthViewModel, AddRecordViewModel>(
-                                create: (ctx) => AddRecordViewModel(
-                                  authViewModel: ctx.read<AuthViewModel>(),
-                                  useCase: CreateRecordUseCase(
-                                    recordsRepository: RecordsRepository(),
-                                  ),
-                                ),
-                                update: (ctx, authVM, prev) =>
-                                (prev ?? AddRecordViewModel(
-                                  authViewModel: authVM,
-                                  useCase: CreateRecordUseCase(
-                                    recordsRepository: RecordsRepository(),
-                                  ),
-                                ))
-                                  ..updateAuth(authVM),
-                              ),
-                            ],
-                            child: AddDiary(work: work),
-                          ),
+                          builder: (_) => AddDiary(work: work),
                         ),
                       );
                     },

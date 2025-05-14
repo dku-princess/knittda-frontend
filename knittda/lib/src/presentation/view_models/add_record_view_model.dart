@@ -4,17 +4,18 @@ import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 
 class AddRecordViewModel extends ChangeNotifier {
-  AuthViewModel _authViewModel;
+  AuthViewModel _auth;
   final CreateRecordUseCase _useCase;
 
   AddRecordViewModel({
     required AuthViewModel authViewModel,
     required CreateRecordUseCase useCase,
-  })  : _authViewModel = authViewModel,
+  })  : _auth = authViewModel,
         _useCase = useCase;
 
-  void updateAuth(AuthViewModel authVM) {
-    _authViewModel = authVM;
+  void updateAuth(AuthViewModel auth) {
+    _auth = auth;
+    notifyListeners();
   }
 
   bool _isLoading = false;
@@ -26,9 +27,8 @@ class AddRecordViewModel extends ChangeNotifier {
   RecordsModel? _created;
   RecordsModel? get createdRecord => _created;
 
-
   Future<bool> addRecord(RecordsModel record) async {
-    final token = _authViewModel.jwt;
+    final token = _auth.jwt;
     if (token == null) {
       _error = '로그인이 필요합니다.';
       notifyListeners();
@@ -36,11 +36,10 @@ class AddRecordViewModel extends ChangeNotifier {
     }
 
     _setLoading(true);
-
     try {
       final result = await _useCase(token, record);
       _created = result.record;
-      _error = null;
+      _error   = null;
       return true;
     } catch (e) {
       _error = e.toString();
@@ -56,8 +55,8 @@ class AddRecordViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _setLoading(bool value) {
-    _isLoading = value;
+  void _setLoading(bool v) {
+    _isLoading = v;
     notifyListeners();
   }
 }
