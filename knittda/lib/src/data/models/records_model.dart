@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/data/models/image_model.dart';
 import 'package:knittda/src/data/models/work_model.dart';
+
+import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 
 class RecordsModel {
   final int projectId;
@@ -53,7 +58,7 @@ class RecordsModel {
       'comment'     : comment,
       'recordedAt'  : recordedAt?.toIso8601String() ?? DateTime.now().toIso8601String(),
     },
-      'files': files,
+    'files': files ?? [],
   };
 
   factory RecordsModel.forCreate({
@@ -104,5 +109,38 @@ class RecordsModel {
       createdAt: createdAt ?? this.createdAt,
       images: images ?? this.images,
     );
+  }
+}
+
+extension RecordsModelMultipart on RecordsModel {
+  Future<FormData> toMultipartForm() async {
+    final form = FormData();
+
+    // record는 JSON 형태의 문자열로 필드에 넣음
+    form.fields.add(MapEntry(
+      'record',
+      jsonEncode({
+        'projectId'   : projectId,
+        'recordStatus': recordStatus,
+        'tags'        : tags,
+        'comment'     : comment,
+        'recordedAt'  : recordedAt?.toIso8601String() ?? DateTime.now().toIso8601String(),
+      }),
+    ));
+
+    // 파일 추가
+    if (files != null && files!.isNotEmpty) {
+      for (final file in files!) {
+        form.files.add(MapEntry(
+          'files',
+          await MultipartFile.fromFile(
+            file.path,
+            filename: file.name,
+            contentType: MediaType('image', 'jpeg'), // 필요 시 이미지 타입 감지 라이브러리 사용 가능
+          ),
+        ));
+      }
+    }
+    return form;
   }
 }

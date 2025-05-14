@@ -18,17 +18,20 @@ class RecordsRepository {
 
   Future<({RecordsModel record})> createRecord(String accessToken, RecordsModel record) async {
     try {
-      final requestBody =  record.toJson();
+      //final formData = await record.toMultipartForm();
 
-      // 요청 디버그 출력
-      debugPrint('보낸 내용: ${jsonEncode(requestBody)}');
+      final recordJson = record.toJson();
+
+      //debugPrint('보낸 내용: ${formData.fields}, 파일 개수: ${formData.files.length}'); // ✅ 안전하게 디버그 출력
+      debugPrint('보낸 내용: ${jsonEncode(recordJson)}');
 
       final res = await _dio.post<Map<String, dynamic>>(
         '/api/v1/records/',
-        data: requestBody,
+        data: recordJson,
         options: Options(
           headers: {
             'Authorization': 'Bearer $accessToken',
+            'Content-Type' : 'application/json',
           },
         ),
       );

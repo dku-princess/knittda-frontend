@@ -97,13 +97,13 @@ class _AddDiaryState extends State<AddDiary> {
                                 });
                               },
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                 decoration: BoxDecoration(
                                   border: Border.all(
                                     color: isSelected ? PRIMARY_COLOR : Colors.grey.shade600,
                                     width: 1,
                                   ),
-                                  borderRadius: BorderRadius.circular(30),
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
                                   option,
