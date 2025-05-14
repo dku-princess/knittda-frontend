@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/models/work_model.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
 
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+
+enum RecordStatus {
+  NOT_STARTED,
+  STARTED,
+  IN_PROGRESS,
+  ALMOST_DONE,
+  COMPLETED,
+}
 
 class AddDiary extends StatefulWidget {
   final WorkModel work;
@@ -24,6 +33,7 @@ class _AddDiaryState extends State<AddDiary> {
   final Set<String> _selectedOptions = {};
   final ImagePicker _picker = ImagePicker();
   List<XFile> _images = [];
+  RecordStatus? _selectedStatus;
 
   Future<void> _pickImageFromGallery() async {
     if (_images.length >= 5) return;
@@ -90,6 +100,57 @@ class _AddDiaryState extends State<AddDiary> {
                         ),
                       );
                     }).toList(),
+                  ),
+                  const SizedBox(height: 40),
+                ],
+              ),
+            ),
+
+            //record 상태
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '얼마나 떴나요?',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  const SizedBox(height: 40),
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // 배경 선
+                      Container(
+                        height: 2,
+                        width: double.infinity,
+                        color: Colors.grey[300],
+                      ),
+
+                      // 원들
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: RecordStatus.values.map((status) {
+                          final isSelected = status == _selectedStatus;
+
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedStatus = status;
+                              });
+                            },
+                            child: Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                color: isSelected ? PRIMARY_COLOR : Colors.grey[300],
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 26),
                 ],
@@ -173,8 +234,6 @@ class _AddDiaryState extends State<AddDiary> {
               ),
             ),
 
-            const Divider(color: Color(0xFFE0E0E0), thickness: 8, height: 40),
-
             // 3. 텍스트 입력
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -198,6 +257,30 @@ class _AddDiaryState extends State<AddDiary> {
                 ],
               ),
             ),
+
+            const SizedBox(height: 40),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 44,
+                child: TextButton(
+                  onPressed: () {
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: PRIMARY_COLOR,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    "기록 추가하기",
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 50),
           ],
         ),
       ),

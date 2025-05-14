@@ -15,7 +15,7 @@ class SearchPatterns extends StatefulWidget {
 
 class _SearchPatternsState extends State<SearchPatterns> {
   final TextEditingController _searchController = TextEditingController();
-  Timer? _debounce; // 🔹 디바운스 타이머
+  Timer? _debounce; // 디바운스 타이머
 
   @override
   void initState() {
