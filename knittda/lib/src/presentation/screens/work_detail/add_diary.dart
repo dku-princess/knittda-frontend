@@ -1,10 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+//import 'package:knittda/src/core/utils/base64_util.dart';
+import 'package:knittda/src/data/models/records_model.dart';
 import 'package:knittda/src/data/models/work_model.dart';
+import 'package:knittda/src/presentation/view_models/add_record_view_model.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
 
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 enum RecordStatus {
   NOT_STARTED,
@@ -29,13 +35,15 @@ class _AddDiaryState extends State<AddDiary> {
     "실이 부족해요", "무한 메리야스 뜨기", "무늬 뜨기", "배색 뜨기",
     "뿌듯해요", "힘들어요", "성공했어요"
   ];
-
   final Set<String> _selectedOptions = {};
   final ImagePicker _picker = ImagePicker();
   List<XFile> _images = [];
+
   RecordStatus? _selectedStatus;
+  final TextEditingController _commentController = TextEditingController();
 
   Future<void> _pickImageFromGallery() async {
+
     if (_images.length >= 5) return;
 
     final XFile? picked = await _picker.pickImage(source: ImageSource.gallery);
@@ -48,6 +56,8 @@ class _AddDiaryState extends State<AddDiary> {
 
   @override
   Widget build(BuildContext context) {
+    final addRecordVM = context.watch<AddRecordViewModel>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("기록 추가"),
@@ -56,6 +66,7 @@ class _AddDiaryState extends State<AddDiary> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 16),
             // 1. 작품 정보 + 감정 선택
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -82,9 +93,9 @@ class _AddDiaryState extends State<AddDiary> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                           decoration: BoxDecoration(
-                            color: isSelected ? Colors.teal.shade50 : Colors.transparent,
+                            //color: isSelected ? Colors.teal.shade50 : Colors.transparent,
                             border: Border.all(
-                              color: isSelected ? Colors.teal : Colors.grey.shade600,
+                              color: isSelected ? PRIMARY_COLOR : Colors.grey.shade600,
                               width: 1,
                             ),
                             borderRadius: BorderRadius.circular(30),
@@ -92,7 +103,7 @@ class _AddDiaryState extends State<AddDiary> {
                           child: Text(
                             option,
                             style: TextStyle(
-                              color: isSelected ? Colors.teal.shade700 : Colors.black87,
+                              color: isSelected ? PRIMARY_COLOR : Colors.black87,
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                             ),
@@ -245,6 +256,7 @@ class _AddDiaryState extends State<AddDiary> {
                   TextField(
                     maxLines: 8,
                     keyboardType: TextInputType.multiline,
+                    controller: _commentController,
                     decoration: InputDecoration(
                       hintText: "내용을 입력하세요",
                       border: OutlineInputBorder(
@@ -265,7 +277,38 @@ class _AddDiaryState extends State<AddDiary> {
                 width: double.infinity,
                 height: 44,
                 child: TextButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    if (_selectedStatus == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('진행 상태를 선택해주세요.')),
+                      );
+                      return;
+                    }
+
+                    final List<String> b64Files = [];
+                    for (final img in _images) {
+                      final bytes = await File(img.path).readAsBytes();
+                      b64Files.add(base64Encode(bytes));
+                    }
+
+                    final record = RecordsModel.forCreate(
+                      projectId   : widget.work.id!,
+                      recordStatus: _selectedStatus!.name,
+                      tags        : _selectedOptions.toList(),
+                      comment     : _commentController.text.trim(),
+                      recordedAt  : DateTime.now(),
+                      files       : [],      // ← 이제 타입 일치
+                    );
+
+                    final success = await addRecordVM.addRecord(record);
+
+                    if (!success) {
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text(addRecordVM.errorMessage ?? '알 수 없는 오류')));
+                      return;
+                    }
+
+                    Navigator.pop(context, addRecordVM.createdRecord); // 성공
                   },
                   style: TextButton.styleFrom(
                     backgroundColor: PRIMARY_COLOR,
