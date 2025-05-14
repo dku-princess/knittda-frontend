@@ -3,18 +3,19 @@ import 'package:knittda/src/data/models/records_model.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 
-class AddRecordViewModel extends ChangeNotifier {
+class RecordViewModel extends ChangeNotifier {
   AuthViewModel _auth;
-  final CreateRecordUseCase _useCase;
+  CreateRecordUseCase _useCase;
 
-  AddRecordViewModel({
+  RecordViewModel({
     required AuthViewModel authViewModel,
     required CreateRecordUseCase useCase,
   })  : _auth = authViewModel,
         _useCase = useCase;
 
-  void updateAuth(AuthViewModel auth) {
-    _auth = auth;
+  void update(AuthViewModel auth, CreateRecordUseCase useCase) {
+    _auth    = auth;
+    _useCase = useCase;
     notifyListeners();
   }
 

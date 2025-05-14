@@ -16,33 +16,81 @@ class RecordsRepository {
     ),
   );
 
-  Future<({RecordsModel record})> createRecord(
-      String accessToken,
-      RecordsModel record,
-      ) async {
+  Future<({RecordsModel record})> createRecord(String accessToken, RecordsModel record) async {
     try {
+      final requestBody =  record.toJson();
+
+      // 요청 디버그 출력
+      debugPrint('보낸 내용: ${jsonEncode(requestBody)}');
+
       final res = await _dio.post<Map<String, dynamic>>(
         '/api/v1/records/',
-        data: record.toJson(includeFiles: false),
+        data: requestBody,
         options: Options(
-          headers: {'Authorization': 'Bearer $accessToken'},
-          contentType: Headers.jsonContentType,
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+          },
         ),
       );
 
       if (res.statusCode != 200) {
-        // 🔽 서버가 내려주는 메시지를 그대로 로그에 찍기
-        debugPrint('STATUS  : ${res.statusCode}');
-        debugPrint('RESPONSE: ${res.data}');
-        throw Exception(res.data?['message'] ?? 'status ${res.statusCode}');
+        throw Exception('서버 오류: ${res.statusCode}');
       }
 
-      return (record: RecordsModel.fromJson(res.data!['data']));
+      final responseBody = res.data;
+      debugPrint('서버 응답: $responseBody');
+
+      if (responseBody == null || responseBody['success'] != true) {
+        throw Exception(responseBody?['message'] ?? '알 수 없는 오류');
+      }
+
+      final data = responseBody['data'] as Map<String, dynamic>?;
+      if (data == null) {
+        throw Exception('잘못된 응답 형식');
+      }
+
+      final createRecord = RecordsModel.fromJson(data);
+      return (record: createRecord);
+
     } on DioException catch (e) {
-      debugPrint('REQUEST BODY: ${jsonEncode(record.toJson(includeFiles: false))}');
-      debugPrint('ERROR BODY  : ${e.response?.data}');
-      rethrow;
+      debugPrint('네트워크 오류: ${e.response?.data ?? e.message}');
+      throw Exception('네트워크 오류: ${e.message}');
+    } catch (e) {
+      debugPrint('기록 생성 중 예외: $e');
+      throw Exception('기록 생성 중 오류: $e');
     }
   }
+
+  Future<void> deleteRecord(String accessToken, int recordId) async{
+    try{
+      final res = await _dio.delete<Map<String, dynamic>>(
+        '/api/v1/records/$recordId',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'recordId': '$recordId'
+          },
+        ),
+      );
+
+      if (res.statusCode != 200) {
+        throw Exception('서버 오류: ${res.statusCode}');
+      }
+
+      debugPrint('서버 응답: ${res.data}');
+
+      final body = res.data;
+      if (body == null || body['success'] != true) {
+        throw Exception(body?['message'] ?? '알 수 없는 오류');
+      }
+
+    } on DioException catch (e) {
+      throw Exception('네트워크 오류: ${e.message}');
+    } catch (e) {
+      throw Exception('기록 삭제 중 오류: $e');
+    }
+  }
+
+
 }
 

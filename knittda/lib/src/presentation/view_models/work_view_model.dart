@@ -6,7 +6,6 @@ import 'package:knittda/src/data/repositories/work_repositories.dart';
 class WorkViewModel extends ChangeNotifier {
   AuthViewModel _auth;
   final WorkRepositories _repo;
-
   WorkViewModel(this._auth, this._repo);
 
   void update(AuthViewModel auth) => _auth = auth;
@@ -16,8 +15,8 @@ class WorkViewModel extends ChangeNotifier {
   WorkModel? _selected;
   bool _loading = false;
 
-  List<WorkModel> get works     => List.unmodifiable(_works);
-  WorkModel? get work       => _selected;
+  List<WorkModel> get works => List.unmodifiable(_works);
+  WorkModel? get work => _selected;
   bool get isLoading  => _loading;
 
   bool get isReady =>

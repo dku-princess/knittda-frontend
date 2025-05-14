@@ -51,8 +51,7 @@ class RecordsModel {
       'recordStatus': recordStatus,
       'tags'        : tags,
       'comment'     : comment,
-      'recordedAt'  : recordedAt?.toIso8601String() ??
-          DateTime.now().toIso8601String(),
+      'recordedAt'  : recordedAt?.toIso8601String() ?? DateTime.now().toIso8601String(),
     },
       'files': files,
   };
