@@ -310,7 +310,7 @@ class _AddDiaryState extends State<AddDiary> {
                             files       : _images,
                           );
 
-                          if (await addRecordVM.addRecord(record)) {
+                          if (await addRecordVM.createRecord(record)) {
                             if (!mounted) return;
 
                             Navigator.of(context).pushReplacement(

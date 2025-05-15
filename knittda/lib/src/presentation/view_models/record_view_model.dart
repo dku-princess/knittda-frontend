@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/record_model.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
+import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 
 class RecordViewModel extends ChangeNotifier {
   AuthViewModel _auth;
-  CreateRecordUseCase _useCase;
+  final CreateRecordUseCase _createUseCase;
+  final DeleteRecordUseCase _deleteUseCase;
 
   RecordViewModel({
     required AuthViewModel authViewModel,
-    required CreateRecordUseCase useCase,
+    required CreateRecordUseCase createRecordUseCase,
+    required DeleteRecordUseCase deleteRecordUseCase,
   })  : _auth = authViewModel,
-        _useCase = useCase;
+        _createUseCase = createRecordUseCase,
+        _deleteUseCase = deleteRecordUseCase;
 
   void update(AuthViewModel auth) {
-    _auth    = auth;
+    _auth = auth;
     notifyListeners();
   }
 
@@ -33,7 +37,18 @@ class RecordViewModel extends ChangeNotifier {
   RecordModel? _created;
   RecordModel? get createdRecord => _created;
 
-  Future<bool> addRecord(RecordModel record) async {
+  void reset() {
+    _created = null;
+    _error   = null;
+    notifyListeners();
+  }
+
+  void _setLoading(bool v) {
+    _isLoading = v;
+    notifyListeners();
+  }
+
+  Future<bool> createRecord(RecordModel record) async {
     final token = _auth.jwt;
     if (token == null) {
       _error = '로그인이 필요합니다.';
@@ -43,7 +58,7 @@ class RecordViewModel extends ChangeNotifier {
 
     _setLoading(true);
     try {
-      final result = await _useCase(token, record);
+      final result = await _createUseCase(token, record);
       _created = result.record;
       _error   = null;
       return true;
@@ -55,14 +70,25 @@ class RecordViewModel extends ChangeNotifier {
     }
   }
 
-  void reset() {
-    _created = null;
-    _error   = null;
-    notifyListeners();
+  Future<bool> deleteRecord(int recordId) async {
+    final token = _auth.jwt;
+    if (token == null) {
+      _error = '로그인이 필요합니다.';
+      notifyListeners();
+      return false;
+    }
+
+    _setLoading(true);
+    try {
+      await _deleteUseCase(token, recordId);
+      _error   = null;
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _setLoading(false);
+    }
   }
 
-  void _setLoading(bool v) {
-    _isLoading = v;
-    notifyListeners();
-  }
 }

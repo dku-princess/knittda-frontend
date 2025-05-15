@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/data/repositories/records_repository.dart';
 import 'package:knittda/src/data/repositories/work_repositories.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
+import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import './src/app.dart';
@@ -68,17 +69,26 @@ void main() {
           update: (_, repo, __) => CreateRecordUseCase(recordsRepository: repo),
         ),
 
-        ChangeNotifierProxyProvider2<AuthViewModel, CreateRecordUseCase, RecordViewModel>(
+        ProxyProvider<RecordsRepository, DeleteRecordUseCase>(
+          update: (_, repo, __) => DeleteRecordUseCase(recordsRepository: repo),
+        ),
+
+        ChangeNotifierProxyProvider3<AuthViewModel, CreateRecordUseCase, DeleteRecordUseCase, RecordViewModel>(
           create: (ctx) => RecordViewModel(
             authViewModel: ctx.read<AuthViewModel>(),
-            useCase:       ctx.read<CreateRecordUseCase>(),
+            createRecordUseCase: ctx.read<CreateRecordUseCase>(),
+            deleteRecordUseCase: ctx.read<DeleteRecordUseCase>(),
           ),
-          update: (ctx, auth, useCase, prev) {
+          update: (ctx, auth, createUseCase, deleteUseCase, prev) {
             if (prev != null) {
               prev.update(auth);
               return prev;
             }
-            return RecordViewModel(authViewModel: auth, useCase: useCase);
+            return RecordViewModel(
+              authViewModel: auth,
+              createRecordUseCase: createUseCase,
+              deleteRecordUseCase: deleteUseCase
+            );
           },
         ),
       ],
