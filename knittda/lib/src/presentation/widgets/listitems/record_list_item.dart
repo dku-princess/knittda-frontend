@@ -27,7 +27,12 @@ class RecordListItem extends StatelessWidget {
     return GestureDetector(
       onTap: () {},
       child: Container(
-        padding: const EdgeInsets.all(26),
+        margin: const EdgeInsets.only(bottom: 20.0),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: Colors.grey.shade300), //bottom 외각선
+          ),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -81,65 +86,68 @@ class RecordListItem extends StatelessWidget {
             ],
 
             // 태그
-            LayoutBuilder(
-              builder: (context, constraints) {
-                const double tagSpacing = 10; //태그 간의 간격
-                double usedWidth = 0; //지금까지 사용한 너비 누적 계산
-                List<Widget> limitedTags = []; //실제 화면에 보여줄 태그들
-                int hiddenCount = 0; //숨겨진 태그의 개수
+            if (tags.isNotEmpty) ...[
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  const double tagSpacing = 10; //태그 간의 간격
+                  double usedWidth = 0; //지금까지 사용한 너비 누적 계산
+                  List<Widget> limitedTags = []; //실제 화면에 보여줄 태그들
+                  int hiddenCount = 0; //숨겨진 태그의 개수
 
-                //태그 너비 계산 및 제한 로직
-                for (final tag in tags) {
-                  final tagWidth = (tag.length * 12) + 24; // 태그 하나가 차지할 너비
-                  if (usedWidth + tagWidth > constraints.maxWidth) {
-                    hiddenCount = tags.length - limitedTags.length;
-                    if (hiddenCount > 0) {
-                      limitedTags.add(
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: PRIMARY_COLOR),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            '+$hiddenCount',
-                            style: const TextStyle(
-                              color: PRIMARY_COLOR,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 12,
+                  //태그 너비 계산 및 제한 로직
+                  for (final tag in tags) {
+                    final tagWidth = (tag.length * 12) + 24; // 태그 하나가 차지할 너비
+                    if (usedWidth + tagWidth > constraints.maxWidth) {
+                      hiddenCount = tags.length - limitedTags.length;
+                      if (hiddenCount > 0) {
+                        limitedTags.add(
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: PRIMARY_COLOR),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              '+$hiddenCount',
+                              style: const TextStyle(
+                                color: PRIMARY_COLOR,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
-                        ),
-                      );
+                        );
+                      }
+                      break;
                     }
-                    break;
-                  }
-                  usedWidth += tagWidth + tagSpacing;
+                    usedWidth += tagWidth + tagSpacing;
 
-                  limitedTags.add(
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: PRIMARY_COLOR),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        tag,
-                        style: TextStyle(
-                          color: PRIMARY_COLOR,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 12,
+                    limitedTags.add(
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: PRIMARY_COLOR),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          tag,
+                          style: TextStyle(
+                            color: PRIMARY_COLOR,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 12,
+                          ),
                         ),
                       ),
-                    ),
+                    );
+                  }
+                  return Wrap(
+                    spacing: tagSpacing,
+                    children: limitedTags,
                   );
-                }
-                return Wrap(
-                  spacing: tagSpacing,
-                  children: limitedTags,
-                );
-              },
-            ),
+                },
+              ),
+              SizedBox(height: 16,),
+            ],
           ],
         ),
       ),

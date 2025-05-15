@@ -18,12 +18,15 @@ class Diary extends StatelessWidget {
   ];
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: EdgeInsets.zero,
-      itemCount: recordlist.length,
-      itemBuilder: (context, index) {
-        return recordlist[index];
-      },
+    return Padding(
+      padding: EdgeInsets.all(26.0),
+      child: ListView.builder(
+        padding: EdgeInsets.zero,
+        itemCount: recordlist.length,
+        itemBuilder: (context, index) {
+          return recordlist[index];
+        },
+      ),
     );
   }
 }
