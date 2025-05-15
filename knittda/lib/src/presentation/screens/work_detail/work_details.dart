@@ -15,13 +15,36 @@ class WorkDetails extends StatefulWidget {
   State<WorkDetails> createState() => _WorkDetailsState();
 }
 
-class _WorkDetailsState extends State<WorkDetails> {
+class _WorkDetailsState extends State<WorkDetails> with SingleTickerProviderStateMixin{
   bool _isLoading = true;
+  late TabController _tabController;
+
+  final List<Tab> tabs = <Tab>[
+    Tab(text:'정보'),
+    Tab(text:'다이어리'),
+    Tab(text:'리포트'),
+  ];
+
+  final List<Widget> pages = [
+    Info(),
+    Diary(),
+    Report(),
+  ];
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: tabs.length, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
     _getWork();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<void> _getWork() async {
@@ -39,18 +62,6 @@ class _WorkDetailsState extends State<WorkDetails> {
       });
     }
   }
-
-  final List<Tab> tabs = <Tab>[
-    Tab(text:'정보'),
-    Tab(text:'다이어리'),
-    Tab(text:'리포트'),
-  ];
-
-  final List<Widget> pages = [
-    Info(),
-    Diary(),
-    Report(),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +85,15 @@ class _WorkDetailsState extends State<WorkDetails> {
     return DefaultTabController(
       length: tabs.length,
       child: Scaffold(
+        floatingActionButton: _tabController.index == 1
+            ? FloatingActionButton(
+          onPressed: () {
+
+          },
+          child: Icon(Icons.add),
+        )
+            : null,
+
         body: NestedScrollView(
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return [
@@ -158,6 +178,7 @@ class _WorkDetailsState extends State<WorkDetails> {
                   ),
                 ),
                 bottom: TabBar(
+                  controller: _tabController,
                   tabs: tabs,
                   indicatorColor: Colors.black87, //tabbar 밑줄 색상
                   labelColor: Colors.black87, //선택된 영역 글자 색
@@ -166,7 +187,11 @@ class _WorkDetailsState extends State<WorkDetails> {
               ),
             ];
           },
-          body: TabBarView(children: pages),
+          body: TabBarView(
+            physics: NeverScrollableScrollPhysics(),
+            controller: _tabController,
+            children: pages,
+          ),
         ),
       ),
     );
