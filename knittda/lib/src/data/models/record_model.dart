@@ -7,7 +7,7 @@ import 'package:knittda/src/data/models/work_model.dart';
 import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
 
-class RecordsModel {
+class RecordModel {
   final int projectId;
   final String recordStatus;
   final List<String> tags;
@@ -20,7 +20,7 @@ class RecordsModel {
   final DateTime? createdAt;
   final List<ImageModel>? images;
 
-  RecordsModel({
+  RecordModel({
     required this.projectId,
     required this.recordStatus,
     required this.tags,
@@ -33,8 +33,8 @@ class RecordsModel {
     this.images,
   });
 
-  factory RecordsModel.fromJson(Map<String, dynamic> json) {
-    return RecordsModel(
+  factory RecordModel.fromJson(Map<String, dynamic> json) {
+    return RecordModel(
       projectId: json['projectDto']['id'],
       recordStatus: json['recordStatus'] ?? '',
       tags: (json['tags'] as List?)?.map((e) => e.toString()).toList() ?? [],
@@ -61,7 +61,7 @@ class RecordsModel {
     'files': files ?? [],
   };
 
-  factory RecordsModel.forCreate({
+  factory RecordModel.forCreate({
     required int projectId,
     required String recordStatus,
     required List<String> tags,
@@ -69,7 +69,7 @@ class RecordsModel {
     DateTime? recordedAt,
     List<XFile>? files,
   }) {
-    return RecordsModel(
+    return RecordModel(
       projectId: projectId,
       recordStatus: recordStatus,
       tags: tags,
@@ -85,7 +85,7 @@ class RecordsModel {
     );
   }
 
-  RecordsModel copyWith({
+  RecordModel copyWith({
     int? projectId,
     String? recordStatus,
     List<String>? tags,
@@ -97,7 +97,7 @@ class RecordsModel {
     DateTime? createdAt,
     List<ImageModel>? images,
   }) {
-    return RecordsModel(
+    return RecordModel(
       projectId: projectId ?? this.projectId,
       recordStatus: recordStatus ?? this.recordStatus,
       tags: tags ?? this.tags,
@@ -112,7 +112,7 @@ class RecordsModel {
   }
 }
 
-extension RecordsModelMultipart on RecordsModel {
+extension RecordModelMultipart on RecordModel {
   Future<FormData> toMultipartForm() async {
     final form = FormData();
 

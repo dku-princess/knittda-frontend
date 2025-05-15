@@ -5,13 +5,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 
-class DiaryListItem extends StatelessWidget {
+class RecordListItem extends StatelessWidget {
   final DateTime recordedAt;
   final List<XFile> images;
   final String comment;
   final List<String> tags;
 
-  const DiaryListItem({
+  const RecordListItem({
     super.key,
     required this.recordedAt,
     required this.images,

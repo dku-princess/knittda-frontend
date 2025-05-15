@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/data/models/records_model.dart';
+import 'package:knittda/src/data/models/record_model.dart';
 import 'package:knittda/src/data/repositories/records_repository.dart';
 
 class CreateRecordUseCase {
@@ -9,7 +9,7 @@ class CreateRecordUseCase {
     required this.recordsRepository,
   });
 
-  Future<({RecordsModel record})> call(String accessToken, RecordsModel record) async {
+  Future<({RecordModel record})> call(String accessToken, RecordModel record) async {
     try {
       final result = await recordsRepository.createRecord(accessToken, record);
       return (record: result.record); // record 반환 구조 주의!

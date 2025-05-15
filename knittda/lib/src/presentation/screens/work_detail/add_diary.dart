@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
-import 'package:knittda/src/data/models/records_model.dart';
+import 'package:knittda/src/data/models/record_model.dart';
 import 'package:knittda/src/data/models/work_model.dart';
 import 'package:knittda/src/presentation/screens/work_detail/work_details.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
@@ -301,7 +301,7 @@ class _AddDiaryState extends State<AddDiary> {
                             return;
                           }
 
-                          final record = RecordsModel.forCreate(
+                          final record = RecordModel.forCreate(
                             projectId   : widget.work.id!,
                             recordStatus: _selectedStatus!.name,
                             tags        : _selectedTags.toList(),

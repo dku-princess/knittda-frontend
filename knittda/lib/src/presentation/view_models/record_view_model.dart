@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/data/models/records_model.dart';
+import 'package:knittda/src/data/models/record_model.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 
@@ -13,11 +13,16 @@ class RecordViewModel extends ChangeNotifier {
   })  : _auth = authViewModel,
         _useCase = useCase;
 
-  void update(AuthViewModel auth, CreateRecordUseCase useCase) {
+  void update(AuthViewModel auth) {
     _auth    = auth;
-    _useCase = useCase;
     notifyListeners();
   }
+
+  // void update(AuthViewModel auth, CreateRecordUseCase useCase) {
+  //   _auth    = auth;
+  //   _useCase = useCase;
+  //   notifyListeners();
+  // }
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -25,10 +30,10 @@ class RecordViewModel extends ChangeNotifier {
   String? _error;
   String? get errorMessage => _error;
 
-  RecordsModel? _created;
-  RecordsModel? get createdRecord => _created;
+  RecordModel? _created;
+  RecordModel? get createdRecord => _created;
 
-  Future<bool> addRecord(RecordsModel record) async {
+  Future<bool> addRecord(RecordModel record) async {
     final token = _auth.jwt;
     if (token == null) {
       _error = '로그인이 필요합니다.';

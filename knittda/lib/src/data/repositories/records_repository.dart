@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:knittda/src/data/models/records_model.dart';
+import 'package:knittda/src/data/models/record_model.dart';
 import 'package:path/path.dart' as path;
 
 
@@ -16,7 +16,7 @@ class RecordsRepository {
     ),
   );
 
-  Future<({RecordsModel record})> createRecord(String accessToken, RecordsModel record) async {
+  Future<({RecordModel record})> createRecord(String accessToken, RecordModel record) async {
     try {
       //final formData = await record.toMultipartForm();
 
@@ -52,7 +52,7 @@ class RecordsRepository {
         throw Exception('잘못된 응답 형식');
       }
 
-      final createRecord = RecordsModel.fromJson(data);
+      final createRecord = RecordModel.fromJson(data);
       return (record: createRecord);
 
     } on DioException catch (e) {

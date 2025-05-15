@@ -28,7 +28,6 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        // 1) AuthViewModel ─ 앱 시작과 동시에 tryAutoLogin()
         ChangeNotifierProvider<AuthViewModel>(
           lazy: false,
           create: (_) => AuthViewModel(
@@ -42,7 +41,6 @@ void main() {
           create: (_) => WorkRepositories(),
         ),
 
-        // 3) UserViewModel ← AuthViewModel
         ChangeNotifierProxyProvider<AuthViewModel, UserViewModel>(
           create: (ctx) => UserViewModel(ctx.read<AuthViewModel>()),
           update: (ctx, auth, prev) {
@@ -51,7 +49,6 @@ void main() {
           },
         ),
 
-        // 4) WorkViewModel ← AuthViewModel & WorkRepositories
         ChangeNotifierProxyProvider2<AuthViewModel, WorkRepositories, WorkViewModel>(
           create: (ctx) => WorkViewModel(
             ctx.read<AuthViewModel>(),
@@ -67,22 +64,18 @@ void main() {
           create: (_) => RecordsRepository(),
         ),
 
-        /// 2) CreateRecordUseCase ― RecordsRepository 의존
         ProxyProvider<RecordsRepository, CreateRecordUseCase>(
           update: (_, repo, __) => CreateRecordUseCase(recordsRepository: repo),
         ),
 
-        /// 3) AddRecordViewModel ― AuthViewModel + CreateRecordUseCase 의존
         ChangeNotifierProxyProvider2<AuthViewModel, CreateRecordUseCase, RecordViewModel>(
           create: (ctx) => RecordViewModel(
             authViewModel: ctx.read<AuthViewModel>(),
             useCase:       ctx.read<CreateRecordUseCase>(),
           ),
           update: (ctx, auth, useCase, prev) {
-            // Auth 또는 UseCase 가 새로 바뀌었을 때 ViewModel 에 반영
             if (prev != null) {
-              prev.update(auth,useCase);
-              // 필요 시 prev.updateUseCase(useCase);  ← 메서드 추가하는 방안 아래 참고
+              prev.update(auth);
               return prev;
             }
             return RecordViewModel(authViewModel: auth, useCase: useCase);
