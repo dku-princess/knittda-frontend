@@ -22,27 +22,34 @@ class DiaryListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateStr = DateUtilsHelper.toDotFormat(recordedAt);
+    final timeStr = DateUtilsHelper.toHourMinuteFormat(recordedAt);
 
     return GestureDetector(
       onTap: () {},
-      child: Padding(
+      child: Container(
         padding: const EdgeInsets.all(26),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// 날짜
-            Text(dateStr, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+            Row(
+              children: [
+                Text(dateStr, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                SizedBox(width: 10,),
+                Text(timeStr, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+              ],
+            ),
             const SizedBox(height: 16),
 
             /// 이미지 슬라이더
             if (images.isNotEmpty) ...[
               SizedBox(
                 height: 200,
-                child: PageView.builder(
+                child: PageView.builder( //가로로 넘기는 슬라이더
                   itemCount: images.length,
                   itemBuilder: (context, index) {
                     return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      margin: const EdgeInsets.symmetric(horizontal: 4), //이미지들 간의 간격
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         color: Colors.grey[300],
@@ -62,29 +69,49 @@ class DiaryListItem extends StatelessWidget {
               const SizedBox(height: 16),
             ],
 
-            /// 본문 (최대 3줄, 넘치면 ...)
+            /// 본문
             if (comment.isNotEmpty) ...[
               Text(
                 comment,
                 style: const TextStyle(fontSize: 16),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis, // ✅ ... 처리
+                maxLines: 3, //최대 3줄
+                overflow: TextOverflow.ellipsis, //넘기면 ...표시
               ),
               const SizedBox(height: 16),
             ],
 
-            /// 태그 (한 줄만, 넘치면 ... 비슷한 시각적 처리)
+            // 태그
             LayoutBuilder(
               builder: (context, constraints) {
-                // 한 줄에 들어갈 수 있는 최대 너비 기준으로 태그 제한
-                const double tagSpacing = 10;
-                double usedWidth = 0;
-                List<Widget> limitedTags = [];
+                const double tagSpacing = 10; //태그 간의 간격
+                double usedWidth = 0; //지금까지 사용한 너비 누적 계산
+                List<Widget> limitedTags = []; //실제 화면에 보여줄 태그들
+                int hiddenCount = 0; //숨겨진 태그의 개수
 
+                //태그 너비 계산 및 제한 로직
                 for (final tag in tags) {
-                  final tagWidth = (tag.length * 12) + 24; // rough estimate
+                  final tagWidth = (tag.length * 12) + 24; // 태그 하나가 차지할 너비
                   if (usedWidth + tagWidth > constraints.maxWidth) {
-                    limitedTags.add(const Text('...', style: TextStyle(color: Colors.grey)));
+                    hiddenCount = tags.length - limitedTags.length;
+                    if (hiddenCount > 0) {
+                      limitedTags.add(
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: PRIMARY_COLOR),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            '+$hiddenCount',
+                            style: const TextStyle(
+                              color: PRIMARY_COLOR,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
                     break;
                   }
                   usedWidth += tagWidth + tagSpacing;
@@ -107,7 +134,6 @@ class DiaryListItem extends StatelessWidget {
                     ),
                   );
                 }
-
                 return Wrap(
                   spacing: tagSpacing,
                   children: limitedTags,

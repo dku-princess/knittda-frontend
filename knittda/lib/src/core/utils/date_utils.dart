@@ -9,4 +9,7 @@ class DateUtilsHelper {
     final parts = date.split('.');
     return DateTime(int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
   }
+
+  static String toHourMinuteFormat(DateTime date) =>
+      "${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
 }
