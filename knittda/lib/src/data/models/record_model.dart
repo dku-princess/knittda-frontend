@@ -10,11 +10,16 @@ import 'package:http_parser/http_parser.dart';
 class RecordModel {
   final int projectId;
   final String recordStatus;
-  final List<String> tags;
-  final String comment;
+
+  //null 가능한 값
+  final List<String>? tags;
+  final String? comment;
+
+  //서버 응답에는 없는 값
   final DateTime? recordedAt;
   final List<XFile>? files;
 
+  //서버가 보내는 값
   final int? id;
   final WorkModel? projectDto;
   final DateTime? createdAt;
@@ -23,8 +28,8 @@ class RecordModel {
   RecordModel({
     required this.projectId,
     required this.recordStatus,
-    required this.tags,
-    required this.comment,
+    this.tags,
+    this.comment,
     this.recordedAt,
     this.files,
     this.id,
@@ -36,16 +41,21 @@ class RecordModel {
   factory RecordModel.fromJson(Map<String, dynamic> json) {
     return RecordModel(
       projectId: json['projectDto']['id'],
-      recordStatus: json['recordStatus'] ?? '',
-      tags: (json['tags'] as List?)?.map((e) => e.toString()).toList() ?? [],
-      comment: json['comment'] ?? '',
-      recordedAt: null, // 응답에는 없음
-      files: null, // 응답에는 없음
+      recordStatus: json['recordStatus'],
+
+      tags: (json['tags'] as List?)?.map((e) => e.toString()).toList(),
+      comment: json['comment'],
+
+      recordedAt: null,
+      files: null,
+
       id: json['id'],
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'])
           : null,
-      projectDto: json['projectDto'] != null ? WorkModel.fromJson(json['projectDto']) : null,
+      projectDto: json['projectDto'] != null
+          ? WorkModel.fromJson(json['projectDto'])
+          : null,
       images: (json['images'] as List?)?.map((e) => ImageModel.fromJson(e)).toList(),
     );
   }
@@ -54,9 +64,9 @@ class RecordModel {
     'record': {
       'projectId'   : projectId,
       'recordStatus': recordStatus,
-      'tags'        : tags,
-      'comment'     : comment,
-      'recordedAt'  : recordedAt?.toIso8601String() ?? DateTime.now().toIso8601String(),
+      'tags': tags ?? [],
+      'comment': comment ?? '',
+      'recordedAt'  : recordedAt?.toIso8601String(),
     },
     'files': files ?? [],
   };
@@ -64,8 +74,8 @@ class RecordModel {
   factory RecordModel.forCreate({
     required int projectId,
     required String recordStatus,
-    required List<String> tags,
-    required String comment,
+    List<String>? tags,
+    String? comment,
     DateTime? recordedAt,
     List<XFile>? files,
   }) {
@@ -74,7 +84,7 @@ class RecordModel {
       recordStatus: recordStatus,
       tags: tags,
       comment: comment,
-      recordedAt: recordedAt,
+      recordedAt: recordedAt ?? DateTime.now(),
       files: files,
 
       // 서버 응답 필드 → null로 초기화

@@ -43,7 +43,7 @@ class RecordListItem extends StatelessWidget {
             const SizedBox(height: 16),
 
             /// 이미지 슬라이더
-            if (record.files!.isNotEmpty) ...[
+            if (record.files != null && record.files!.isNotEmpty) ...[
               SizedBox(
                 height: 200,
                 child: PageView.builder( //가로로 넘기는 슬라이더
@@ -71,9 +71,9 @@ class RecordListItem extends StatelessWidget {
             ],
 
             /// 본문
-            if (record.comment.isNotEmpty) ...[
+            if (record.comment != null && record.comment!.isNotEmpty) ...[
               Text(
-                record.comment,
+                record.comment ?? '',
                 style: const TextStyle(fontSize: 16),
                 maxLines: 3, //최대 3줄
                 overflow: TextOverflow.ellipsis, //넘기면 ...표시
@@ -82,7 +82,7 @@ class RecordListItem extends StatelessWidget {
             ],
 
             // 태그
-            if (record.tags.isNotEmpty) ...[
+            if (record.tags != null && record.tags!.isNotEmpty) ...[
               LayoutBuilder(
                 builder: (context, constraints) {
                   const double tagSpacing = 10; //태그 간의 간격
@@ -91,10 +91,10 @@ class RecordListItem extends StatelessWidget {
                   int hiddenCount = 0; //숨겨진 태그의 개수
 
                   //태그 너비 계산 및 제한 로직
-                  for (final tag in record.tags) {
+                  for (final tag in record.tags!) {
                     final tagWidth = (tag.length * 12) + 24; // 태그 하나가 차지할 너비
                     if (usedWidth + tagWidth > constraints.maxWidth) {
-                      hiddenCount = record.tags.length - limitedTags.length;
+                      hiddenCount = record.tags!.length - limitedTags.length;
                       if (hiddenCount > 0) {
                         limitedTags.add(
                           Container(

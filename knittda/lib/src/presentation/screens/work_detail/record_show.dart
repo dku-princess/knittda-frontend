@@ -41,22 +41,22 @@ class RecordShow extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 //comment
-                if (record.comment.isNotEmpty) ...[
+                if (record.comment != null && record.comment!.isNotEmpty) ...[
                   Text(
-                    record.comment,
+                    record.comment ?? '',
                     style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(height: 16),
                 ],
 
                 // 태그
-                if (record.tags.isNotEmpty) ...[
+                if (record.tags != null && record.tags!.isNotEmpty) ...[
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Wrap(
                       spacing: 10,
                       runSpacing: 10,
-                      children: record.tags.map((tag) {
+                      children: record.tags!.map((tag) {
                         return Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
