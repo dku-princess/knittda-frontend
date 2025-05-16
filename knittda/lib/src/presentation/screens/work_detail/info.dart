@@ -1,26 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/data/models/work_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import 'package:provider/provider.dart';
 
 class Info extends StatelessWidget {
+  final WorkModel work;
+
+  const Info({super.key, required this.work});
 
   @override
   Widget build(BuildContext context) {
-    final workVM = context.watch<WorkViewModel>();
-    final work = workVM.gotWork;
-
-    if (workVM.isLoading) {
-      return Center(child: CircularProgressIndicator());
-    }
-
-    if (workVM.errorMessage != null) {
-      return Center(child: Text('에러 발생: ${workVM.errorMessage}'));
-    }
-
-    if (work == null) {
-      return Center(child: Text('기록이 없습니다.'));
-    }
-
     return Container(
       //color: Colors.white,
       padding: EdgeInsets.only(top: 26, right: 40, left: 40),
@@ -66,7 +55,7 @@ class Info extends StatelessWidget {
                       "실"
                   ),
                 ),
-                Expanded(child: Text("열매달이틀 스카이")),
+                Expanded(child: Text(work.customYarnInfo!)),
               ],
             ),
           ),
@@ -82,7 +71,7 @@ class Info extends StatelessWidget {
                       "바늘"
                   ),
                 ),
-                Expanded(child: Text("치아오구 4mm")),
+                Expanded(child: Text(work.customNeedleInfo!)),
               ],
             ),
           ),

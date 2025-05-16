@@ -28,12 +28,6 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
     Tab(text:'리포트'),
   ];
 
-  final List<Widget> pages = [
-    Info(),
-    Diary(),
-    Report(),
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -179,7 +173,11 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
               body: TabBarView(
                 physics: NeverScrollableScrollPhysics(),
                 controller: _tabController,
-                children: pages,
+                children: [
+                  Info(work:work),
+                  Diary(),
+                  Report(),
+                ],
               ),
             ),
           ),
