@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/presentation/screens/work_detail/diary.dart';
 import 'package:knittda/src/presentation/screens/work_detail/info.dart';
 import 'package:knittda/src/presentation/screens/work_detail/report.dart';
@@ -75,7 +76,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final workVM = context.read<WorkViewModel>();
+    final workVM = context.watch<WorkViewModel>();
     final work = workVM.gotWork;
     final error = workVM.errorMessage;
     final isBusy = workVM.isLoading;
@@ -111,7 +112,8 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
               onPressed: () {
                 //다이어리 작성
               },
-              child: Icon(Icons.add),
+              backgroundColor: PRIMARY_COLOR,
+              child: Icon(Icons.add, color: Colors.white,),
             )
                 : null,
 
