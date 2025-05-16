@@ -344,7 +344,7 @@ class _AddDiaryState extends State<AddDiary> {
         ),
         if (isBusy)
           const ColoredBox(
-            color: Colors.black38,
+            color: Colors.black26,
             child: Center(child: CircularProgressIndicator()),
           ),
       ],

@@ -76,8 +76,10 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     final workVM = context.read<WorkViewModel>();
-    final topPadding = MediaQuery.of(context).padding.top; //상태바 높이
     final work = workVM.gotWork;
+    final error = workVM.errorMessage;
+    final isBusy = workVM.isLoading;
+    final topPadding = MediaQuery.of(context).padding.top; //상태바 높이
 
     if (_isLoading) {
       return Scaffold(
@@ -86,7 +88,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
       );
     }
 
-    if (workVM.errorMessage != null) {
+    if (error != null) {
       return Scaffold(
         appBar: AppBar(),
         body: Center(child: Text('에러 발생: ${workVM.errorMessage}')),
@@ -99,74 +101,94 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
       );
     }
 
-    return DefaultTabController(
-      length: tabs.length,
-      child: Scaffold(
-        floatingActionButton: _tabController.index == 1
-            ? FloatingActionButton(
-          onPressed: () {
-            //다이어리 작성
-          },
-          child: Icon(Icons.add),
-        )
-            : null,
+    return Stack(
+      children: [
+        DefaultTabController(
+          length: tabs.length,
+          child: Scaffold(
+            floatingActionButton: _tabController.index == 1
+                ? FloatingActionButton(
+              onPressed: () {
+                //다이어리 작성
+              },
+              child: Icon(Icons.add),
+            )
+                : null,
 
-        body: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return [
-              SliverAppBar(
-                pinned: true, //appbar 고정
-                expandedHeight: 210.0, //확장 높이
-                //backgroundColor: Colors.white, //배경 흰색
-                leading: IconButton( //뒤로가기 버튼
-                  icon: Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                actions: [
-                  EditDeleteMenu(
-                    onEdit: (){
-                      // 작품 편집
-                    },
-                    onDelete: () async {
-                      // 작품 삭제
-                    },
-                  )
-                ],
-                flexibleSpace: FlexibleSpaceBar( //확장영역
-                  background: Padding(
-                    padding: EdgeInsets.only(top: topPadding + 56, left: 24),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ImageBox(null, size: 100),
-                        SizedBox(width: 16),
-                        Text(
-                          work.nickname,
-                          style: TextStyle(fontSize: 20),
+            body: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) {
+                return [
+                  SliverAppBar(
+                    pinned: true, //appbar 고정
+                    expandedHeight: 210.0, //확장 높이
+                    //backgroundColor: Colors.white, //배경 흰색
+                    leading: IconButton( //뒤로가기 버튼
+                      icon: Icon(Icons.arrow_back, color: Colors.black),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    actions: [
+                      EditDeleteMenu(
+                        onEdit: (){
+                          // 작품 편집
+                        },
+                        onDelete: () async {
+                          final success = await workVM.deleteWork(work.id!);
+
+                          if (!context.mounted) return;
+
+                          if (success) {
+                            Navigator.pop(context);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(error ?? '삭제 중 오류가 발생했습니다')),
+                            );
+                          }
+                        },
+                      )
+                    ],
+                    flexibleSpace: FlexibleSpaceBar( //확장영역
+                      background: Padding(
+                        padding: EdgeInsets.only(top: topPadding + 56, left: 24),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ImageBox(null, size: 100),
+                            SizedBox(width: 16),
+                            Text(
+                              work.nickname,
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
+                    ),
+                    bottom: TabBar(
+                      controller: _tabController,
+                      tabs: tabs,
+                      indicatorColor: Colors.black87, //tabbar 밑줄 색상
+                      labelColor: Colors.black87, //선택된 영역 글자 색
+                      unselectedLabelColor: Colors.grey, //선택 안된 영역 글자색
                     ),
                   ),
-                ),
-                bottom: TabBar(
-                  controller: _tabController,
-                  tabs: tabs,
-                  indicatorColor: Colors.black87, //tabbar 밑줄 색상
-                  labelColor: Colors.black87, //선택된 영역 글자 색
-                  unselectedLabelColor: Colors.grey, //선택 안된 영역 글자색
-                ),
+                ];
+              },
+              body: TabBarView(
+                physics: NeverScrollableScrollPhysics(),
+                controller: _tabController,
+                children: pages,
               ),
-            ];
-          },
-          body: TabBarView(
-            physics: NeverScrollableScrollPhysics(),
-            controller: _tabController,
-            children: pages,
+            ),
           ),
         ),
-      ),
+        if (isBusy)
+          const ColoredBox(
+            color: Colors.black26,
+            child: Center(child: CircularProgressIndicator()),
+          ),
+      ],
     );
+
   }
 }
