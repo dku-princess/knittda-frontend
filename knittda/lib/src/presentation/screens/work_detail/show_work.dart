@@ -18,8 +18,8 @@ class ShowWork extends StatefulWidget {
 }
 
 class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin{
-  bool _isLoading = true;
   late TabController _tabController;
+  bool _isLoading = true;
 
   final List<Tab> tabs = <Tab>[
     Tab(text:'정보'),
@@ -40,9 +40,8 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
     _tabController.addListener(() { setState(() {});});
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getWorkAndRecords(); // ✅ context 접근을 안전하게 지연
+      _getWorkAndRecords();
     });
-
   }
 
   @override
@@ -62,10 +61,12 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
       await recordVM.getRecords(widget.projectId);
     } catch (e) {
       debugPrint('작품 불러오기 오류: $e');
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('작품 정보를 불러오는 데 실패했습니다.')),
       );
     } finally {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
@@ -74,19 +75,27 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final workViewModel = context.read<WorkViewModel>();
+    final workVM = context.read<WorkViewModel>();
     final topPadding = MediaQuery.of(context).padding.top; //상태바 높이
-    final work = workViewModel.work;
+    final work = workVM.gotWork;
 
     if (_isLoading) {
-      return const Scaffold(
+      return Scaffold(
+        appBar: AppBar(),
         body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (workVM.errorMessage != null) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: Center(child: Text('에러 발생: ${workVM.errorMessage}')),
       );
     }
 
     if (work == null) {
       return const Scaffold(
-        body: Center(child: Text('작품 정보를 불러올 수 없습니다.')),
+        body: Center(child: Text('작품을 불러올 수 없습니다.')),
       );
     }
 
@@ -134,7 +143,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                         ImageBox(null, size: 100),
                         SizedBox(width: 16),
                         Text(
-                          workViewModel.work!.nickname,
+                          work.nickname,
                           style: TextStyle(fontSize: 20),
                         ),
                       ],

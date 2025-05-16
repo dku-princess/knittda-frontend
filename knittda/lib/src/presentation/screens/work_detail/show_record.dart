@@ -15,37 +15,45 @@ class ShowRecord extends StatefulWidget {
 }
 
 class _ShowRecordState extends State<ShowRecord> {
-  late final RecordViewModel recordVM;
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    recordVM = context.read<RecordViewModel>();
-    _fetchRecord();
-  }
-
-  @override
-  void dispose() {
-    recordVM.reset();
-    super.dispose();
-  }
-
-  Future<void> _fetchRecord() async {
-    recordVM.reset();
-    await recordVM.getRecord(widget.recordId);
-
-    if (!mounted) return;
-
-    setState(() {
-      _isLoading = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchRecord();
     });
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  Future<void> _fetchRecord() async {
+    try {
+      final recordVM = context.read<RecordViewModel>();
+
+      recordVM.reset();
+      await recordVM.getRecord(widget.recordId);
+    } catch (e) {
+      debugPrint('기록 불러오기 오류: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('기록 정보를 불러오는 데 실패했습니다.')),
+      );
+    } finally {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final record = context.watch<RecordViewModel>().gotRecord;
-    final error = context.watch<RecordViewModel>().errorMessage;
+    final recordVM = context.watch<RecordViewModel>();
+    final record = recordVM.gotRecord;
 
     if (_isLoading) {
       return Scaffold(
@@ -54,7 +62,7 @@ class _ShowRecordState extends State<ShowRecord> {
       );
     }
 
-    if (error != null) {
+    if (recordVM.errorMessage != null) {
       return Scaffold(
         appBar: AppBar(),
         body: Center(child: Text('에러 발생: ${recordVM.errorMessage}')),
