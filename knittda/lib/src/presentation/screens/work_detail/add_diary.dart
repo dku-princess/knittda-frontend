@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/models/record_model.dart';
 import 'package:knittda/src/data/models/work_model.dart';
-import 'package:knittda/src/presentation/screens/work_detail/work_details.dart';
+import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
 
@@ -310,25 +310,18 @@ class _AddDiaryState extends State<AddDiary> {
                             files       : _images,
                           );
 
-                          if (await addRecordVM.createRecord(record)) {
-                            if (!mounted) return;
+                          final success = await addRecordVM.createRecord(record);
+                          if (!mounted) return;
 
+                          if (success) {
                             Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (_) => WorkDetails(
-                                  projectId: widget.work.id!,
-                                ),
-                              ),
+                              MaterialPageRoute(builder: (_) => ShowWork(projectId: widget.work.id!)),
                             );
-
                             addRecordVM.reset();
-                          } else if (mounted) {
+                          } else {
+                            final error = addRecordVM.errorMessage ?? '알 수 없는 오류';
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  addRecordVM.errorMessage ?? '알 수 없는 오류',
-                                ),
-                              ),
+                              SnackBar(content: Text(error)),
                             );
                           }
                         },

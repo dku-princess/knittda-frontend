@@ -3,19 +3,20 @@ import 'package:knittda/src/presentation/screens/work_detail/diary.dart';
 import 'package:knittda/src/presentation/screens/work_detail/info.dart';
 import 'package:knittda/src/presentation/screens/work_detail/report.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
+import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
 
-class WorkDetails extends StatefulWidget {
+class ShowWork extends StatefulWidget {
   final int projectId;
 
-  const WorkDetails({super.key, required this.projectId});
+  const ShowWork({super.key, required this.projectId});
 
   @override
-  State<WorkDetails> createState() => _WorkDetailsState();
+  State<ShowWork> createState() => _ShowWorkState();
 }
 
-class _WorkDetailsState extends State<WorkDetails> with SingleTickerProviderStateMixin{
+class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin{
   bool _isLoading = true;
   late TabController _tabController;
 
@@ -108,58 +109,14 @@ class _WorkDetailsState extends State<WorkDetails> with SingleTickerProviderStat
                   },
                 ),
                 actions: [
-                  PopupMenuButton<String>(
-                    icon: Icon(Icons.more_vert, color: Colors.black),
-                    onSelected: (value) async {
-                      if (value == 'edit') {
-                        // 수정 동작
-                      } else if (value == 'delete') {
-                        // 삭제 확인 다이얼로그
-                        final confirmed = await showDialog<bool>(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('작품 삭제'),
-                            content: Text('정말 이 작품을 삭제하시겠습니까?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, false),
-                                child: Text('취소'),
-                              ),
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, true),
-                                child: Text('삭제', style: TextStyle(color: Colors.red)),
-                              ),
-                            ],
-                          ),
-                        );
+                  EditDeleteMenu(
+                    onEdit: (){
 
-                        if (confirmed == true) {
-                          try {
-                            final workViewModel = context.read<WorkViewModel>();
-                            await workViewModel.deleteWork(widget.projectId);
-
-                            if (context.mounted) {
-                              Navigator.pop(context); // 삭제 후 상세 페이지 닫기
-                            }
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('삭제 중 오류가 발생했습니다')),
-                            );
-                          }
-                        }
-                      }
                     },
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: 'edit',
-                        child: Text('수정'),
-                      ),
-                      PopupMenuItem(
-                        value: 'delete',
-                        child: Text('삭제'),
-                      ),
-                    ],
-                  ),
+                    onDelete: () async {
+
+                    },
+                  )
                 ],
                 flexibleSpace: FlexibleSpaceBar( //확장영역
                   background: Padding(

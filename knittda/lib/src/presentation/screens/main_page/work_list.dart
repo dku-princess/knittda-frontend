@@ -5,7 +5,7 @@ import 'package:knittda/src/data/repositories/records_repository.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/search_patterns.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_diary.dart';
-import 'package:knittda/src/presentation/screens/work_detail/work_details.dart';
+import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:knittda/src/presentation/view_models/search_view_model.dart';
@@ -79,7 +79,7 @@ class _WorkListState extends State<WorkList> {
                         context,
                         MaterialPageRoute(
                           builder: (_) =>
-                              WorkDetails(projectId: work.id!),
+                              ShowWork(projectId: work.id!),
                         ),
                       );
                     },

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/record_model.dart';
-import 'package:knittda/src/presentation/screens/work_detail/record_show.dart';
+import 'package:knittda/src/presentation/screens/work_detail/show_record.dart';
 import 'package:knittda/src/presentation/widgets/listitems/record_list_item.dart';
 
 class Diary extends StatelessWidget {
@@ -36,7 +36,7 @@ class Diary extends StatelessWidget {
             onTap: (){
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => RecordShow(record: recordlist[index],)),
+                MaterialPageRoute(builder: (context) => ShowRecord(record: recordlist[index],)),
               );
             }
           );

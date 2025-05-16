@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/models/record_model.dart';
+import 'package:knittda/src/presentation/view_models/record_view_model.dart';
+import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
+import 'package:provider/provider.dart';
 
-class RecordShow extends StatelessWidget {
+class ShowRecord extends StatelessWidget {
   final RecordModel record;
-  const RecordShow({super.key, required this.record});
+  const ShowRecord({super.key, required this.record});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +17,30 @@ class RecordShow extends StatelessWidget {
     final timeStr = DateUtilsHelper.toHourMinuteFormat(record.recordedAt!);
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          EditDeleteMenu(
+            onEdit: (){
+
+            },
+            onDelete: () async {
+              final recordVM = context.read<RecordViewModel>();
+              final success = await recordVM.deleteRecord(record.id!);
+
+              if (!context.mounted) return;
+
+              if (success) {
+                Navigator.pop(context);
+              } else {
+                final error = recordVM.errorMessage ?? '삭제 중 오류가 발생했습니다';
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(error)),
+                );
+              }
+            },
+          )
+        ],
+      ),
       body: ListView(
         children: [
           //이미지
