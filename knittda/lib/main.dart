@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/data/repositories/records_repository.dart';
 import 'package:knittda/src/data/repositories/work_repositories.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
+import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
+import 'package:knittda/src/domain/use_case/delete_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_work_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_works_use_case.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import './src/app.dart';
@@ -40,10 +44,6 @@ void main() {
           ),
         ),
 
-        Provider<WorkRepositories>(
-          create: (_) => WorkRepositories(),
-        ),
-
         ChangeNotifierProxyProvider<AuthViewModel, UserViewModel>(
           create: (ctx) => UserViewModel(ctx.read<AuthViewModel>()),
           update: (ctx, auth, prev) {
@@ -52,14 +52,52 @@ void main() {
           },
         ),
 
-        ChangeNotifierProxyProvider2<AuthViewModel, WorkRepositories, WorkViewModel>(
-          create: (ctx) => WorkViewModel(
-            ctx.read<AuthViewModel>(),
-            ctx.read<WorkRepositories>(),
+        Provider<WorkRepositories>(
+          create: (_) => WorkRepositories(),
+        ),
+
+        ProxyProvider<WorkRepositories, CreateWorkUseCase>(
+          update: (_, repo, __) => CreateWorkUseCase(workRepositories: repo),
+        ),
+
+        ProxyProvider<WorkRepositories, DeleteWorkUseCase>(
+          update: (_, repo, __) => DeleteWorkUseCase(workRepositories: repo),
+        ),
+
+        ProxyProvider<WorkRepositories, GetWorkUseCase>(
+          update: (_, repo, __) => GetWorkUseCase(workRepositories: repo),
+        ),
+
+        ProxyProvider<WorkRepositories, GetWorksUseCase>(
+          update: (_, repo, __) => GetWorksUseCase(workRepositories: repo),
+        ),
+
+        ChangeNotifierProxyProvider5<
+          AuthViewModel,
+          CreateWorkUseCase,
+          DeleteWorkUseCase,
+          GetWorkUseCase,
+          GetWorksUseCase,
+          WorkViewModel
+        > (create: (ctx) => WorkViewModel(
+            authViewModel: ctx.read<AuthViewModel>(),
+            createWorkUseCase: ctx.read<CreateWorkUseCase>(),
+            deleteWorkUseCase: ctx.read<DeleteWorkUseCase>(),
+            getWorkUseCase: ctx.read<GetWorkUseCase>(),
+            getWorksUseCase: ctx.read<GetWorksUseCase>(),
           ),
-          update: (ctx, auth, repo, prev) {
-            prev?.update(auth);              // Auth 변경 반영
-            return prev ?? WorkViewModel(auth, repo);
+          update: (ctx, auth, createUseCase, deleteUseCase, getWorkUseCase, getWorksUseCase, prev) {
+            if (prev != null) {
+              prev.update(auth);
+              return prev;
+            }
+            return WorkViewModel(
+              authViewModel:auth,
+              createWorkUseCase: createUseCase,
+              deleteWorkUseCase: deleteUseCase,
+              getWorkUseCase: getWorkUseCase,
+              getWorksUseCase: getWorksUseCase
+            );
           },
         ),
 
@@ -89,7 +127,8 @@ void main() {
           DeleteRecordUseCase,
           GetRecordUseCase,
           GetRecordsUseCase,
-          RecordViewModel> (create: (ctx) => RecordViewModel(
+          RecordViewModel
+        > (create: (ctx) => RecordViewModel(
             authViewModel: ctx.read<AuthViewModel>(),
             createRecordUseCase: ctx.read<CreateRecordUseCase>(),
             deleteRecordUseCase: ctx.read<DeleteRecordUseCase>(),
