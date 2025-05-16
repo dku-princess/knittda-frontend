@@ -1,20 +1,76 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
-import 'package:knittda/src/data/models/record_model.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
 import 'package:provider/provider.dart';
 
-class ShowRecord extends StatelessWidget {
-  final RecordModel record;
-  const ShowRecord({super.key, required this.record});
+class ShowRecord extends StatefulWidget {
+  final int recordId;
+
+  const ShowRecord({super.key, required this.recordId});
+
+  @override
+  State<ShowRecord> createState() => _ShowRecordState();
+}
+
+class _ShowRecordState extends State<ShowRecord> {
+  late final RecordViewModel recordVM;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    recordVM = context.read<RecordViewModel>();
+    _fetchRecord();
+  }
+
+  @override
+  void dispose() {
+    recordVM.reset();
+    super.dispose();
+  }
+
+  Future<void> _fetchRecord() async {
+    recordVM.reset();
+    await recordVM.getRecord(widget.recordId);
+
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final record = context.watch<RecordViewModel>().gotRecord;
+    final error = context.watch<RecordViewModel>().errorMessage;
+
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (error != null) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: Center(child: Text('에러 발생: ${recordVM.errorMessage}')),
+      );
+    }
+
+    if (record == null) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: Center(child: Text('기록을 불러올 수 없습니다.')),
+      );
+    }
+
     final height = MediaQuery.of(context).size.height / 3; //화면의 1/3
-    final dateStr = DateUtilsHelper.toDotFormat(record.recordedAt!);
-    final timeStr = DateUtilsHelper.toHourMinuteFormat(record.recordedAt!);
+    final dateStr = DateUtilsHelper.toDotFormat(record.createdAt!);
+    final timeStr = DateUtilsHelper.toHourMinuteFormat(record.createdAt!);
 
     return Scaffold(
       appBar: AppBar(

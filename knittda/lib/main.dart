@@ -3,6 +3,8 @@ import 'package:knittda/src/data/repositories/records_repository.dart';
 import 'package:knittda/src/data/repositories/work_repositories.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import './src/app.dart';
@@ -73,13 +75,28 @@ void main() {
           update: (_, repo, __) => DeleteRecordUseCase(recordsRepository: repo),
         ),
 
-        ChangeNotifierProxyProvider3<AuthViewModel, CreateRecordUseCase, DeleteRecordUseCase, RecordViewModel>(
-          create: (ctx) => RecordViewModel(
+        ProxyProvider<RecordsRepository, GetRecordUseCase>(
+          update: (_, repo, __) => GetRecordUseCase(recordsRepository: repo),
+        ),
+
+        ProxyProvider<RecordsRepository, GetRecordsUseCase>(
+          update: (_, repo, __) => GetRecordsUseCase(recordsRepository: repo),
+        ),
+
+        ChangeNotifierProxyProvider5<
+          AuthViewModel,
+          CreateRecordUseCase,
+          DeleteRecordUseCase,
+          GetRecordUseCase,
+          GetRecordsUseCase,
+          RecordViewModel> (create: (ctx) => RecordViewModel(
             authViewModel: ctx.read<AuthViewModel>(),
             createRecordUseCase: ctx.read<CreateRecordUseCase>(),
             deleteRecordUseCase: ctx.read<DeleteRecordUseCase>(),
+            getRecordUseCase: ctx.read<GetRecordUseCase>(),
+            getRecordsUseCase: ctx.read<GetRecordsUseCase>(),
           ),
-          update: (ctx, auth, createUseCase, deleteUseCase, prev) {
+          update: (ctx, auth, createUseCase, deleteUseCase, getRecordUseCase, getRecordsUseCase, prev) {
             if (prev != null) {
               prev.update(auth);
               return prev;
@@ -87,7 +104,9 @@ void main() {
             return RecordViewModel(
               authViewModel: auth,
               createRecordUseCase: createUseCase,
-              deleteRecordUseCase: deleteUseCase
+              deleteRecordUseCase: deleteUseCase,
+              getRecordUseCase: getRecordUseCase,
+              getRecordsUseCase: getRecordsUseCase
             );
           },
         ),

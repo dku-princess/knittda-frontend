@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/screens/work_detail/diary.dart';
 import 'package:knittda/src/presentation/screens/work_detail/info.dart';
 import 'package:knittda/src/presentation/screens/work_detail/report.dart';
+import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
@@ -36,10 +37,12 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
   void initState() {
     super.initState();
     _tabController = TabController(length: tabs.length, vsync: this);
-    _tabController.addListener(() {
-      setState(() {});
+    _tabController.addListener(() { setState(() {});});
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _getWorkAndRecords(); // ✅ context 접근을 안전하게 지연
     });
-    _getWork();
+
   }
 
   @override
@@ -48,10 +51,15 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
     super.dispose();
   }
 
-  Future<void> _getWork() async {
+  Future<void> _getWorkAndRecords() async {
     try {
       final workViewModel = context.read<WorkViewModel>();
+      final recordVM = context.read<RecordViewModel>();
+
+      recordVM.reset(all: true);
+
       await workViewModel.getWork(widget.projectId);
+      await recordVM.getRecords(widget.projectId);
     } catch (e) {
       debugPrint('작품 불러오기 오류: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -68,7 +76,6 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     final workViewModel = context.read<WorkViewModel>();
     final topPadding = MediaQuery.of(context).padding.top; //상태바 높이
-
     final work = workViewModel.work;
 
     if (_isLoading) {
@@ -89,7 +96,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
         floatingActionButton: _tabController.index == 1
             ? FloatingActionButton(
           onPressed: () {
-
+            //다이어리 작성
           },
           child: Icon(Icons.add),
         )
@@ -111,10 +118,10 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                 actions: [
                   EditDeleteMenu(
                     onEdit: (){
-
+                      // 작품 편집
                     },
                     onDelete: () async {
-
+                      // 작품 삭제
                     },
                   )
                 ],
