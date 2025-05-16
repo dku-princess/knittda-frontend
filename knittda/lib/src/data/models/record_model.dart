@@ -56,19 +56,22 @@ class RecordModel {
       projectDto: json['projectDto'] != null
           ? WorkModel.fromJson(json['projectDto'])
           : null,
-      images: (json['images'] as List?)?.map((e) => ImageModel.fromJson(e)).toList(),
+      images: (json['images'] as List?)
+          ?.where((e) => e != null)
+          .map((e) => ImageModel.fromJson(e))
+          .toList(),
     );
   }
 
   Map<String, dynamic> toJson() => {
     'record': {
-      'projectId'   : projectId,
+      'projectId': projectId,
       'recordStatus': recordStatus,
       'tags': tags ?? [],
       'comment': comment ?? '',
       'recordedAt'  : recordedAt?.toIso8601String(),
     },
-    'files': files ?? [],
+    'files': files?.map((file) => file.path).toList() ?? [],
   };
 
   factory RecordModel.forCreate({

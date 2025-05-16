@@ -1,60 +1,69 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/models/image_model.dart';
 
 class WorkModel {
-  final int? id;
   final int? designId;
-  final int? userId;
   final String nickname;
+  final String? customYarnInfo;
+  final String? customNeedleInfo;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final DateTime? goalDate;
+  final XFile? file;
+
+  final int? id;
+  final int? userId;
   final String? status;
-  final String customYarnInfo;
-  final String customNeedleInfo;
   final DateTime? lastRecordAt;
   final DateTime? createdAt;
-  final DateTime startDate;
-  final DateTime endDate;
-  final DateTime goalDate;
   final ImageModel? image;
-  final String? customDesign;
-  final String? customDesigner;
 
   WorkModel({
-    this.id,
     this.designId,
-    this.userId,
     required this.nickname,
+    this.customYarnInfo,
+    this.customNeedleInfo,
+    this.startDate,
+    this.endDate,
+    this.goalDate,
+    this.file,
+
+    this.id,
+    this.userId,
     this.status,
-    required this.customYarnInfo,
-    required this.customNeedleInfo,
     this.lastRecordAt,
     this.createdAt,
-    required this.startDate,
-    required this.endDate,
-    required this.goalDate,
     this.image,
-    this.customDesign,
-    this.customDesigner,
   });
 
   //서버에서 json 형식으로 돌려주면 map으로 저장
   factory WorkModel.fromJson(Map<String, dynamic> json) {
     return WorkModel(
-      id: json['id'],
       designId: json['designId'],
-      userId: json['userId'],
       nickname: json['nickname'],
-      status: json['status'],
       customYarnInfo: json['customYarnInfo'],
       customNeedleInfo: json['customNeedleInfo'],
+      startDate:  json['startDate'] != null
+          ? DateTime.tryParse(json['startDate'])
+          : null,
+      endDate:  json['endDate'] != null
+          ? DateTime.tryParse(json['endDate'])
+          : null,
+      goalDate:  json['goalDate'] != null
+          ? DateTime.tryParse(json['goalDate'])
+          : null,
+      file: null,
+
+      id: json['id'],
+      userId: json['userId'],
+      status: json['status'],
       lastRecordAt: json['lastRecordAt'] != null
           ? DateTime.parse(json['lastRecordAt'])
           : null,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
           : null,
-      startDate: DateTime.parse(json['startDate']),
-      endDate: DateTime.parse(json['endDate']),
-      goalDate: DateTime.parse(json['goalDate']),
       image: json['image'] != null ? ImageModel.fromJson(json['image']) : null,
     );
   }
@@ -62,33 +71,29 @@ class WorkModel {
   // map으로 된 정보를 json으로 변형해서 서버로 전송
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'designId': designId,
-      'userId': userId,
-      'nickname': nickname,
-      'status': status,
-      'customYarnInfo': customYarnInfo,
-      'customNeedleInfo': customNeedleInfo,
-      'lastRecordAt': lastRecordAt?.toIso8601String(),
-      'createdAt': createdAt?.toIso8601String(),
-      'startDate': DateUtilsHelper.toHyphenFormat(startDate),
-      'endDate': DateUtilsHelper.toHyphenFormat(endDate),
-      'goalDate': DateUtilsHelper.toHyphenFormat(goalDate),
-      'image': image?.toJson(),
+      'project': {
+        'designId': designId,
+        'nickname': nickname,
+        'customYarnInfo': customYarnInfo ?? '',
+        'customNeedleInfo': customNeedleInfo ?? '',
+        'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
+        'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
+        'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
+      },
+      'file': file?.path,
     };
   }
 
   /// 작품 생성 전용
   factory WorkModel.forCreate({
-    required int? designId,
+    int? designId,
     required String nickname,
-    required String customYarnInfo,
-    required String customNeedleInfo,
-    required DateTime startDate,
-    required DateTime endDate,
-    required DateTime goalDate,
-    required String? customDesign,
-    required String? customDesigner,
+    String? customYarnInfo,
+    String? customNeedleInfo,
+    DateTime? startDate,
+    DateTime? endDate,
+    DateTime? goalDate,
+    XFile? file,
   }) {
     return WorkModel(
       designId: designId,
@@ -98,25 +103,15 @@ class WorkModel {
       startDate: startDate,
       endDate: endDate,
       goalDate: goalDate,
-      customDesign: customDesign,
-      customDesigner: customDesigner,
-    );
-  }
+      file: file,
 
-  /// map으로 된 정보를 json으로 변형해서 서버로 전송, 작품 생성시 사용
-  Map<String, dynamic> toCreateJson() {
-    return {
-      'project': {
-        'designId': designId,
-        'nickname': nickname,
-        'customYarnInfo': customYarnInfo,
-        'customNeedleInfo': customNeedleInfo,
-        'startDate': DateUtilsHelper.toHyphenFormat(startDate),
-        'endDate': DateUtilsHelper.toHyphenFormat(endDate),
-        'goalDate': DateUtilsHelper.toHyphenFormat(goalDate),
-      },
-      'file': 'test',
-    };
+      id: null,
+      userId: null,
+      status: null,
+      lastRecordAt: null,
+      createdAt: null,
+      image: null,
+    );
   }
 
   WorkModel copyWith({
@@ -133,8 +128,7 @@ class WorkModel {
     DateTime? endDate,
     DateTime? goalDate,
     ImageModel? image,
-    String? customDesign,
-    String? customDesigner,
+    XFile? file,
   }) {
     return WorkModel(
       id: id ?? this.id,
@@ -150,8 +144,7 @@ class WorkModel {
       endDate: endDate ?? this.endDate,
       goalDate: goalDate ?? this.goalDate,
       image: image ?? this.image,
-      customDesign: customDesign ?? this.customDesign,
-      customDesigner: customDesigner ?? this.customDesigner,
+      file: file ?? this.file,
     );
   }
 }
