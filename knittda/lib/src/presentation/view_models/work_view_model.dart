@@ -1,70 +1,161 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
+import 'package:knittda/src/domain/use_case/delete_work_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_work_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_works_use_case.dart';
 import 'auth_view_model.dart';
 import 'package:knittda/src/data/models/work_model.dart';
-import 'package:knittda/src/data/repositories/work_repositories.dart';
 
 class WorkViewModel extends ChangeNotifier {
   AuthViewModel _auth;
-  final WorkRepositories _repo;
-  WorkViewModel(this._auth, this._repo);
+  final CreateWorkUseCase _createUseCase;
+  final DeleteWorkUseCase _deleteUseCase;
+  final GetWorkUseCase _getWorkUseCase;
+  final GetWorksUseCase _getWorksUseCase;
 
-  void update(AuthViewModel auth) => _auth = auth;
+  WorkViewModel({
+    required AuthViewModel authViewModel,
+    required CreateWorkUseCase createWorkUseCase,
+    required DeleteWorkUseCase deleteWorkUseCase,
+    required GetWorkUseCase getWorkUseCase,
+    required GetWorksUseCase getWorksUseCase,
+  })  : _auth = authViewModel,
+        _createUseCase = createWorkUseCase,
+        _deleteUseCase = deleteWorkUseCase,
+        _getWorkUseCase = getWorkUseCase,
+        _getWorksUseCase = getWorksUseCase;
 
-
-  final List<WorkModel> _works = [];
-  WorkModel? _selected;
-  bool _loading = false;
-
-  List<WorkModel> get works => List.unmodifiable(_works);
-  WorkModel? get work => _selected;
-  bool get isLoading  => _loading;
-
-  bool get isReady =>
-      _auth.status == AuthStatus.authenticated && _auth.user != null;
-
-  String get _token {
-    final t = _auth.jwt;
-    if (t == null || t.isEmpty) throw Exception('Access token 없음');
-    return t;
+  void update(AuthViewModel auth) {
+    _auth = auth;
+    notifyListeners();
   }
 
-  Future<void> getWorks() async {
-    if (!isReady || _loading) return;
-    _loading = true;
-    notifyListeners();
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
 
-    try {
-      final results = await _repo.getWorks(_token);
-      _works
-        ..clear()
-        ..addAll(results);
-    } finally {
-      _loading = false;
+  String? _error;
+  String? get errorMessage => _error;
+
+  WorkModel? _created;
+  WorkModel? get createdRecord => _created;
+
+  WorkModel? _gotWork;
+  WorkModel? get gotWork => _gotWork;
+
+  List<WorkModel>? _gotWorks;
+  List<WorkModel>? get gotWorks => _gotWorks;
+
+  void reset({bool all = false}) {
+    _created = null;
+    _error = null;
+    _gotWork = null;
+    if (all) {
+      _gotWorks = null;
+    }
+    notifyListeners();
+  }
+
+  void _setLoading(bool v) {
+    _isLoading = v;
+    notifyListeners();
+  }
+
+  Future<bool> createWork(WorkModel work) async {
+    final token = _auth.jwt;
+    if (token == null) {
+      _error = '로그인이 필요합니다.';
       notifyListeners();
+      return false;
+    }
+
+    _setLoading(true);
+    try {
+      final result = await _createUseCase(token, work);
+      _created = result.work;
+      _error   = null;
+
+      //목록 갱신
+      await getWorks();
+
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _setLoading(false);
     }
   }
 
-  Future<WorkModel> createWork(WorkModel work) async {
-    final result = await _repo.createWork(_token, work);
-    _works.add(result.work);
-    notifyListeners();
-    return result.work;
+  Future<bool> getWork(int projectId) async {
+    final token = _auth.jwt;
+    if (token == null) {
+      _error = '로그인이 필요합니다.';
+      notifyListeners();
+      return false;
+    }
+
+    _setLoading(true);
+    try {
+      final result = await _getWorkUseCase(token, projectId);
+      _gotWork = result.work;
+      _error   = null;
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _setLoading(false);
+    }
   }
 
-  Future<void> getWork(int id) async {
-    final result = await _repo.getWork(_token, id);
-    _selected = result.work;
+  Future<bool> getWorks() async {
+    final token = _auth.jwt;
+    if (token == null) {
+      _error = '로그인이 필요합니다.';
+      notifyListeners();
+      return false;
+    }
 
-    final i = _works.indexWhere((w) => w.id == id);
-    if (i != -1) _works[i] = _selected!;
-    notifyListeners();
+    _setLoading(true);
+    try {
+      final result = await _getWorksUseCase(token);
+      _gotWorks = result;
+      _error   = null;
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _setLoading(false);
+    }
   }
 
-  Future<void> deleteWork(int id) async {
-    await _repo.deleteWork(_token, id);
+  Future<bool> deleteWork(int projectId) async {
+    final token = _auth.jwt;
+    if (token == null) {
+      _error = '로그인이 필요합니다.';
+      notifyListeners();
+      return false;
+    }
 
-    _works.removeWhere((w) => w.id == id);
-    if (_selected?.id == id) _selected = null;
-    notifyListeners();
+    _setLoading(true);
+    try {
+      await _deleteUseCase(token, projectId);
+      _error   = null;
+
+      // 목록에서 직접 제거
+      final index = _gotWorks?.indexWhere((r) => r.id == projectId);
+      if (index != null && index != -1) {
+        _gotWorks!.removeAt(index);
+        notifyListeners();
+      }
+
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _setLoading(false);
+    }
   }
 }

@@ -77,8 +77,6 @@ class AddWorkViewModel extends ChangeNotifier {
         startDate: DateUtilsHelper.fromDotFormat(startDate!),
         endDate: DateUtilsHelper.fromDotFormat(endDate!),
         goalDate: DateUtilsHelper.fromDotFormat(goalDate!),
-        customDesign: designId == null ? customDesign : null,
-        customDesigner: designId == null ? customDesigner : null,
       );
 
       try {
