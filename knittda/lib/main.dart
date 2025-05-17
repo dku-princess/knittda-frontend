@@ -9,6 +9,7 @@ import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_works_use_case.dart';
+import 'package:knittda/src/domain/use_case/update_record_use_case.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import './src/app.dart';
@@ -121,12 +122,17 @@ void main() {
           update: (_, repo, __) => GetRecordsUseCase(recordsRepository: repo),
         ),
 
-        ChangeNotifierProxyProvider5<
+        ProxyProvider<RecordsRepository, UpdateRecordUseCase>(
+          update: (_, repo, __) => UpdateRecordUseCase(recordsRepository: repo),
+        ),
+
+        ChangeNotifierProxyProvider6<
           AuthViewModel,
           CreateRecordUseCase,
           DeleteRecordUseCase,
           GetRecordUseCase,
           GetRecordsUseCase,
+          UpdateRecordUseCase,
           RecordViewModel
         > (create: (ctx) => RecordViewModel(
             authViewModel: ctx.read<AuthViewModel>(),
@@ -134,8 +140,9 @@ void main() {
             deleteRecordUseCase: ctx.read<DeleteRecordUseCase>(),
             getRecordUseCase: ctx.read<GetRecordUseCase>(),
             getRecordsUseCase: ctx.read<GetRecordsUseCase>(),
+            updateRecordUseCase: ctx.read<UpdateRecordUseCase>(),
           ),
-          update: (ctx, auth, createUseCase, deleteUseCase, getRecordUseCase, getRecordsUseCase, prev) {
+          update: (ctx, auth, createUseCase, deleteUseCase, getRecordUseCase, getRecordsUseCase, updateUseCase,prev) {
             if (prev != null) {
               prev.update(auth);
               return prev;
@@ -145,7 +152,8 @@ void main() {
               createRecordUseCase: createUseCase,
               deleteRecordUseCase: deleteUseCase,
               getRecordUseCase: getRecordUseCase,
-              getRecordsUseCase: getRecordsUseCase
+              getRecordsUseCase: getRecordsUseCase,
+              updateRecordUseCase: updateUseCase,
             );
           },
         ),

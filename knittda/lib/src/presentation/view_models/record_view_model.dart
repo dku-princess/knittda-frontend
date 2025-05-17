@@ -4,6 +4,7 @@ import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
+import 'package:knittda/src/domain/use_case/update_record_use_case.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 
 class RecordViewModel extends ChangeNotifier {
@@ -12,6 +13,7 @@ class RecordViewModel extends ChangeNotifier {
   final DeleteRecordUseCase _deleteUseCase;
   final GetRecordUseCase _getRecordUseCase;
   final GetRecordsUseCase _getRecordsUseCase;
+  final UpdateRecordUseCase _updateRecordUseCase;
 
   RecordViewModel({
     required AuthViewModel authViewModel,
@@ -19,11 +21,13 @@ class RecordViewModel extends ChangeNotifier {
     required DeleteRecordUseCase deleteRecordUseCase,
     required GetRecordUseCase getRecordUseCase,
     required GetRecordsUseCase getRecordsUseCase,
+    required UpdateRecordUseCase updateRecordUseCase,
   })  : _auth = authViewModel,
         _createUseCase = createRecordUseCase,
         _deleteUseCase = deleteRecordUseCase,
         _getRecordUseCase = getRecordUseCase,
-        _getRecordsUseCase = getRecordsUseCase;
+        _getRecordsUseCase = getRecordsUseCase,
+        _updateRecordUseCase = updateRecordUseCase;
 
   void update(AuthViewModel auth) {
     _auth = auth;
@@ -45,10 +49,14 @@ class RecordViewModel extends ChangeNotifier {
   List<RecordModel>? _gotRecords;
   List<RecordModel>? get gotRecords => _gotRecords;
 
+  RecordModel? _updateRecord;
+  RecordModel? get editRecord => _updateRecord;
+
   void reset({bool all = false}) {
     _created = null;
     _error = null;
     _gotRecord = null;
+    _updateRecord = null;
     if (all) {
       _gotRecords = null;
     }
@@ -58,6 +66,28 @@ class RecordViewModel extends ChangeNotifier {
   void _setLoading(bool v) {
     _isLoading = v;
     notifyListeners();
+  }
+
+  Future<bool> udateRecord(RecordModel record) async {
+    final token = _auth.jwt;
+    if (token == null) {
+      _error = '로그인이 필요합니다.';
+      notifyListeners();
+      return false;
+    }
+
+    _setLoading(true);
+    try {
+      final result = await _updateRecordUseCase(token, record);
+      _updateRecord = result.record;
+      _error   = null;
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _setLoading(false);
+    }
   }
 
   Future<bool> createRecord(RecordModel record) async {
