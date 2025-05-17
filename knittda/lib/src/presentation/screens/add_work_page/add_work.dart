@@ -322,11 +322,12 @@ class _AddWorkState extends State<AddWork> {
                           }
 
                           final work = WorkModel.forCreate(
-                            //designId: _selectedDesign?.id,
+                            designId: _selectedDesign?.id,
                             nickname: nickname,
                             customYarnInfo: customYarnInfo,
                             customNeedleInfo: customNeedleInfo,
                             goalDate: DateUtilsHelper.fromDotFormat(_goalDate!),
+                            file: _image,
                           );
 
                           final success = await WorkVM.createWork(work);

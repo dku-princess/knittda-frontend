@@ -91,7 +91,7 @@ class WorkModel {
   Map<String, dynamic> toJson() {
     return {
       'project': {
-        //'designId': designId,
+        'designId': designId,
         'nickname': nickname,
         //'customYarnInfo': customYarnInfo ?? '',
         //'customNeedleInfo': customNeedleInfo ?? '',
@@ -193,16 +193,16 @@ extension WorkModelMultipart on WorkModel {
     form.fields.add(MapEntry(
       'project',
       jsonEncode({
-        //'designId': designId,
+        'designId': designId,
         'nickname': nickname,
-        //'customYarnInfo': customYarnInfo ?? '',
-        //'customNeedleInfo': customNeedleInfo ?? '',
-        //'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
-        //'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
+        'customYarnInfo': customYarnInfo ?? '',
+        'customNeedleInfo': customNeedleInfo ?? '',
+        'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
+        'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
         'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
-        //'title': title,
-        //'designer': designer,
-        //'visible': false,
+        'title': title,
+        'designer': designer,
+        'visible': false,
       }),
     ));
 
