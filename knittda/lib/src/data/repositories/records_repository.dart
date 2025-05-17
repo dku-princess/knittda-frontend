@@ -1,4 +1,4 @@
-import 'dart:convert';
+//import 'dart:convert';
 //import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,7 @@ class RecordsRepository {
   Future<({RecordModel record})> getRecord(String accessToken, int recordId) async {
     try{
       final res = await _dio.get<Map<String, dynamic>>(
-        '/api/v1/projects/$recordId',
+        '/api/v1/records/$recordId',
         options: Options(
           headers: {
             'Authorization': 'Bearer $accessToken',
@@ -108,7 +108,7 @@ class RecordsRepository {
         options: Options(
           headers: {
             'Authorization': 'Bearer $accessToken',
-            'Content-Type': 'multipart/form-data',
+            //'Content-Type': 'multipart/form-data',
           },
         ),
       );

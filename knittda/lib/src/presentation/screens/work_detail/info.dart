@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/work_model.dart';
-import 'package:knittda/src/presentation/view_models/work_view_model.dart';
-import 'package:provider/provider.dart';
+//import 'package:knittda/src/presentation/view_models/work_view_model.dart';
+//import 'package:provider/provider.dart';
 
 class Info extends StatelessWidget {
   final WorkModel work;

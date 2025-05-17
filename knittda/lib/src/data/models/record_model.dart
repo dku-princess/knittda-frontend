@@ -9,7 +9,7 @@ import 'package:http_parser/http_parser.dart';
 
 class RecordModel {
   final int projectId;
-  final String recordStatus;
+  final String? recordStatus;
 
   //null 가능한 값
   final List<String>? tags;
@@ -27,7 +27,7 @@ class RecordModel {
 
   RecordModel({
     required this.projectId,
-    required this.recordStatus,
+    this.recordStatus,
     this.tags,
     this.comment,
     this.recordedAt,
@@ -66,7 +66,7 @@ class RecordModel {
   Map<String, dynamic> toJson() => {
     'record': {
       'projectId': projectId,
-      'recordStatus': recordStatus,
+      'recordStatus': recordStatus ?? '',
       'tags': tags ?? [],
       'comment': comment ?? '',
       'recordedAt'  : recordedAt?.toIso8601String(),
@@ -76,7 +76,7 @@ class RecordModel {
 
   factory RecordModel.forCreate({
     required int projectId,
-    required String recordStatus,
+    String? recordStatus,
     List<String>? tags,
     String? comment,
     DateTime? recordedAt,
