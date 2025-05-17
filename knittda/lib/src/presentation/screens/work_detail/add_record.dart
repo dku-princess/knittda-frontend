@@ -1,5 +1,3 @@
-//import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/models/record_model.dart';
@@ -21,16 +19,16 @@ enum RecordStatus {
   COMPLETED,
 }
 
-class AddDiary extends StatefulWidget {
+class AddRecord extends StatefulWidget {
   final WorkModel work;
 
-  const AddDiary({super.key, required this.work});
+  const AddRecord({super.key, required this.work});
 
   @override
-  State<AddDiary> createState() => _AddDiaryState();
+  State<AddRecord> createState() => _AddRecordState();
 }
 
-class _AddDiaryState extends State<AddDiary> {
+class _AddRecordState extends State<AddRecord> {
   final List<String> _tags = [
     "푸르시오", "지쳤어요", "실수했어요", "함뜨했어요", "완벽 해요",
     "실이 부족해요", "무한 메리야스 뜨기", "무늬 뜨기", "배색 뜨기",
