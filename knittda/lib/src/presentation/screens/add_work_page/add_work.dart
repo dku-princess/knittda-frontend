@@ -200,17 +200,24 @@ class _AddWorkState extends State<AddWork> {
                     TextField(
                       controller: _designController,
                       readOnly: _selectedDesign != null,
-
                       decoration: InputDecoration(
-                        //hintText: "도안명",
                         isDense: true,
                         filled: _selectedDesign != null,
                         fillColor: Colors.grey[200],
                         contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          //borderSide: BorderSide.none,
-                        ),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        suffixIcon: _selectedDesign != null
+                            ? IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () {
+                            setState(() {
+                              _selectedDesign = null;
+                              _designController.clear();
+                              _designerController.clear();
+                            });
+                          },
+                        )
+                            : null,
                       ),
                       style: const TextStyle(fontSize: 14),
                     ),
@@ -225,15 +232,23 @@ class _AddWorkState extends State<AddWork> {
                       controller: _designerController,
                       readOnly: _selectedDesign != null,
                       decoration: InputDecoration(
-                        //hintText: "작가",
                         isDense: true,
                         filled: _selectedDesign != null,
                         fillColor: Colors.grey[200],
                         contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          //borderSide: BorderSide.none,
-                        ),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        suffixIcon: _selectedDesign != null
+                            ? IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () {
+                            setState(() {
+                              _selectedDesign = null;
+                              _designController.clear();
+                              _designerController.clear();
+                            });
+                          },
+                        )
+                            : null,
                       ),
                       style: const TextStyle(fontSize: 14),
                     ),
@@ -307,7 +322,7 @@ class _AddWorkState extends State<AddWork> {
                           }
 
                           final work = WorkModel.forCreate(
-                            designId: _selectedDesign?.id,
+                            //designId: _selectedDesign?.id,
                             nickname: nickname,
                             customYarnInfo: customYarnInfo,
                             customNeedleInfo: customNeedleInfo,
@@ -318,7 +333,7 @@ class _AddWorkState extends State<AddWork> {
                           if (!mounted) return;
 
                           if (success) {
-                            //WorkList로 이동
+                            Navigator.pop(context, true);
                             WorkVM.reset();
                           } else {
                             final error = WorkVM.errorMessage ?? '알 수 없는 오류';

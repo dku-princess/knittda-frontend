@@ -116,13 +116,15 @@ class _WorkListState extends State<WorkList> {
 
   Widget _addWorkFloatingButton(BuildContext context) {
     return FloatingActionButton(
-      onPressed: () {
-        Navigator.push(
+      onPressed: () async {
+        final result = await Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (_) => AddWork()
-          ),
+          MaterialPageRoute(builder: (_) => AddWork()),
         );
+
+        if (result == true) {
+          _getWorks(); // ✅ 돌아왔을 때만 목록 다시 불러오기
+        }
       },
       backgroundColor: PRIMARY_COLOR,
       child: Icon(Icons.add, color: Colors.white),
