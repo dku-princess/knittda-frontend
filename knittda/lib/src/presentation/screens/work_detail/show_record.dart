@@ -110,17 +110,39 @@ class _ShowRecordState extends State<ShowRecord> {
           body: ListView(
             children: [
               //이미지
-              if (true)
-                Container(
-                  height: height, // 높이를 화면 1/3로 고정
-                  width: double.infinity, // 가로를 화면 가득 채움
-                  color: Colors.grey,
+              if (record.images != null && record.images!.isNotEmpty) ...[
+                SizedBox(
+                  height: height,
+                  child: record.images!.length == 1
+                      ? Image.network(
+                    record.images!.first.imageUrl,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  )
+                      : PageView.builder(
+                    itemCount: record.images!.length,
+                    padEnds: false, // 첫 이미지 왼쪽 여백 제거
+                    controller: PageController(),
+                    itemBuilder: (context, index) {
+                      final image = record.images![index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: Image.network(
+                          image.imageUrl,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
+              ],
 
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 26.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     //시간
                     Row(
@@ -130,7 +152,7 @@ class _ShowRecordState extends State<ShowRecord> {
                         Text(timeStr, style: const TextStyle(fontSize: 12, color: Colors.grey)),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 26),
 
                     //comment
                     if (record.comment != null && record.comment!.isNotEmpty) ...[
@@ -138,7 +160,7 @@ class _ShowRecordState extends State<ShowRecord> {
                         record.comment ?? '',
                         style: const TextStyle(fontSize: 16),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 40),
                     ],
 
                     // 태그
