@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/design_model.dart';
 import 'package:knittda/src/data/repositories/design_repositories.dart';
 
-class SearchPatternsUseCase {
+class SearchDesignUseCase {
   final DesignRepositories designRepositories;
 
-  SearchPatternsUseCase({
+  SearchDesignUseCase({
     required this.designRepositories,
   });
 

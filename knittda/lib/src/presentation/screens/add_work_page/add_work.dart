@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
+import 'package:knittda/src/data/models/design_model.dart';
+import 'package:knittda/src/presentation/screens/add_work_page/search_patterns.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/core/constants/color.dart';
@@ -23,6 +25,7 @@ class _AddWorkState extends State<AddWork> {
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
   String? _goalDate;
+  DesignModel? _selectedDesign;
 
   Future<void> _pickImageFromGallery() async {
     final XFile? picked = await _picker.pickImage(source: ImageSource.gallery);
@@ -163,9 +166,21 @@ class _AddWorkState extends State<AddWork> {
                       ),
                       trailing: IconButton(
                         icon: Icon(Icons.search),
-                        onPressed: () {
-                          // 검색 아이콘 클릭 시 동작
-                          print("검색 클릭됨");
+                        onPressed: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const SearchPatterns(),
+                            ),
+                          );
+
+                          if (result != null && result is DesignModel) {
+                            setState(() {
+                              _designController.text = result.title ?? '';
+                              _designerController.text = result.designer ?? '';
+                              _selectedDesign = result;
+                            });
+                          }
                         },
                       ),
                     ),
@@ -180,6 +195,7 @@ class _AddWorkState extends State<AddWork> {
                       controller: _designController,
                       readOnly: true,
                       decoration: InputDecoration(
+                        hintText: "도안명",
                         isDense: true,
                         filled: true,
                         fillColor: Colors.grey[200],
@@ -202,6 +218,7 @@ class _AddWorkState extends State<AddWork> {
                       controller: _designerController,
                       readOnly: true,
                       decoration: InputDecoration(
+                        hintText: "작가",
                         isDense: true,
                         filled: true,
                         fillColor: Colors.grey[200],
@@ -274,8 +291,6 @@ class _AddWorkState extends State<AddWork> {
                           final nickname = _nicknameController.text.trim();
                           final customYarnInfo = _yarnController.text.trim();
                           final customNeedleInfo = _needleController.text.trim();
-                          //final customDesign = _designController.text.trim();
-                          //final customDesigner = _designerController.text.trim();
 
                           if (nickname.isEmpty || _goalDate == null || _goalDate!.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -285,7 +300,7 @@ class _AddWorkState extends State<AddWork> {
                           }
 
                           final work = WorkModel.forCreate(
-                            //designId: designId ?? 1,
+                            designId: _selectedDesign?.id,
                             nickname: nickname,
                             customYarnInfo: customYarnInfo,
                             customNeedleInfo: customNeedleInfo,
