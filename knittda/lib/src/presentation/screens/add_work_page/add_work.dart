@@ -199,11 +199,11 @@ class _AddWorkState extends State<AddWork> {
                     SizedBox(height: 10),
                     TextField(
                       controller: _designController,
-                      readOnly: true,
+                      readOnly: _selectedDesign != null,
                       decoration: InputDecoration(
-                        hintText: "도안명",
+                        //hintText: "도안명",
                         isDense: true,
-                        filled: true,
+                        filled: _selectedDesign != null,
                         fillColor: Colors.grey[200],
                         contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                         border: OutlineInputBorder(
@@ -222,11 +222,11 @@ class _AddWorkState extends State<AddWork> {
                     SizedBox(height: 10),
                     TextField(
                       controller: _designerController,
-                      readOnly: true,
+                      readOnly: _selectedDesign != null,
                       decoration: InputDecoration(
-                        hintText: "작가",
+                        //hintText: "작가",
                         isDense: true,
-                        filled: true,
+                        filled: _selectedDesign != null,
                         fillColor: Colors.grey[200],
                         contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                         border: OutlineInputBorder(

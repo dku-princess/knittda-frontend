@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/presentation/screens/work_detail/add_diary.dart';
 import 'package:knittda/src/presentation/screens/work_detail/diary.dart';
 import 'package:knittda/src/presentation/screens/work_detail/info.dart';
 import 'package:knittda/src/presentation/screens/work_detail/report.dart';
@@ -11,8 +12,13 @@ import 'package:provider/provider.dart';
 
 class ShowWork extends StatefulWidget {
   final int projectId;
+  final int initialTabIndex;
 
-  const ShowWork({super.key, required this.projectId});
+  const ShowWork({
+    super.key,
+    required this.projectId,
+    this.initialTabIndex = 0,
+  });
 
   @override
   State<ShowWork> createState() => _ShowWorkState();
@@ -31,7 +37,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: tabs.length, vsync: this);
+    _tabController = TabController(length: tabs.length, vsync: this, initialIndex: widget.initialTabIndex);
     _tabController.addListener(() { setState(() {});});
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -104,10 +110,15 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
             floatingActionButton: _tabController.index == 1
                 ? FloatingActionButton(
               onPressed: () {
-                //다이어리 작성
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AddDiary(work: work),
+                  ),
+                );
               },
               backgroundColor: PRIMARY_COLOR,
-              child: Icon(Icons.add, color: Colors.white,),
+              child: const Icon(Icons.add, color: Colors.white),
             )
                 : null,
 

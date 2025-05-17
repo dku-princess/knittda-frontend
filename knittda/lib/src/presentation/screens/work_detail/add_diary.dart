@@ -321,7 +321,12 @@ class _AddDiaryState extends State<AddDiary> {
 
                           if (success) {
                             Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(builder: (_) => ShowWork(projectId: widget.work.id!)),
+                              MaterialPageRoute(
+                                builder: (_) => ShowWork(
+                                  projectId: widget.work.id!,
+                                  initialTabIndex: 1,
+                                ),
+                              ),
                             );
                             RecordVM.reset();
                           } else {
