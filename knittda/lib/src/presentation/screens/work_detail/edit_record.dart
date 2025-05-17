@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/models/record_model.dart';
-import 'package:knittda/src/data/models/work_model.dart';
-import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
 
@@ -20,9 +18,9 @@ enum RecordStatus {
 }
 
 class EditRecord extends StatefulWidget {
-  final WorkModel work;
+  final RecordModel record;
 
-  const EditRecord({super.key, required this.work});
+  const EditRecord({super.key, required this.record});
 
   @override
   State<EditRecord> createState() => _EditRecordState();
@@ -54,6 +52,17 @@ class _EditRecordState extends State<EditRecord> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _selectedTags.addAll(widget.record.tags ?? []);
+    _selectedStatus = RecordStatus.values
+        .where((e) => e.name == widget.record.recordStatus)
+        .cast<RecordStatus?>()
+        .firstWhere((_) => true, orElse: () => null);
+    _commentController.text = widget.record.comment ?? '';
+  }
+
+  @override
   void dispose() {
     _commentController.dispose();
     super.dispose();
@@ -62,13 +71,13 @@ class _EditRecordState extends State<EditRecord> {
   @override
   Widget build(BuildContext context) {
     final RecordVM = context.watch<RecordViewModel>();
-    final isBusy = RecordVM.isLoading;   // 버튼 비활성 + 로딩 표시
+    final isBusy = RecordVM.isLoading;
 
     return Stack(
       children: [
         Scaffold(
           appBar: AppBar(
-            title: const Text("기록 추가"),
+            title: const Text("기록 수정"),
           ),
           body: AbsorbPointer(
             absorbing: isBusy,
@@ -83,7 +92,7 @@ class _EditRecordState extends State<EditRecord> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        WorkListItem(work: widget.work),
+                        WorkListItem(work: widget.record.projectDto!),
                         const SizedBox(height: 35),
                         const Text("오늘은 어떠셨어요?", style: TextStyle(fontSize: 20)),
                         const SizedBox(height: 16),
@@ -303,6 +312,23 @@ class _EditRecordState extends State<EditRecord> {
                             return;
                           }
 
+                          final updatedRecord = widget.record.copyWith(
+                            recordStatus: _selectedStatus!.name,
+                            tags: _selectedTags.toList(),
+                            comment: _commentController.text.trim(),
+                            recordedAt: DateTime.now(),
+                            files: _images,
+                          );
+
+                          final success  = await RecordVM.udateRecord(updatedRecord);
+                          if (!mounted) return;
+
+                          if (success && context.mounted) {
+                            Navigator.pop(context, true); // 수정 성공 표시
+                          } else {
+                            final error = RecordVM.errorMessage ?? "수정에 실패했습니다.";
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+                          }
                         },
                         style: TextButton.styleFrom(
                           backgroundColor: PRIMARY_COLOR,
@@ -311,7 +337,7 @@ class _EditRecordState extends State<EditRecord> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: Text("기록 추가하기"),
+                        child: Text("기록 수정하기"),
                       ),
                     ),
                   ),

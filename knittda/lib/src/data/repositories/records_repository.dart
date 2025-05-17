@@ -1,10 +1,6 @@
-//import 'dart:convert';
-//import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-//import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/data/models/record_model.dart';
-//import 'package:path/path.dart' as path;
 
 
 class RecordsRepository {
@@ -16,11 +12,14 @@ class RecordsRepository {
     ),
   );
 
-  //record 상세 조회
-  Future<({RecordModel record})> updateRecord(String accessToken) async {
+  //record 수정
+  Future<({RecordModel record})> updateRecord(String accessToken, RecordModel record) async {
     try{
+      final formData = await record.toMultipartForm();
+
       final res = await _dio.put<Map<String, dynamic>>(
         '/api/v1/records',
+        data: formData,
         options: Options(
           headers: {
             'Authorization': 'Bearer $accessToken',

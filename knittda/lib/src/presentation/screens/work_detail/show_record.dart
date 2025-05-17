@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
+import 'package:knittda/src/presentation/screens/work_detail/edit_record.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
 import 'package:provider/provider.dart';
@@ -88,8 +89,18 @@ class _ShowRecordState extends State<ShowRecord> {
           appBar: AppBar(
             actions: [
               EditDeleteMenu(
-                onEdit: (){
+                onEdit: () async {
+                  final updated = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EditRecord(record: record),
+                    ),
+                  );
 
+                  // 수정 후 돌아왔을 때 새로고침
+                  if (updated == true && context.mounted) {
+                    _fetchRecord(); // 다시 기록 불러오기
+                  }
                 },
                 onDelete: () async {
                   final success = await recordVM.deleteRecord(record.id!);
