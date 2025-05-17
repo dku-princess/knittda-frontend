@@ -122,7 +122,7 @@ class WorkRepositories {
   //작품 생성하기
   Future<({WorkModel work})> createWork(String accessToken, WorkModel work) async {
     try {
-      final requestBody =  work.toCreateJson();
+      final requestBody =  work.toJson();
 
       // 요청 디버그 출력
       debugPrint('보낸 내용: ${jsonEncode(requestBody)}');

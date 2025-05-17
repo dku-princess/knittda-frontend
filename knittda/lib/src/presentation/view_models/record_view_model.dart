@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
-import 'package:knittda/src/domain/use_case/delete_work_use_case.dart';
-import 'package:knittda/src/domain/use_case/get_work_use_case.dart';
-import 'package:knittda/src/domain/use_case/get_works_use_case.dart';
-import 'auth_view_model.dart';
-import 'package:knittda/src/data/models/work_model.dart';
+import 'package:knittda/src/data/models/record_model.dart';
+import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
+import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
+import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 
-class WorkViewModel extends ChangeNotifier {
+class RecordViewModel extends ChangeNotifier {
   AuthViewModel _auth;
-  final CreateWorkUseCase _createUseCase;
-  final DeleteWorkUseCase _deleteUseCase;
-  final GetWorkUseCase _getWorkUseCase;
-  final GetWorksUseCase _getWorksUseCase;
+  final CreateRecordUseCase _createUseCase;
+  final DeleteRecordUseCase _deleteUseCase;
+  final GetRecordUseCase _getRecordUseCase;
+  final GetRecordsUseCase _getRecordsUseCase;
 
-  WorkViewModel({
+  RecordViewModel({
     required AuthViewModel authViewModel,
-    required CreateWorkUseCase createWorkUseCase,
-    required DeleteWorkUseCase deleteWorkUseCase,
-    required GetWorkUseCase getWorkUseCase,
-    required GetWorksUseCase getWorksUseCase,
+    required CreateRecordUseCase createRecordUseCase,
+    required DeleteRecordUseCase deleteRecordUseCase,
+    required GetRecordUseCase getRecordUseCase,
+    required GetRecordsUseCase getRecordsUseCase,
   })  : _auth = authViewModel,
-        _createUseCase = createWorkUseCase,
-        _deleteUseCase = deleteWorkUseCase,
-        _getWorkUseCase = getWorkUseCase,
-        _getWorksUseCase = getWorksUseCase;
+        _createUseCase = createRecordUseCase,
+        _deleteUseCase = deleteRecordUseCase,
+        _getRecordUseCase = getRecordUseCase,
+        _getRecordsUseCase = getRecordsUseCase;
 
   void update(AuthViewModel auth) {
     _auth = auth;
@@ -36,21 +36,21 @@ class WorkViewModel extends ChangeNotifier {
   String? _error;
   String? get errorMessage => _error;
 
-  WorkModel? _created;
-  WorkModel? get createdRecord => _created;
+  RecordModel? _created;
+  RecordModel? get createdRecord => _created;
 
-  WorkModel? _gotWork;
-  WorkModel? get gotWork => _gotWork;
+  RecordModel? _gotRecord;
+  RecordModel? get gotRecord => _gotRecord;
 
-  List<WorkModel>? _gotWorks;
-  List<WorkModel>? get gotWorks => _gotWorks;
+  List<RecordModel>? _gotRecords;
+  List<RecordModel>? get gotRecords => _gotRecords;
 
   void reset({bool all = false}) {
     _created = null;
     _error = null;
-    _gotWork = null;
+    _gotRecord = null;
     if (all) {
-      _gotWorks = null;
+      _gotRecords = null;
     }
     notifyListeners();
   }
@@ -60,7 +60,7 @@ class WorkViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> createWork(WorkModel work) async {
+  Future<bool> createRecord(RecordModel record) async {
     final token = _auth.jwt;
     if (token == null) {
       _error = '로그인이 필요합니다.';
@@ -70,12 +70,12 @@ class WorkViewModel extends ChangeNotifier {
 
     _setLoading(true);
     try {
-      final result = await _createUseCase(token, work);
-      _created = result.work;
+      final result = await _createUseCase(token, record);
+      _created = result.record;
       _error   = null;
 
       //목록 갱신
-      await getWorks();
+      await getRecords(result.record.projectId);
 
       return true;
     } catch (e) {
@@ -86,7 +86,7 @@ class WorkViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> getWork(int projectId) async {
+  Future<bool> getRecord(int recordId) async {
     final token = _auth.jwt;
     if (token == null) {
       _error = '로그인이 필요합니다.';
@@ -96,8 +96,8 @@ class WorkViewModel extends ChangeNotifier {
 
     _setLoading(true);
     try {
-      final result = await _getWorkUseCase(token, projectId);
-      _gotWork = result.work;
+      final result = await _getRecordUseCase(token, recordId);
+      _gotRecord = result.record;
       _error   = null;
       return true;
     } catch (e) {
@@ -108,7 +108,7 @@ class WorkViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> getWorks() async {
+  Future<bool> getRecords(int projectId) async {
     final token = _auth.jwt;
     if (token == null) {
       _error = '로그인이 필요합니다.';
@@ -118,8 +118,8 @@ class WorkViewModel extends ChangeNotifier {
 
     _setLoading(true);
     try {
-      final result = await _getWorksUseCase(token);
-      _gotWorks = result;
+      final result = await _getRecordsUseCase(token, projectId);
+      _gotRecords = result;
       _error   = null;
       return true;
     } catch (e) {
@@ -130,7 +130,7 @@ class WorkViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> deleteWork(int projectId) async {
+  Future<bool> deleteRecord(int recordId) async {
     final token = _auth.jwt;
     if (token == null) {
       _error = '로그인이 필요합니다.';
@@ -140,13 +140,13 @@ class WorkViewModel extends ChangeNotifier {
 
     _setLoading(true);
     try {
-      await _deleteUseCase(token, projectId);
+      await _deleteUseCase(token, recordId);
       _error   = null;
 
       // 목록에서 직접 제거
-      final index = _gotWorks?.indexWhere((r) => r.id == projectId);
+      final index = _gotRecords?.indexWhere((r) => r.id == recordId);
       if (index != null && index != -1) {
-        _gotWorks!.removeAt(index);
+        _gotRecords!.removeAt(index);
         notifyListeners();
       }
 

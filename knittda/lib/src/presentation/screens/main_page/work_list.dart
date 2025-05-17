@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
-import 'package:knittda/src/data/repositories/design_repositories.dart';
-import 'package:knittda/src/presentation/screens/add_work_page/search_patterns.dart';
+import 'package:knittda/src/presentation/screens/add_work_page/add_work.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_diary.dart';
-import 'package:knittda/src/presentation/screens/work_detail/work_details.dart';
-import 'package:knittda/src/presentation/view_models/search_view_model.dart';
+import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import 'package:knittda/src/presentation/widgets/buttons/work_state_button.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
 import 'package:provider/provider.dart';
-import '../../view_models/add_work_view_model.dart';
 
 class WorkList extends StatefulWidget {
   const WorkList({super.key});
@@ -19,21 +16,35 @@ class WorkList extends StatefulWidget {
 }
 
 class _WorkListState extends State<WorkList> {
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _getWorks());
+  }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final workViewModel = context.read<WorkViewModel>();
-      if (workViewModel.isReady && workViewModel.works.isEmpty) {
-        workViewModel.getWorks();
-      }
-    });
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  Future<void> _getWorks() async {
+    try {
+      final workVM = context.read<WorkViewModel>();
+      await workVM.getWorks();
+    } catch (e) {
+      debugPrint('작품 불러오기 오류: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('작품을 불러오는 데 실패했습니다.')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final workViewModel = context.watch<WorkViewModel>();
+    final workVM = context.watch<WorkViewModel>();
+    final works = workVM.gotWorks;
 
     return Scaffold(
       appBar: AppBar(
@@ -46,6 +57,7 @@ class _WorkListState extends State<WorkList> {
           ),
         ),
       ),
+
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
@@ -54,9 +66,11 @@ class _WorkListState extends State<WorkList> {
             const WorkStateButton(),
             const SizedBox(height: 20),
             Expanded(
-              child: workViewModel.isLoading
+              child: workVM.isLoading
                   ? Center(child: CircularProgressIndicator())
-                  : workViewModel.works.isEmpty
+                  : workVM.errorMessage != null
+                  ? Center(child: Text('에러 발생: ${workVM.errorMessage}'))
+                  : works == null || works.isEmpty
                   ? Center(
                 child: Text(
                   '작품이 없습니다.\n작품을 추가해주세요.',
@@ -65,9 +79,9 @@ class _WorkListState extends State<WorkList> {
                 ),
               )
                   : ListView.builder(
-                itemCount: workViewModel.works.length,
+                itemCount: works.length,
                 itemBuilder: (context, index) {
-                  final work = workViewModel.works[index];
+                  final work = works[index];
                   return WorkListItem(
                     work: work,
                     onTap: () {
@@ -75,7 +89,7 @@ class _WorkListState extends State<WorkList> {
                         context,
                         MaterialPageRoute(
                           builder: (_) =>
-                              WorkDetails(projectId: work.id!),
+                              ShowWork(projectId: work.id!),
                         ),
                       );
                     },
@@ -83,7 +97,8 @@ class _WorkListState extends State<WorkList> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => AddDiary(work: work),
+                          builder: (_) =>
+                              AddDiary(work: work),
                         ),
                       );
                     },
@@ -105,18 +120,7 @@ class _WorkListState extends State<WorkList> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => MultiProvider(
-              providers: [
-                ChangeNotifierProvider(
-                  create: (_) =>
-                      AddWorkViewModel(context.read<WorkViewModel>()),
-                ),
-                ChangeNotifierProvider(
-                  create: (_) => SearchViewModel(DesignRepositories()),
-                ),
-              ],
-              child: SearchPatterns(),
-            ),
+              builder: (_) => AddWork()
           ),
         );
       },

@@ -1,4 +1,4 @@
-import 'dart:convert';
+//import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/design_model.dart';
@@ -17,7 +17,7 @@ class DesignRepositories {
   Future<List<DesignModel>> searchDesign(String keyword) async{
     try{
       final res = await _dio.get<Map<String, dynamic>>(
-        '/v1/designs/search?keyword=$keyword',
+        '/api/v1/designs/search?keyword=$keyword',
       );
 
       if (res.statusCode != 200) {
