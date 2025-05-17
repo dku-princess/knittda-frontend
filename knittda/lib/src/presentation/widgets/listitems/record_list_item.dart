@@ -41,7 +41,40 @@ class RecordListItem extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            //이미지들
+            // 이미지들
+            if (record.images != null && record.images!.isNotEmpty) ...[
+              SizedBox(
+                height: 200,
+                child: record.images!.length == 1
+                    ? ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    record.images!.first.imageUrl,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                )
+                    : PageView.builder(
+                  controller: PageController(viewportFraction: 0.85),
+                  itemCount: record.images!.length,
+                  padEnds: false,
+                  itemBuilder: (context, index) {
+                    final image = record.images![index];
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          image.imageUrl,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
 
             // 본문
             if (record.comment != null && record.comment!.isNotEmpty) ...[
