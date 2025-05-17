@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/models/image_model.dart';
+
+import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 
 class WorkModel {
   final int? designId;
@@ -146,5 +151,39 @@ class WorkModel {
       image: image ?? this.image,
       file: file ?? this.file,
     );
+  }
+}
+
+extension WorkModelMultipart on WorkModel {
+  Future<FormData> toMultipartForm() async {
+    final form = FormData();
+
+    // JSON 문자열로 project 필드 추가
+    form.fields.add(MapEntry(
+      'project',
+      jsonEncode({
+        'designId'       : designId,
+        'nickname'       : nickname,
+        'customYarnInfo' : customYarnInfo ?? '',
+        'customNeedleInfo': customNeedleInfo ?? '',
+        'startDate'      : startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
+        'endDate'        : endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
+        'goalDate'       : goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
+      }),
+    ));
+
+    // 이미지 파일 첨부 (선택)
+    if (file != null) {
+      form.files.add(MapEntry(
+        'file',
+        await MultipartFile.fromFile(
+          file!.path,
+          filename: file!.name,
+          contentType: MediaType('image', 'jpeg'), // 필요 시 mime 자동화 가능
+        ),
+      ));
+    }
+
+    return form;
   }
 }

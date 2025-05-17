@@ -94,20 +94,21 @@ class RecordsRepository {
 
   Future<({RecordModel record})> createRecord(String accessToken, RecordModel record) async {
     try {
-      //final formData = await record.toMultipartForm();
+      final formData = await record.toMultipartForm();
 
-      final recordJson = record.toJson();
+      //final recordJson = record.toJson();
 
-      //debugPrint('보낸 내용: ${formData.fields}, 파일 개수: ${formData.files.length}'); // ✅ 안전하게 디버그 출력
-      debugPrint('보낸 내용: ${jsonEncode(recordJson)}');
+      debugPrint('보낸 내용: ${formData.fields}, 파일 개수: ${formData.files.length}');
+      debugPrint('formData runtimeType: ${formData.runtimeType}');
+      //debugPrint('보낸 내용: ${jsonEncode(recordJson)}');
 
       final res = await _dio.post<Map<String, dynamic>>(
         '/api/v1/records/',
-        data: recordJson,
+        data: formData,
         options: Options(
           headers: {
             'Authorization': 'Bearer $accessToken',
-            'Content-Type' : 'application/json',
+            'Content-Type': 'multipart/form-data',
           },
         ),
       );

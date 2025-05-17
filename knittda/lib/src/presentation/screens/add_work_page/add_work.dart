@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/models/design_model.dart';
+import 'package:knittda/src/data/repositories/design_repositories.dart';
+import 'package:knittda/src/domain/use_case/search_design_use_case.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/search_patterns.dart';
+import 'package:knittda/src/presentation/view_models/search_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/core/constants/color.dart';
@@ -170,7 +173,10 @@ class _AddWorkState extends State<AddWork> {
                           final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const SearchPatterns(),
+                              builder: (_) => ChangeNotifierProvider(
+                                create: (_) => SearchViewModel(searchDesignUseCase: SearchDesignUseCase(designRepositories: DesignRepositories())),
+                                child: SearchPatterns(),
+                              ),
                             ),
                           );
 
