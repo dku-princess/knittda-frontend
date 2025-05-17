@@ -108,7 +108,7 @@ class RecordsRepository {
         options: Options(
           headers: {
             'Authorization': 'Bearer $accessToken',
-            'Content-Type': 'multipart/form-data',
+            //'Content-Type': 'multipart/form-data',
           },
         ),
       );

@@ -18,6 +18,11 @@ class SearchViewModel extends ChangeNotifier {
   List<DesignModel>? _searchDesigns;
   List<DesignModel>? get designs => _searchDesigns;
 
+  void reset() {
+    _searchDesigns = null;
+    notifyListeners();
+  }
+
   void _setLoading(bool v) {
     _isLoading = v;
     notifyListeners();

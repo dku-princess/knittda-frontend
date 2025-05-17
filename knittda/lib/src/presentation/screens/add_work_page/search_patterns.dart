@@ -27,8 +27,13 @@ class _SearchPatternsState extends State<SearchPatterns> {
 
     _debounce = Timer(const Duration(milliseconds: 500), () {
       final keyword = _searchController.text.trim();
-      if (keyword.isEmpty) return;
-      context.read<SearchViewModel>().searchDesign(keyword);
+      final viewModel = context.read<SearchViewModel>();
+
+      if (keyword.isEmpty) {
+        viewModel.reset(); // 검색어 지울 때 결과 초기화
+      } else {
+        viewModel.searchDesign(keyword);
+      }
     });
   }
 
