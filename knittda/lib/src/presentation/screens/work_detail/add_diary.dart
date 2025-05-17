@@ -298,18 +298,25 @@ class _AddDiaryState extends State<AddDiary> {
                             return;
                           }
 
-                          if (_selectedTags.isEmpty &&
-                              _commentController.text.trim().isEmpty &&
-                              _images.isEmpty) {
+                          if (_commentController.text.trim().isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('태그를 선택하거나 사진 또는 기록을 남겨주세요.')),
+                              const SnackBar(content: Text('기록을 남겨주세요.')),
                             );
                             return;
                           }
 
+                          // if (_selectedTags.isEmpty &&
+                          //     _commentController.text.trim().isEmpty &&
+                          //     _images.isEmpty) {
+                          //   ScaffoldMessenger.of(context).showSnackBar(
+                          //     const SnackBar(content: Text('태그를 선택하거나 사진 또는 기록을 남겨주세요.')),
+                          //   );
+                          //   return;
+                          // }
+
                           final record = RecordModel.forCreate(
                             projectId   : widget.work.id!,
-                            recordStatus: _selectedStatus!.name,
+                            recordStatus: _selectedStatus?.name,
                             tags        : _selectedTags.toList(),
                             comment     : _commentController.text.trim(),
                             recordedAt  : DateTime.now(),
