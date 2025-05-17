@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/add_work.dart';
-import 'package:knittda/src/presentation/screens/work_detail/add_diary.dart';
+import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
 import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import 'package:knittda/src/presentation/widgets/buttons/work_state_button.dart';
@@ -98,7 +98,7 @@ class _WorkListState extends State<WorkList> {
                         context,
                         MaterialPageRoute(
                           builder: (_) =>
-                              AddDiary(work: work),
+                              AddRecord(work: work),
                         ),
                       );
                     },

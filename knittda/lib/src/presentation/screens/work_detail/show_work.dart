@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
-import 'package:knittda/src/presentation/screens/work_detail/add_diary.dart';
+import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
 import 'package:knittda/src/presentation/screens/work_detail/diary.dart';
 import 'package:knittda/src/presentation/screens/work_detail/info.dart';
 import 'package:knittda/src/presentation/screens/work_detail/report.dart';
@@ -113,7 +113,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => AddDiary(work: work),
+                    builder: (_) => AddRecord(work: work),
                   ),
                 );
               },
