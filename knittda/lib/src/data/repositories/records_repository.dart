@@ -17,6 +17,43 @@ class RecordsRepository {
   );
 
   //record 상세 조회
+  Future<({RecordModel record})> updateRecord(String accessToken) async {
+    try{
+      final res = await _dio.put<Map<String, dynamic>>(
+        '/api/v1/records',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+          },
+        ),
+      );
+
+      if (res.statusCode != 200) {
+        throw Exception('서버 오류: ${res.statusCode}');
+      }
+
+      debugPrint('서버 응답: ${res.data}');
+
+      final body = res.data;
+      if (body == null || body['success'] != true) {
+        throw Exception(body?['message'] ?? '알 수 없는 오류');
+      }
+
+      final data = body['data'] as Map<String, dynamic>?;
+      if (data == null) {
+        throw Exception('잘못된 응답 형식');
+      }
+
+      return (record: RecordModel.fromJson(data));
+
+    } on DioException catch (e) {
+      throw Exception('네트워크 오류: ${e.message}');
+    } catch (e) {
+      throw Exception('기록 수정 중 오류: $e');
+    }
+  }
+
+  //record 상세 조회
   Future<({RecordModel record})> getRecord(String accessToken, int recordId) async {
     try{
       final res = await _dio.get<Map<String, dynamic>>(
