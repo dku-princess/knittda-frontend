@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/work_model.dart';
@@ -31,7 +29,7 @@ class WorkRepositories {
         throw Exception('서버 오류: ${res.statusCode}');
       }
 
-      debugPrint('서버 응답: ${res.data}');
+      //debugPrint('서버 응답: ${res.data}');
 
       final body = res.data;
       if (body == null || body['success'] != true) {
@@ -61,7 +59,7 @@ class WorkRepositories {
         throw Exception('서버 오류: ${res.statusCode}');
       }
 
-      debugPrint('서버 응답: ${res.data}');
+      //debugPrint('서버 응답: ${res.data}');
 
       final body = res.data;
       if (body == null || body['success'] != true) {
@@ -98,7 +96,7 @@ class WorkRepositories {
         throw Exception('서버 오류: ${res.statusCode}');
       }
 
-      debugPrint('서버 응답: ${res.data}');
+      //debugPrint('서버 응답: ${res.data}');
 
       final body = res.data;
       if (body == null || body['success'] != true) {
@@ -122,14 +120,18 @@ class WorkRepositories {
   //작품 생성하기
   Future<({WorkModel work})> createWork(String accessToken, WorkModel work) async {
     try {
-      final requestBody =  work.toJson();
+      final formData =  await work.toMultipartForm();
 
-      // 요청 디버그 출력
-      debugPrint('보낸 내용: ${jsonEncode(requestBody)}');
+      for (final f in formData.fields) {
+        debugPrint('🟡 Field: ${f.key} = ${f.value}');
+      }
+      for (final f in formData.files) {
+        debugPrint('🟡 File: ${f.key} = ${f.value.filename}');
+      }
 
       final res = await _dio.post<Map<String, dynamic>>(
         '/api/v1/projects/',
-        data: requestBody,
+        data: formData,
         options: Options(
           headers: {
             'Authorization': 'Bearer $accessToken',
@@ -142,7 +144,7 @@ class WorkRepositories {
       }
 
       final responseBody = res.data;
-      debugPrint('서버 응답: $responseBody');
+      //debugPrint('서버 응답: $responseBody');
 
       if (responseBody == null || responseBody['success'] != true) {
         throw Exception(responseBody?['message'] ?? '알 수 없는 오류');

@@ -1,10 +1,6 @@
-//import 'dart:convert';
-//import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-//import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/data/models/record_model.dart';
-//import 'package:path/path.dart' as path;
 
 
 class RecordsRepository {
@@ -15,6 +11,46 @@ class RecordsRepository {
       baseUrl: baseUrl,
     ),
   );
+
+  //record 수정
+  Future<({RecordModel record})> updateRecord(String accessToken, RecordModel record) async {
+    try{
+      final formData = await record.toMultipartForm();
+
+      final res = await _dio.put<Map<String, dynamic>>(
+        '/api/v1/records',
+        data: formData,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+          },
+        ),
+      );
+
+      if (res.statusCode != 200) {
+        throw Exception('서버 오류: ${res.statusCode}');
+      }
+
+      debugPrint('서버 응답: ${res.data}');
+
+      final body = res.data;
+      if (body == null || body['success'] != true) {
+        throw Exception(body?['message'] ?? '알 수 없는 오류');
+      }
+
+      final data = body['data'] as Map<String, dynamic>?;
+      if (data == null) {
+        throw Exception('잘못된 응답 형식');
+      }
+
+      return (record: RecordModel.fromJson(data));
+
+    } on DioException catch (e) {
+      throw Exception('네트워크 오류: ${e.message}');
+    } catch (e) {
+      throw Exception('기록 수정 중 오류: $e');
+    }
+  }
 
   //record 상세 조회
   Future<({RecordModel record})> getRecord(String accessToken, int recordId) async {

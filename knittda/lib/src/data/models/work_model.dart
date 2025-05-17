@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
+import 'package:knittda/src/data/models/design_model.dart';
 import 'package:knittda/src/data/models/image_model.dart';
 
 import 'package:dio/dio.dart';
@@ -18,11 +19,16 @@ class WorkModel {
   final XFile? file;
 
   final int? id;
+  final DesignModel? designDto;
   final int? userId;
   final String? status;
   final DateTime? lastRecordAt;
   final DateTime? createdAt;
   final ImageModel? image;
+
+  final String? title;
+  final String? designer;
+  final bool visible;
 
   WorkModel({
     this.designId,
@@ -35,32 +41,37 @@ class WorkModel {
     this.file,
 
     this.id,
+    this.designDto,
     this.userId,
     this.status,
     this.lastRecordAt,
     this.createdAt,
     this.image,
+
+    this.title,
+    this.designer,
+    this.visible = false,
   });
 
-  //서버에서 json 형식으로 돌려주면 map으로 저장
   factory WorkModel.fromJson(Map<String, dynamic> json) {
     return WorkModel(
-      designId: json['designId'],
+      designId: json['designDto']?['id'],
       nickname: json['nickname'],
       customYarnInfo: json['customYarnInfo'],
       customNeedleInfo: json['customNeedleInfo'],
-      startDate:  json['startDate'] != null
+      startDate: json['startDate'] != null
           ? DateTime.tryParse(json['startDate'])
           : null,
-      endDate:  json['endDate'] != null
+      endDate: json['endDate'] != null
           ? DateTime.tryParse(json['endDate'])
           : null,
-      goalDate:  json['goalDate'] != null
+      goalDate: json['goalDate'] != null
           ? DateTime.tryParse(json['goalDate'])
           : null,
       file: null,
 
       id: json['id'],
+      designDto: json['designDto'] != null ? DesignModel.fromJson(json['designDto']) : null,
       userId: json['userId'],
       status: json['status'],
       lastRecordAt: json['lastRecordAt'] != null
@@ -70,26 +81,31 @@ class WorkModel {
           ? DateTime.parse(json['createdAt'])
           : null,
       image: json['image'] != null ? ImageModel.fromJson(json['image']) : null,
+
+      title: json['title'],
+      designer: json['designer'],
+      visible: json['visible'] ?? false,
     );
   }
 
-  // map으로 된 정보를 json으로 변형해서 서버로 전송
   Map<String, dynamic> toJson() {
     return {
       'project': {
-        'designId': designId,
+        //'designId': designId,
         'nickname': nickname,
-        'customYarnInfo': customYarnInfo ?? '',
-        'customNeedleInfo': customNeedleInfo ?? '',
-        'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
-        'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
+        //'customYarnInfo': customYarnInfo ?? '',
+        //'customNeedleInfo': customNeedleInfo ?? '',
+        //'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
+        //'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
         'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
+        //'title': title,
+        //'designer': designer,
+        //'visible': false,
       },
       'file': file?.path,
     };
   }
 
-  /// 작품 생성 전용
   factory WorkModel.forCreate({
     int? designId,
     required String nickname,
@@ -99,6 +115,9 @@ class WorkModel {
     DateTime? endDate,
     DateTime? goalDate,
     XFile? file,
+    String? title,
+    String? designer,
+    bool visible = false,
   }) {
     return WorkModel(
       designId: designId,
@@ -111,16 +130,22 @@ class WorkModel {
       file: file,
 
       id: null,
+      designDto: null,
       userId: null,
       status: null,
       lastRecordAt: null,
       createdAt: null,
       image: null,
+
+      title: title,
+      designer: designer,
+      visible: visible,
     );
   }
 
   WorkModel copyWith({
     int? id,
+    DesignModel? designDto,
     int? designId,
     int? userId,
     String? nickname,
@@ -134,9 +159,13 @@ class WorkModel {
     DateTime? goalDate,
     ImageModel? image,
     XFile? file,
+    String? title,
+    String? designer,
+    bool? visible,
   }) {
     return WorkModel(
       id: id ?? this.id,
+      designDto: designDto ?? this.designDto,
       designId: designId ?? this.designId,
       userId: userId ?? this.userId,
       nickname: nickname ?? this.nickname,
@@ -150,6 +179,9 @@ class WorkModel {
       goalDate: goalDate ?? this.goalDate,
       image: image ?? this.image,
       file: file ?? this.file,
+      title: title ?? this.title,
+      designer: designer ?? this.designer,
+      visible: visible ?? this.visible,
     );
   }
 }
@@ -158,28 +190,29 @@ extension WorkModelMultipart on WorkModel {
   Future<FormData> toMultipartForm() async {
     final form = FormData();
 
-    // JSON 문자열로 project 필드 추가
     form.fields.add(MapEntry(
       'project',
       jsonEncode({
-        'designId'       : designId,
-        'nickname'       : nickname,
-        'customYarnInfo' : customYarnInfo ?? '',
-        'customNeedleInfo': customNeedleInfo ?? '',
-        'startDate'      : startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
-        'endDate'        : endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
-        'goalDate'       : goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
+        //'designId': designId,
+        'nickname': nickname,
+        //'customYarnInfo': customYarnInfo ?? '',
+        //'customNeedleInfo': customNeedleInfo ?? '',
+        //'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
+        //'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
+        'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
+        //'title': title,
+        //'designer': designer,
+        //'visible': false,
       }),
     ));
 
-    // 이미지 파일 첨부 (선택)
     if (file != null) {
       form.files.add(MapEntry(
         'file',
         await MultipartFile.fromFile(
           file!.path,
           filename: file!.name,
-          contentType: MediaType('image', 'jpeg'), // 필요 시 mime 자동화 가능
+          contentType: MediaType('image', 'jpeg'),
         ),
       ));
     }
