@@ -17,8 +17,10 @@ class RecordListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateStr = DateUtilsHelper.toDotFormat(record.recordedAt!);
-    final timeStr = DateUtilsHelper.toHourMinuteFormat(record.recordedAt!);
+    final dateStr = DateUtilsHelper.toDotFormat(record.createdAt!);
+    final timeStr = DateUtilsHelper.toHourMinuteFormat(record.createdAt!);
+    final images = (record.images ?? []).take(5).toList();
+    final isSingleImage = images.length == 1;
 
     return GestureDetector(
       onTap: onTap,
@@ -42,26 +44,28 @@ class RecordListItem extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            /// 이미지 슬라이더
-            if (record.files != null && record.files!.isNotEmpty) ...[
+            // 이미지 슬라이더
+            if (record.images != null && record.images!.isNotEmpty) ...[
               SizedBox(
                 height: 200,
-                child: PageView.builder( //가로로 넘기는 슬라이더
-                  itemCount: record.files!.length,
+                child: PageView.builder(
+                  //itemCount: record.images!.length,
+                  itemCount: record.images!.length > 5 ? 5 : record.images!.length,
                   itemBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4), //이미지들 간의 간격
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.grey[300],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.file(
-                          File(record.files![index].path),
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                        ),
+                    final image = record.images![index];
+                    return  ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        image.imageUrl,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Center(child: Icon(Icons.broken_image));
+                        },
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(child: CircularProgressIndicator());
+                        },
                       ),
                     );
                   },

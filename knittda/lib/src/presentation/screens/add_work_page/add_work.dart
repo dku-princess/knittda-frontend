@@ -200,6 +200,7 @@ class _AddWorkState extends State<AddWork> {
                     TextField(
                       controller: _designController,
                       readOnly: _selectedDesign != null,
+
                       decoration: InputDecoration(
                         //hintText: "도안명",
                         isDense: true,
