@@ -38,7 +38,7 @@ class _AddDiaryState extends State<AddDiary> {
   ];
   final Set<String> _selectedTags = {};
   final ImagePicker _picker = ImagePicker();
-  List<XFile> _images = [];
+  final List<XFile> _images = [];
 
   RecordStatus? _selectedStatus;
   final TextEditingController _commentController = TextEditingController();
@@ -56,9 +56,15 @@ class _AddDiaryState extends State<AddDiary> {
   }
 
   @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final addRecordVM = context.watch<RecordViewModel>();
-    final isBusy = addRecordVM.isLoading;   // 버튼 비활성 + 로딩 표시
+    final RecordVM = context.watch<RecordViewModel>();
+    final isBusy = RecordVM.isLoading;   // 버튼 비활성 + 로딩 표시
 
     return Stack(
       children: [
@@ -310,16 +316,16 @@ class _AddDiaryState extends State<AddDiary> {
                             files       : _images,
                           );
 
-                          final success = await addRecordVM.createRecord(record);
+                          final success = await RecordVM.createRecord(record);
                           if (!mounted) return;
 
                           if (success) {
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(builder: (_) => ShowWork(projectId: widget.work.id!)),
                             );
-                            addRecordVM.reset();
+                            RecordVM.reset();
                           } else {
-                            final error = addRecordVM.errorMessage ?? '알 수 없는 오류';
+                            final error = RecordVM.errorMessage ?? '알 수 없는 오류';
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text(error)),
                             );

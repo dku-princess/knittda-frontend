@@ -13,11 +13,6 @@
 //   final WorkViewModel _workViewModel;
 //   final formKey = GlobalKey<FormState>();
 //
-//   final nicknameController = TextEditingController();
-//   final designController = TextEditingController();
-//   final designerController = TextEditingController();
-//   final yarnController = TextEditingController();
-//   final needleController = TextEditingController();
 //
 //   String? startDate;
 //   String? endDate;
@@ -56,7 +51,6 @@
 //
 //     if (picked != null) {
 //       goalDate = DateUtilsHelper.toDotFormat(picked);
-//       endDate = DateUtilsHelper.toDotFormat(picked);
 //       notifyListeners();
 //     }
 //   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/presentation/screens/add_work_page/add_work.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_diary.dart';
 import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
@@ -96,7 +97,8 @@ class _WorkListState extends State<WorkList> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => AddDiary(work: work),
+                          builder: (_) =>
+                              AddDiary(work: work),
                         ),
                       );
                     },
@@ -115,23 +117,12 @@ class _WorkListState extends State<WorkList> {
   Widget _addWorkFloatingButton(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (_) => MultiProvider(
-        //       providers: [
-        //         ChangeNotifierProvider(
-        //           create: (_) =>
-        //               AddWorkViewModel(context.read<WorkViewModel>()),
-        //         ),
-        //         ChangeNotifierProvider(
-        //           create: (_) => SearchViewModel(DesignRepositories()),
-        //         ),
-        //       ],
-        //       child: SearchPatterns(),
-        //     ),
-        //   ),
-        // );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) => AddWork()
+          ),
+        );
       },
       backgroundColor: PRIMARY_COLOR,
       child: Icon(Icons.add, color: Colors.white),
