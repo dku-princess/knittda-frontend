@@ -12,6 +12,57 @@ class WorkRepositories {
     ),
   );
 
+  Future<({WorkModel work})> updateWork(String accessToken, WorkModel work) async {
+    try {
+      final formData =  await work.toMultipartForm();
+
+      debugPrint('=== [작품 수정 요청 FormData] ===');
+      for (final field in formData.fields) {
+        debugPrint('field: ${field.key} = ${field.value}');
+      }
+      for (final file in formData.files) {
+        debugPrint('file: ${file.key} → ${file.value.filename}');
+      }
+      debugPrint('=============================');
+
+      final res = await _dio.put<Map<String, dynamic>>(
+        '/api/v1/projects/',
+        data: formData,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+          },
+        ),
+      );
+
+      if (res.statusCode != 200) {
+        throw Exception('서버 오류: ${res.statusCode}');
+      }
+
+      final responseBody = res.data;
+
+      if (responseBody == null || responseBody['success'] != true) {
+        throw Exception(responseBody?['message'] ?? '알 수 없는 오류');
+      }
+
+      final data = responseBody['data'] as Map<String, dynamic>?;
+      if (data == null) {
+        throw Exception('잘못된 응답 형식');
+      }
+
+      final updateWork = WorkModel.fromJson(data);
+      return (work: updateWork);
+
+    } on DioException catch (e) {
+      debugPrint('네트워크 오류: ${e.response?.data ?? e.message}');
+      throw Exception('네트워크 오류: ${e.message}');
+    } catch (e) {
+      debugPrint('작품 수정 중 예외: $e');
+      throw Exception('작품 수정 중 오류: $e');
+    }
+  }
+
+
   //서버에서 작품 삭제하기
   Future<void> deleteWork(String accessToken, int projectId) async {
     try{
@@ -28,8 +79,6 @@ class WorkRepositories {
       if (res.statusCode != 200) {
         throw Exception('서버 오류: ${res.statusCode}');
       }
-
-      //debugPrint('서버 응답: ${res.data}');
 
       final body = res.data;
       if (body == null || body['success'] != true) {
@@ -58,8 +107,6 @@ class WorkRepositories {
       if (res.statusCode != 200) {
         throw Exception('서버 오류: ${res.statusCode}');
       }
-
-      //debugPrint('서버 응답: ${res.data}');
 
       final body = res.data;
       if (body == null || body['success'] != true) {
@@ -96,8 +143,6 @@ class WorkRepositories {
         throw Exception('서버 오류: ${res.statusCode}');
       }
 
-      //debugPrint('서버 응답: ${res.data}');
-
       final body = res.data;
       if (body == null || body['success'] != true) {
         throw Exception(body?['message'] ?? '알 수 없는 오류');
@@ -122,13 +167,6 @@ class WorkRepositories {
     try {
       final formData =  await work.toMultipartForm();
 
-      for (final f in formData.fields) {
-        debugPrint('🟡 Field: ${f.key} = ${f.value}');
-      }
-      for (final f in formData.files) {
-        debugPrint('🟡 File: ${f.key} = ${f.value.filename}');
-      }
-
       final res = await _dio.post<Map<String, dynamic>>(
         '/api/v1/projects/',
         data: formData,
@@ -144,7 +182,6 @@ class WorkRepositories {
       }
 
       final responseBody = res.data;
-      //debugPrint('서버 응답: $responseBody');
 
       if (responseBody == null || responseBody['success'] != true) {
         throw Exception(responseBody?['message'] ?? '알 수 없는 오류');

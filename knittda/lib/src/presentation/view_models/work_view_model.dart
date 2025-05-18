@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_works_use_case.dart';
@@ -8,19 +7,16 @@ import 'package:knittda/src/data/models/work_model.dart';
 
 class WorkViewModel extends ChangeNotifier {
   AuthViewModel _auth;
-  final CreateWorkUseCase _createUseCase;
   final DeleteWorkUseCase _deleteUseCase;
   final GetWorkUseCase _getWorkUseCase;
   final GetWorksUseCase _getWorksUseCase;
 
   WorkViewModel({
     required AuthViewModel authViewModel,
-    required CreateWorkUseCase createWorkUseCase,
     required DeleteWorkUseCase deleteWorkUseCase,
     required GetWorkUseCase getWorkUseCase,
     required GetWorksUseCase getWorksUseCase,
   })  : _auth = authViewModel,
-        _createUseCase = createWorkUseCase,
         _deleteUseCase = deleteWorkUseCase,
         _getWorkUseCase = getWorkUseCase,
         _getWorksUseCase = getWorksUseCase;
@@ -36,9 +32,6 @@ class WorkViewModel extends ChangeNotifier {
   String? _error;
   String? get errorMessage => _error;
 
-  WorkModel? _created;
-  WorkModel? get createdRecord => _created;
-
   WorkModel? _gotWork;
   WorkModel? get gotWork => _gotWork;
 
@@ -46,7 +39,6 @@ class WorkViewModel extends ChangeNotifier {
   List<WorkModel>? get gotWorks => _gotWorks;
 
   void reset({bool all = false}) {
-    _created = null;
     _error = null;
     _gotWork = null;
     if (all) {
@@ -58,32 +50,6 @@ class WorkViewModel extends ChangeNotifier {
   void _setLoading(bool v) {
     _isLoading = v;
     notifyListeners();
-  }
-
-  Future<bool> createWork(WorkModel work) async {
-    final token = _auth.jwt;
-    if (token == null) {
-      _error = '로그인이 필요합니다.';
-      notifyListeners();
-      return false;
-    }
-
-    _setLoading(true);
-    try {
-      final result = await _createUseCase(token, work);
-      _created = result.work;
-      _error   = null;
-
-      //목록 갱신
-      await getWorks();
-
-      return true;
-    } catch (e) {
-      _error = e.toString();
-      return false;
-    } finally {
-      _setLoading(false);
-    }
   }
 
   Future<bool> getWork(int projectId) async {

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/data/repositories/work_repositories.dart';
+import 'package:knittda/src/domain/use_case/update_work_use_case.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
 import 'package:knittda/src/presentation/screens/work_detail/diary.dart';
+import 'package:knittda/src/presentation/screens/work_detail/edit_work.dart';
 import 'package:knittda/src/presentation/screens/work_detail/info.dart';
 import 'package:knittda/src/presentation/screens/work_detail/report.dart';
+import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
+import 'package:knittda/src/presentation/view_models/edit_work_view_model.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
@@ -137,8 +142,27 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                     ),
                     actions: [
                       EditDeleteMenu(
-                        onEdit: (){
-                          // 작품 편집
+                        onEdit: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChangeNotifierProvider(
+                                create: (_) => EditWorkViewModel(
+                                  authViewModel: context.read<AuthViewModel>(),
+                                  updateWorkUseCase: UpdateWorkUseCase(
+                                    workRepositories: context.read<WorkRepositories>(),
+                                  ),
+                                ),
+                                child: EditWork(work: work),
+                              ),
+                            ),
+                          );
+
+                          if (result == true && context.mounted) {
+                            final workVM = context.read<WorkViewModel>();
+                            await workVM.getWork(work.id!);
+                            await workVM.getWorks();
+                          }
                         },
                         onDelete: () async {
                           final success = await workVM.deleteWork(work.id!);
@@ -161,7 +185,11 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ImageBox(null, size: 100),
+                            ImageBox(
+                              networkImageUrl: work.image?.imageUrl,
+                              height: 100,
+                              width: 100,
+                            ),
                             SizedBox(width: 16),
                             Text(
                               work.nickname,

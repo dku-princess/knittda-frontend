@@ -88,25 +88,8 @@ class WorkModel {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'project': {
-        'designId': designId,
-        'nickname': nickname,
-        //'customYarnInfo': customYarnInfo ?? '',
-        //'customNeedleInfo': customNeedleInfo ?? '',
-        //'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
-        //'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
-        'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
-        //'title': title,
-        //'designer': designer,
-        //'visible': false,
-      },
-      'file': file?.path,
-    };
-  }
-
   factory WorkModel.forCreate({
+    int? id,
     int? designId,
     required String nickname,
     String? customYarnInfo,
@@ -129,7 +112,7 @@ class WorkModel {
       goalDate: goalDate,
       file: file,
 
-      id: null,
+      id: id,
       designDto: null,
       userId: null,
       status: null,
@@ -193,10 +176,11 @@ extension WorkModelMultipart on WorkModel {
     form.fields.add(MapEntry(
       'project',
       jsonEncode({
+        'projectId': id,
         'designId': designId,
         'nickname': nickname,
-        'customYarnInfo': customYarnInfo ?? '',
-        'customNeedleInfo': customNeedleInfo ?? '',
+        'customYarnInfo': customYarnInfo,
+        'customNeedleInfo': customNeedleInfo,
         'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
         'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
         'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,

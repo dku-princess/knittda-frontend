@@ -5,21 +5,26 @@ import 'package:knittda/src/data/models/design_model.dart';
 import 'package:knittda/src/data/repositories/design_repositories.dart';
 import 'package:knittda/src/domain/use_case/search_design_use_case.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/search_patterns.dart';
-import 'package:knittda/src/presentation/view_models/add_work_view_model.dart';
+import 'package:knittda/src/presentation/view_models/edit_work_view_model.dart';
 import 'package:knittda/src/presentation/view_models/search_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/models/work_model.dart';
 
-class AddWork extends StatefulWidget {
-  const AddWork({super.key});
+class EditWork extends StatefulWidget {
+  final WorkModel work;
+
+  const EditWork({
+    super.key,
+    required this.work,
+  });
 
   @override
-  State<AddWork> createState() =>_AddWorkState();
+  State<EditWork> createState() =>_EditWorkState();
 }
 
-class _AddWorkState extends State<AddWork> {
+class _EditWorkState extends State<EditWork> {
   final _nicknameController = TextEditingController();
   final _designController = TextEditingController();
   final _designerController = TextEditingController();
@@ -30,6 +35,7 @@ class _AddWorkState extends State<AddWork> {
   XFile? _image;
   String? _goalDate;
   DesignModel? _selectedDesign;
+  String? _networkImageUrl;
 
   Future<void> _pickImageFromGallery() async {
     final XFile? picked = await _picker.pickImage(
@@ -62,6 +68,32 @@ class _AddWorkState extends State<AddWork> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _nicknameController.text = widget.work.nickname;
+
+    if(widget.work.designDto != null){
+      _selectedDesign = widget.work.designDto;
+      _designController.text = widget.work.designDto?.title ?? '';
+      _designerController.text = widget.work.designDto?.designer ?? '';
+    } else{
+      _designController.text = widget.work.title ?? '';
+      _designerController.text = widget.work.designer ?? '';
+    }
+
+    _yarnController.text = widget.work.customYarnInfo ?? '';
+    _needleController.text = widget.work.customNeedleInfo ?? '';
+
+    if (widget.work.goalDate != null) {
+      _goalDate = DateUtilsHelper.toDotFormat(widget.work.goalDate!);
+    }
+
+    if (widget.work.image?.imageUrl != null && widget.work.image!.imageUrl.isNotEmpty) {
+      _networkImageUrl = widget.work.image!.imageUrl;
+    }
+  }
+
+  @override
   void dispose() {
     _nicknameController.dispose();
     _designController.dispose();
@@ -73,14 +105,14 @@ class _AddWorkState extends State<AddWork> {
 
   @override
   Widget build(BuildContext context) {
-    final addWorkVM = context.read<AddWorkViewModel>();
-    final isBusy = addWorkVM.isLoading;
+    final EditWorkVM = context.read<EditWorkViewModel>();
+    final isBusy = EditWorkVM.isLoading;
 
     return Stack(
       children: [
         Scaffold(
           appBar: AppBar(
-            title: const Text('작품 추가', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+            title: const Text('작품 수정', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
             centerTitle: true,
           ),
           body: Padding(
@@ -105,11 +137,12 @@ class _AddWorkState extends State<AddWork> {
                             children: [
                               ImageBox(
                                 localImageUrl: _image?.path,
+                                networkImageUrl: _networkImageUrl,
                                 width: 110,
                                 height: 110,
-                                showIcon: _image == null, // 이미지가 없을 때만 add 아이콘 표시
+                                showIcon: true,
                               ),
-                              if (_image != null)
+                              if (_image != null || (_networkImageUrl?.isNotEmpty ?? false))
                                 Positioned(
                                   top: 1,
                                   right: 1,
@@ -117,6 +150,7 @@ class _AddWorkState extends State<AddWork> {
                                     onTap: () {
                                       setState(() {
                                         _image = null;
+                                        _networkImageUrl = null;
                                       });
                                     },
                                     child: Container(
@@ -333,7 +367,7 @@ class _AddWorkState extends State<AddWork> {
 
                           if (nickname.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('작품 이름을 작성해주세요!')),
+                              const SnackBar(content: Text('작품 이름을 작성해주세요.')),
                             );
                             return;
                           }
@@ -351,6 +385,7 @@ class _AddWorkState extends State<AddWork> {
                           }
 
                           final work = WorkModel.forCreate(
+                            id: widget.work.id,
                             designId: _selectedDesign?.id,
                             nickname: nickname,
                             customYarnInfo: customYarnInfo,
@@ -361,13 +396,13 @@ class _AddWorkState extends State<AddWork> {
                             designer: designer,
                           );
 
-                          final success = await addWorkVM.createWork(work);
+                          final success = await EditWorkVM.updateWork(work);
                           if (!mounted) return;
 
                           if (success) {
                             Navigator.pop(context, true); // <-- 성공 여부 반환
                           } else {
-                            final error = addWorkVM.errorMessage ?? '알 수 없는 오류';
+                            final error = EditWorkVM.errorMessage ?? '알 수 없는 오류';
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text(error)),
                             );
@@ -381,7 +416,7 @@ class _AddWorkState extends State<AddWork> {
                           ),
                         ),
                         child: Text(
-                          "작품 추가하기",
+                          "작품 수정하기",
                         ),
                       ),
                     ),

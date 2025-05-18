@@ -18,7 +18,7 @@ class DesignModel {
     this.title,
     this.designer,
     this.price,
-    this. imageUrl,
+    this.imageUrl,
     this.detailUrl,
     this.categories,
     this.tools,
