@@ -67,7 +67,6 @@ class RecordModel {
     String? comment,
     List<XFile>? files,
 
-    WorkModel? projectDto,
     int? id
   }) {
     return RecordModel(
@@ -79,7 +78,6 @@ class RecordModel {
 
       // 서버 응답 필드 → null로 초기화
       id: id,
-      projectDto: projectDto,
       createdAt: null,
       images: null,
     );
@@ -149,7 +147,6 @@ extension RecordModelMultipart on RecordModel {
       'record',
       jsonEncode({
         'recordId': id,
-        'project': projectDto?.toJson()['project'],
         'recordStatus': recordStatus,
         'tags'        : tags,
         'comment'     : comment,
@@ -157,10 +154,9 @@ extension RecordModelMultipart on RecordModel {
     ));
 
     if (deleteImageIds != null && deleteImageIds.isNotEmpty) {
-      form.fields.add(MapEntry(
-        'deleteImageIds',
-        jsonEncode(deleteImageIds),
-      ));
+      for (final id in deleteImageIds) {
+        form.fields.add(MapEntry('deleteImageIds', id.toString()));
+      }
     }
 
     // 파일 추가
