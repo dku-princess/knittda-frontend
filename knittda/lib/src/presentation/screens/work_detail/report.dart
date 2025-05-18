@@ -170,11 +170,7 @@ class Report extends StatelessWidget {
                 width: 281,
                 height: 48,
                 decoration: ShapeDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment(0.09, -0.71),
-                    end: Alignment(0.95, 1.50),
-                    colors: [Color(0xFF8BD5BA), Color(0xFF46BC90), Color(0xFF00A367)],
-                  ),
+                  color: Color(0xFF0ABE8C),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),

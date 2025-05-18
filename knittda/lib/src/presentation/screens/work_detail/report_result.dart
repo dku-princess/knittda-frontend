@@ -67,7 +67,7 @@ class ReportResult extends StatelessWidget {
           // 🔹 오른쪽 위 X 버튼 (뒤로 가기)
           Positioned(
             right: 16,
-            top: 50,
+            top: 55,
             child: GestureDetector(
               onTap: () {
                 Navigator.pop(context); // 이전 페이지로 이동
