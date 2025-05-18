@@ -16,14 +16,14 @@ class WorkRepositories {
     try {
       final formData =  await work.toMultipartForm();
 
-      debugPrint('=== [작품 수정 요청 FormData] ===');
-      for (final field in formData.fields) {
-        debugPrint('field: ${field.key} = ${field.value}');
-      }
-      for (final file in formData.files) {
-        debugPrint('file: ${file.key} → ${file.value.filename}');
-      }
-      debugPrint('=============================');
+      // debugPrint('=== [작품 수정 요청 FormData] ===');
+      // for (final field in formData.fields) {
+      //   debugPrint('field: ${field.key} = ${field.value}');
+      // }
+      // for (final file in formData.files) {
+      //   debugPrint('file: ${file.key} → ${file.value.filename}');
+      // }
+      // debugPrint('=============================');
 
       final res = await _dio.put<Map<String, dynamic>>(
         '/api/v1/projects/',

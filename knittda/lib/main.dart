@@ -57,10 +57,6 @@ void main() {
           create: (_) => WorkRepositories(),
         ),
 
-        ProxyProvider<WorkRepositories, CreateWorkUseCase>(
-          update: (_, repo, __) => CreateWorkUseCase(workRepositories: repo),
-        ),
-
         ProxyProvider<WorkRepositories, DeleteWorkUseCase>(
           update: (_, repo, __) => DeleteWorkUseCase(workRepositories: repo),
         ),
@@ -103,10 +99,6 @@ void main() {
           create: (_) => RecordsRepository(),
         ),
 
-        ProxyProvider<RecordsRepository, CreateRecordUseCase>(
-          update: (_, repo, __) => CreateRecordUseCase(recordsRepository: repo),
-        ),
-
         ProxyProvider<RecordsRepository, DeleteRecordUseCase>(
           update: (_, repo, __) => DeleteRecordUseCase(recordsRepository: repo),
         ),
@@ -123,9 +115,8 @@ void main() {
           update: (_, repo, __) => UpdateRecordUseCase(recordsRepository: repo),
         ),
 
-        ChangeNotifierProxyProvider6<
+        ChangeNotifierProxyProvider5<
           AuthViewModel,
-          CreateRecordUseCase,
           DeleteRecordUseCase,
           GetRecordUseCase,
           GetRecordsUseCase,
@@ -133,20 +124,18 @@ void main() {
           RecordViewModel
         > (create: (ctx) => RecordViewModel(
             authViewModel: ctx.read<AuthViewModel>(),
-            createRecordUseCase: ctx.read<CreateRecordUseCase>(),
             deleteRecordUseCase: ctx.read<DeleteRecordUseCase>(),
             getRecordUseCase: ctx.read<GetRecordUseCase>(),
             getRecordsUseCase: ctx.read<GetRecordsUseCase>(),
             updateRecordUseCase: ctx.read<UpdateRecordUseCase>(),
           ),
-          update: (ctx, auth, createUseCase, deleteUseCase, getRecordUseCase, getRecordsUseCase, updateUseCase,prev) {
+          update: (ctx, auth, deleteUseCase, getRecordUseCase, getRecordsUseCase, updateUseCase,prev) {
             if (prev != null) {
               prev.update(auth);
               return prev;
             }
             return RecordViewModel(
               authViewModel: auth,
-              createRecordUseCase: createUseCase,
               deleteRecordUseCase: deleteUseCase,
               getRecordUseCase: getRecordUseCase,
               getRecordsUseCase: getRecordsUseCase,

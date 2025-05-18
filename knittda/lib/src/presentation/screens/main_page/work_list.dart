@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/data/repositories/work_repositories.dart';
 import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/add_work.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
@@ -128,7 +129,9 @@ class _WorkListState extends State<WorkList> {
             builder: (_) => ChangeNotifierProvider(
               create: (_) => AddWorkViewModel(
                 authViewModel: context.read<AuthViewModel>(),
-                createWorkUseCase: context.read<CreateWorkUseCase>(),
+                createWorkUseCase: CreateWorkUseCase(
+                  workRepositories: context.read<WorkRepositories>(),
+                ),
               ),
               child: AddWork(),
             ),

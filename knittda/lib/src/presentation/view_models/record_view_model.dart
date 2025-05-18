@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/record_model.dart';
-import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
@@ -9,7 +8,6 @@ import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 
 class RecordViewModel extends ChangeNotifier {
   AuthViewModel _auth;
-  final CreateRecordUseCase _createUseCase;
   final DeleteRecordUseCase _deleteUseCase;
   final GetRecordUseCase _getRecordUseCase;
   final GetRecordsUseCase _getRecordsUseCase;
@@ -17,13 +15,11 @@ class RecordViewModel extends ChangeNotifier {
 
   RecordViewModel({
     required AuthViewModel authViewModel,
-    required CreateRecordUseCase createRecordUseCase,
     required DeleteRecordUseCase deleteRecordUseCase,
     required GetRecordUseCase getRecordUseCase,
     required GetRecordsUseCase getRecordsUseCase,
     required UpdateRecordUseCase updateRecordUseCase,
   })  : _auth = authViewModel,
-        _createUseCase = createRecordUseCase,
         _deleteUseCase = deleteRecordUseCase,
         _getRecordUseCase = getRecordUseCase,
         _getRecordsUseCase = getRecordsUseCase,
@@ -81,32 +77,6 @@ class RecordViewModel extends ChangeNotifier {
       final result = await _updateRecordUseCase(token, record);
       _updateRecord = result.record;
       _error   = null;
-      return true;
-    } catch (e) {
-      _error = e.toString();
-      return false;
-    } finally {
-      _setLoading(false);
-    }
-  }
-
-  Future<bool> createRecord(RecordModel record) async {
-    final token = _auth.jwt;
-    if (token == null) {
-      _error = '로그인이 필요합니다.';
-      notifyListeners();
-      return false;
-    }
-
-    _setLoading(true);
-    try {
-      final result = await _createUseCase(token, record);
-      _created = result.record;
-      _error   = null;
-
-      //목록 갱신
-      await getRecords(result.record.projectId);
-
       return true;
     } catch (e) {
       _error = e.toString();
