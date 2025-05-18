@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/add_work.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
 import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
+import 'package:knittda/src/presentation/view_models/add_work_view_model.dart';
+import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import 'package:knittda/src/presentation/widgets/buttons/work_state_button.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
@@ -116,19 +119,28 @@ class _WorkListState extends State<WorkList> {
 
   Widget _addWorkFloatingButton(BuildContext context) {
     return FloatingActionButton(
+      backgroundColor: PRIMARY_COLOR,
+      tooltip: '작품 추가',
       onPressed: () async {
         final result = await Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => AddWork()),
+          MaterialPageRoute(
+            builder: (_) => ChangeNotifierProvider(
+              create: (_) => AddWorkViewModel(
+                authViewModel: context.read<AuthViewModel>(),
+                createWorkUseCase: context.read<CreateWorkUseCase>(),
+              ),
+              child: AddWork(),
+            ),
+          ),
         );
 
-        if (result == true) {
-          _getWorks(); // ✅ 돌아왔을 때만 목록 다시 불러오기
+        // 결과 처리: 작품이 추가되었을 경우 리스트 다시 불러오기
+        if (result == true && context.mounted) {
+          await context.read<WorkViewModel>().getWorks();
         }
       },
-      backgroundColor: PRIMARY_COLOR,
-      child: Icon(Icons.add, color: Colors.white),
-      tooltip: '작품 추가',
+      child: Icon(Icons.add, color: Colors.white)
     );
   }
 }

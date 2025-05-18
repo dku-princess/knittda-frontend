@@ -73,28 +73,25 @@ void main() {
           update: (_, repo, __) => GetWorksUseCase(workRepositories: repo),
         ),
 
-        ChangeNotifierProxyProvider5<
+        ChangeNotifierProxyProvider4<
           AuthViewModel,
-          CreateWorkUseCase,
           DeleteWorkUseCase,
           GetWorkUseCase,
           GetWorksUseCase,
           WorkViewModel
         > (create: (ctx) => WorkViewModel(
             authViewModel: ctx.read<AuthViewModel>(),
-            createWorkUseCase: ctx.read<CreateWorkUseCase>(),
             deleteWorkUseCase: ctx.read<DeleteWorkUseCase>(),
             getWorkUseCase: ctx.read<GetWorkUseCase>(),
             getWorksUseCase: ctx.read<GetWorksUseCase>(),
           ),
-          update: (ctx, auth, createUseCase, deleteUseCase, getWorkUseCase, getWorksUseCase, prev) {
+          update: (ctx, auth, deleteUseCase, getWorkUseCase, getWorksUseCase, prev) {
             if (prev != null) {
               prev.update(auth);
               return prev;
             }
             return WorkViewModel(
               authViewModel:auth,
-              createWorkUseCase: createUseCase,
               deleteWorkUseCase: deleteUseCase,
               getWorkUseCase: getWorkUseCase,
               getWorksUseCase: getWorksUseCase
