@@ -20,121 +20,128 @@ import 'package:knittda/src/data/repositories/auth_repository.dart';
 import 'package:knittda/src/core/storage/token_storage.dart';
 import 'package:knittda/src/presentation/view_models/user_view_model.dart';
 
+import 'dart:async';
+import 'package:flutter/widgets.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+
 // 앱 실행
-void main() {
-  // 웹 환경에서 카카오 로그인을 정상적으로 완료하려면 runApp() 호출 전 아래 메서드 호출 필요
-  WidgetsFlutterBinding.ensureInitialized();
+Future<void> main() async {
+  await runZonedGuarded(() async {
+    // 바인딩 초기화는 반드시 runZoned 내부에서
+    WidgetsFlutterBinding.ensureInitialized();
 
-  // runApp() 호출 전 Flutter SDK 초기화
-  KakaoSdk.init(
-    nativeAppKey: '80b636a62e74a4a39f74f6f3fef235fd',
-  );
+    // UI 예외 추적 (Flutter 위젯 오류)
+    FlutterError.onError = (FlutterErrorDetails details) async {
+      FlutterError.presentError(details);
+      await Sentry.captureException(
+        details.exception,
+        stackTrace: details.stack,
+      );
+    };
 
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider<AuthViewModel>(
-          lazy: false,
-          create: (_) => AuthViewModel(
-            KaKaoLogin(),
-            AuthRepository(),
-            TokenStorage(),
+    // Sentry 초기화
+    await SentryFlutter.init((options) {
+      options.dsn = 'https://d23c992a19e943b25de8eabac866c136@o4509342537613312.ingest.us.sentry.io/4509343717261312';
+    });
+
+    // Kakao SDK 초기화 (필수 키 입력!)
+    KakaoSdk.init(nativeAppKey: '80b636a62e74a4a39f74f6f3fef235fd');
+
+    // 앱 실행
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<AuthViewModel>(
+            lazy: false,
+            create: (_) => AuthViewModel(
+              KaKaoLogin(),
+              AuthRepository(),
+              TokenStorage(),
+            ),
           ),
-        ),
-
-        ChangeNotifierProxyProvider<AuthViewModel, UserViewModel>(
-          create: (ctx) => UserViewModel(ctx.read<AuthViewModel>()),
-          update: (ctx, auth, prev) {
-            prev?.update(auth);
-            return prev ?? UserViewModel(auth);
-          },
-        ),
-
-        Provider<WorkRepositories>(
-          create: (_) => WorkRepositories(),
-        ),
-
-        ProxyProvider<WorkRepositories, DeleteWorkUseCase>(
-          update: (_, repo, __) => DeleteWorkUseCase(workRepositories: repo),
-        ),
-
-        ProxyProvider<WorkRepositories, GetWorkUseCase>(
-          update: (_, repo, __) => GetWorkUseCase(workRepositories: repo),
-        ),
-
-        ProxyProvider<WorkRepositories, GetWorksUseCase>(
-          update: (_, repo, __) => GetWorksUseCase(workRepositories: repo),
-        ),
-
-        ChangeNotifierProxyProvider4<
-          AuthViewModel,
-          DeleteWorkUseCase,
-          GetWorkUseCase,
-          GetWorksUseCase,
-          WorkViewModel
-        > (create: (ctx) => WorkViewModel(
-            authViewModel: ctx.read<AuthViewModel>(),
-            deleteWorkUseCase: ctx.read<DeleteWorkUseCase>(),
-            getWorkUseCase: ctx.read<GetWorkUseCase>(),
-            getWorksUseCase: ctx.read<GetWorksUseCase>(),
+          ChangeNotifierProxyProvider<AuthViewModel, UserViewModel>(
+            create: (ctx) => UserViewModel(ctx.read<AuthViewModel>()),
+            update: (ctx, auth, prev) {
+              prev?.update(auth);
+              return prev ?? UserViewModel(auth);
+            },
           ),
-          update: (ctx, auth, deleteUseCase, getWorkUseCase, getWorksUseCase, prev) {
-            if (prev != null) {
-              prev.update(auth);
-              return prev;
-            }
-            return WorkViewModel(
-              authViewModel:auth,
-              deleteWorkUseCase: deleteUseCase,
-              getWorkUseCase: getWorkUseCase,
-              getWorksUseCase: getWorksUseCase
-            );
-          },
-        ),
-
-        Provider<RecordsRepository>(
-          create: (_) => RecordsRepository(),
-        ),
-
-        ProxyProvider<RecordsRepository, DeleteRecordUseCase>(
-          update: (_, repo, __) => DeleteRecordUseCase(recordsRepository: repo),
-        ),
-
-        ProxyProvider<RecordsRepository, GetRecordUseCase>(
-          update: (_, repo, __) => GetRecordUseCase(recordsRepository: repo),
-        ),
-
-        ProxyProvider<RecordsRepository, GetRecordsUseCase>(
-          update: (_, repo, __) => GetRecordsUseCase(recordsRepository: repo),
-        ),
-
-        ChangeNotifierProxyProvider4<
-          AuthViewModel,
-          DeleteRecordUseCase,
-          GetRecordUseCase,
-          GetRecordsUseCase,
-          RecordViewModel
-        > (create: (ctx) => RecordViewModel(
-            authViewModel: ctx.read<AuthViewModel>(),
-            deleteRecordUseCase: ctx.read<DeleteRecordUseCase>(),
-            getRecordUseCase: ctx.read<GetRecordUseCase>(),
-            getRecordsUseCase: ctx.read<GetRecordsUseCase>(),
+          Provider<WorkRepositories>(create: (_) => WorkRepositories()),
+          ProxyProvider<WorkRepositories, DeleteWorkUseCase>(
+            update: (_, repo, __) => DeleteWorkUseCase(workRepositories: repo),
           ),
-          update: (ctx, auth, deleteUseCase, getRecordUseCase, getRecordsUseCase,prev) {
-            if (prev != null) {
-              prev.update(auth);
-              return prev;
-            }
-            return RecordViewModel(
-              authViewModel: auth,
-              deleteRecordUseCase: deleteUseCase,
-              getRecordUseCase: getRecordUseCase,
-              getRecordsUseCase: getRecordsUseCase,
-            );
-          },
-        ),
-      ],
-      child: const MyApp(),
-    ),
-  );
+          ProxyProvider<WorkRepositories, GetWorkUseCase>(
+            update: (_, repo, __) => GetWorkUseCase(workRepositories: repo),
+          ),
+          ProxyProvider<WorkRepositories, GetWorksUseCase>(
+            update: (_, repo, __) => GetWorksUseCase(workRepositories: repo),
+          ),
+          ChangeNotifierProxyProvider4<
+              AuthViewModel,
+              DeleteWorkUseCase,
+              GetWorkUseCase,
+              GetWorksUseCase,
+              WorkViewModel>(
+            create: (ctx) => WorkViewModel(
+              authViewModel: ctx.read<AuthViewModel>(),
+              deleteWorkUseCase: ctx.read<DeleteWorkUseCase>(),
+              getWorkUseCase: ctx.read<GetWorkUseCase>(),
+              getWorksUseCase: ctx.read<GetWorksUseCase>(),
+            ),
+            update: (ctx, auth, deleteUseCase, getWorkUseCase, getWorksUseCase, prev) {
+              if (prev != null) {
+                prev.update(auth);
+                return prev;
+              }
+              return WorkViewModel(
+                authViewModel: auth,
+                deleteWorkUseCase: deleteUseCase,
+                getWorkUseCase: getWorkUseCase,
+                getWorksUseCase: getWorksUseCase,
+              );
+            },
+          ),
+          Provider<RecordsRepository>(create: (_) => RecordsRepository()),
+          ProxyProvider<RecordsRepository, DeleteRecordUseCase>(
+            update: (_, repo, __) => DeleteRecordUseCase(recordsRepository: repo),
+          ),
+          ProxyProvider<RecordsRepository, GetRecordUseCase>(
+            update: (_, repo, __) => GetRecordUseCase(recordsRepository: repo),
+          ),
+          ProxyProvider<RecordsRepository, GetRecordsUseCase>(
+            update: (_, repo, __) => GetRecordsUseCase(recordsRepository: repo),
+          ),
+          ChangeNotifierProxyProvider4<
+              AuthViewModel,
+              DeleteRecordUseCase,
+              GetRecordUseCase,
+              GetRecordsUseCase,
+              RecordViewModel>(
+            create: (ctx) => RecordViewModel(
+              authViewModel: ctx.read<AuthViewModel>(),
+              deleteRecordUseCase: ctx.read<DeleteRecordUseCase>(),
+              getRecordUseCase: ctx.read<GetRecordUseCase>(),
+              getRecordsUseCase: ctx.read<GetRecordsUseCase>(),
+            ),
+            update: (ctx, auth, deleteUseCase, getRecordUseCase, getRecordsUseCase, prev) {
+              if (prev != null) {
+                prev.update(auth);
+                return prev;
+              }
+              return RecordViewModel(
+                authViewModel: auth,
+                deleteRecordUseCase: deleteUseCase,
+                getRecordUseCase: getRecordUseCase,
+                getRecordsUseCase: getRecordsUseCase,
+              );
+            },
+          ),
+        ],
+        child: const MyApp(),
+      ),
+    );
+  }, (error, stackTrace) async {
+    // 비동기 예외 추적
+    await Sentry.captureException(error, stackTrace: stackTrace);
+  });
 }

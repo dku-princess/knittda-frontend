@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/record_model.dart';
 import 'package:knittda/src/data/repositories/records_repository.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class UpdateRecordUseCase {
   final RecordsRepository recordsRepository;
@@ -14,6 +15,7 @@ class UpdateRecordUseCase {
       final result = await recordsRepository.updateRecord(accessToken, record, deleteImageIds);
       return (record: result.record);
     } catch (e, stack) {
+      await Sentry.captureException(e, stackTrace: stack);
       debugPrint('UpdateRecordUseCase 오류: $e\n$stack');
       rethrow;
     }
