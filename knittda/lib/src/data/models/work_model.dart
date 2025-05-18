@@ -194,6 +194,7 @@ extension WorkModelMultipart on WorkModel {
     form.fields.add(MapEntry(
       'project',
       jsonEncode({
+        'projectId': id,
         'designId': designId,
         'nickname': nickname,
         'customYarnInfo': customYarnInfo ?? '',
