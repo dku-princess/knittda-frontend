@@ -88,6 +88,25 @@ class WorkModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'project': {
+        'projectId': id,
+        'designId': designId,
+        'nickname': nickname,
+        'customYarnInfo': customYarnInfo ?? '',
+        'customNeedleInfo': customNeedleInfo ?? '',
+        'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
+        'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
+        'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
+        'title': title,
+        'designer': designer,
+        'visible': false,
+      },
+      'file': file?.path,
+    };
+  }
+
   factory WorkModel.forCreate({
     int? id,
     int? designId,
@@ -168,6 +187,7 @@ class WorkModel {
     );
   }
 }
+
 
 extension WorkModelMultipart on WorkModel {
   Future<FormData> toMultipartForm() async {

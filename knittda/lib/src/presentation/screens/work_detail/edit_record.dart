@@ -326,6 +326,8 @@ class _EditRecordState extends State<EditRecord> {
                           }
 
                           final updatedRecord = widget.record.copyWith(
+                            id: widget.record.id,
+                            projectDto: widget.record.projectDto,
                             recordStatus: _selectedStatus!.name,
                             tags: _selectedTags.toList(),
                             comment: _commentController.text.trim(),

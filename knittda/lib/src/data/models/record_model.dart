@@ -66,6 +66,9 @@ class RecordModel {
     List<String>? tags,
     String? comment,
     List<XFile>? files,
+
+    WorkModel? projectDto,
+    int? id
   }) {
     return RecordModel(
       projectId: projectId,
@@ -75,8 +78,8 @@ class RecordModel {
       files: files,
 
       // 서버 응답 필드 → null로 초기화
-      id: null,
-      projectDto: null,
+      id: id,
+      projectDto: projectDto,
       createdAt: null,
       images: null,
     );
@@ -108,7 +111,37 @@ class RecordModel {
 }
 
 extension RecordModelMultipart on RecordModel {
-  Future<FormData> toMultipartForm({List<int>? deleteImageIds}) async {
+  Future<FormData> toMultipartForm() async {
+    final form = FormData();
+
+    // record는 JSON 형태의 문자열로 필드에 넣음
+    form.fields.add(MapEntry(
+      'record',
+      jsonEncode({
+        'projectId'   : projectId,
+        'recordStatus': recordStatus,
+        'tags'        : tags,
+        'comment'     : comment,
+      }),
+    ));
+
+    // 파일 추가
+    if (files != null && files!.isNotEmpty) {
+      for (final file in files!) {
+        form.files.add(MapEntry(
+          'files',
+          await MultipartFile.fromFile(
+            file.path,
+            filename: file.name,
+            contentType: MediaType('image', 'jpeg'), // 필요 시 이미지 타입 감지 라이브러리 사용 가능
+          ),
+        ));
+      }
+    }
+    return form;
+  }
+
+  Future<FormData> toEditMultipartForm({List<int>? deleteImageIds}) async {
     final form = FormData();
 
     // record는 JSON 형태의 문자열로 필드에 넣음
@@ -116,7 +149,7 @@ extension RecordModelMultipart on RecordModel {
       'record',
       jsonEncode({
         'recordId': id,
-        //'projectId'   : projectId,
+        'project': projectDto?.toJson()['project'],
         'recordStatus': recordStatus,
         'tags'        : tags,
         'comment'     : comment,
@@ -146,3 +179,4 @@ extension RecordModelMultipart on RecordModel {
     return form;
   }
 }
+

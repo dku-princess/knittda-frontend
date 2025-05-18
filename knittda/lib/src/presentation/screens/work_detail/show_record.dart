@@ -8,6 +8,7 @@ import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:knittda/src/presentation/view_models/edit_record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
+import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
 
 class ShowRecord extends StatefulWidget {
@@ -136,23 +137,23 @@ class _ShowRecordState extends State<ShowRecord> {
                 SizedBox(
                   height: height,
                   child: record.images!.length == 1
-                      ? Image.network(
-                    record.images!.first.imageUrl,
+                      ? ImageBox(
+                    networkImageUrl: record.images!.first.imageUrl,
                     width: double.infinity,
-                    fit: BoxFit.cover,
+                    height: height,
                   )
                       : PageView.builder(
                     itemCount: record.images!.length,
-                    padEnds: false, // 첫 이미지 왼쪽 여백 제거
+                    padEnds: false,
                     controller: PageController(),
                     itemBuilder: (context, index) {
                       final image = record.images![index];
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: Image.network(
-                          image.imageUrl,
-                          fit: BoxFit.cover,
+                        child: ImageBox(
+                          networkImageUrl: image.imageUrl,
                           width: double.infinity,
+                          height: height,
                         ),
                       );
                     },
