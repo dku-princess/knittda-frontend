@@ -4,9 +4,9 @@ import 'package:knittda/src/data/models/record_model.dart';
 import 'package:knittda/src/data/models/work_model.dart';
 import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
 import 'package:knittda/src/presentation/view_models/add_record_view_model.dart';
+import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
 
-import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -45,7 +45,12 @@ class _AddRecordState extends State<AddRecord> {
 
     if (_images.length >= 5) return;
 
-    final XFile? picked = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      //imageQuality: 85,//이미지 압축률 (선택사항)
+    );
     if (picked != null) {
       setState(() {
         _images.add(picked);
@@ -62,7 +67,7 @@ class _AddRecordState extends State<AddRecord> {
   @override
   Widget build(BuildContext context) {
     final AddRecordVM = context.read<AddRecordViewModel>();
-    final isBusy = AddRecordVM.isLoading;   // 버튼 비활성 + 로딩 표시
+    final isBusy = AddRecordVM.isLoading;
 
     return Stack(
       children: [
@@ -194,18 +199,15 @@ class _AddRecordState extends State<AddRecord> {
                               ..._images.asMap().entries.map((entry) {
                                 final index = entry.key;
                                 final image = entry.value;
+
                                 return Padding(
                                   padding: const EdgeInsets.only(right: 10),
                                   child: Stack(
                                     children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Image.file(
-                                          File(image.path),
-                                          width: 100,
-                                          height: 100,
-                                          fit: BoxFit.cover,
-                                        ),
+                                      ImageBox(
+                                        localImageUrl: image.path,
+                                        width: 100,
+                                        height: 100,
                                       ),
                                       Positioned(
                                         top: 0,
