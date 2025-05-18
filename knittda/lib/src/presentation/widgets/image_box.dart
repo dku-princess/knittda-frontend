@@ -75,6 +75,15 @@ class ImageBox extends StatelessWidget {
         width: width,
         height: height,
         fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            width: width,
+            height: height,
+            color: Colors.grey[300],
+            alignment: Alignment.center,
+            child: const Icon(Icons.broken_image, color: Colors.white),
+          );
+        },
       ),
     );
   }
