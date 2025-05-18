@@ -27,7 +27,7 @@ class EditRecordViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> updateRecord(RecordModel record) async {
+  Future<bool> updateRecord(RecordModel record, List<int>? deleteImageIds) async {
     final token = _auth.jwt;
     if (token == null) {
       _error = '로그인이 필요합니다.';
@@ -37,7 +37,7 @@ class EditRecordViewModel extends ChangeNotifier {
 
     _setLoading(true);
     try {
-      final result = await _updateRecordUseCase(token, record);
+      final result = await _updateRecordUseCase(token, record, deleteImageIds);
       _updated = result.record;
       _error   = null;
 

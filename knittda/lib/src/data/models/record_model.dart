@@ -65,7 +65,6 @@ class RecordModel {
     String? recordStatus,
     List<String>? tags,
     String? comment,
-    DateTime? recordedAt,
     List<XFile>? files,
   }) {
     return RecordModel(
@@ -88,7 +87,6 @@ class RecordModel {
     String? recordStatus,
     List<String>? tags,
     String? comment,
-    DateTime? recordedAt,
     List<XFile>? files,
     int? id,
     WorkModel? projectDto,
@@ -110,19 +108,27 @@ class RecordModel {
 }
 
 extension RecordModelMultipart on RecordModel {
-  Future<FormData> toMultipartForm() async {
+  Future<FormData> toMultipartForm({List<int>? deleteImageIds}) async {
     final form = FormData();
 
     // record는 JSON 형태의 문자열로 필드에 넣음
     form.fields.add(MapEntry(
       'record',
       jsonEncode({
-        'projectId'   : projectId,
+        'recordId': id,
+        //'projectId'   : projectId,
         'recordStatus': recordStatus,
         'tags'        : tags,
         'comment'     : comment,
       }),
     ));
+
+    if (deleteImageIds != null && deleteImageIds.isNotEmpty) {
+      form.fields.add(MapEntry(
+        'deleteImageIds',
+        jsonEncode(deleteImageIds),
+      ));
+    }
 
     // 파일 추가
     if (files != null && files!.isNotEmpty) {

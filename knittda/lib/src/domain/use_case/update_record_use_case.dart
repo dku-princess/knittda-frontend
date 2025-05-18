@@ -9,9 +9,9 @@ class UpdateRecordUseCase {
     required this.recordsRepository,
   });
 
-  Future<({RecordModel record})> call(String accessToken, RecordModel record) async {
+  Future<({RecordModel record})> call(String accessToken, RecordModel record, List<int>? deleteImageIds) async {
     try {
-      final result = await recordsRepository.updateRecord(accessToken, record);
+      final result = await recordsRepository.updateRecord(accessToken, record, deleteImageIds);
       return (record: result.record);
     } catch (e, stack) {
       debugPrint('UpdateRecordUseCase 오류: $e\n$stack');

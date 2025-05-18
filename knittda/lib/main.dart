@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/repositories/records_repository.dart';
 import 'package:knittda/src/data/repositories/work_repositories.dart';
-import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
-import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_works_use_case.dart';
-import 'package:knittda/src/domain/use_case/update_record_use_case.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import './src/app.dart';
@@ -111,25 +108,19 @@ void main() {
           update: (_, repo, __) => GetRecordsUseCase(recordsRepository: repo),
         ),
 
-        ProxyProvider<RecordsRepository, UpdateRecordUseCase>(
-          update: (_, repo, __) => UpdateRecordUseCase(recordsRepository: repo),
-        ),
-
-        ChangeNotifierProxyProvider5<
+        ChangeNotifierProxyProvider4<
           AuthViewModel,
           DeleteRecordUseCase,
           GetRecordUseCase,
           GetRecordsUseCase,
-          UpdateRecordUseCase,
           RecordViewModel
         > (create: (ctx) => RecordViewModel(
             authViewModel: ctx.read<AuthViewModel>(),
             deleteRecordUseCase: ctx.read<DeleteRecordUseCase>(),
             getRecordUseCase: ctx.read<GetRecordUseCase>(),
             getRecordsUseCase: ctx.read<GetRecordsUseCase>(),
-            updateRecordUseCase: ctx.read<UpdateRecordUseCase>(),
           ),
-          update: (ctx, auth, deleteUseCase, getRecordUseCase, getRecordsUseCase, updateUseCase,prev) {
+          update: (ctx, auth, deleteUseCase, getRecordUseCase, getRecordsUseCase,prev) {
             if (prev != null) {
               prev.update(auth);
               return prev;
@@ -139,7 +130,6 @@ void main() {
               deleteRecordUseCase: deleteUseCase,
               getRecordUseCase: getRecordUseCase,
               getRecordsUseCase: getRecordsUseCase,
-              updateRecordUseCase: updateUseCase,
             );
           },
         ),

@@ -202,33 +202,15 @@ class _AddRecordState extends State<AddRecord> {
 
                                 return Padding(
                                   padding: const EdgeInsets.only(right: 10),
-                                  child: Stack(
-                                    children: [
-                                      ImageBox(
-                                        localImageUrl: image.path,
-                                        width: 100,
-                                        height: 100,
-                                      ),
-                                      Positioned(
-                                        top: 0,
-                                        right: 0,
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              _images.removeAt(index);
-                                            });
-                                          },
-                                          child: Container(
-                                            decoration: const BoxDecoration(
-                                              color: Colors.black54,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            padding: const EdgeInsets.all(2),
-                                            child: const Icon(Icons.close, size: 16, color: Colors.white),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                  child: ImageBox(
+                                    localImageUrl: image.path,
+                                    width: 100,
+                                    height: 100,
+                                    onRemove: () {
+                                      setState(() {
+                                        _images.removeAt(index);
+                                      });
+                                    },
                                   ),
                                 );
                               }),

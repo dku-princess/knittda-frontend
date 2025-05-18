@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/record_model.dart';
@@ -13,9 +15,16 @@ class RecordsRepository {
   );
 
   //record 수정
-  Future<({RecordModel record})> updateRecord(String accessToken, RecordModel record) async {
+  Future<({RecordModel record})> updateRecord(String accessToken, RecordModel record, List<int>? deleteImageIds) async {
     try{
-      final formData = await record.toMultipartForm();
+      final formData = await record.toMultipartForm(
+        deleteImageIds: deleteImageIds,
+      );
+
+      // 🔍 formData 확인
+      for (final field in formData.fields) {
+        debugPrint('📦 field: ${field.key} = ${field.value}');
+      }
 
       final res = await _dio.put<Map<String, dynamic>>(
         '/api/v1/records',

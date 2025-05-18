@@ -101,35 +101,18 @@ class _AddWorkState extends State<AddWork> {
                       children: [
                         GestureDetector(
                           onTap: _pickImageFromGallery,
-                          child: Stack(
-                            children: [
-                              ImageBox(
-                                localImageUrl: _image?.path,
-                                width: 110,
-                                height: 110,
-                                showIcon: _image == null, // 이미지가 없을 때만 add 아이콘 표시
-                              ),
-                              if (_image != null)
-                                Positioned(
-                                  top: 1,
-                                  right: 1,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _image = null;
-                                      });
-                                    },
-                                    child: Container(
-                                      decoration: const BoxDecoration(
-                                        color: Colors.black54,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      padding: const EdgeInsets.all(4),
-                                      child: const Icon(Icons.close, size: 16, color: Colors.white),
-                                    ),
-                                  ),
-                                ),
-                            ],
+                          child: ImageBox(
+                            localImageUrl: _image?.path,
+                            width: 110,
+                            height: 110,
+                            showIcon: _image == null, // 이미지가 없으면 + 아이콘
+                            onRemove: _image != null
+                                ? () {
+                              setState(() {
+                                _image = null;
+                              });
+                            }
+                                : null, // null이면 X 아이콘 안 보임
                           ),
                         ),
                         const SizedBox(width: 16),
