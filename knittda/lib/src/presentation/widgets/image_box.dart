@@ -7,12 +7,14 @@ class ImageBox extends StatelessWidget {
   final String? networkImageUrl;
   final double? width;
   final double? height;
+  final bool showIcon;
 
   const ImageBox({
     this.localImageUrl,
     this.networkImageUrl,
     this.width = 60,
     this.height = 60,
+    this.showIcon = false,
     super.key,
   });
 
@@ -30,6 +32,9 @@ class ImageBox extends StatelessWidget {
           color: Colors.grey[300],
           borderRadius: BorderRadius.circular(6),
         ),
+        child: showIcon
+            ? const Icon(Icons.add, color: Colors.white, size: 50)
+            : null,
       );
     }
   }

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
@@ -8,6 +7,7 @@ import 'package:knittda/src/domain/use_case/search_design_use_case.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/search_patterns.dart';
 import 'package:knittda/src/presentation/view_models/edit_work_view_model.dart';
 import 'package:knittda/src/presentation/view_models/search_view_model.dart';
+import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/models/work_model.dart';
@@ -133,60 +133,40 @@ class _EditWorkState extends State<EditWork> {
                       children: [
                         GestureDetector(
                           onTap: _pickImageFromGallery,
-                          child: _image != null
-                              ? Stack(
+                          child: Stack(
                             children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(4),
-                                child: Image.file(
-                                  File(_image!.path),
-                                  width: 110,
-                                  height: 110,
-                                  fit: BoxFit.cover,
-                                ),
+                              ImageBox(
+                                localImageUrl: _image?.path,
+                                networkImageUrl: _networkImageUrl,
+                                width: 110,
+                                height: 110,
+                                showIcon: true,
                               ),
-                              Positioned(
-                                top: 1,
-                                right: 1,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      _image = null;
-                                    });
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.black54,
-                                      shape: BoxShape.circle,
+                              if (_image != null || (_networkImageUrl?.isNotEmpty ?? false))
+                                Positioned(
+                                  top: 1,
+                                  right: 1,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _image = null;
+                                        _networkImageUrl = null;
+                                      });
+                                    },
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        color: Colors.black54,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      padding: const EdgeInsets.all(4),
+                                      child: const Icon(Icons.close, size: 16, color: Colors.white),
                                     ),
-                                    padding: const EdgeInsets.all(4),
-                                    child: const Icon(Icons.close, size: 16, color: Colors.white),
                                   ),
                                 ),
-                              ),
                             ],
-                          )
-                              : _networkImageUrl != null
-                              ? ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: Image.network(
-                              _networkImageUrl!,
-                              width: 110,
-                              height: 110,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                              : Container(
-                            height: 110,
-                            width: 110,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: const Icon(Icons.add, color: Colors.white, size: 50),
                           ),
                         ),
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
