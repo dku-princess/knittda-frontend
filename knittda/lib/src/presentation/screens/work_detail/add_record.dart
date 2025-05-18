@@ -319,7 +319,6 @@ class _AddRecordState extends State<AddRecord> {
                             recordStatus: _selectedStatus?.name,
                             tags        : _selectedTags.toList(),
                             comment     : _commentController.text.trim(),
-                            recordedAt  : DateTime.now(),
                             files       : _images,
                           );
 

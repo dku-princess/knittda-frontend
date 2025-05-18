@@ -43,7 +43,11 @@ class _EditRecordState extends State<EditRecord> {
 
     if (_images.length >= 5) return;
 
-    final XFile? picked = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1024,
+      maxHeight: 1024,
+    );
     if (picked != null) {
       setState(() {
         _images.add(picked);
@@ -70,7 +74,7 @@ class _EditRecordState extends State<EditRecord> {
 
   @override
   Widget build(BuildContext context) {
-    final RecordVM = context.watch<RecordViewModel>();
+    final RecordVM = context.read<RecordViewModel>();
     final isBusy = RecordVM.isLoading;
 
     return Stack(

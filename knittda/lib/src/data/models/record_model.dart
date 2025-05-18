@@ -16,7 +16,6 @@ class RecordModel {
   final String? comment;
 
   //서버 응답에는 없는 값
-  final DateTime? recordedAt;
   final List<XFile>? files;
 
   //서버가 보내는 값
@@ -30,7 +29,6 @@ class RecordModel {
     this.recordStatus,
     this.tags,
     this.comment,
-    this.recordedAt,
     this.files,
     this.id,
     this.projectDto,
@@ -46,7 +44,6 @@ class RecordModel {
       tags: (json['tags'] as List?)?.map((e) => e.toString()).toList(),
       comment: json['comment'],
 
-      recordedAt: null,
       files: null,
 
       id: json['id'],
@@ -76,7 +73,6 @@ class RecordModel {
       recordStatus: recordStatus,
       tags: tags,
       comment: comment,
-      recordedAt: recordedAt,
       files: files,
 
       // 서버 응답 필드 → null로 초기화
@@ -104,7 +100,6 @@ class RecordModel {
       recordStatus: recordStatus ?? this.recordStatus,
       tags: tags ?? this.tags,
       comment: comment ?? this.comment,
-      recordedAt: recordedAt ?? this.recordedAt,
       files: files ?? this.files,
       id: id ?? this.id,
       projectDto: projectDto ?? this.projectDto,
@@ -126,7 +121,6 @@ extension RecordModelMultipart on RecordModel {
         'recordStatus': recordStatus,
         'tags'        : tags,
         'comment'     : comment,
-        'recordedAt': recordedAt?.toIso8601String() ?? DateTime.now().toIso8601String(),
       }),
     ));
 
