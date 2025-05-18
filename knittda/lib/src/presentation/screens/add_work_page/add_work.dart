@@ -8,7 +8,6 @@ import 'package:knittda/src/domain/use_case/search_design_use_case.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/search_patterns.dart';
 import 'package:knittda/src/presentation/view_models/add_work_view_model.dart';
 import 'package:knittda/src/presentation/view_models/search_view_model.dart';
-import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/models/work_model.dart';
@@ -314,12 +313,26 @@ class _AddWorkState extends State<AddWork> {
                           final nickname = _nicknameController.text.trim();
                           final customYarnInfo = _yarnController.text.trim();
                           final customNeedleInfo = _needleController.text.trim();
+                          final title = _designController.text.trim();
+                          final designer = _designerController.text.trim();
 
-                          if (nickname.isEmpty || _goalDate == null || _goalDate!.isEmpty) {
+                          if (nickname.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('작품 이름과 목표 날짜를 설정 해주세요!')),
+                              const SnackBar(content: Text('작품 이름을 작성해주세요!')),
                             );
                             return;
+                          }
+
+                          if (_goalDate != null) {
+                            final goalDate = DateUtilsHelper.fromDotFormat(_goalDate!);
+                            final now = DateTime.now();
+
+                            if (goalDate.isBefore(DateTime(now.year, now.month, now.day))) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('목표 날짜는 오늘 이후여야 합니다.')),
+                              );
+                              return;
+                            }
                           }
 
                           final work = WorkModel.forCreate(
@@ -329,6 +342,8 @@ class _AddWorkState extends State<AddWork> {
                             customNeedleInfo: customNeedleInfo,
                             goalDate: DateUtilsHelper.fromDotFormat(_goalDate!),
                             file: _image,
+                            title: title,
+                            designer: designer,
                           );
 
                           final success = await addWorkVM.createWork(work);
