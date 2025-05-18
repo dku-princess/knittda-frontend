@@ -110,14 +110,37 @@ class _AddWorkState extends State<AddWork> {
                             ),
                             child: const Icon(Icons.add, color: Colors.white, size: 50),
                           )
-                              : ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: Image.file(
-                              File(_image!.path),
-                              width: 110,
-                              height: 110,
-                              fit: BoxFit.cover,
-                            ),
+                              : Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(4),
+                                child: Image.file(
+                                  File(_image!.path),
+                                  width: 110,
+                                  height: 110,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              Positioned(
+                                top: 1,
+                                right: 1,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _image = null;
+                                    });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.black54,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    padding: const EdgeInsets.all(4),
+                                    child: const Icon(Icons.close, size: 16, color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         SizedBox(width: 16),
