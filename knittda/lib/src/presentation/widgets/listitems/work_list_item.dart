@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/work_model.dart';
 import '../image_box.dart';
-//import 'package:knittda/src/core/utils/date_utils.dart';
 
 class WorkListItem extends StatelessWidget {
   final WorkModel work;
@@ -23,7 +22,11 @@ class WorkListItem extends StatelessWidget {
         ),
         child: Row(
           children: [
-            ImageBox(null),
+            ImageBox(
+              networkImageUrl: work.image?.imageUrl,
+              width: 60,
+              height: 60,
+            ),
             SizedBox(width: 10), // 이미지와 텍스트 사이 여백 추가
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,

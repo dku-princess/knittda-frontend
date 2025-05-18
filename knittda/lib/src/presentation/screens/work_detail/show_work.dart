@@ -185,7 +185,11 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ImageBox(null, size: 100),
+                            ImageBox(
+                              networkImageUrl: work.image?.imageUrl,
+                              height: 100,
+                              width: 100,
+                            ),
                             SizedBox(width: 16),
                             Text(
                               work.nickname,

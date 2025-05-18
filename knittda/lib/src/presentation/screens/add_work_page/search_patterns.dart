@@ -108,9 +108,7 @@ class _SearchPatternsState extends State<SearchPatterns> {
           itemBuilder: (context, index) {
             final design = designs[index];
             return DesignListItem(
-              url: design.imageUrl,
-              title: design.title ?? '',
-              designer: design.designer ?? '',
+              design: design,
               onTap: () {
                 Navigator.pop(context, design);
               },

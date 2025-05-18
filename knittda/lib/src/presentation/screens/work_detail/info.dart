@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/work_model.dart';
-//import 'package:knittda/src/presentation/view_models/work_view_model.dart';
-//import 'package:provider/provider.dart';
 
 class Info extends StatelessWidget {
   final WorkModel work;
@@ -11,7 +9,6 @@ class Info extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      //color: Colors.white,
       padding: EdgeInsets.only(top: 26, right: 40, left: 40),
       child: Column(
         children: [
@@ -22,10 +19,18 @@ class Info extends StatelessWidget {
                 SizedBox(
                   width: 100,
                   child: Text(
-                      "도안"
+                    "도안",
+                    style: TextStyle(fontSize: 16),
                   ),
                 ),
-                Expanded(child: Text("정보 받아와야됨")),
+                Expanded(
+                  child: Text(
+                      (work.designDto?.title?.trim().isEmpty ?? true)
+                          ? '정보를 추가해 주세요'
+                          : work.designDto!.title!,
+                      style: TextStyle(fontSize: 16)
+                  ),
+                ),
               ],
             ),
           ),
@@ -36,42 +41,65 @@ class Info extends StatelessWidget {
                 SizedBox(
                   width: 100,
                   child: Text(
-                      "작가"
+                      "작가",
+                    style: TextStyle(fontSize: 16),
                   ),
                 ),
-                Expanded(child: Text("정보 받아와야 됨")),
+                Expanded(
+                  child: Text(
+                      (work.designDto?.designer?.trim().isEmpty ?? true)
+                          ? '정보를 추가해 주세요'
+                          : work.designDto!.designer!,
+                      style: TextStyle(fontSize: 16)
+                  ),
+                ),
               ],
             ),
           ),
-          work.customYarnInfo == null
-              ?  SizedBox()
-              : Container(
+
+
+          Container(
             padding: EdgeInsets.only(bottom: 20),
             child: Row(
               children: [
                 SizedBox(
                   width: 100,
                   child: Text(
-                      "실"
+                      "실",
+                    style: TextStyle(fontSize: 16),
                   ),
                 ),
-                Expanded(child: Text(work.customYarnInfo!)),
+                Expanded(
+                  child: Text(
+                      (work.customYarnInfo?.trim().isEmpty ?? true)
+                          ? '정보를 추가해 주세요'
+                          : work.designDto!.title!,
+                      style: TextStyle(fontSize: 16)
+                  ),
+                ),
               ],
             ),
           ),
-          work.customNeedleInfo == null
-              ?  SizedBox()
-              : Container(
+
+          Container(
             padding: EdgeInsets.only(bottom: 20),
             child: Row(
               children: [
                 SizedBox(
                   width: 100,
                   child: Text(
-                      "바늘"
+                      "바늘",
+                    style: TextStyle(fontSize: 16),
                   ),
                 ),
-                Expanded(child: Text(work.customNeedleInfo!)),
+                Expanded(
+                  child: Text(
+                      (work.customNeedleInfo?.trim().isEmpty ?? true)
+                         ? '정보를 추가해 주세요'
+                         : work.designDto!.title!,
+                      style: TextStyle(fontSize: 16)
+                  ),
+                ),
               ],
             ),
           ),
