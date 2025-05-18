@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/data/models/design_model.dart';
 import '../image_box.dart';
 
 class DesignListItem extends StatelessWidget {
-  final String? url;
-  final String title;
-  final String designer;
+  final DesignModel design;
   final VoidCallback onTap;
 
   DesignListItem({
-    this.url,
-    required this.title,
-    required this.designer,
+    required this.design,
     required this.onTap,
   });
 
@@ -32,14 +29,14 @@ class DesignListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title,
+                    design.title ?? '',
                     style: TextStyle(
                       fontSize: 16
                     ),
                   ),
                   SizedBox(height:9),
                   Text(
-                    designer,
+                    design.designer ?? '',
                     style: TextStyle(
                         fontSize: 14
                     ),
@@ -48,7 +45,13 @@ class DesignListItem extends StatelessWidget {
               ),
             ),
             SizedBox(width: 10),
-            ImageBox(url),
+            design.imageUrl != null
+            ? SizedBox()
+            : ImageBox(
+              networkImageUrl: design.imageUrl,
+              height: 60,
+              width: 60,
+            ),
           ],
         ),
       ),

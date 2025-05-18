@@ -1,28 +1,46 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class ImageBox extends StatelessWidget {
-  final String? url;
-  final double size;
-  const ImageBox(this.url,{this.size = 60, super.key});
+  final String? localImageUrl;
+  final String? networkImageUrl;
+  final double? width;
+  final double? height;
+
+  const ImageBox({
+    this.localImageUrl,
+    this.networkImageUrl,
+    this.width = 60,
+    this.height = 60,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (url == null) {
+    if (localImageUrl != null && localImageUrl!.isNotEmpty) {
+      return _buildImage(FileImage(File(localImageUrl!)));
+    } else if (networkImageUrl != null && networkImageUrl!.isNotEmpty) {
+      return _buildImage(NetworkImage(networkImageUrl!));
+    } else {
       return Container(
-        width: size,
-        height: size,
+        width: width,
+        height: height,
         decoration: BoxDecoration(
-          color: Colors.grey,
-          borderRadius: BorderRadius.circular(10),
+          color: Colors.grey[300],
+          borderRadius: BorderRadius.circular(6),
         ),
       );
     }
+  }
+
+  Widget _buildImage(ImageProvider image) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: Image.network(
-        url!,
-        width: size,
-        height: size,
+      borderRadius: BorderRadius.circular(6),
+      child: Image(
+        image: image,
+        width: width,
+        height: height,
         fit: BoxFit.cover,
       ),
     );
