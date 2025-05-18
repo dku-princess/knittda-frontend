@@ -63,17 +63,6 @@ class RecordModel {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'record': {
-      'projectId': projectId,
-      'recordStatus': recordStatus ?? '',
-      'tags': tags ?? [],
-      'comment': comment ?? '',
-      'recordedAt'  : recordedAt?.toIso8601String() ?? DateTime.now().toIso8601String(),
-    },
-    'files': files?.map((file) => file.path).toList() ?? [],
-  };
-
   factory RecordModel.forCreate({
     required int projectId,
     String? recordStatus,
@@ -137,7 +126,7 @@ extension RecordModelMultipart on RecordModel {
         'recordStatus': recordStatus,
         'tags'        : tags,
         'comment'     : comment,
-        'recordedAt'  : recordedAt,
+        'recordedAt': recordedAt?.toIso8601String() ?? DateTime.now().toIso8601String(),
       }),
     ));
 

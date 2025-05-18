@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/data/repositories/records_repository.dart';
 import 'package:knittda/src/data/repositories/work_repositories.dart';
+import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/add_work.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
 import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
+import 'package:knittda/src/presentation/view_models/add_record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/add_work_view_model.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
@@ -101,8 +104,15 @@ class _WorkListState extends State<WorkList> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) =>
-                              AddRecord(work: work),
+                          builder: (_) => ChangeNotifierProvider<AddRecordViewModel>(
+                            create: (_) => AddRecordViewModel(
+                              authViewModel: context.read<AuthViewModel>(),
+                              createRecordUseCase: CreateRecordUseCase(
+                                recordsRepository: context.read<RecordsRepository>(),
+                              ),
+                            ),
+                            child: AddRecord(work: work),
+                          ),
                         ),
                       );
                     },
@@ -126,7 +136,7 @@ class _WorkListState extends State<WorkList> {
         final result = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => ChangeNotifierProvider(
+            builder: (_) => ChangeNotifierProvider<AddWorkViewModel>(
               create: (_) => AddWorkViewModel(
                 authViewModel: context.read<AuthViewModel>(),
                 createWorkUseCase: CreateWorkUseCase(

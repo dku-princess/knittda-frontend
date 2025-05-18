@@ -3,7 +3,7 @@ import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/models/record_model.dart';
 import 'package:knittda/src/data/models/work_model.dart';
 import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
-import 'package:knittda/src/presentation/view_models/record_view_model.dart';
+import 'package:knittda/src/presentation/view_models/add_record_view_model.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
 
 import 'dart:io';
@@ -61,8 +61,8 @@ class _AddRecordState extends State<AddRecord> {
 
   @override
   Widget build(BuildContext context) {
-    final RecordVM = context.watch<RecordViewModel>();
-    final isBusy = RecordVM.isLoading;   // 버튼 비활성 + 로딩 표시
+    final AddRecordVM = context.read<AddRecordViewModel>();
+    final isBusy = AddRecordVM.isLoading;   // 버튼 비활성 + 로딩 표시
 
     return Stack(
       children: [
@@ -321,7 +321,7 @@ class _AddRecordState extends State<AddRecord> {
                             files       : _images,
                           );
 
-                          final success = await RecordVM.createRecord(record);
+                          final success = await AddRecordVM.createRecord(record);
                           if (!mounted) return;
 
                           if (success) {
@@ -333,9 +333,9 @@ class _AddRecordState extends State<AddRecord> {
                                 ),
                               ),
                             );
-                            RecordVM.reset();
+
                           } else {
-                            final error = RecordVM.errorMessage ?? '알 수 없는 오류';
+                            final error = AddRecordVM.errorMessage ?? '알 수 없는 오류';
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text(error)),
                             );
