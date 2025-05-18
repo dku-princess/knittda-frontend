@@ -6,6 +6,7 @@ import 'package:knittda/src/data/models/design_model.dart';
 import 'package:knittda/src/data/repositories/design_repositories.dart';
 import 'package:knittda/src/domain/use_case/search_design_use_case.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/search_patterns.dart';
+import 'package:knittda/src/presentation/view_models/add_work_view_model.dart';
 import 'package:knittda/src/presentation/view_models/search_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import 'package:provider/provider.dart';
@@ -67,8 +68,8 @@ class _AddWorkState extends State<AddWork> {
 
   @override
   Widget build(BuildContext context) {
-    final WorkVM = context.watch<WorkViewModel>();
-    final isBusy = WorkVM.isLoading;
+    final addWorkVM = context.watch<AddWorkViewModel>();
+    final isBusy = addWorkVM.isLoading;
 
     return Stack(
       children: [
@@ -330,14 +331,13 @@ class _AddWorkState extends State<AddWork> {
                             file: _image,
                           );
 
-                          final success = await WorkVM.createWork(work);
+                          final success = await addWorkVM.createWork(work);
                           if (!mounted) return;
 
                           if (success) {
-                            Navigator.pop(context, true);
-                            WorkVM.reset();
+                            Navigator.pop(context, true); // <-- 성공 여부 반환
                           } else {
-                            final error = WorkVM.errorMessage ?? '알 수 없는 오류';
+                            final error = addWorkVM.errorMessage ?? '알 수 없는 오류';
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text(error)),
                             );
