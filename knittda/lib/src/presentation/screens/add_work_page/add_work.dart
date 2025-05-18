@@ -31,7 +31,12 @@ class _AddWorkState extends State<AddWork> {
   DesignModel? _selectedDesign;
 
   Future<void> _pickImageFromGallery() async {
-    final XFile? picked = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      //imageQuality: 85,//이미지 압축률 (선택사항)
+    );
     if (picked != null) {
       setState(() {
         _image = picked;
@@ -67,7 +72,7 @@ class _AddWorkState extends State<AddWork> {
 
   @override
   Widget build(BuildContext context) {
-    final addWorkVM = context.watch<AddWorkViewModel>();
+    final addWorkVM = context.read<AddWorkViewModel>();
     final isBusy = addWorkVM.isLoading;
 
     return Stack(
@@ -95,26 +100,24 @@ class _AddWorkState extends State<AddWork> {
                       children: [
                         GestureDetector(
                           onTap: _pickImageFromGallery,
-                          child: Container(
+                          child: _image == null
+                              ? Container(
                             height: 110,
                             width: 110,
                             decoration: BoxDecoration(
                               color: Colors.grey[300],
                               borderRadius: BorderRadius.circular(4),
-                              image: _image != null
-                                  ? DecorationImage(
-                                image: FileImage(File(_image!.path)),
-                                fit: BoxFit.cover,
-                              )
-                                  : null,
                             ),
-                            child: _image == null
-                                ? Icon(
-                              Icons.add,
-                              color: Colors.white,
-                              size: 50,
-                            )
-                                : null,
+                            child: const Icon(Icons.add, color: Colors.white, size: 50),
+                          )
+                              : ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: Image.file(
+                              File(_image!.path),
+                              width: 110,
+                              height: 110,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                         SizedBox(width: 16),
@@ -340,7 +343,7 @@ class _AddWorkState extends State<AddWork> {
                             nickname: nickname,
                             customYarnInfo: customYarnInfo,
                             customNeedleInfo: customNeedleInfo,
-                            goalDate: DateUtilsHelper.fromDotFormat(_goalDate!),
+                            goalDate: _goalDate != null ? DateUtilsHelper.fromDotFormat(_goalDate!) : null,
                             file: _image,
                             title: title,
                             designer: designer,
