@@ -89,6 +89,7 @@ class WorkModel {
   }
 
   factory WorkModel.forCreate({
+    int? id,
     int? designId,
     required String nickname,
     String? customYarnInfo,
@@ -111,7 +112,7 @@ class WorkModel {
       goalDate: goalDate,
       file: file,
 
-      id: null,
+      id: id,
       designDto: null,
       userId: null,
       status: null,
