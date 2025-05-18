@@ -170,7 +170,7 @@ class Report extends StatelessWidget {
                 width: 281,
                 height: 48,
                 decoration: ShapeDecoration(
-                  color: Color(0xFF0ABE8C), // ✅ 단색 배경
+                  color: Color(0xFF0ABE8C),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
