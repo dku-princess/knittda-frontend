@@ -21,7 +21,7 @@ class RecordsRepository {
 
       // 🔍 formData 확인
       for (final field in formData.fields) {
-        debugPrint('📦 field: ${field.key} = ${field.value}');
+        debugPrint('📦 field: ${field.key} = ${field.value} (type: ${field.value.runtimeType})');
       }
 
       final res = await _dio.put<Map<String, dynamic>>(
@@ -142,6 +142,9 @@ class RecordsRepository {
       //final recordJson = record.toJson();
 
       debugPrint('보낸 내용: ${formData.fields}, 파일 개수: ${formData.files.length}');
+      for (final file in formData.files) {
+        debugPrint('📸 file: ${file.key} → ${file.value.filename}');
+      }
       debugPrint('formData runtimeType: ${formData.runtimeType}');
       //debugPrint('보낸 내용: ${jsonEncode(recordJson)}');
 
