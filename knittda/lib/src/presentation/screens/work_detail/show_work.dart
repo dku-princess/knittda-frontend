@@ -230,7 +230,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                 children: [
                   Info(work:work),
                   Diary(),
-                  Report(),
+                  Report(work:work),
                 ],
               ),
             ),
