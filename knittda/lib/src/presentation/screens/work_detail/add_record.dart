@@ -3,10 +3,10 @@ import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/models/record_model.dart';
 import 'package:knittda/src/data/models/work_model.dart';
 import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
-import 'package:knittda/src/presentation/view_models/record_view_model.dart';
+import 'package:knittda/src/presentation/view_models/add_record_view_model.dart';
+import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
 
-import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -45,7 +45,12 @@ class _AddRecordState extends State<AddRecord> {
 
     if (_images.length >= 5) return;
 
-    final XFile? picked = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      //imageQuality: 85,//이미지 압축률 (선택사항)
+    );
     if (picked != null) {
       setState(() {
         _images.add(picked);
@@ -61,8 +66,8 @@ class _AddRecordState extends State<AddRecord> {
 
   @override
   Widget build(BuildContext context) {
-    final RecordVM = context.watch<RecordViewModel>();
-    final isBusy = RecordVM.isLoading;   // 버튼 비활성 + 로딩 표시
+    final AddRecordVM = context.read<AddRecordViewModel>();
+    final isBusy = AddRecordVM.isLoading;
 
     return Stack(
       children: [
@@ -194,39 +199,18 @@ class _AddRecordState extends State<AddRecord> {
                               ..._images.asMap().entries.map((entry) {
                                 final index = entry.key;
                                 final image = entry.value;
+
                                 return Padding(
                                   padding: const EdgeInsets.only(right: 10),
-                                  child: Stack(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Image.file(
-                                          File(image.path),
-                                          width: 100,
-                                          height: 100,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      Positioned(
-                                        top: 0,
-                                        right: 0,
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              _images.removeAt(index);
-                                            });
-                                          },
-                                          child: Container(
-                                            decoration: const BoxDecoration(
-                                              color: Colors.black54,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            padding: const EdgeInsets.all(2),
-                                            child: const Icon(Icons.close, size: 16, color: Colors.white),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                  child: ImageBox(
+                                    localImageUrl: image.path,
+                                    width: 100,
+                                    height: 100,
+                                    onRemove: () {
+                                      setState(() {
+                                        _images.removeAt(index);
+                                      });
+                                    },
                                   ),
                                 );
                               }),
@@ -317,11 +301,10 @@ class _AddRecordState extends State<AddRecord> {
                             recordStatus: _selectedStatus?.name,
                             tags        : _selectedTags.toList(),
                             comment     : _commentController.text.trim(),
-                            recordedAt  : DateTime.now(),
                             files       : _images,
                           );
 
-                          final success = await RecordVM.createRecord(record);
+                          final success = await AddRecordVM.createRecord(record);
                           if (!mounted) return;
 
                           if (success) {
@@ -333,9 +316,9 @@ class _AddRecordState extends State<AddRecord> {
                                 ),
                               ),
                             );
-                            RecordVM.reset();
+
                           } else {
-                            final error = RecordVM.errorMessage ?? '알 수 없는 오류';
+                            final error = AddRecordVM.errorMessage ?? '알 수 없는 오류';
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text(error)),
                             );

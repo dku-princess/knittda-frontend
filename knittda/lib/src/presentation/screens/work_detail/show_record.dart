@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
+import 'package:knittda/src/data/repositories/records_repository.dart';
+import 'package:knittda/src/domain/use_case/update_record_use_case.dart';
 import 'package:knittda/src/presentation/screens/work_detail/edit_record.dart';
+import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
+import 'package:knittda/src/presentation/view_models/edit_record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
+import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
 
 class ShowRecord extends StatefulWidget {
@@ -90,16 +95,23 @@ class _ShowRecordState extends State<ShowRecord> {
             actions: [
               EditDeleteMenu(
                 onEdit: () async {
-                  final updated = await Navigator.push(
+                  final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => EditRecord(record: record),
+                      builder: (_) => ChangeNotifierProvider(
+                        create: (_) => EditRecordViewModel(
+                          authViewModel: context.read<AuthViewModel>(),
+                          updateRecordUseCase: UpdateRecordUseCase(
+                            recordsRepository: context.read<RecordsRepository>(),
+                          ),
+                        ),
+                        child: EditRecord(record: record),
+                      ),
                     ),
                   );
 
-                  // 수정 후 돌아왔을 때 새로고침
-                  if (updated == true && context.mounted) {
-                    _fetchRecord(); // 다시 기록 불러오기
+                  if (result == true && mounted) {
+                    await context.read<RecordViewModel>().getRecord(widget.recordId);
                   }
                 },
                 onDelete: () async {
@@ -125,23 +137,23 @@ class _ShowRecordState extends State<ShowRecord> {
                 SizedBox(
                   height: height,
                   child: record.images!.length == 1
-                      ? Image.network(
-                    record.images!.first.imageUrl,
+                      ? ImageBox(
+                    networkImageUrl: record.images!.first.imageUrl,
                     width: double.infinity,
-                    fit: BoxFit.cover,
+                    height: height,
                   )
                       : PageView.builder(
                     itemCount: record.images!.length,
-                    padEnds: false, // 첫 이미지 왼쪽 여백 제거
+                    padEnds: false,
                     controller: PageController(),
                     itemBuilder: (context, index) {
                       final image = record.images![index];
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: Image.network(
-                          image.imageUrl,
-                          fit: BoxFit.cover,
+                        child: ImageBox(
+                          networkImageUrl: image.imageUrl,
                           width: double.infinity,
+                          height: height,
                         ),
                       );
                     },

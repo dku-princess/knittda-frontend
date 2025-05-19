@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/models/record_model.dart';
+import 'package:knittda/src/presentation/widgets/image_box.dart';
 
 class RecordListItem extends StatelessWidget {
   final RecordModel record;
@@ -17,7 +18,6 @@ class RecordListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final dateStr = DateUtilsHelper.toDotFormat(record.createdAt!);
     final timeStr = DateUtilsHelper.toHourMinuteFormat(record.createdAt!);
-    final images = (record.images ?? []).take(5).toList();
 
     return GestureDetector(
       onTap: onTap,
@@ -46,13 +46,10 @@ class RecordListItem extends StatelessWidget {
               SizedBox(
                 height: 200,
                 child: record.images!.length == 1
-                    ? ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    record.images!.first.imageUrl,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+                    ? ImageBox(
+                  networkImageUrl: record.images!.first.imageUrl,
+                  width: double.infinity,
+                  height: 200,
                 )
                     : PageView.builder(
                   controller: PageController(viewportFraction: 0.85),
@@ -62,12 +59,10 @@ class RecordListItem extends StatelessWidget {
                     final image = record.images![index];
                     return Padding(
                       padding: const EdgeInsets.only(right: 8.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          image.imageUrl,
-                          fit: BoxFit.cover,
-                        ),
+                      child: ImageBox(
+                        networkImageUrl: image.imageUrl,
+                        width: double.infinity,
+                        height: 200,
                       ),
                     );
                   },
@@ -75,6 +70,7 @@ class RecordListItem extends StatelessWidget {
               ),
               const SizedBox(height: 16),
             ],
+
 
             // 본문
             if (record.comment != null && record.comment!.isNotEmpty) ...[

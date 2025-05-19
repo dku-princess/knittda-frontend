@@ -133,37 +133,20 @@ class _EditWorkState extends State<EditWork> {
                       children: [
                         GestureDetector(
                           onTap: _pickImageFromGallery,
-                          child: Stack(
-                            children: [
-                              ImageBox(
-                                localImageUrl: _image?.path,
-                                networkImageUrl: _networkImageUrl,
-                                width: 110,
-                                height: 110,
-                                showIcon: true,
-                              ),
-                              if (_image != null || (_networkImageUrl?.isNotEmpty ?? false))
-                                Positioned(
-                                  top: 1,
-                                  right: 1,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _image = null;
-                                        _networkImageUrl = null;
-                                      });
-                                    },
-                                    child: Container(
-                                      decoration: const BoxDecoration(
-                                        color: Colors.black54,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      padding: const EdgeInsets.all(4),
-                                      child: const Icon(Icons.close, size: 16, color: Colors.white),
-                                    ),
-                                  ),
-                                ),
-                            ],
+                          child: ImageBox(
+                            localImageUrl: _image?.path,
+                            networkImageUrl: _networkImageUrl,
+                            width: 110,
+                            height: 110,
+                            showIcon: _image == null && (_networkImageUrl?.isEmpty ?? true),
+                            onRemove: (_image != null || (_networkImageUrl?.isNotEmpty ?? false))
+                                ? () {
+                              setState(() {
+                                _image = null;
+                                _networkImageUrl = null;
+                              });
+                            }
+                                : null,
                           ),
                         ),
                         const SizedBox(width: 16),

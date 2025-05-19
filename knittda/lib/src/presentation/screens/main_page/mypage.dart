@@ -58,36 +58,36 @@ class Mypage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Spacer(),
-                  TextButton(
-                    onPressed: (){
-                      //프로필 수정으로 이동
-                    },
-                    style: TextButton.styleFrom(
-                      backgroundColor: Colors.grey[300],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: const BorderRadius.all(Radius.circular(8)),
-                      ),
-                    ),
-                    child: Text(
-                      '프로필 수정',
-                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                    ),
-                  ),
+                  // Spacer(),
+                  // TextButton(
+                  //   onPressed: (){
+                  //     //프로필 수정으로 이동
+                  //   },
+                  //   style: TextButton.styleFrom(
+                  //     backgroundColor: Colors.grey[300],
+                  //     shape: RoundedRectangleBorder(
+                  //       borderRadius: const BorderRadius.all(Radius.circular(8)),
+                  //     ),
+                  //   ),
+                  //   child: Text(
+                  //     '프로필 수정',
+                  //     style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                  //   ),
+                  // ),
                 ],
               ),
             ),
-            SizedBox(height: 26),
-            // 연결된 계정
-            Text(
-              "연결된 계정",
-              style: TextStyle(
-                fontSize: 16,
-                //fontWeight: FontWeight.w600,
-              ),
-            ),
-            SizedBox(height: 16),
-            Text(userViewModel.email),
+            // SizedBox(height: 26),
+            // // 연결된 계정
+            // Text(
+            //   "연결된 계정",
+            //   style: TextStyle(
+            //     fontSize: 16,
+            //     //fontWeight: FontWeight.w600,
+            //   ),
+            // ),
+            // SizedBox(height: 16),
+            // Text(userViewModel.email),
           ],
         ),
       )

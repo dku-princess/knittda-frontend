@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/data/repositories/records_repository.dart';
 import 'package:knittda/src/data/repositories/work_repositories.dart';
+import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_work_use_case.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
 import 'package:knittda/src/presentation/screens/work_detail/diary.dart';
 import 'package:knittda/src/presentation/screens/work_detail/edit_work.dart';
 import 'package:knittda/src/presentation/screens/work_detail/info.dart';
 import 'package:knittda/src/presentation/screens/work_detail/report.dart';
+import 'package:knittda/src/presentation/view_models/add_record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:knittda/src/presentation/view_models/edit_work_view_model.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
@@ -114,13 +117,25 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
           child: Scaffold(
             floatingActionButton: _tabController.index == 1
                 ? FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => AddRecord(work: work),
+                    builder: (_) => ChangeNotifierProvider(
+                      create: (_) => AddRecordViewModel(
+                        authViewModel: context.read<AuthViewModel>(),
+                        createRecordUseCase: CreateRecordUseCase(
+                          recordsRepository: context.read<RecordsRepository>(),
+                        ),
+                      ),
+                      child: AddRecord(work: work),
+                    ),
                   ),
                 );
+
+                if (result == true && mounted) {
+                  await context.read<RecordViewModel>().getRecords(work.id!);
+                }
               },
               backgroundColor: PRIMARY_COLOR,
               child: const Icon(Icons.add, color: Colors.white),

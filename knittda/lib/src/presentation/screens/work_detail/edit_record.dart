@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/data/models/image_model.dart';
 import 'package:knittda/src/data/models/record_model.dart';
-import 'package:knittda/src/presentation/view_models/record_view_model.dart';
+import 'package:knittda/src/presentation/view_models/edit_record_view_model.dart';
+import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
 
-import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -39,11 +40,18 @@ class _EditRecordState extends State<EditRecord> {
   RecordStatus? _selectedStatus;
   final TextEditingController _commentController = TextEditingController();
 
+  final List<ImageModel> _serverImages = [];
+  final List<int> _deleteImageIds = [];
+
   Future<void> _pickImageFromGallery() async {
 
     if (_images.length >= 5) return;
 
-    final XFile? picked = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1024,
+      maxHeight: 1024,
+    );
     if (picked != null) {
       setState(() {
         _images.add(picked);
@@ -55,11 +63,15 @@ class _EditRecordState extends State<EditRecord> {
   void initState() {
     super.initState();
     _selectedTags.addAll(widget.record.tags ?? []);
-    _selectedStatus = RecordStatus.values
-        .where((e) => e.name == widget.record.recordStatus)
-        .cast<RecordStatus?>()
-        .firstWhere((_) => true, orElse: () => null);
+
+    final match = RecordStatus.values.where(
+          (e) => e.name == widget.record.recordStatus,
+    );
+    _selectedStatus = match.isNotEmpty ? match.first : null;
+
     _commentController.text = widget.record.comment ?? '';
+
+    _serverImages.addAll(widget.record.images ?? []);
   }
 
   @override
@@ -70,8 +82,8 @@ class _EditRecordState extends State<EditRecord> {
 
   @override
   Widget build(BuildContext context) {
-    final RecordVM = context.watch<RecordViewModel>();
-    final isBusy = RecordVM.isLoading;
+    final EditRecordVM = context.read<EditRecordViewModel>();
+    final isBusy = EditRecordVM.isLoading;
 
     return Stack(
       children: [
@@ -200,48 +212,49 @@ class _EditRecordState extends State<EditRecord> {
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             children: [
-                              ..._images.asMap().entries.map((entry) {
+                              // 서버에서 온 이미지들
+                              ..._serverImages.asMap().entries.map((entry) {
                                 final index = entry.key;
                                 final image = entry.value;
+
                                 return Padding(
                                   padding: const EdgeInsets.only(right: 10),
-                                  child: Stack(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Image.file(
-                                          File(image.path),
-                                          width: 100,
-                                          height: 100,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      Positioned(
-                                        top: 0,
-                                        right: 0,
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              _images.removeAt(index);
-                                            });
-                                          },
-                                          child: Container(
-                                            decoration: const BoxDecoration(
-                                              color: Colors.black54,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            padding: const EdgeInsets.all(2),
-                                            child: const Icon(Icons.close, size: 16, color: Colors.white),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                  child: ImageBox(
+                                    networkImageUrl: image.imageUrl,
+                                    width: 100,
+                                    height: 100,
+                                    onRemove: () {
+                                      setState(() {
+                                        _deleteImageIds.add(image.id);
+                                        _serverImages.removeAt(index);
+                                      });
+                                    },
                                   ),
                                 );
                               }),
 
-                              // + 버튼
-                              if (_images.length < 5)
+                              // 새로 추가한 이미지들
+                              ..._images.asMap().entries.map((entry) {
+                                final index = entry.key;
+                                final image = entry.value;
+
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 10),
+                                  child: ImageBox(
+                                    localImageUrl: image.path,
+                                    width: 100,
+                                    height: 100,
+                                    onRemove: () {
+                                      setState(() {
+                                        _images.removeAt(index);
+                                      });
+                                    },
+                                  ),
+                                );
+                              }),
+
+                              // 이미지 추가 버튼 (최대 5장 제한)
+                              if (_serverImages.length + _images.length < 5)
                                 GestureDetector(
                                   onTap: _pickImageFromGallery,
                                   child: Container(
@@ -313,20 +326,21 @@ class _EditRecordState extends State<EditRecord> {
                           }
 
                           final updatedRecord = widget.record.copyWith(
+                            id: widget.record.id,
+                            projectDto: widget.record.projectDto,
                             recordStatus: _selectedStatus!.name,
                             tags: _selectedTags.toList(),
                             comment: _commentController.text.trim(),
-                            recordedAt: DateTime.now(),
                             files: _images,
                           );
 
-                          final success  = await RecordVM.udateRecord(updatedRecord);
+                          final success  = await EditRecordVM.updateRecord(updatedRecord, _deleteImageIds);
                           if (!mounted) return;
 
                           if (success && context.mounted) {
                             Navigator.pop(context, true); // 수정 성공 표시
                           } else {
-                            final error = RecordVM.errorMessage ?? "수정에 실패했습니다.";
+                            final error = EditRecordVM.errorMessage ?? "수정에 실패했습니다.";
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
                           }
                         },
