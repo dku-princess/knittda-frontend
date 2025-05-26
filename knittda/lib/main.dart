@@ -1,122 +1,156 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:knittda/src/data/repositories/records_repository.dart';
+import 'package:knittda/src/data/repositories/work_repositories.dart';
+import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
+import 'package:knittda/src/domain/use_case/delete_work_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_work_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_works_use_case.dart';
+import 'package:knittda/src/presentation/view_models/record_view_model.dart';
+import 'package:knittda/src/presentation/view_models/work_view_model.dart';
+import './src/app.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+import 'package:provider/provider.dart';
+import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
+import 'package:knittda/src/data/datasources/kakao_login.dart';
+import 'package:knittda/src/data/repositories/auth_repository.dart';
+import 'package:knittda/src/core/storage/token_storage.dart';
+import 'package:knittda/src/presentation/view_models/user_view_model.dart';
 
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
+import 'dart:async';
+import 'package:flutter/widgets.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+import 'env.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+// 앱 실행
+Future<void> main() async {
+  await runZonedGuarded(() async {
+    // 바인딩 초기화는 반드시 runZoned 내부에서
+    WidgetsFlutterBinding.ensureInitialized();
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
+    if (!kDebugMode) {
+      FlutterError.onError = (FlutterErrorDetails details) async {
+        FlutterError.presentError(details);
+        await Sentry.captureException(
+          details.exception,
+          stackTrace: details.stack,
+        );
+      };
 
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
-  final String title;
+      // Sentry 초기화
+      await SentryFlutter.init((options) {
+        options.dsn = SentryFlutterDns;
+        options.attachStacktrace = true;
+      });
+    }
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
+    // Kakao SDK 초기화 (필수 키 입력!)
+    KakaoSdk.init(nativeAppKey: kakaoNativeAppKey);
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+    // 앱 실행
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<AuthViewModel>(
+            lazy: false,
+            create: (_) => AuthViewModel(
+              KaKaoLogin(),
+              AuthRepository(),
+              TokenStorage(),
             ),
-          ],
-        ),
+          ),
+          ChangeNotifierProxyProvider<AuthViewModel, UserViewModel>(
+            create: (ctx) => UserViewModel(ctx.read<AuthViewModel>()),
+            update: (ctx, auth, prev) {
+              prev?.update(auth);
+              return prev ?? UserViewModel(auth);
+            },
+          ),
+          Provider<WorkRepositories>(create: (_) => WorkRepositories()),
+          ProxyProvider<WorkRepositories, DeleteWorkUseCase>(
+            update: (_, repo, __) => DeleteWorkUseCase(workRepositories: repo),
+          ),
+          ProxyProvider<WorkRepositories, GetWorkUseCase>(
+            update: (_, repo, __) => GetWorkUseCase(workRepositories: repo),
+          ),
+          ProxyProvider<WorkRepositories, GetWorksUseCase>(
+            update: (_, repo, __) => GetWorksUseCase(workRepositories: repo),
+          ),
+          ChangeNotifierProxyProvider4<
+              AuthViewModel,
+              DeleteWorkUseCase,
+              GetWorkUseCase,
+              GetWorksUseCase,
+              WorkViewModel>(
+            create: (ctx) => WorkViewModel(
+              authViewModel: ctx.read<AuthViewModel>(),
+              deleteWorkUseCase: ctx.read<DeleteWorkUseCase>(),
+              getWorkUseCase: ctx.read<GetWorkUseCase>(),
+              getWorksUseCase: ctx.read<GetWorksUseCase>(),
+            ),
+            update: (ctx, auth, deleteUseCase, getWorkUseCase, getWorksUseCase, prev) {
+              if (prev != null) {
+                prev.update(auth);
+                return prev;
+              }
+              return WorkViewModel(
+                authViewModel: auth,
+                deleteWorkUseCase: deleteUseCase,
+                getWorkUseCase: getWorkUseCase,
+                getWorksUseCase: getWorksUseCase,
+              );
+            },
+          ),
+          Provider<RecordsRepository>(create: (_) => RecordsRepository()),
+          ProxyProvider<RecordsRepository, DeleteRecordUseCase>(
+            update: (_, repo, __) => DeleteRecordUseCase(recordsRepository: repo),
+          ),
+          ProxyProvider<RecordsRepository, GetRecordUseCase>(
+            update: (_, repo, __) => GetRecordUseCase(recordsRepository: repo),
+          ),
+          ProxyProvider<RecordsRepository, GetRecordsUseCase>(
+            update: (_, repo, __) => GetRecordsUseCase(recordsRepository: repo),
+          ),
+          ChangeNotifierProxyProvider4<
+              AuthViewModel,
+              DeleteRecordUseCase,
+              GetRecordUseCase,
+              GetRecordsUseCase,
+              RecordViewModel>(
+            create: (ctx) => RecordViewModel(
+              authViewModel: ctx.read<AuthViewModel>(),
+              deleteRecordUseCase: ctx.read<DeleteRecordUseCase>(),
+              getRecordUseCase: ctx.read<GetRecordUseCase>(),
+              getRecordsUseCase: ctx.read<GetRecordsUseCase>(),
+            ),
+            update: (ctx, auth, deleteUseCase, getRecordUseCase, getRecordsUseCase, prev) {
+              if (prev != null) {
+
+
+                prev.update(auth);
+                return prev;
+              }
+              return RecordViewModel(
+                authViewModel: auth,
+                deleteRecordUseCase: deleteUseCase,
+                getRecordUseCase: getRecordUseCase,
+                getRecordsUseCase: getRecordsUseCase,
+              );
+            },
+          ),
+        ],
+        child: const MyApp(),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
-  }
+  }, (error, stackTrace) async {
+    // 비동기 예외 추적
+    if (!kDebugMode) {
+      await Sentry.captureException(error, stackTrace: stackTrace);
+    }
+  });
 }
