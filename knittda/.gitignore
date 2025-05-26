@@ -43,3 +43,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+
+# 민감 정보 및 임시 파일
+lib/env.dart
+lib/temp.dart

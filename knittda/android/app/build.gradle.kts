@@ -19,6 +19,20 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
+    /** ───────────────────────────────────────────────
+     *  Kakao Native App Key를 local.properties에서 읽어오기
+     *  - 값이 없으면 빌드 실패(error)로 처리하도록 설정
+     * ─────────────────────────────────────────────── */
+    val kakaoKey: String by lazy {
+        val propsFile = rootDir.resolve("local.properties")
+        val props = java.util.Properties()
+        if (propsFile.exists()) {
+            props.load(propsFile.inputStream())
+        }
+        props.getProperty("KAKAO_NATIVE_APP_KEY")?.trim()
+            ?: error("KAKAO_NATIVE_APP_KEY not found in local.properties")
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.knittda"
@@ -28,6 +42,9 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        //키값 주입
+        manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = kakaoKey
     }
 
     buildTypes {
