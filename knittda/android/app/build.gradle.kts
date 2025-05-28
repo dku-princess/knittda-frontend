@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -25,7 +27,7 @@ android {
      * ─────────────────────────────────────────────── */
     val kakaoKey: String by lazy {
         val propsFile = rootDir.resolve("local.properties")
-        val props = java.util.Properties()
+        val props = Properties()
         if (propsFile.exists()) {
             props.load(propsFile.inputStream())
         }
