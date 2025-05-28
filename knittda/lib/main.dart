@@ -57,7 +57,7 @@ Future<void> main() async {
       MultiProvider(
         providers: [
           ChangeNotifierProvider<AuthViewModel>(
-            lazy: false,
+            //lazy: false,
             create: (_) => AuthViewModel(
               KaKaoLogin(),
               AuthRepository(),
