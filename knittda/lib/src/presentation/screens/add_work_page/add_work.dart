@@ -338,6 +338,7 @@ class _AddWorkState extends State<AddWork> {
                             nickname: nickname,
                             customYarnInfo: customYarnInfo,
                             customNeedleInfo: customNeedleInfo,
+                            startDate: DateTime.now(),
                             goalDate: _goalDate != null ? DateUtilsHelper.fromDotFormat(_goalDate!) : null,
                             file: _image,
                             title: title,
