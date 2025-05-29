@@ -52,7 +52,7 @@ class _WorkListState extends State<WorkList> {
   @override
   Widget build(BuildContext context) {
     final workVM = context.watch<WorkViewModel>();
-    final works = workVM.gotWorks;
+    final works = workVM.works;
 
     return Scaffold(
       appBar: AppBar(
@@ -143,6 +143,7 @@ class _WorkListState extends State<WorkList> {
                 createWorkUseCase: CreateWorkUseCase(
                   workRepositories: context.read<WorkRepository>(),
                 ),
+                workRepository: context.read<WorkRepository>(),
               ),
               child: AddWork(),
             ),

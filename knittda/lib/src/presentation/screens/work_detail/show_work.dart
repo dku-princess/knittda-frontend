@@ -85,7 +85,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     final workVM = context.watch<WorkViewModel>();
-    final work = workVM.gotWork;
+    final work = workVM.work;
     final error = workVM.errorMessage;
     final isBusy = workVM.isLoading;
     final topPadding = MediaQuery.of(context).padding.top; //상태바 높이
@@ -167,6 +167,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                                   updateWorkUseCase: UpdateWorkUseCase(
                                     workRepositories: context.read<WorkRepository>(),
                                   ),
+                                  workRepository: context.read<WorkRepository>(),
                                 ),
                                 child: EditWork(work: work),
                               ),
