@@ -71,7 +71,7 @@ Future<void> main() async {
               return prev ?? UserViewModel(auth);
             },
           ),
-          Provider<WorkRepository>(create: (_) => WorkRepository()),
+          ChangeNotifierProvider<WorkRepository>(create: (_) => WorkRepository()),
           ProxyProvider<WorkRepository, DeleteWorkUseCase>(
             update: (_, repo, __) => DeleteWorkUseCase(workRepositories: repo),
           ),
@@ -81,24 +81,32 @@ Future<void> main() async {
           ProxyProvider<WorkRepository, GetWorksUseCase>(
             update: (_, repo, __) => GetWorksUseCase(workRepositories: repo),
           ),
-          ChangeNotifierProxyProvider4<
+          ChangeNotifierProxyProvider5<
               AuthViewModel,
               DeleteWorkUseCase,
               GetWorkUseCase,
               GetWorksUseCase,
+              WorkRepository,
               WorkViewModel>(
             create: (ctx) => WorkViewModel(
               authViewModel: ctx.read<AuthViewModel>(),
               deleteWorkUseCase: ctx.read<DeleteWorkUseCase>(),
               getWorkUseCase: ctx.read<GetWorkUseCase>(),
               getWorksUseCase: ctx.read<GetWorksUseCase>(),
+              workRepository: ctx.read<WorkRepository>(),
             ),
-            update: (ctx, auth, deleteUseCase, getWorkUseCase, getWorksUseCase, prev) {
+            update: (ctx, auth, deleteUseCase, getWorkUseCase, getWorksUseCase, workRepository,prev) {
+              if (prev != null) {
+                prev.update(auth);
+                return prev;
+              }
+
               return WorkViewModel(
                 authViewModel: auth,
                 deleteWorkUseCase: deleteUseCase,
                 getWorkUseCase: getWorkUseCase,
                 getWorksUseCase: getWorksUseCase,
+                workRepository: workRepository
               );
             },
           ),
