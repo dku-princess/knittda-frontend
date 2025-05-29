@@ -158,7 +158,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                     actions: [
                       EditDeleteMenu(
                         onEdit: () async {
-                          final result = await Navigator.push(
+                          await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (_) => ChangeNotifierProvider(
@@ -173,12 +173,6 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                               ),
                             ),
                           );
-
-                          if (result == true && context.mounted) {
-                            final workVM = context.read<WorkViewModel>();
-                            await workVM.getWork(work.id!);
-                            await workVM.getWorks();
-                          }
                         },
                         onDelete: () async {
                           final success = await workVM.deleteWork(work.id!);

@@ -134,7 +134,7 @@ class _WorkListState extends State<WorkList> {
       backgroundColor: PRIMARY_COLOR,
       tooltip: '작품 추가',
       onPressed: () async {
-        final result = await Navigator.push(
+        await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) => ChangeNotifierProvider<AddWorkViewModel>(
@@ -150,10 +150,6 @@ class _WorkListState extends State<WorkList> {
           ),
         );
 
-        // 결과 처리: 작품이 추가되었을 경우 리스트 다시 불러오기
-        if (result == true && context.mounted) {
-          await context.read<WorkViewModel>().getWorks();
-        }
       },
       child: Icon(Icons.add, color: Colors.white)
     );
