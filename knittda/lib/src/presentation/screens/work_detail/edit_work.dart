@@ -367,8 +367,7 @@ class _EditWorkState extends State<EditWork> {
                             }
                           }
 
-                          final work = WorkModel.forCreate(
-                            id: widget.work.id,
+                          final work = widget.work.copyWith(
                             designId: _selectedDesign?.id,
                             nickname: nickname,
                             customYarnInfo: customYarnInfo,
