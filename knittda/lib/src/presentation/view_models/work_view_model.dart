@@ -21,11 +21,6 @@ class WorkViewModel extends ChangeNotifier {
         _getWorkUseCase = getWorkUseCase,
         _getWorksUseCase = getWorksUseCase;
 
-  void update(AuthViewModel auth) {
-    _auth = auth;
-    notifyListeners();
-  }
-
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
