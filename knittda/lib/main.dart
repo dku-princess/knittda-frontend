@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/repositories/records_repository.dart';
-import 'package:knittda/src/data/repositories/work_repositories.dart';
+import 'package:knittda/src/data/repositories/work_repository.dart';
 import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
@@ -71,14 +71,14 @@ Future<void> main() async {
               return prev ?? UserViewModel(auth);
             },
           ),
-          Provider<WorkRepositories>(create: (_) => WorkRepositories()),
-          ProxyProvider<WorkRepositories, DeleteWorkUseCase>(
+          Provider<WorkRepository>(create: (_) => WorkRepository()),
+          ProxyProvider<WorkRepository, DeleteWorkUseCase>(
             update: (_, repo, __) => DeleteWorkUseCase(workRepositories: repo),
           ),
-          ProxyProvider<WorkRepositories, GetWorkUseCase>(
+          ProxyProvider<WorkRepository, GetWorkUseCase>(
             update: (_, repo, __) => GetWorkUseCase(workRepositories: repo),
           ),
-          ProxyProvider<WorkRepositories, GetWorksUseCase>(
+          ProxyProvider<WorkRepository, GetWorksUseCase>(
             update: (_, repo, __) => GetWorksUseCase(workRepositories: repo),
           ),
           ChangeNotifierProxyProvider4<

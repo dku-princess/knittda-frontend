@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/repositories/records_repository.dart';
-import 'package:knittda/src/data/repositories/work_repositories.dart';
+import 'package:knittda/src/data/repositories/work_repository.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_work_use_case.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
@@ -165,7 +165,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                                 create: (_) => EditWorkViewModel(
                                   authViewModel: context.read<AuthViewModel>(),
                                   updateWorkUseCase: UpdateWorkUseCase(
-                                    workRepositories: context.read<WorkRepositories>(),
+                                    workRepositories: context.read<WorkRepository>(),
                                   ),
                                 ),
                                 child: EditWork(work: work),

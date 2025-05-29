@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/work_model.dart';
 import 'package:knittda/env.dart';
 
-class WorkRepositories extends ChangeNotifier{
+class WorkRepository extends ChangeNotifier{
   final Dio _dio = Dio(
     BaseOptions(
       baseUrl: baseUrl,
@@ -62,6 +62,8 @@ class WorkRepositories extends ChangeNotifier{
       final index = _works.indexWhere((w) => w.id == updatedWork.id);
       if (index != -1) {
         _works[index] = updatedWork;
+      } else {
+        _works.add(updatedWork);
       }
 
       _work = updatedWork;

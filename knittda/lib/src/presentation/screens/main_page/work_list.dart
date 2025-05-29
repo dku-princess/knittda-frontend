@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/repositories/records_repository.dart';
-import 'package:knittda/src/data/repositories/work_repositories.dart';
+import 'package:knittda/src/data/repositories/work_repository.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/add_work.dart';
@@ -141,7 +141,7 @@ class _WorkListState extends State<WorkList> {
               create: (_) => AddWorkViewModel(
                 authViewModel: context.read<AuthViewModel>(),
                 createWorkUseCase: CreateWorkUseCase(
-                  workRepositories: context.read<WorkRepositories>(),
+                  workRepositories: context.read<WorkRepository>(),
                 ),
               ),
               child: AddWork(),
