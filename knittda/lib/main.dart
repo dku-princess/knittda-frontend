@@ -73,13 +73,13 @@ Future<void> main() async {
           ),
           ChangeNotifierProvider<WorkRepository>(create: (_) => WorkRepository()),
           ProxyProvider<WorkRepository, DeleteWorkUseCase>(
-            update: (_, repo, __) => DeleteWorkUseCase(workRepositories: repo),
+            update: (_, repo, __) => DeleteWorkUseCase(workRepository: repo),
           ),
           ProxyProvider<WorkRepository, GetWorkUseCase>(
-            update: (_, repo, __) => GetWorkUseCase(workRepositories: repo),
+            update: (_, repo, __) => GetWorkUseCase(workRepository: repo),
           ),
           ProxyProvider<WorkRepository, GetWorksUseCase>(
-            update: (_, repo, __) => GetWorksUseCase(workRepositories: repo),
+            update: (_, repo, __) => GetWorksUseCase(workRepository: repo),
           ),
           ChangeNotifierProxyProvider5<
               AuthViewModel,
