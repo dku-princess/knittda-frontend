@@ -240,4 +240,58 @@ class WorkRepository extends ChangeNotifier{
       throw Exception('작품 생성 중 오류: $e');
     }
   }
+
+  Future<void> updateWorkStatus(String accessToken, WorkModel work) async {
+    try {
+      final jsonData =  await work.toJson();
+
+      debugPrint('작품 상태 수정 보낸 내용: $jsonData');
+
+      final res = await _dio.put<Map<String, dynamic>>(
+        '/api/v1/projects/',
+        data: jsonData,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+          },
+        ),
+      );
+
+      if (res.statusCode != 200) {
+        throw Exception('서버 오류: ${res.statusCode}');
+      }
+
+      debugPrint('작품 상태 수정 서버 응답: ${res.data}');
+
+      final body = res.data;
+      if (body == null || body['success'] != true) {
+        throw Exception(body?['message'] ?? '알 수 없는 오류');
+      }
+
+      final data = body['data'] as Map<String, dynamic>?;
+      if (data == null) {
+        throw Exception('잘못된 응답 형식');
+      }
+
+      final updatedWork = WorkModel.fromJson(data);
+
+      // 기존 목록에서 교체
+      final index = _works.indexWhere((w) => w.id == updatedWork.id);
+      if (index != -1) {
+        _works[index] = updatedWork;
+      } else {
+        _works.add(updatedWork);
+      }
+
+      _work = updatedWork;
+      notifyListeners();
+
+    } on DioException catch (e) {
+      debugPrint('네트워크 오류: ${e.response?.data ?? e.message}');
+      throw Exception('네트워크 오류: ${e.message}');
+    } catch (e) {
+      debugPrint('작품 수정 중 예외: $e');
+      throw Exception('작품 수정 중 오류: $e');
+    }
+  }
 }
