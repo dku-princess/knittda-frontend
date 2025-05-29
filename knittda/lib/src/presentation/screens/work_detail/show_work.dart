@@ -165,7 +165,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                                 create: (_) => EditWorkViewModel(
                                   authViewModel: context.read<AuthViewModel>(),
                                   updateWorkUseCase: UpdateWorkUseCase(
-                                    workRepositories: context.read<WorkRepository>(),
+                                    workRepository: context.read<WorkRepository>(),
                                   ),
                                   workRepository: context.read<WorkRepository>(),
                                 ),

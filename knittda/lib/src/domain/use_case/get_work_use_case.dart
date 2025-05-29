@@ -4,15 +4,15 @@ import 'package:knittda/src/data/repositories/work_repository.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 class GetWorkUseCase {
-  final WorkRepository workRepositories;
+  final WorkRepository workRepository;
 
   GetWorkUseCase({
-    required this.workRepositories,
+    required this.workRepository,
   });
 
   Future<void> call(String accessToken, int projectId) async {
     try {
-      await workRepositories.getWork(accessToken, projectId);
+      await workRepository.getWork(accessToken, projectId);
     } catch (e, stack) {
       await Sentry.captureException(e, stackTrace: stack);
       debugPrint('GetWorkUseCase 오류: $e\n$stack');

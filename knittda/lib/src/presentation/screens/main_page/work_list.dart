@@ -141,7 +141,7 @@ class _WorkListState extends State<WorkList> {
               create: (_) => AddWorkViewModel(
                 authViewModel: context.read<AuthViewModel>(),
                 createWorkUseCase: CreateWorkUseCase(
-                  workRepositories: context.read<WorkRepository>(),
+                  workRepository: context.read<WorkRepository>(),
                 ),
                 workRepository: context.read<WorkRepository>(),
               ),
