@@ -200,10 +200,33 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                               height: 100,
                               width: 100,
                             ),
-                            SizedBox(width: 16),
-                            Text(
-                              work.nickname,
-                              style: TextStyle(fontSize: 20),
+                            SizedBox(width: 24),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  work.nickname,
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                SizedBox(height: 16),
+                                DropdownButton<String>(
+                                  value: work.status,
+                                  onChanged: work.status == 'DONE'
+                                      ? null
+                                      : (String? newValue) {
+                                    if (newValue != null && newValue != work.status) {
+                                      debugPrint('작품 상태 변경됨: $newValue');
+                                      // 여기서만 API 호출
+                                      // await context.read<WorkStatusViewModel>().updateStatus(newValue);
+                                    }
+                                  },
+                                  items: const [
+                                    DropdownMenuItem(value: 'IN_PROGRESS', child: Text('뜨고 있어요')),
+                                    DropdownMenuItem(value: 'REST', child: Text('쉬고 있어요')),
+                                    DropdownMenuItem(value: 'DONE', child: Text('다 떴어요')),
+                                  ],
+                                ),
+                              ],
                             ),
                           ],
                         ),
