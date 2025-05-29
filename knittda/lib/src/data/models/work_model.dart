@@ -28,7 +28,7 @@ class WorkModel {
 
   final String? title;
   final String? designer;
-  final bool visible;
+  final bool? visible;
 
   WorkModel({
     this.designId,
@@ -50,12 +50,12 @@ class WorkModel {
 
     this.title,
     this.designer,
-    this.visible = false,
+    this.visible,
   });
 
   factory WorkModel.fromJson(Map<String, dynamic> json) {
     return WorkModel(
-      designId: json['designDto']?['id'],
+      designId: null,
       nickname: json['nickname'],
       customYarnInfo: json['customYarnInfo'],
       customNeedleInfo: json['customNeedleInfo'],
@@ -82,30 +82,31 @@ class WorkModel {
           : null,
       image: json['image'] != null ? ImageModel.fromJson(json['image']) : null,
 
-      title: json['title'],
-      designer: json['designer'],
-      visible: json['visible'] ?? false,
+      title: null,
+      designer: null,
+      visible: null,
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'project': {
-        'projectId': id,
-        'designId': designId,
-        'nickname': nickname,
-        'customYarnInfo': customYarnInfo ?? '',
-        'customNeedleInfo': customNeedleInfo ?? '',
-        'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
-        'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
-        'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
-        'title': title,
-        'designer': designer,
-        'visible': false,
-      },
-      'file': file?.path,
-    };
-  }
+  // 사용 안함
+  // Map<String, dynamic> toJson() {
+  //   return {
+  //     'project': {
+  //       'projectId': id,
+  //       'designId': designId,
+  //       'nickname': nickname,
+  //       'customYarnInfo': customYarnInfo ?? '',
+  //       'customNeedleInfo': customNeedleInfo ?? '',
+  //       'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
+  //       'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
+  //       'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
+  //       'title': title,
+  //       'designer': designer,
+  //       'visible': false,
+  //     },
+  //     'file': file?.path,
+  //   };
+  // }
 
   factory WorkModel.forCreate({
     int? id,
@@ -206,7 +207,7 @@ extension WorkModelMultipart on WorkModel {
         'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
         'title': title,
         'designer': designer,
-        'visible': false,
+        'visible': visible,
       }),
     ));
 

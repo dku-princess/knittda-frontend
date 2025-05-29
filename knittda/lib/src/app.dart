@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-// import 'package:knittda/src/presentation/screens/home.dart';
-// import 'package:knittda/src/presentation/screens/main_page/login.dart';
-// import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
-// import 'package:provider/provider.dart';
+import 'package:knittda/src/presentation/screens/home.dart';
+import 'package:knittda/src/presentation/screens/main_page/login.dart';
+import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
+import 'package:provider/provider.dart';
 import 'package:knittda/src/presentation/screens/work_detail/report_ui.dart';
 
 class MyApp extends StatelessWidget {
@@ -24,20 +24,20 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      // home: Consumer<AuthViewModel>(
-      //   builder: (_, auth, __) {
-      //     switch (auth.status) {
-      //       case AuthStatus.loading:
-      //         return const SplashScreen();
-      //       case AuthStatus.authenticated:
-      //         return Home();
-      //       case AuthStatus.unauthenticated:
-      //         return const Login();
-      //     }
-      //   },
-      // ),
+      home: Consumer<AuthViewModel>(
+        builder: (_, auth, __) {
+          switch (auth.status) {
+            case AuthStatus.loading:
+              return const SplashScreen();
+            case AuthStatus.authenticated:
+              return Home();
+            case AuthStatus.unauthenticated:
+              return const Login();
+          }
+        },
+      ),
 
-      home: ReportUi(),
+      //home: ReportUi(),
     );
   }
 }
