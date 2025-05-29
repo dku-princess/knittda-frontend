@@ -348,7 +348,7 @@ class _AddWorkState extends State<AddWork> {
                           if (!mounted) return;
 
                           if (success) {
-                            Navigator.pop(context, true); // <-- 성공 여부 반환
+                            Navigator.pop(context); // <-- 성공 여부 반환
                           } else {
                             final error = addWorkVM.errorMessage ?? '알 수 없는 오류';
                             ScaffoldMessenger.of(context).showSnackBar(
