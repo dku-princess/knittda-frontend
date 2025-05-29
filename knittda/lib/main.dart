@@ -94,10 +94,6 @@ Future<void> main() async {
               getWorksUseCase: ctx.read<GetWorksUseCase>(),
             ),
             update: (ctx, auth, deleteUseCase, getWorkUseCase, getWorksUseCase, prev) {
-              if (prev != null) {
-                prev.update(auth);
-                return prev;
-              }
               return WorkViewModel(
                 authViewModel: auth,
                 deleteWorkUseCase: deleteUseCase,
