@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/work_model.dart';
 import 'package:knittda/env.dart';
 
-class WorkRepositories {
+class WorkRepositories extends ChangeNotifier{
   final Dio _dio = Dio(
     BaseOptions(
       baseUrl: baseUrl,
@@ -11,7 +11,13 @@ class WorkRepositories {
     ),
   );
 
-  Future<({WorkModel work})> updateWork(String accessToken, WorkModel work) async {
+  List<WorkModel> _works = [];
+  WorkModel? _work;
+
+  List<WorkModel> get works => List.unmodifiable(_works);
+  WorkModel? get work => _work;
+
+  Future<void> updateWork(String accessToken, WorkModel work) async {
     try {
       final formData =  await work.toMultipartForm();
 
@@ -40,19 +46,26 @@ class WorkRepositories {
 
       debugPrint('작품 수정 서버 응답: ${res.data}');
 
-      final responseBody = res.data;
-
-      if (responseBody == null || responseBody['success'] != true) {
-        throw Exception(responseBody?['message'] ?? '알 수 없는 오류');
+      final body = res.data;
+      if (body == null || body['success'] != true) {
+        throw Exception(body?['message'] ?? '알 수 없는 오류');
       }
 
-      final data = responseBody['data'] as Map<String, dynamic>?;
+      final data = body['data'] as Map<String, dynamic>?;
       if (data == null) {
         throw Exception('잘못된 응답 형식');
       }
 
-      final updateWork = WorkModel.fromJson(data);
-      return (work: updateWork);
+      final updatedWork = WorkModel.fromJson(data);
+
+      // 기존 목록에서 교체
+      final index = _works.indexWhere((w) => w.id == updatedWork.id);
+      if (index != -1) {
+        _works[index] = updatedWork;
+      }
+
+      _work = updatedWork;
+      notifyListeners();
 
     } on DioException catch (e) {
       debugPrint('네트워크 오류: ${e.response?.data ?? e.message}');
@@ -88,6 +101,9 @@ class WorkRepositories {
         throw Exception(body?['message'] ?? '알 수 없는 오류');
       }
 
+      _works.removeWhere((w) => w.id == projectId);
+      notifyListeners();
+
     } on DioException catch (e) {
       throw Exception('네트워크 오류: ${e.message}');
     } catch (e) {
@@ -95,7 +111,7 @@ class WorkRepositories {
     }
   }
   //서버에서 작품 단건 조회하기
-  Future<({WorkModel work})> getWork(String accessToken, int projectId) async {
+  Future<void> getWork(String accessToken, int projectId) async {
     try{
       final res = await _dio.get<Map<String, dynamic>>(
         '/api/v1/projects/$projectId',
@@ -123,7 +139,8 @@ class WorkRepositories {
         throw Exception('잘못된 응답 형식');
       }
 
-      return (work: WorkModel.fromJson(data));
+      _work = WorkModel.fromJson(data);
+      notifyListeners();
 
     } on DioException catch (e) {
       throw Exception('네트워크 오류: ${e.message}');
@@ -133,7 +150,7 @@ class WorkRepositories {
   }
 
   //서버에서 작품 목록 가져오기
-  Future<List<WorkModel>> getWorks(String accessToken) async{
+  Future<void> getWorks(String accessToken) async{
     try{
       final res = await _dio.get<Map<String, dynamic>>(
         '/api/v1/projects/',
@@ -160,7 +177,8 @@ class WorkRepositories {
         throw Exception('잘못된 응답 형식');
       }
 
-      return data.map((item) => WorkModel.fromJson(item as Map<String, dynamic>)).toList();
+      _works = data.map((e) => WorkModel.fromJson(e)).toList();
+      notifyListeners();
 
     } on DioException catch (e) {
       throw Exception('네트워크 오류: ${e.message}');
@@ -170,7 +188,7 @@ class WorkRepositories {
   }
 
   //작품 생성하기
-  Future<({WorkModel work})> createWork(String accessToken, WorkModel work) async {
+  Future<void> createWork(String accessToken, WorkModel work) async {
     try {
       final formData =  await work.toMultipartForm();
 
@@ -202,7 +220,15 @@ class WorkRepositories {
       }
 
       final createdWork = WorkModel.fromJson(data);
-      return (work: createdWork);
+
+      // 중복 체크 후 추가
+      final exists = _works.any((w) => w.id == createdWork.id);
+      if (!exists) {
+        _works.add(createdWork);
+      }
+
+      _work = createdWork;
+      notifyListeners();
 
     } on DioException catch (e) {
       debugPrint('네트워크 오류: ${e.response?.data ?? e.message}');
