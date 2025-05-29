@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/data/models/work_model.dart';
-import 'package:knittda/src/data/repositories/work_repositories.dart';
+//import 'package:knittda/src/data/models/work_model.dart';
+import 'package:knittda/src/data/repositories/work_repository.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 class GetWorksUseCase {
-  final WorkRepositories workRepositories;
+  final WorkRepository workRepositories;
 
   GetWorksUseCase({
     required this.workRepositories,
   });
 
-  Future<List<WorkModel>> call(String accessToken) async {
+  Future<void> call(String accessToken) async {
     try {
-      final result = await workRepositories.getWorks(accessToken);
-      return result;
+      await workRepositories.getWorks(accessToken);
     } catch (e, stack) {
       await Sentry.captureException(e, stackTrace: stack);
       debugPrint('GetWorksUseCase 오류: $e\n$stack');

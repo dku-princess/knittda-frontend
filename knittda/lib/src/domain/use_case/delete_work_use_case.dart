@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/data/repositories/work_repositories.dart';
+import 'package:knittda/src/data/repositories/work_repository.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 class DeleteWorkUseCase {
-  final WorkRepositories workRepositories;
+  final WorkRepository workRepositories;
 
   DeleteWorkUseCase({
     required this.workRepositories,
