@@ -10,10 +10,9 @@ class CreateRecordUseCase {
     required this.recordsRepository,
   });
 
-  Future<({RecordModel record})> call(String accessToken, RecordModel record) async {
+  Future<void> call(String accessToken, RecordModel record) async {
     try {
-      final result = await recordsRepository.createRecord(accessToken, record);
-      return (record: result.record); // record 반환 구조 주의!
+      await recordsRepository.createRecord(accessToken, record);
     } catch (e, stack) {
       await Sentry.captureException(e, stackTrace: stack);
       debugPrint('CreateRecordUseCase 오류: $e\n$stack');
