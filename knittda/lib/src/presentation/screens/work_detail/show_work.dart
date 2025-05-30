@@ -14,6 +14,7 @@ import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:knittda/src/presentation/view_models/edit_work_view_model.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
+import 'package:knittda/src/presentation/widgets/buttons/work_status_button.dart';
 import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
@@ -89,6 +90,14 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
     final error = workVM.errorMessage;
     final isBusy = workVM.isLoading;
     final topPadding = MediaQuery.of(context).padding.top; //상태바 높이
+
+    final editVM = EditWorkViewModel(
+      authViewModel: context.read<AuthViewModel>(),
+      updateWorkUseCase: UpdateWorkUseCase(
+        workRepository: context.read<WorkRepository>(),
+      ),
+      workRepository: context.read<WorkRepository>(),
+    );
 
     if (_isLoading) {
       return Scaffold(
@@ -200,7 +209,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                               height: 100,
                               width: 100,
                             ),
-                            SizedBox(width: 24),
+                            SizedBox(width: 26),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -208,8 +217,11 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                                   work.nickname,
                                   style: TextStyle(fontSize: 20),
                                 ),
-                                SizedBox(height: 16),
-                                Text("WorkStatusButton"),
+                                SizedBox(height: 10),
+                                WorkStatusButton(
+                                  work: work,
+                                  editVM: editVM,
+                                ),
                               ],
                             ),
                           ],
