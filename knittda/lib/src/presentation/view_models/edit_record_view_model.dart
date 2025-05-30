@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/record_model.dart';
+import 'package:knittda/src/data/repositories/records_repository.dart';
 import 'package:knittda/src/domain/use_case/update_record_use_case.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 
 class EditRecordViewModel extends ChangeNotifier {
   AuthViewModel _auth;
   final UpdateRecordUseCase _updateRecordUseCase;
+  final RecordsRepository repository;
 
   EditRecordViewModel({
     required AuthViewModel authViewModel,
     required UpdateRecordUseCase updateRecordUseCase,
+    required RecordsRepository recordsRepository,
   })  : _auth = authViewModel,
-        _updateRecordUseCase = updateRecordUseCase;
+        _updateRecordUseCase = updateRecordUseCase,
+        repository = recordsRepository;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -19,8 +23,7 @@ class EditRecordViewModel extends ChangeNotifier {
   String? _error;
   String? get errorMessage => _error;
 
-  RecordModel? _updated;
-  RecordModel? get updatedRecord => _updated;
+  RecordModel? get updatedRecord => repository.record;
 
   void _setLoading(bool v) {
     _isLoading = v;
@@ -37,8 +40,7 @@ class EditRecordViewModel extends ChangeNotifier {
 
     _setLoading(true);
     try {
-      final result = await _updateRecordUseCase(token, record, deleteImageIds);
-      _updated = result.record;
+      await _updateRecordUseCase(token, record, deleteImageIds);
       _error   = null;
 
       return true;

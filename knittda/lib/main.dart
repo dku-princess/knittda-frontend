@@ -110,7 +110,7 @@ Future<void> main() async {
               );
             },
           ),
-          Provider<RecordsRepository>(create: (_) => RecordsRepository()),
+          ChangeNotifierProvider<RecordsRepository>(create: (_) => RecordsRepository()),
           ProxyProvider<RecordsRepository, DeleteRecordUseCase>(
             update: (_, repo, __) => DeleteRecordUseCase(recordsRepository: repo),
           ),
@@ -120,22 +120,22 @@ Future<void> main() async {
           ProxyProvider<RecordsRepository, GetRecordsUseCase>(
             update: (_, repo, __) => GetRecordsUseCase(recordsRepository: repo),
           ),
-          ChangeNotifierProxyProvider4<
+          ChangeNotifierProxyProvider5<
               AuthViewModel,
               DeleteRecordUseCase,
               GetRecordUseCase,
               GetRecordsUseCase,
+              RecordsRepository,
               RecordViewModel>(
             create: (ctx) => RecordViewModel(
               authViewModel: ctx.read<AuthViewModel>(),
               deleteRecordUseCase: ctx.read<DeleteRecordUseCase>(),
               getRecordUseCase: ctx.read<GetRecordUseCase>(),
               getRecordsUseCase: ctx.read<GetRecordsUseCase>(),
+              recordsRepository: ctx.read<RecordsRepository>(),
             ),
-            update: (ctx, auth, deleteUseCase, getRecordUseCase, getRecordsUseCase, prev) {
+            update: (ctx, auth, deleteUseCase, getRecordUseCase, getRecordsUseCase, recordsRepository,prev) {
               if (prev != null) {
-
-
                 prev.update(auth);
                 return prev;
               }
@@ -144,6 +144,7 @@ Future<void> main() async {
                 deleteRecordUseCase: deleteUseCase,
                 getRecordUseCase: getRecordUseCase,
                 getRecordsUseCase: getRecordsUseCase,
+                recordsRepository: recordsRepository
               );
             },
           ),
