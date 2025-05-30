@@ -123,6 +123,8 @@ class _ShowRecordState extends State<ShowRecord> {
                     );
                   }
                 },
+                deleteDialogTitle: '기록 삭제',
+                deleteDialogContent: '정말 이 기록을 삭제하시겠습니까?',
               )
             ],
           ),

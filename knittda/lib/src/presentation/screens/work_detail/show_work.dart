@@ -191,6 +191,8 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                             );
                           }
                         },
+                        deleteDialogTitle: '작품 삭제',
+                        deleteDialogContent: '정말 이 작품을 삭제하시겠습니까?',
                       )
                     ],
                     flexibleSpace: FlexibleSpaceBar( //확장영역
