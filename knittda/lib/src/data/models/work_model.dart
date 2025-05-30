@@ -178,7 +178,7 @@ class WorkModel {
       lastRecordAt: lastRecordAt ?? this.lastRecordAt,
       createdAt: createdAt ?? this.createdAt,
       startDate: startDate ?? this.startDate,
-      endDate: endDate ?? this.endDate,
+      endDate: endDate,
       goalDate: goalDate ?? this.goalDate,
       image: image ?? this.image,
       file: file ?? this.file,
