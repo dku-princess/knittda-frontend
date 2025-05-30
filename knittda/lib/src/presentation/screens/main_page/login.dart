@@ -15,10 +15,11 @@ class Login extends StatelessWidget {
         children: [
           Expanded(
             child: Center(
-              child: Text(
-                "로고",
-                style: TextStyle(fontSize: 24),
-              ),
+              child: Image.asset(
+                'assets/image/logo.png',
+                width: 100,
+                height: 50,
+              )
             ),
           ),
           Padding(
