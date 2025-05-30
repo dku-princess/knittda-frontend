@@ -338,7 +338,7 @@ class _EditRecordState extends State<EditRecord> {
                           if (!mounted) return;
 
                           if (success && context.mounted) {
-                            Navigator.pop(context, true); // 수정 성공 표시
+                            Navigator.pop(context); // 수정 성공 표시
                           } else {
                             final error = EditRecordVM.errorMessage ?? "수정에 실패했습니다.";
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));

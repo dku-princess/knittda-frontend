@@ -120,6 +120,7 @@ class _WorkListState extends State<WorkList> {
                               createRecordUseCase: CreateRecordUseCase(
                                 recordsRepository: context.read<RecordsRepository>(),
                               ),
+                              recordsRepository: context.read<RecordsRepository>(),
                             ),
                             child: AddRecord(work: work),
                           ),
