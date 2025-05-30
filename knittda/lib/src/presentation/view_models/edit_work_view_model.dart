@@ -51,4 +51,25 @@ class EditWorkViewModel extends ChangeNotifier {
       _setLoading(false);
     }
   }
+
+  // Future<bool> updateWorkStatus(WorkModel work) async {
+  //   final token = _auth.jwt;
+  //   if (token == null) {
+  //     _error = '로그인이 필요합니다.';
+  //     notifyListeners();
+  //     return false;
+  //   }
+  //
+  //   _setLoading(true);
+  //   try {
+  //     await repository.updateWorkStatus(token, work);
+  //     _error = null;
+  //     return true;
+  //   } catch (e) {
+  //     _error = e.toString();
+  //     return false;
+  //   } finally {
+  //     _setLoading(false);
+  //   }
+  // }
 }

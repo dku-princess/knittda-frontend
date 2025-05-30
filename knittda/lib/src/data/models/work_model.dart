@@ -88,24 +88,25 @@ class WorkModel {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'project': {
-        'projectId': id,
-        'designId': designId,
-        'nickname': nickname,
-        'customYarnInfo': customYarnInfo ?? '',
-        'customNeedleInfo': customNeedleInfo ?? '',
-        'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
-        'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
-        'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
-        'title': title,
-        'designer': designer,
-        'visible': false,
-      },
-      'file': file?.path,
-    };
-  }
+  // Map<String, dynamic> toJson() {
+  //   return {
+  //     'project': {
+  //       // 'projectId': id,
+  //       // 'designId': designId,
+  //       // 'nickname': nickname,
+  //       // 'customYarnInfo': customYarnInfo ?? '',
+  //       // 'customNeedleInfo': customNeedleInfo ?? '',
+  //       // 'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
+  //       // 'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
+  //       // 'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
+  //       // 'title': title,
+  //       // 'designer': designer,
+  //       // 'visible': false,
+  //       'status': status
+  //     },
+  //     //'file': file?.path,
+  //   };
+  // }
 
   factory WorkModel.forCreate({
     int? id,
@@ -201,6 +202,7 @@ extension WorkModelMultipart on WorkModel {
         'nickname': nickname,
         'customYarnInfo': customYarnInfo,
         'customNeedleInfo': customNeedleInfo,
+        'status': status,
         'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
         'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
         'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
