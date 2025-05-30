@@ -24,6 +24,7 @@ class WorkList extends StatefulWidget {
 }
 
 class _WorkListState extends State<WorkList> {
+  String _filterStatus = 'IN_PROGRESS';
 
   @override
   void initState() {
@@ -54,6 +55,8 @@ class _WorkListState extends State<WorkList> {
     final workVM = context.watch<WorkViewModel>();
     final works = workVM.works;
 
+    final filteredWorks = (works ?? []).where((work) => work.status == _filterStatus).toList();
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 90,
@@ -71,15 +74,22 @@ class _WorkListState extends State<WorkList> {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            const WorkStateButton(),
+            WorkStateButton(
+              selectedStatus: _filterStatus,
+              onChanged: (newStatus) {
+                setState(() {
+                  _filterStatus = newStatus;
+                });
+              },
+            ),
             const SizedBox(height: 20),
             Expanded(
               child: workVM.isLoading
-                  ? Center(child: CircularProgressIndicator())
+                  ? const Center(child: CircularProgressIndicator())
                   : workVM.errorMessage != null
                   ? Center(child: Text('에러 발생: ${workVM.errorMessage}'))
-                  : works == null || works.isEmpty
-                  ? Center(
+                  : filteredWorks.isEmpty
+                  ? const Center(
                 child: Text(
                   '작품이 없습니다.\n작품을 추가해주세요.',
                   style: TextStyle(fontSize: 16, color: Colors.grey),
@@ -87,17 +97,16 @@ class _WorkListState extends State<WorkList> {
                 ),
               )
                   : ListView.builder(
-                itemCount: works.length,
+                itemCount: filteredWorks.length,
                 itemBuilder: (context, index) {
-                  final work = works[index];
+                  final work = filteredWorks[index];
                   return WorkListItem(
                     work: work,
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) =>
-                              ShowWork(projectId: work.id!),
+                          builder: (_) => ShowWork(projectId: work.id!),
                         ),
                       );
                     },
@@ -105,7 +114,7 @@ class _WorkListState extends State<WorkList> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => ChangeNotifierProvider<AddRecordViewModel>(
+                          builder: (_) => ChangeNotifierProvider(
                             create: (_) => AddRecordViewModel(
                               authViewModel: context.read<AuthViewModel>(),
                               createRecordUseCase: CreateRecordUseCase(
