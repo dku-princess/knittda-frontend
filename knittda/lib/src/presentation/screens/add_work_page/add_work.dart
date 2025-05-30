@@ -321,16 +321,21 @@ class _AddWorkState extends State<AddWork> {
                             return;
                           }
 
-                          if (_goalDate != null) {
-                            final goalDate = DateUtilsHelper.fromDotFormat(_goalDate!);
-                            final now = DateTime.now();
+                          if (_goalDate == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('목표 날짜를 선택해주세요!')),
+                            );
+                            return;
+                          }
 
-                            if (goalDate.isBefore(DateTime(now.year, now.month, now.day))) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('목표 날짜는 오늘 이후여야 합니다.')),
-                              );
-                              return;
-                            }
+                          final goalDate = DateUtilsHelper.fromDotFormat(_goalDate!);
+                          final now = DateTime.now();
+
+                          if (goalDate.isBefore(DateTime(now.year, now.month, now.day))) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('목표 날짜는 오늘 이후여야 합니다.')),
+                            );
+                            return;
                           }
 
                           final work = WorkModel.forCreate(
