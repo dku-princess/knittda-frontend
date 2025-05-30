@@ -307,7 +307,7 @@ class _AddRecordState extends State<AddRecord> {
                           if (!mounted) return;
 
                           if (success) {
-                            Navigator.pop(context, true);
+                            Navigator.pop(context);
                           } else {
                             final error = AddRecordVM.errorMessage ?? '알 수 없는 오류';
                             ScaffoldMessenger.of(context).showSnackBar(

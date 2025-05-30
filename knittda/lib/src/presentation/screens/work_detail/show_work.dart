@@ -65,8 +65,6 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
       final workViewModel = context.read<WorkViewModel>();
       final recordVM = context.read<RecordViewModel>();
 
-      recordVM.reset(all: true);
-
       await workViewModel.getWork(widget.projectId);
       await recordVM.getRecords(widget.projectId);
     } catch (e) {
@@ -127,7 +125,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
             floatingActionButton: _tabController.index == 1
                 ? FloatingActionButton(
               onPressed: () async {
-                final result = await Navigator.push(
+                await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => ChangeNotifierProvider(
@@ -136,15 +134,12 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                         createRecordUseCase: CreateRecordUseCase(
                           recordsRepository: context.read<RecordsRepository>(),
                         ),
+                        recordsRepository: context.read<RecordsRepository>(),
                       ),
                       child: AddRecord(work: work),
                     ),
                   ),
                 );
-
-                if (result == true) {
-                  await context.read<RecordViewModel>().getRecords(work.id!);
-                }
               },
               backgroundColor: PRIMARY_COLOR,
               child: const Icon(Icons.add, color: Colors.white),

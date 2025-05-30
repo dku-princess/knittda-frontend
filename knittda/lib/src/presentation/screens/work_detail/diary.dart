@@ -8,7 +8,7 @@ class Diary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final recordVM = context.watch<RecordViewModel>();
-    final records = recordVM.gotRecords;
+    final records = recordVM.records;
 
     if (recordVM.isLoading) {
       return Center(child: CircularProgressIndicator());

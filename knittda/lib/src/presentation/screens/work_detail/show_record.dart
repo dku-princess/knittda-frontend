@@ -40,7 +40,6 @@ class _ShowRecordState extends State<ShowRecord> {
     try {
       final recordVM = context.read<RecordViewModel>();
 
-      recordVM.reset();
       await recordVM.getRecord(widget.recordId);
     } catch (e) {
       debugPrint('기록 불러오기 오류: $e');
@@ -59,7 +58,7 @@ class _ShowRecordState extends State<ShowRecord> {
   @override
   Widget build(BuildContext context) {
     final recordVM = context.watch<RecordViewModel>();
-    final record = recordVM.gotRecord;
+    final record = recordVM.record;
     final error = recordVM.errorMessage;
     final isBusy = recordVM.isLoading;
 
@@ -95,7 +94,7 @@ class _ShowRecordState extends State<ShowRecord> {
             actions: [
               EditDeleteMenu(
                 onEdit: () async {
-                  final result = await Navigator.push(
+                  await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => ChangeNotifierProvider(
@@ -104,16 +103,12 @@ class _ShowRecordState extends State<ShowRecord> {
                           updateRecordUseCase: UpdateRecordUseCase(
                             recordsRepository: context.read<RecordsRepository>(),
                           ),
+                          recordsRepository: context.read<RecordsRepository>(),
                         ),
                         child: EditRecord(record: record),
                       ),
                     ),
                   );
-
-                  if (result == true && mounted) {
-                    await context.read<RecordViewModel>().getRecord(widget.recordId);
-                    await context.read<RecordViewModel>().getRecords(record.projectId);
-                  }
                 },
                 onDelete: () async {
                   final success = await recordVM.deleteRecord(record.id!);
