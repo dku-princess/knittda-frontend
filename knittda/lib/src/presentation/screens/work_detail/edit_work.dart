@@ -72,13 +72,16 @@ class _EditWorkState extends State<EditWork> {
     super.initState();
     _nicknameController.text = widget.work.nickname;
 
-    if(widget.work.designDto != null){
-      _selectedDesign = widget.work.designDto;
-      _designController.text = widget.work.designDto?.title ?? '';
-      _designerController.text = widget.work.designDto?.designer ?? '';
-    } else{
-      _designController.text = widget.work.title ?? '';
-      _designerController.text = widget.work.designer ?? '';
+    final design = widget.work.designDto;
+
+    if (design != null &&
+        (design.title?.trim().isNotEmpty == true || design.designer?.trim().isNotEmpty == true)) {
+      _selectedDesign = design;
+      _designController.text = design.title ?? '';
+      _designerController.text = design.designer ?? '';
+    } else {
+      _designController.text = '';
+      _designerController.text = '';
     }
 
     _yarnController.text = widget.work.customYarnInfo ?? '';
