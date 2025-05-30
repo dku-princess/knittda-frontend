@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/models/work_model.dart';
-//import 'package:knittda/src/data/repositories/work_repository.dart';
-//import 'package:knittda/src/domain/use_case/update_work_use_case.dart';
-//import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:knittda/src/presentation/view_models/edit_work_view_model.dart';
-//import 'package:provider/provider.dart';
 
 class WorkStatusButton extends StatefulWidget {
   final WorkModel work;
@@ -43,7 +39,11 @@ class _WorkStatusButtonState extends State<WorkStatusButton> {
 
     setState(() => _isUpdating = true);
 
-    final updatedWork = widget.work.copyWith(status: newStatus);
+    final updatedWork = widget.work.copyWith(
+      status: newStatus,
+      endDate: newStatus == 'DONE' ? DateTime.now() : null,
+    );
+
     final success = await widget.editVM.updateWork(updatedWork);
 
     setState(() => _isUpdating = false);
