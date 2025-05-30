@@ -28,7 +28,6 @@ class Report extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('📦 Report 위젯 build() 호출됨');
     final recordVM = context.watch<RecordViewModel>();
     final records = recordVM.records ?? [];
 
@@ -39,18 +38,12 @@ class Report extends StatelessWidget {
     DateTime now = DateTime.now();
     DateTime startDate = work.startDate!;
     DateTime goalDate = work.goalDate!;
-    debugPrint('startDate: $startDate');
-    debugPrint('goalDate: $goalDate');
 
     int dDayPlus = now.difference(startDate).inDays;
     int dDayMinus = goalDate.difference(now).inDays;
-    debugPrint('startDate: $dDayPlus');
-    debugPrint('goalDate: $dDayMinus');
 
     String formattedStartDate = DateUtilsHelper.toDotFormat(startDate);
     String formattedGoalDate = DateUtilsHelper.toDotFormat(goalDate);
-    debugPrint('startDate: $formattedStartDate');
-    debugPrint('goalDate: $formattedGoalDate');
 
     return Padding(
       padding: EdgeInsets.all(26.0),

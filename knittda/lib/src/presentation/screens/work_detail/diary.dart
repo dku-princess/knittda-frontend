@@ -22,13 +22,15 @@ class Diary extends StatelessWidget {
       return Center(child: Text('기록이 없습니다.'));
     }
 
+    final reversedRecords = records.reversed.toList();
+
     return Padding(
       padding: EdgeInsets.all(26.0),
       child: ListView.builder(
         padding: EdgeInsets.zero,
-        itemCount: records.length,
+        itemCount: reversedRecords.length,
         itemBuilder: (context, index) {
-          final record = records[index];
+          final record = reversedRecords[index];
           return RecordListItem(
             record: record,
             onTap: (){
