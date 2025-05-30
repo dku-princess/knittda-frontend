@@ -255,7 +255,7 @@ class _AddWorkState extends State<AddWork> {
                     ListTile(
                       contentPadding: EdgeInsets.zero,
                       title: Text(
-                        "정보",
+                        "뜨개 정보",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 20,

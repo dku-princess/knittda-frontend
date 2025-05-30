@@ -63,7 +63,7 @@ class _WorkListState extends State<WorkList> {
         title: Padding(
           padding: const EdgeInsets.only(left: 8.0, top: 8.0),
           child: const Text(
-            '나의\n작품',
+            '나의\n뜨개 작품',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
           ),
         ),
