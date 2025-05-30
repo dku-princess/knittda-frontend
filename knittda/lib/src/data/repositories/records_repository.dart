@@ -3,15 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/record_model.dart';
 import 'package:knittda/env.dart';
 
-class RecordsRepository {
-    final Dio _dio = Dio(
+class RecordsRepository extends ChangeNotifier{
+  final Dio _dio = Dio(
     BaseOptions(
       baseUrl: baseUrl,
     ),
   );
 
+  List<RecordModel> _records = [];
+  RecordModel? _record;
+
+  List<RecordModel> get records => List.unmodifiable(_records);
+  RecordModel? get record => _record;
+
   //record 수정
-  Future<({RecordModel record})> updateRecord(String accessToken, RecordModel record, List<int>? deleteImageIds) async {
+  Future<void> updateRecord(String accessToken, RecordModel record, List<int>? deleteImageIds) async {
     try{
       final formData = await record.toEditMultipartForm(
         deleteImageIds: deleteImageIds,
@@ -48,7 +54,17 @@ class RecordsRepository {
         throw Exception('잘못된 응답 형식');
       }
 
-      return (record: RecordModel.fromJson(data));
+      final updatedRecord = RecordModel.fromJson(data);
+
+      final index = _records.indexWhere((w) => w.id ==updatedRecord.id);
+      if(index != -1) {
+        _records[index] = updatedRecord;
+      } else {
+        _records.add(updatedRecord);
+      }
+
+      _record = updatedRecord;
+      notifyListeners();
 
     } on DioException catch (e) {
       throw Exception('네트워크 오류: ${e.message}');
@@ -58,7 +74,7 @@ class RecordsRepository {
   }
 
   //record 상세 조회
-  Future<({RecordModel record})> getRecord(String accessToken, int recordId) async {
+  Future<void> getRecord(String accessToken, int recordId) async {
     try{
       final res = await _dio.get<Map<String, dynamic>>(
         '/api/v1/records/$recordId',
@@ -86,7 +102,8 @@ class RecordsRepository {
         throw Exception('잘못된 응답 형식');
       }
 
-      return (record: RecordModel.fromJson(data));
+      _record = RecordModel.fromJson(data);
+      notifyListeners();
 
     } on DioException catch (e) {
       throw Exception('네트워크 오류: ${e.message}');
@@ -96,7 +113,7 @@ class RecordsRepository {
   }
 
   //프로젝트별 record 조회
-  Future<List<RecordModel>> getRecords(String accessToken, int projectId) async{
+  Future<void> getRecords(String accessToken, int projectId) async{
     try{
       final res = await _dio.get<Map<String, dynamic>>(
         '/api/v1/records/projects/$projectId',
@@ -124,7 +141,8 @@ class RecordsRepository {
         throw Exception('잘못된 응답 형식');
       }
 
-      return data.map((item) => RecordModel.fromJson(item as Map<String, dynamic>)).toList();
+      _records = data.map((e) => RecordModel.fromJson(e)).toList();
+      notifyListeners();
 
     } on DioException catch (e) {
       throw Exception('네트워크 오류: ${e.message}');
@@ -133,7 +151,7 @@ class RecordsRepository {
     }
   }
 
-  Future<({RecordModel record})> createRecord(String accessToken, RecordModel record) async {
+  Future<void> createRecord(String accessToken, RecordModel record) async {
     try {
       final formData = await record.toMultipartForm();
 
@@ -173,8 +191,15 @@ class RecordsRepository {
         throw Exception('잘못된 응답 형식');
       }
 
-      final createRecord = RecordModel.fromJson(data);
-      return (record: createRecord);
+      final createdRecord = RecordModel.fromJson(data);
+
+      final exists = _records.any((w) => w.id ==createdRecord.id);
+      if(!exists) {
+        _records.add(createdRecord);
+      }
+
+      _record = createdRecord;
+      notifyListeners();
 
     } on DioException catch (e) {
       debugPrint('네트워크 오류: ${e.response?.data ?? e.message}');
@@ -207,6 +232,9 @@ class RecordsRepository {
       if (body == null || body['success'] != true) {
         throw Exception(body?['message'] ?? '알 수 없는 오류');
       }
+
+      _records.removeWhere((w) => w.id == recordId);
+      notifyListeners();
 
     } on DioException catch (e) {
       throw Exception('네트워크 오류: ${e.message}');
