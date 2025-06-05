@@ -63,7 +63,7 @@ class Report extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-            Container(
+              Container(
                 width: 150,
                 height: 130,
                 decoration: BoxDecoration(
