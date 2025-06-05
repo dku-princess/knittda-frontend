@@ -55,7 +55,7 @@ class WorkModel {
 
   factory WorkModel.fromJson(Map<String, dynamic> json) {
     return WorkModel(
-      designId: null,
+      designId: json['designDto']?['id'],
       nickname: json['nickname'],
       customYarnInfo: json['customYarnInfo'],
       customNeedleInfo: json['customNeedleInfo'],
