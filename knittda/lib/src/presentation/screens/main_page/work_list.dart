@@ -6,6 +6,7 @@ import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/add_work.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
+import 'package:knittda/src/presentation/screens/work_detail/report_ui.dart';
 import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
 import 'package:knittda/src/presentation/view_models/add_record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/add_work_view_model.dart';
@@ -69,71 +70,97 @@ class _WorkListState extends State<WorkList> {
         ),
       ),
 
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            WorkStateButton(
-              selectedStatus: _filterStatus,
-              onChanged: (newStatus) {
-                setState(() {
-                  _filterStatus = newStatus;
-                });
-              },
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: workVM.isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : workVM.errorMessage != null
-                  ? Center(child: Text('에러 발생: ${workVM.errorMessage}'))
-                  : filteredWorks.isEmpty
-                  ? const Center(
-                child: Text(
-                  '작품이 없습니다.\n작품을 추가해주세요.',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                  textAlign: TextAlign.center,
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                WorkStateButton(
+                  selectedStatus: _filterStatus,
+                  onChanged: (newStatus) {
+                    setState(() {
+                      _filterStatus = newStatus;
+                    });
+                  },
                 ),
-              )
-                  : ListView.builder(
-                itemCount: filteredWorks.length,
-                itemBuilder: (context, index) {
-                  final work = filteredWorks[index];
-                  return WorkListItem(
-                    work: work,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ShowWork(projectId: work.id!),
-                        ),
-                      );
-                    },
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ChangeNotifierProvider(
-                            create: (_) => AddRecordViewModel(
-                              authViewModel: context.read<AuthViewModel>(),
-                              createRecordUseCase: CreateRecordUseCase(
-                                recordsRepository: context.read<RecordsRepository>(),
-                              ),
-                              recordsRepository: context.read<RecordsRepository>(),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: workVM.isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : workVM.errorMessage != null
+                      ? Center(child: Text('에러 발생: ${workVM.errorMessage}'))
+                      : filteredWorks.isEmpty
+                      ? const Center(
+                    child: Text(
+                      '작품이 없습니다',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                      : ListView.builder(
+                    itemCount: filteredWorks.length,
+                    itemBuilder: (context, index) {
+                      final work = filteredWorks[index];
+                      return WorkListItem(
+                        work: work,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ShowWork(projectId: work.id!),
                             ),
-                            child: AddRecord(work: work),
-                          ),
-                        ),
+                          );
+                        },
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChangeNotifierProvider(
+                                create: (_) => AddRecordViewModel(
+                                  authViewModel: context.read<AuthViewModel>(),
+                                  createRecordUseCase: CreateRecordUseCase(
+                                    recordsRepository: context.read<RecordsRepository>(),
+                                  ),
+                                  recordsRepository: context.read<RecordsRepository>(),
+                                ),
+                                child: AddRecord(work: work),
+                              ),
+                            ),
+                          );
+                        },
                       );
                     },
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          if (DateTime.now().weekday == DateTime.friday)
+            Positioned(
+              bottom: 16,
+              left: 16,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ReportUi(),
+                    ),
                   );
                 },
+                style: ElevatedButton.styleFrom(
+                  //foregroundColor: PRIMARY_COLOR,
+                  side: BorderSide(color: PRIMARY_COLOR),
+                ),
+                child: Text('주간 리포트 확인', style: TextStyle(color: PRIMARY_COLOR),),
               ),
             ),
-          ],
-        ),
+        ],
       ),
+
       floatingActionButton: _addWorkFloatingButton(context),
       //floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
