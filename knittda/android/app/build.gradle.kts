@@ -21,17 +21,8 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
-//    packaging {
-//        resources {
-//            excludes += "META-INF/DEPENDENCIES"
-//            excludes += "META-INF/LICENSE*"
-//            excludes += "META-INF/NOTICE*"
-//        }
-//    }
-
     /** ───────────────────────────────────────────────
      *  Kakao Native App Key를 local.properties에서 읽어오기
-     *  - 값이 없으면 빌드 실패(error)로 처리하도록 설정
      * ─────────────────────────────────────────────── */
     val kakaoKey: String by lazy {
         val propsFile = rootDir.resolve("local.properties")
@@ -41,6 +32,24 @@ android {
         }
         props.getProperty("KAKAO_NATIVE_APP_KEY")?.trim()
             ?: error("KAKAO_NATIVE_APP_KEY not found in local.properties")
+    }
+
+    /** ───────────────────────────────────────────────
+     *  릴리즈 키 등록 (key.properties 파일 읽기)
+     * ─────────────────────────────────────────────── */
+    val keystorePropertiesFile = rootProject.file("key.properties")
+    val keystoreProperties = Properties()
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(keystorePropertiesFile.inputStream())
+    }
+
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+        }
     }
 
     defaultConfig {
@@ -58,10 +67,14 @@ android {
     }
 
     buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+        getByName("release") {
+            isMinifyEnabled = false              // 코드 난독화 활성화
+            isShrinkResources = false            // 사용되지 않는 리소스 제거
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"            // 사용자 정의 ProGuard 룰 파일
+            )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }
@@ -69,8 +82,3 @@ android {
 flutter {
     source = "../.."
 }
-
-//dependencies {
-//    implementation("com.google.api-client:google-api-client:1.31.5")
-//    implementation("joda-time:joda-time:2.10.10")
-//}
