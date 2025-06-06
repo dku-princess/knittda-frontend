@@ -14,7 +14,7 @@ class ReportRepository {
   Future<({ReportModel report})> getReport(String accessToken) async {
     try {
       final res = await _dio.post<Map<String, dynamic>>(
-        '/api/weekly-report',
+        '/api/v1/report/',
         options: Options(
           headers: {
             'Authorization': 'Bearer $accessToken',

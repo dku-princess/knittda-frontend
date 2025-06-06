@@ -19,14 +19,14 @@ class ReportModel {
 
   factory ReportModel.fromJson(Map<String, dynamic> json) {
     return ReportModel(
-      knittingLevel: json['knitting_level']?.toDouble() ?? 0.0,
-      weeklyKnittingCount: json['weekly_knitting_count'] ?? 0,
-      weeklyKnittingPhotoCount: json['weekly_knitting_photo_count'] ?? 0,
-      weeklyProgress: json['weekly_progress'] ?? 0,
-      topTags: (json['top_tags'] as List<dynamic>?)
+      knittingLevel: json['knittingLevel']?.toDouble() ?? 0.0,
+      weeklyKnittingCount: json['weeklyKnittingCount'] ?? 0,
+      weeklyKnittingPhotoCount: json['weeklyKnittingPhotoCount'] ?? 0,
+      weeklyProgress: json['weeklyProgress'] ?? 0,
+      topTags: (json['topTags'] as List<dynamic>?)
           ?.map((e) => e.toString())
           .toList(),
-      weeklyHashtags: (json['weekly_hashtags'] as List<dynamic>?)
+      weeklyHashtags: (json['weeklyHashtags'] as List<dynamic>?)
           ?.map((e) => HashtagModel.fromJson(e))
           .toList(),
     );
