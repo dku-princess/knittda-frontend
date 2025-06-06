@@ -72,13 +72,16 @@ class _EditWorkState extends State<EditWork> {
     super.initState();
     _nicknameController.text = widget.work.nickname;
 
-    if(widget.work.designDto != null){
-      _selectedDesign = widget.work.designDto;
-      _designController.text = widget.work.designDto?.title ?? '';
-      _designerController.text = widget.work.designDto?.designer ?? '';
-    } else{
-      _designController.text = widget.work.title ?? '';
-      _designerController.text = widget.work.designer ?? '';
+    final design = widget.work.designDto;
+
+    if (design != null &&
+        (design.title?.trim().isNotEmpty == true || design.designer?.trim().isNotEmpty == true)) {
+      _selectedDesign = design;
+      _designController.text = design.title ?? '';
+      _designerController.text = design.designer ?? '';
+    } else {
+      _designController.text = '';
+      _designerController.text = '';
     }
 
     _yarnController.text = widget.work.customYarnInfo ?? '';
@@ -289,7 +292,7 @@ class _EditWorkState extends State<EditWork> {
                     ListTile(
                       contentPadding: EdgeInsets.zero,
                       title: Text(
-                        "정보",
+                        "뜨개 정보",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 20,
@@ -367,8 +370,7 @@ class _EditWorkState extends State<EditWork> {
                             }
                           }
 
-                          final work = WorkModel.forCreate(
-                            id: widget.work.id,
+                          final work = widget.work.copyWith(
                             designId: _selectedDesign?.id,
                             nickname: nickname,
                             customYarnInfo: customYarnInfo,
@@ -385,7 +387,7 @@ class _EditWorkState extends State<EditWork> {
                           if (!mounted) return;
 
                           if (success) {
-                            Navigator.pop(context, true); // <-- 성공 여부 반환
+                            Navigator.pop(context); // <-- 성공 여부 반환
                           } else {
                             final error = EditWorkVM.errorMessage ?? '알 수 없는 오류';
                             ScaffoldMessenger.of(context).showSnackBar(

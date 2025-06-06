@@ -89,7 +89,7 @@ class _AddRecordState extends State<AddRecord> {
                       children: [
                         WorkListItem(work: widget.work),
                         const SizedBox(height: 35),
-                        const Text("오늘은 어떠셨어요?", style: TextStyle(fontSize: 20)),
+                        const Text("오늘은 뜨개는 어떠셨어요?", style: TextStyle(fontSize: 20)),
                         const SizedBox(height: 16),
                         Wrap(
                           spacing: 10,
@@ -243,7 +243,7 @@ class _AddRecordState extends State<AddRecord> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text("기록을 남겨주세요", style: TextStyle(fontSize: 20)),
+                        const Text("뜨개 기록을 남겨주세요", style: TextStyle(fontSize: 20)),
                         const SizedBox(height: 16),
                         TextField(
                           maxLines: 8,
@@ -307,7 +307,7 @@ class _AddRecordState extends State<AddRecord> {
                           if (!mounted) return;
 
                           if (success) {
-                            Navigator.pop(context, true);
+                            Navigator.pop(context);
                           } else {
                             final error = AddRecordVM.errorMessage ?? '알 수 없는 오류';
                             ScaffoldMessenger.of(context).showSnackBar(

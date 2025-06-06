@@ -78,6 +78,7 @@ class RecordModel {
 
       // 서버 응답 필드 → null로 초기화
       id: id,
+      projectDto: null,
       createdAt: null,
       images: null,
     );

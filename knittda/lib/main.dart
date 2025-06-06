@@ -1,14 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/repositories/records_repository.dart';
-import 'package:knittda/src/data/repositories/work_repositories.dart';
+import 'package:knittda/src/data/repositories/report_repository.dart';
+import 'package:knittda/src/data/repositories/work_repository.dart';
 import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_report_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_works_use_case.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
+import 'package:knittda/src/presentation/view_models/report_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import './src/app.dart';
 
@@ -57,7 +60,7 @@ Future<void> main() async {
       MultiProvider(
         providers: [
           ChangeNotifierProvider<AuthViewModel>(
-            lazy: false,
+            //lazy: false,
             create: (_) => AuthViewModel(
               KaKaoLogin(),
               AuthRepository(),
@@ -71,42 +74,46 @@ Future<void> main() async {
               return prev ?? UserViewModel(auth);
             },
           ),
-          Provider<WorkRepositories>(create: (_) => WorkRepositories()),
-          ProxyProvider<WorkRepositories, DeleteWorkUseCase>(
-            update: (_, repo, __) => DeleteWorkUseCase(workRepositories: repo),
+          ChangeNotifierProvider<WorkRepository>(create: (_) => WorkRepository()),
+          ProxyProvider<WorkRepository, DeleteWorkUseCase>(
+            update: (_, repo, __) => DeleteWorkUseCase(workRepository: repo),
           ),
-          ProxyProvider<WorkRepositories, GetWorkUseCase>(
-            update: (_, repo, __) => GetWorkUseCase(workRepositories: repo),
+          ProxyProvider<WorkRepository, GetWorkUseCase>(
+            update: (_, repo, __) => GetWorkUseCase(workRepository: repo),
           ),
-          ProxyProvider<WorkRepositories, GetWorksUseCase>(
-            update: (_, repo, __) => GetWorksUseCase(workRepositories: repo),
+          ProxyProvider<WorkRepository, GetWorksUseCase>(
+            update: (_, repo, __) => GetWorksUseCase(workRepository: repo),
           ),
-          ChangeNotifierProxyProvider4<
+          ChangeNotifierProxyProvider5<
               AuthViewModel,
               DeleteWorkUseCase,
               GetWorkUseCase,
               GetWorksUseCase,
+              WorkRepository,
               WorkViewModel>(
             create: (ctx) => WorkViewModel(
               authViewModel: ctx.read<AuthViewModel>(),
               deleteWorkUseCase: ctx.read<DeleteWorkUseCase>(),
               getWorkUseCase: ctx.read<GetWorkUseCase>(),
               getWorksUseCase: ctx.read<GetWorksUseCase>(),
+              workRepository: ctx.read<WorkRepository>(),
             ),
-            update: (ctx, auth, deleteUseCase, getWorkUseCase, getWorksUseCase, prev) {
+            update: (ctx, auth, deleteUseCase, getWorkUseCase, getWorksUseCase, workRepository,prev) {
               if (prev != null) {
                 prev.update(auth);
                 return prev;
               }
+
               return WorkViewModel(
                 authViewModel: auth,
                 deleteWorkUseCase: deleteUseCase,
                 getWorkUseCase: getWorkUseCase,
                 getWorksUseCase: getWorksUseCase,
+                workRepository: workRepository
               );
             },
           ),
-          Provider<RecordsRepository>(create: (_) => RecordsRepository()),
+          ChangeNotifierProvider<RecordsRepository>(create: (_) => RecordsRepository()),
           ProxyProvider<RecordsRepository, DeleteRecordUseCase>(
             update: (_, repo, __) => DeleteRecordUseCase(recordsRepository: repo),
           ),
@@ -116,22 +123,22 @@ Future<void> main() async {
           ProxyProvider<RecordsRepository, GetRecordsUseCase>(
             update: (_, repo, __) => GetRecordsUseCase(recordsRepository: repo),
           ),
-          ChangeNotifierProxyProvider4<
+          ChangeNotifierProxyProvider5<
               AuthViewModel,
               DeleteRecordUseCase,
               GetRecordUseCase,
               GetRecordsUseCase,
+              RecordsRepository,
               RecordViewModel>(
             create: (ctx) => RecordViewModel(
               authViewModel: ctx.read<AuthViewModel>(),
               deleteRecordUseCase: ctx.read<DeleteRecordUseCase>(),
               getRecordUseCase: ctx.read<GetRecordUseCase>(),
               getRecordsUseCase: ctx.read<GetRecordsUseCase>(),
+              recordsRepository: ctx.read<RecordsRepository>(),
             ),
-            update: (ctx, auth, deleteUseCase, getRecordUseCase, getRecordsUseCase, prev) {
+            update: (ctx, auth, deleteUseCase, getRecordUseCase, getRecordsUseCase, recordsRepository,prev) {
               if (prev != null) {
-
-
                 prev.update(auth);
                 return prev;
               }
@@ -140,6 +147,26 @@ Future<void> main() async {
                 deleteRecordUseCase: deleteUseCase,
                 getRecordUseCase: getRecordUseCase,
                 getRecordsUseCase: getRecordsUseCase,
+                recordsRepository: recordsRepository
+              );
+            },
+          ),
+
+          Provider<ReportRepository>(
+            create: (_) => ReportRepository(),
+          ),
+          ProxyProvider<ReportRepository, GetReportUseCase>(
+            update: (_, repo, __) => GetReportUseCase(reportRepository: repo),
+          ),
+          ChangeNotifierProxyProvider2<AuthViewModel, GetReportUseCase, ReportViewModel>(
+            create: (ctx) => ReportViewModel(
+              authViewModel: ctx.read<AuthViewModel>(),
+              getReportUseCase: ctx.read<GetReportUseCase>(),
+            ),
+            update: (ctx, auth, getReportUseCase, prev) {
+              return ReportViewModel(
+                authViewModel: auth,
+                getReportUseCase: getReportUseCase,
               );
             },
           ),

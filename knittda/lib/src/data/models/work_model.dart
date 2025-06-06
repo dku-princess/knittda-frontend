@@ -28,7 +28,7 @@ class WorkModel {
 
   final String? title;
   final String? designer;
-  final bool visible;
+  final bool? visible;
 
   WorkModel({
     this.designId,
@@ -50,7 +50,7 @@ class WorkModel {
 
     this.title,
     this.designer,
-    this.visible = false,
+    this.visible,
   });
 
   factory WorkModel.fromJson(Map<String, dynamic> json) {
@@ -82,30 +82,31 @@ class WorkModel {
           : null,
       image: json['image'] != null ? ImageModel.fromJson(json['image']) : null,
 
-      title: json['title'],
-      designer: json['designer'],
-      visible: json['visible'] ?? false,
+      title: null,
+      designer: null,
+      visible: null,
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'project': {
-        'projectId': id,
-        'designId': designId,
-        'nickname': nickname,
-        'customYarnInfo': customYarnInfo ?? '',
-        'customNeedleInfo': customNeedleInfo ?? '',
-        'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
-        'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
-        'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
-        'title': title,
-        'designer': designer,
-        'visible': false,
-      },
-      'file': file?.path,
-    };
-  }
+  // Map<String, dynamic> toJson() {
+  //   return {
+  //     'project': {
+  //       // 'projectId': id,
+  //       // 'designId': designId,
+  //       // 'nickname': nickname,
+  //       // 'customYarnInfo': customYarnInfo ?? '',
+  //       // 'customNeedleInfo': customNeedleInfo ?? '',
+  //       // 'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
+  //       // 'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
+  //       // 'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
+  //       // 'title': title,
+  //       // 'designer': designer,
+  //       // 'visible': false,
+  //       'status': status
+  //     },
+  //     //'file': file?.path,
+  //   };
+  // }
 
   factory WorkModel.forCreate({
     int? id,
@@ -177,7 +178,7 @@ class WorkModel {
       lastRecordAt: lastRecordAt ?? this.lastRecordAt,
       createdAt: createdAt ?? this.createdAt,
       startDate: startDate ?? this.startDate,
-      endDate: endDate ?? this.endDate,
+      endDate: endDate,
       goalDate: goalDate ?? this.goalDate,
       image: image ?? this.image,
       file: file ?? this.file,
@@ -201,12 +202,13 @@ extension WorkModelMultipart on WorkModel {
         'nickname': nickname,
         'customYarnInfo': customYarnInfo,
         'customNeedleInfo': customNeedleInfo,
+        'status': status,
         'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
         'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
         'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
         'title': title,
         'designer': designer,
-        'visible': false,
+        'visible': visible,
       }),
     ));
 

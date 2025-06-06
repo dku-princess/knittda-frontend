@@ -33,6 +33,7 @@ flutter:
   assets:
     - assets/font/ # Pretendard 폰트 경로 추가
     - assets/image/ #image 경로 추가
+    - assets/image/stage/ #image 경로 추가
 
   fonts:
     - family: Pretendard

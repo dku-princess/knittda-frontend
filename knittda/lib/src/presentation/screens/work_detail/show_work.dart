@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/repositories/records_repository.dart';
-import 'package:knittda/src/data/repositories/work_repositories.dart';
+import 'package:knittda/src/data/repositories/work_repository.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_work_use_case.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
@@ -14,6 +14,7 @@ import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:knittda/src/presentation/view_models/edit_work_view_model.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
+import 'package:knittda/src/presentation/widgets/buttons/work_status_button.dart';
 import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
@@ -64,8 +65,6 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
       final workViewModel = context.read<WorkViewModel>();
       final recordVM = context.read<RecordViewModel>();
 
-      recordVM.reset(all: true);
-
       await workViewModel.getWork(widget.projectId);
       await recordVM.getRecords(widget.projectId);
     } catch (e) {
@@ -85,10 +84,18 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     final workVM = context.watch<WorkViewModel>();
-    final work = workVM.gotWork;
+    final work = workVM.work;
     final error = workVM.errorMessage;
     final isBusy = workVM.isLoading;
     final topPadding = MediaQuery.of(context).padding.top; //상태바 높이
+
+    final editVM = EditWorkViewModel(
+      authViewModel: context.read<AuthViewModel>(),
+      updateWorkUseCase: UpdateWorkUseCase(
+        workRepository: context.read<WorkRepository>(),
+      ),
+      workRepository: context.read<WorkRepository>(),
+    );
 
     if (_isLoading) {
       return Scaffold(
@@ -118,7 +125,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
             floatingActionButton: _tabController.index == 1
                 ? FloatingActionButton(
               onPressed: () async {
-                final result = await Navigator.push(
+                await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => ChangeNotifierProvider(
@@ -127,15 +134,12 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                         createRecordUseCase: CreateRecordUseCase(
                           recordsRepository: context.read<RecordsRepository>(),
                         ),
+                        recordsRepository: context.read<RecordsRepository>(),
                       ),
                       child: AddRecord(work: work),
                     ),
                   ),
                 );
-
-                if (result == true) {
-                  await context.read<RecordViewModel>().getRecords(work.id!);
-                }
               },
               backgroundColor: PRIMARY_COLOR,
               child: const Icon(Icons.add, color: Colors.white),
@@ -158,26 +162,21 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                     actions: [
                       EditDeleteMenu(
                         onEdit: () async {
-                          final result = await Navigator.push(
+                          await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (_) => ChangeNotifierProvider(
                                 create: (_) => EditWorkViewModel(
                                   authViewModel: context.read<AuthViewModel>(),
                                   updateWorkUseCase: UpdateWorkUseCase(
-                                    workRepositories: context.read<WorkRepositories>(),
+                                    workRepository: context.read<WorkRepository>(),
                                   ),
+                                  workRepository: context.read<WorkRepository>(),
                                 ),
                                 child: EditWork(work: work),
                               ),
                             ),
                           );
-
-                          if (result == true && context.mounted) {
-                            final workVM = context.read<WorkViewModel>();
-                            await workVM.getWork(work.id!);
-                            await workVM.getWorks();
-                          }
                         },
                         onDelete: () async {
                           final success = await workVM.deleteWork(work.id!);
@@ -192,6 +191,8 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                             );
                           }
                         },
+                        deleteDialogTitle: '작품 삭제',
+                        deleteDialogContent: '정말 이 작품을 삭제하시겠습니까?',
                       )
                     ],
                     flexibleSpace: FlexibleSpaceBar( //확장영역
@@ -205,10 +206,20 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                               height: 100,
                               width: 100,
                             ),
-                            SizedBox(width: 16),
-                            Text(
-                              work.nickname,
-                              style: TextStyle(fontSize: 20),
+                            SizedBox(width: 26),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  work.nickname,
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                SizedBox(height: 10),
+                                WorkStatusButton(
+                                  work: work,
+                                  editVM: editVM,
+                                ),
+                              ],
                             ),
                           ],
                         ),

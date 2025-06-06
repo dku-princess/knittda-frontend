@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/repositories/records_repository.dart';
-import 'package:knittda/src/data/repositories/work_repositories.dart';
+import 'package:knittda/src/data/repositories/work_repository.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/add_work.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
+import 'package:knittda/src/presentation/screens/work_detail/report_ui.dart';
 import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
 import 'package:knittda/src/presentation/view_models/add_record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/add_work_view_model.dart';
@@ -15,14 +16,16 @@ import 'package:knittda/src/presentation/widgets/buttons/work_state_button.dart'
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
 import 'package:provider/provider.dart';
 
+
 class WorkList extends StatefulWidget {
   const WorkList({super.key});
 
   @override
-  _WorkListState createState() => _WorkListState();
+  State<WorkList> createState() => _WorkListState();
 }
 
 class _WorkListState extends State<WorkList> {
+  String _filterStatus = 'IN_PROGRESS';
 
   @override
   void initState() {
@@ -51,7 +54,9 @@ class _WorkListState extends State<WorkList> {
   @override
   Widget build(BuildContext context) {
     final workVM = context.watch<WorkViewModel>();
-    final works = workVM.gotWorks;
+    final works = workVM.works;
+
+    final filteredWorks = (works ?? []).where((work) => work.status == _filterStatus).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -59,70 +64,101 @@ class _WorkListState extends State<WorkList> {
         title: Padding(
           padding: const EdgeInsets.only(left: 8.0, top: 8.0),
           child: const Text(
-            '나의\n작품',
+            '나의\n뜨개 작품',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
           ),
         ),
       ),
 
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            const WorkStateButton(),
-            const SizedBox(height: 20),
-            Expanded(
-              child: workVM.isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : workVM.errorMessage != null
-                  ? Center(child: Text('에러 발생: ${workVM.errorMessage}'))
-                  : works == null || works.isEmpty
-                  ? Center(
-                child: Text(
-                  '작품이 없습니다.\n작품을 추가해주세요.',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                  textAlign: TextAlign.center,
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                WorkStateButton(
+                  selectedStatus: _filterStatus,
+                  onChanged: (newStatus) {
+                    setState(() {
+                      _filterStatus = newStatus;
+                    });
+                  },
                 ),
-              )
-                  : ListView.builder(
-                itemCount: works.length,
-                itemBuilder: (context, index) {
-                  final work = works[index];
-                  return WorkListItem(
-                    work: work,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              ShowWork(projectId: work.id!),
-                        ),
-                      );
-                    },
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ChangeNotifierProvider<AddRecordViewModel>(
-                            create: (_) => AddRecordViewModel(
-                              authViewModel: context.read<AuthViewModel>(),
-                              createRecordUseCase: CreateRecordUseCase(
-                                recordsRepository: context.read<RecordsRepository>(),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: workVM.isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : workVM.errorMessage != null
+                      ? Center(child: Text('에러 발생: ${workVM.errorMessage}'))
+                      : filteredWorks.isEmpty
+                      ? const Center(
+                    child: Text(
+                      '작품이 없습니다',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                      : ListView.builder(
+                    itemCount: filteredWorks.length,
+                    itemBuilder: (context, index) {
+                      final work = filteredWorks[index];
+                      return WorkListItem(
+                        work: work,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ShowWork(projectId: work.id!),
+                            ),
+                          );
+                        },
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChangeNotifierProvider(
+                                create: (_) => AddRecordViewModel(
+                                  authViewModel: context.read<AuthViewModel>(),
+                                  createRecordUseCase: CreateRecordUseCase(
+                                    recordsRepository: context.read<RecordsRepository>(),
+                                  ),
+                                  recordsRepository: context.read<RecordsRepository>(),
+                                ),
+                                child: AddRecord(work: work),
                               ),
                             ),
-                            child: AddRecord(work: work),
-                          ),
-                        ),
+                          );
+                        },
                       );
                     },
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          if (DateTime.now().weekday == DateTime.monday)
+            Positioned(
+              bottom: 16,
+              left: 16,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ReportUi()),
                   );
                 },
+                style: ElevatedButton.styleFrom(
+                  //foregroundColor: PRIMARY_COLOR,
+                  side: BorderSide(color: PRIMARY_COLOR),
+                ),
+                child: Text('주간 리포트 확인', style: TextStyle(color: PRIMARY_COLOR),),
               ),
             ),
-          ],
-        ),
+        ],
       ),
+
       floatingActionButton: _addWorkFloatingButton(context),
       //floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
@@ -133,25 +169,22 @@ class _WorkListState extends State<WorkList> {
       backgroundColor: PRIMARY_COLOR,
       tooltip: '작품 추가',
       onPressed: () async {
-        final result = await Navigator.push(
+        await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) => ChangeNotifierProvider<AddWorkViewModel>(
               create: (_) => AddWorkViewModel(
                 authViewModel: context.read<AuthViewModel>(),
                 createWorkUseCase: CreateWorkUseCase(
-                  workRepositories: context.read<WorkRepositories>(),
+                  workRepository: context.read<WorkRepository>(),
                 ),
+                workRepository: context.read<WorkRepository>(),
               ),
               child: AddWork(),
             ),
           ),
         );
 
-        // 결과 처리: 작품이 추가되었을 경우 리스트 다시 불러오기
-        if (result == true && context.mounted) {
-          await context.read<WorkViewModel>().getWorks();
-        }
       },
       child: Icon(Icons.add, color: Colors.white)
     );

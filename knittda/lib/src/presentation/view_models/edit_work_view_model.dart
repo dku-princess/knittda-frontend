@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/data/repositories/work_repository.dart';
 import 'package:knittda/src/domain/use_case/update_work_use_case.dart';
 import 'package:knittda/src/data/models/work_model.dart';
 import 'auth_view_model.dart';
@@ -7,11 +8,15 @@ class EditWorkViewModel extends ChangeNotifier {
   final UpdateWorkUseCase _updateWorkUseCase;
   final AuthViewModel _auth;
 
+  final WorkRepository repository;
+
   EditWorkViewModel({
     required AuthViewModel authViewModel,
     required UpdateWorkUseCase updateWorkUseCase,
+    required WorkRepository workRepository
   })  : _auth = authViewModel,
-        _updateWorkUseCase = updateWorkUseCase;
+        _updateWorkUseCase = updateWorkUseCase,
+        repository = workRepository;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -19,8 +24,7 @@ class EditWorkViewModel extends ChangeNotifier {
   String? _error;
   String? get errorMessage => _error;
 
-  WorkModel? _updated;
-  WorkModel? get updatedWork => _updated;
+  WorkModel? get updatedWork => repository.work;
 
   void _setLoading(bool value) {
     _isLoading = value;
@@ -37,8 +41,7 @@ class EditWorkViewModel extends ChangeNotifier {
 
     _setLoading(true);
     try {
-      final result = await _updateWorkUseCase(token, work);
-      _updated = result.work;
+      await _updateWorkUseCase(token, work);
       _error = null;
       return true;
     } catch (e) {
@@ -48,4 +51,25 @@ class EditWorkViewModel extends ChangeNotifier {
       _setLoading(false);
     }
   }
+
+  // Future<bool> updateWorkStatus(WorkModel work) async {
+  //   final token = _auth.jwt;
+  //   if (token == null) {
+  //     _error = '로그인이 필요합니다.';
+  //     notifyListeners();
+  //     return false;
+  //   }
+  //
+  //   _setLoading(true);
+  //   try {
+  //     await repository.updateWorkStatus(token, work);
+  //     _error = null;
+  //     return true;
+  //   } catch (e) {
+  //     _error = e.toString();
+  //     return false;
+  //   } finally {
+  //     _setLoading(false);
+  //   }
+  // }
 }

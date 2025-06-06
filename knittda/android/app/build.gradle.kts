@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -19,13 +21,21 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
+//    packaging {
+//        resources {
+//            excludes += "META-INF/DEPENDENCIES"
+//            excludes += "META-INF/LICENSE*"
+//            excludes += "META-INF/NOTICE*"
+//        }
+//    }
+
     /** ───────────────────────────────────────────────
      *  Kakao Native App Key를 local.properties에서 읽어오기
      *  - 값이 없으면 빌드 실패(error)로 처리하도록 설정
      * ─────────────────────────────────────────────── */
     val kakaoKey: String by lazy {
         val propsFile = rootDir.resolve("local.properties")
-        val props = java.util.Properties()
+        val props = Properties()
         if (propsFile.exists()) {
             props.load(propsFile.inputStream())
         }
@@ -59,3 +69,8 @@ android {
 flutter {
     source = "../.."
 }
+
+//dependencies {
+//    implementation("com.google.api-client:google-api-client:1.31.5")
+//    implementation("joda-time:joda-time:2.10.10")
+//}
