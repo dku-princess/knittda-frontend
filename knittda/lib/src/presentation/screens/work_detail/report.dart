@@ -36,11 +36,24 @@ class Report extends StatelessWidget {
     final fillFraction = percent / 100.0;
 
     DateTime now = DateTime.now();
-    DateTime startDate = work.startDate!;
-    DateTime goalDate = work.goalDate!;
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime startDate = DateTime(work.startDate!.year, work.startDate!.month, work.startDate!.day);
+    DateTime goalDate = DateTime(work.goalDate!.year, work.goalDate!.month, work.goalDate!.day);
 
-    int dDayPlus = now.difference(startDate).inDays;
-    int dDayMinus = goalDate.difference(now).inDays;
+    // D+ 계산
+    int dDayPlus = today.difference(startDate).inDays;
+
+    // D-Day 텍스트 계산
+    int dayDiff = goalDate.difference(today).inDays;
+
+    String dDayText;
+    if (dayDiff > 0) {
+      dDayText = 'D - $dayDiff';
+    } else if (dayDiff == 0) {
+      dDayText = 'D - 0';
+    } else {
+      dDayText = 'D + ${dayDiff.abs()}';
+    }
 
     String formattedStartDate = DateUtilsHelper.toDotFormat(startDate);
     String formattedGoalDate = DateUtilsHelper.toDotFormat(goalDate);
@@ -141,12 +154,19 @@ class Report extends StatelessWidget {
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: 'D + $dDayMinus\n',
-                            style: TextStyle(color: PRIMARY_COLOR, fontSize: 20, fontWeight: FontWeight.w500),
+                            text: '$dDayText\n',
+                            style: TextStyle(
+                              color: PRIMARY_COLOR,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                           TextSpan(
                             text: formattedGoalDate,
-                            style: TextStyle(color: Colors.grey[600], fontSize: 12,)
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 12,
+                            ),
                           ),
                         ],
                       ),
@@ -156,7 +176,6 @@ class Report extends StatelessWidget {
               )
             ],
           ),
-
         ],
       ),
     );
