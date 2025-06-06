@@ -4,11 +4,15 @@ import 'package:flutter/material.dart';
 class EditDeleteMenu extends StatelessWidget {
   final VoidCallback onEdit;
   final Future<void> Function() onDelete;
+  final String deleteDialogTitle;
+  final String deleteDialogContent;
 
   const EditDeleteMenu({
     Key? key,
     required this.onEdit,
     required this.onDelete,
+    this.deleteDialogTitle = '삭제',
+    this.deleteDialogContent = '정말 삭제하시겠습니까?',
   }) : super(key: key);
 
   @override
@@ -34,8 +38,8 @@ class EditDeleteMenu extends StatelessWidget {
           final confirmed = await showDialog<bool>(
             context: context,
             builder: (context) => AlertDialog(
-              title: Text('기록 삭제'),
-              content: Text('정말 이 기록을 삭제하시겠습니까?'),
+              title: Text(deleteDialogTitle),
+              content: Text(deleteDialogContent),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),

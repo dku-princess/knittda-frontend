@@ -106,7 +106,7 @@ class _EditRecordState extends State<EditRecord> {
                       children: [
                         WorkListItem(work: widget.record.projectDto!),
                         const SizedBox(height: 35),
-                        const Text("오늘은 어떠셨어요?", style: TextStyle(fontSize: 20)),
+                        const Text("오늘 뜨개는 어떠셨어요?", style: TextStyle(fontSize: 20)),
                         const SizedBox(height: 16),
                         Wrap(
                           spacing: 10,
@@ -282,7 +282,7 @@ class _EditRecordState extends State<EditRecord> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text("기록을 남겨주세요", style: TextStyle(fontSize: 20)),
+                        const Text("뜨개 기록을 남겨주세요", style: TextStyle(fontSize: 20)),
                         const SizedBox(height: 16),
                         TextField(
                           maxLines: 8,
@@ -338,7 +338,7 @@ class _EditRecordState extends State<EditRecord> {
                           if (!mounted) return;
 
                           if (success && context.mounted) {
-                            Navigator.pop(context, true); // 수정 성공 표시
+                            Navigator.pop(context); // 수정 성공 표시
                           } else {
                             final error = EditRecordVM.errorMessage ?? "수정에 실패했습니다.";
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));

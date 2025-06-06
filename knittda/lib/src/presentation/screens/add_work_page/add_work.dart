@@ -255,7 +255,7 @@ class _AddWorkState extends State<AddWork> {
                     ListTile(
                       contentPadding: EdgeInsets.zero,
                       title: Text(
-                        "정보",
+                        "뜨개 정보",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 20,
@@ -321,16 +321,21 @@ class _AddWorkState extends State<AddWork> {
                             return;
                           }
 
-                          if (_goalDate != null) {
-                            final goalDate = DateUtilsHelper.fromDotFormat(_goalDate!);
-                            final now = DateTime.now();
+                          if (_goalDate == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('목표 날짜를 선택해주세요!')),
+                            );
+                            return;
+                          }
 
-                            if (goalDate.isBefore(DateTime(now.year, now.month, now.day))) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('목표 날짜는 오늘 이후여야 합니다.')),
-                              );
-                              return;
-                            }
+                          final goalDate = DateUtilsHelper.fromDotFormat(_goalDate!);
+                          final now = DateTime.now();
+
+                          if (goalDate.isBefore(DateTime(now.year, now.month, now.day))) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('목표 날짜는 오늘 이후여야 합니다.')),
+                            );
+                            return;
                           }
 
                           final work = WorkModel.forCreate(
@@ -338,6 +343,7 @@ class _AddWorkState extends State<AddWork> {
                             nickname: nickname,
                             customYarnInfo: customYarnInfo,
                             customNeedleInfo: customNeedleInfo,
+                            startDate: DateTime.now(),
                             goalDate: _goalDate != null ? DateUtilsHelper.fromDotFormat(_goalDate!) : null,
                             file: _image,
                             title: title,
@@ -348,7 +354,7 @@ class _AddWorkState extends State<AddWork> {
                           if (!mounted) return;
 
                           if (success) {
-                            Navigator.pop(context, true); // <-- 성공 여부 반환
+                            Navigator.pop(context); // <-- 성공 여부 반환
                           } else {
                             final error = addWorkVM.errorMessage ?? '알 수 없는 오류';
                             ScaffoldMessenger.of(context).showSnackBar(

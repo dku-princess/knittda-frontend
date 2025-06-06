@@ -1,17 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:knittda/src/data/models/record_model.dart';
+import 'package:knittda/src/data/repositories/records_repository.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 
 class AddRecordViewModel extends ChangeNotifier {
   AuthViewModel _auth;
   final CreateRecordUseCase _createUseCase;
+  final RecordsRepository repository;
 
   AddRecordViewModel({
     required AuthViewModel authViewModel,
     required CreateRecordUseCase createRecordUseCase,
+    required RecordsRepository recordsRepository,
   })  : _auth = authViewModel,
-        _createUseCase = createRecordUseCase;
+        _createUseCase = createRecordUseCase,
+        repository = recordsRepository;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -19,8 +23,7 @@ class AddRecordViewModel extends ChangeNotifier {
   String? _error;
   String? get errorMessage => _error;
 
-  RecordModel? _created;
-  RecordModel? get createdRecord => _created;
+  RecordModel? get createdRecord => repository.record;
 
   void _setLoading(bool v) {
     _isLoading = v;
@@ -37,8 +40,7 @@ class AddRecordViewModel extends ChangeNotifier {
 
     _setLoading(true);
     try {
-      final result = await _createUseCase(token, record);
-      _created = result.record;
+      await _createUseCase(token, record);
       _error   = null;
 
       return true;

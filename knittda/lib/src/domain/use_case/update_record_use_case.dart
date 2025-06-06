@@ -10,10 +10,9 @@ class UpdateRecordUseCase {
     required this.recordsRepository,
   });
 
-  Future<({RecordModel record})> call(String accessToken, RecordModel record, List<int>? deleteImageIds) async {
+  Future<void> call(String accessToken, RecordModel record, List<int>? deleteImageIds) async {
     try {
-      final result = await recordsRepository.updateRecord(accessToken, record, deleteImageIds);
-      return (record: result.record);
+      await recordsRepository.updateRecord(accessToken, record, deleteImageIds);
     } catch (e, stack) {
       await Sentry.captureException(e, stackTrace: stack);
       debugPrint('UpdateRecordUseCase 오류: $e\n$stack');

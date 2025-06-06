@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/record_model.dart';
+import 'package:knittda/src/data/repositories/records_repository.dart';
 import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
@@ -10,16 +11,19 @@ class RecordViewModel extends ChangeNotifier {
   final DeleteRecordUseCase _deleteUseCase;
   final GetRecordUseCase _getRecordUseCase;
   final GetRecordsUseCase _getRecordsUseCase;
+  final RecordsRepository repository;
 
   RecordViewModel({
     required AuthViewModel authViewModel,
     required DeleteRecordUseCase deleteRecordUseCase,
     required GetRecordUseCase getRecordUseCase,
     required GetRecordsUseCase getRecordsUseCase,
+    required RecordsRepository recordsRepository,
   })  : _auth = authViewModel,
         _deleteUseCase = deleteRecordUseCase,
         _getRecordUseCase = getRecordUseCase,
-        _getRecordsUseCase = getRecordsUseCase;
+        _getRecordsUseCase = getRecordsUseCase,
+        repository = recordsRepository;
 
   void update(AuthViewModel auth) {
     _auth = auth;
@@ -32,20 +36,9 @@ class RecordViewModel extends ChangeNotifier {
   String? _error;
   String? get errorMessage => _error;
 
-  RecordModel? _gotRecord;
-  RecordModel? get gotRecord => _gotRecord;
+  RecordModel? get record => repository.record;
 
-  List<RecordModel>? _gotRecords;
-  List<RecordModel>? get gotRecords => _gotRecords;
-
-  void reset({bool all = false}) {
-    _error = null;
-    _gotRecord = null;
-    if (all) {
-      _gotRecords = null;
-    }
-    notifyListeners();
-  }
+  List<RecordModel>? get records => repository.records;
 
   void _setLoading(bool v) {
     _isLoading = v;
@@ -62,8 +55,7 @@ class RecordViewModel extends ChangeNotifier {
 
     _setLoading(true);
     try {
-      final result = await _getRecordUseCase(token, recordId);
-      _gotRecord = result.record;
+      await _getRecordUseCase(token, recordId);
       _error   = null;
       return true;
     } catch (e) {
@@ -84,8 +76,7 @@ class RecordViewModel extends ChangeNotifier {
 
     _setLoading(true);
     try {
-      final result = await _getRecordsUseCase(token, projectId);
-      _gotRecords = result;
+      await _getRecordsUseCase(token, projectId);
       _error   = null;
       return true;
     } catch (e) {
@@ -108,13 +99,6 @@ class RecordViewModel extends ChangeNotifier {
     try {
       await _deleteUseCase(token, recordId);
       _error   = null;
-
-      // 목록에서 직접 제거
-      final index = _gotRecords?.indexWhere((r) => r.id == recordId);
-      if (index != null && index != -1) {
-        _gotRecords!.removeAt(index);
-        notifyListeners();
-      }
 
       return true;
     } catch (e) {
