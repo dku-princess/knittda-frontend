@@ -1,14 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/repositories/records_repository.dart';
+import 'package:knittda/src/data/repositories/report_repository.dart';
 import 'package:knittda/src/data/repositories/work_repository.dart';
 import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_report_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_works_use_case.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
+import 'package:knittda/src/presentation/view_models/report_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import './src/app.dart';
 
@@ -145,6 +148,25 @@ Future<void> main() async {
                 getRecordUseCase: getRecordUseCase,
                 getRecordsUseCase: getRecordsUseCase,
                 recordsRepository: recordsRepository
+              );
+            },
+          ),
+
+          Provider<ReportRepository>(
+            create: (_) => ReportRepository(),
+          ),
+          ProxyProvider<ReportRepository, GetReportUseCase>(
+            update: (_, repo, __) => GetReportUseCase(reportRepository: repo),
+          ),
+          ChangeNotifierProxyProvider2<AuthViewModel, GetReportUseCase, ReportViewModel>(
+            create: (ctx) => ReportViewModel(
+              authViewModel: ctx.read<AuthViewModel>(),
+              getReportUseCase: ctx.read<GetReportUseCase>(),
+            ),
+            update: (ctx, auth, getReportUseCase, prev) {
+              return ReportViewModel(
+                authViewModel: auth,
+                getReportUseCase: getReportUseCase,
               );
             },
           ),

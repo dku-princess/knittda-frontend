@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
-// import 'package:knittda/src/data/models/hashtag_model.dart';
-// import 'package:knittda/src/data/models/report_model.dart';
 import 'package:knittda/src/presentation/view_models/report_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -32,8 +30,21 @@ Map<String, String?> scoreToStage(double score) {
   };
 }
 
-class ReportUi extends StatelessWidget {
+class ReportUi extends StatefulWidget {
   const ReportUi({super.key});
+
+  @override
+  State<ReportUi> createState() => _ReportUiState();
+}
+
+class _ReportUiState extends State<ReportUi> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ReportViewModel>().fetchReport();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
