@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/core/constants/color.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:knittda/src/presentation/screens/home.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -15,10 +17,11 @@ class Login extends StatelessWidget {
         children: [
           Expanded(
             child: Center(
-              child: Image.asset(
-                'assets/image/logo.png',
-                width: 100,
-                height: 50,
+              child: SvgPicture.asset(
+                'assets/image/logo3.svg',
+                width: 150,
+                height: 150,
+                colorFilter: ColorFilter.mode(PRIMARY_COLOR, BlendMode.srcIn),
               )
             ),
           ),
@@ -36,7 +39,8 @@ class Login extends StatelessWidget {
                 }
               },
               child: Image.asset(
-                "assets/image/kakao_login_medium_wide.png",
+                "assets/image/kakao_login_large_wide.png",
+                width: 300,
               ),
             ),
           ),
