@@ -17,6 +17,7 @@ class Mypage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         title: Padding(
           padding: EdgeInsets.only(left: 8.0, top: 8.0),
           child: Text(

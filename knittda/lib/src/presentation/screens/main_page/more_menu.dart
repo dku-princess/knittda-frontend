@@ -25,6 +25,7 @@ class MoreMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         title: Padding(
           padding: EdgeInsets.only(left: 8.0, top: 8.0),
           child: Text(
