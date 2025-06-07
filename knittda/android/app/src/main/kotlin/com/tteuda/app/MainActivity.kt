@@ -1,4 +1,4 @@
-package com.example.knittda
+package com.tteuda.app
 
 import io.flutter.embedding.android.FlutterActivity
 
