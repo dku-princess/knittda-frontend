@@ -10,7 +10,7 @@ class ReportLocalDataSource {
   Future<void> save(String weekId, ReportModel report) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_weekIdKey, weekId);
-    await prefs.setString(_reportKey, jsonEncode(report));
+    await prefs.setString(_reportKey, jsonEncode(report.toJson()));
   }
 
   /// (읽기) weekId가 다르면 null, 같으면 파싱하여 반환

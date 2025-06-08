@@ -10,10 +10,10 @@ class GetReportUseCase {
     required this.reportRepository,
   });
 
-  Future<({ReportModel report})> call (String accessToken) async {
+  Future<ReportModel> call (String accessToken) async {
     try {
       final result = await reportRepository.getReport(accessToken);
-      return (report: result.report);
+      return result;
     } catch (e, stack) {
       await Sentry.captureException(e, stackTrace: stack);
       debugPrint('GetReportUseCase 오류: $e\n$stack');
