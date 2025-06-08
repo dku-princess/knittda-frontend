@@ -13,11 +13,9 @@ class HashtagModel {
       description: json['description'] ?? '',
     );
   }
-}
 
-extension HashtagModelJson on HashtagModel {
   Map<String, dynamic> toJson() => {
-    'hashtag' : hashtag,
-    'description' : description,
+    'hashtag': hashtag,
+    'description': description,
   };
 }
