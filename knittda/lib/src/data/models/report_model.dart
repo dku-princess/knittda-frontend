@@ -32,3 +32,14 @@ class ReportModel {
     );
   }
 }
+
+extension ReportModelJson on ReportModel {
+  Map<String, dynamic> toJson() => {
+    'knittingLevel': knittingLevel,
+    'weeklyKnittingCount': weeklyKnittingCount,
+    'weeklyKnittingPhotoCount': weeklyKnittingPhotoCount,
+    'weeklyProgress': weeklyProgress,
+    'topTags': topTags,
+    'weeklyHashtags': weeklyHashtags?.map((e) => e.toJson()).toList(),
+  };
+}
