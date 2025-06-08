@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/core/constants/color.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:knittda/src/presentation/screens/home.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -17,11 +15,10 @@ class Login extends StatelessWidget {
         children: [
           Expanded(
             child: Center(
-              child: SvgPicture.asset(
-                'assets/image/logo3.svg',
+              child: Image.asset(
+                'assets/image/logo.png',
                 width: 150,
                 height: 150,
-                colorFilter: ColorFilter.mode(PRIMARY_COLOR, BlendMode.srcIn),
               )
             ),
           ),
