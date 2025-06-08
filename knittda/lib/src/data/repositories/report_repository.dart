@@ -1,7 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/models/report_model.dart';
 import 'package:knittda/env.dart';
+
+import '../../core/storage/report_local_data_source.dart';
 
 class ReportRepository {
   final Dio _dio = Dio(
@@ -11,7 +14,9 @@ class ReportRepository {
     ),
   );
 
-  Future<({ReportModel report})> getReport(String accessToken) async {
+  final ReportLocalDataSource _local = ReportLocalDataSource();
+
+  Future<ReportModel> fetchReportFromServer (String accessToken) async {
     try {
       final res = await _dio.post<Map<String, dynamic>>(
         '/api/v1/report/',
@@ -39,7 +44,7 @@ class ReportRepository {
         throw Exception('잘못된 응답 형식');
       }
 
-      return (report: ReportModel.fromJson(data));
+      return ReportModel.fromJson(data);
 
     } on DioException catch (e) {
       debugPrint('네트워크 오류: ${e.response?.data ?? e.message}');
@@ -48,5 +53,20 @@ class ReportRepository {
       debugPrint('리포트 불러오기 예외: $e');
       throw Exception('리포트 불러오기 오류: $e');
     }
+  }
+
+  Future<ReportModel> getReport(String token) async {
+    final weekId = DateUtilsHelper.getCurrentWeekId();
+
+    // 1. 로컬 캐시 먼저
+    final cached = await _local.load(weekId);
+    if (cached != null) return cached;
+
+    // 2. 캐시 없으면 서버 호출
+    final fresh = await fetchReportFromServer(token);
+
+    // 3. 받아온 결과를 캐시에 저장
+    await _local.save(weekId, fresh);
+    return fresh;
   }
 }
