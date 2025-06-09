@@ -1,4 +1,5 @@
 class DateUtilsHelper {
+  //padLeft: 지정한 길이보다 짧으면, 왼쪽에 문자를 채운다
   static String toHyphenFormat(DateTime date) =>
       "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
 
@@ -14,11 +15,12 @@ class DateUtilsHelper {
       "${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
 
   static String getCurrentWeekId() {
+    //현재 날짜와 시간을 가져온다
     final now = DateTime.now();
 
-    // 이번 주 월요일 0시 계산 (weekday: 월=1 … 일=7)
-    final monday = now.subtract(
-      Duration(days: now.weekday - DateTime.monday),
+    // 이번 주 월요일 날짜 계산
+    final monday = now.subtract( //현재 날짜에서 duration 만큼 뺀다
+      Duration(days: now.weekday - DateTime.monday), //두 시간 사이의 간격을 나타냄
     );
 
     //문자열 생성
