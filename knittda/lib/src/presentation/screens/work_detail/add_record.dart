@@ -48,7 +48,7 @@ class _AddRecordState extends State<AddRecord> {
       source: ImageSource.gallery,
       maxWidth: 1024,
       maxHeight: 1024,
-      //imageQuality: 85,//이미지 압축률 (선택사항)
+      //imageQuality: 85,//이미지 압축률
     );
     if (picked != null) {
       setState(() {
@@ -81,7 +81,8 @@ class _AddRecordState extends State<AddRecord> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 16),
-                  // 1. 작품 정보 + 감정 선택
+
+                  // 태그 선택
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24.0),
                     child: Column(
@@ -183,7 +184,7 @@ class _AddRecordState extends State<AddRecord> {
 
                   const Divider(color: Color(0xFFE0E0E0), thickness: 8, height: 40),
 
-                  // 2. 사진 추가 영역
+                  // 사진 추가
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24.0),
                     child: Column(
@@ -237,7 +238,7 @@ class _AddRecordState extends State<AddRecord> {
                     ),
                   ),
 
-                  // 3. 텍스트 입력
+                  // 텍스트 입력
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24.0),
                     child: Column(
@@ -285,15 +286,6 @@ class _AddRecordState extends State<AddRecord> {
                             );
                             return;
                           }
-
-                          // if (_selectedTags.isEmpty &&
-                          //     _commentController.text.trim().isEmpty &&
-                          //     _images.isEmpty) {
-                          //   ScaffoldMessenger.of(context).showSnackBar(
-                          //     const SnackBar(content: Text('태그를 선택하거나 사진 또는 기록을 남겨주세요.')),
-                          //   );
-                          //   return;
-                          // }
 
                           final record = RecordModel.forCreate(
                             projectId   : widget.work.id!,
