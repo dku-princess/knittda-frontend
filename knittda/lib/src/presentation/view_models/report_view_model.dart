@@ -38,7 +38,7 @@ class ReportViewModel extends ChangeNotifier {
 
     try {
       final result = await _getReportUseCase(token);
-      _report = result.report;
+      _report = result;
       return true;
     } catch (e) {
       _error = e.toString();

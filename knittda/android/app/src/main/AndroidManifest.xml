@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
-        android:label="knittda"
+        android:label="뜨다"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 

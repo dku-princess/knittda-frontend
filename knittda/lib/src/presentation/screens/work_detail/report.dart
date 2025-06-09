@@ -52,7 +52,7 @@ class Report extends StatelessWidget {
     } else if (dayDiff == 0) {
       dDayText = 'D - 0';
     } else {
-      dDayText = 'D + ${dayDiff.abs()}';
+      dDayText = 'D + ${dayDiff.abs()}'; //절댓값
     }
 
     String formattedStartDate = DateUtilsHelper.toDotFormat(startDate);
@@ -86,17 +86,19 @@ class Report extends StatelessWidget {
                 child: Stack(
                   alignment: Alignment.bottomCenter,
                   children: [
-                    // 그라데이션 채움 (아래서부터 비율만큼 높이)
+                    // 자식 위젯의 위치를 부모 영역의 아래 쪽 중앙에 위치
                     Align(
                       alignment: Alignment.bottomCenter,
+                      //부모 높이의 몇 퍼센트 만큼 자식 높이를 차지할 지
                       child: FractionallySizedBox(
-                        heightFactor: fillFraction, // 0.0 ~ 1.0
+                        heightFactor: fillFraction,
                         widthFactor: 1.0,
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: percent == 100
                                 ? BorderRadius.circular(10) // 전체 둥글게
                                 : BorderRadius.vertical(bottom: Radius.circular(10)), // 아래만
+                            //그라데이션 채움
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,

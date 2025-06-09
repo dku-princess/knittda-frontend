@@ -85,7 +85,7 @@ class RecordListItem extends StatelessWidget {
 
             // 태그
             if (record.tags != null && record.tags!.isNotEmpty) ...[
-              LayoutBuilder(
+              LayoutBuilder( //화면의 가로 너비를 알아내기 위해 사용
                 builder: (context, constraints) {
                   const double tagSpacing = 10;
                   double usedWidth = 0;
@@ -93,7 +93,8 @@ class RecordListItem extends StatelessWidget {
                   int hiddenCount = 0;
 
                   for (final tag in record.tags!) {
-                    final tagWidth = (tag.length * 12) + 24;
+                    final tagWidth = (tag.length * 12) + 24; //각 태그의 대략적인 너비 계산
+                    //현재까지 너비 + 이번 태그 더했을 때 화면 너비 초과하면, 남은 태구 개수를 +N 형태로 계산
                     if (usedWidth + tagWidth > constraints.maxWidth) {
                       hiddenCount = record.tags!.length - limitedTags.length;
                       if (hiddenCount > 0) {

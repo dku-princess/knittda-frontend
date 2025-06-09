@@ -13,4 +13,9 @@ class HashtagModel {
       description: json['description'] ?? '',
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'hashtag': hashtag,
+    'description': description,
+  };
 }
