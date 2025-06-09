@@ -42,7 +42,7 @@ class _EditWorkState extends State<EditWork> {
       source: ImageSource.gallery,
       maxWidth: 1024,
       maxHeight: 1024,
-      //imageQuality: 85,//이미지 압축률 (선택사항)
+      //imageQuality: 85,//이미지 압축률
     );
     if (picked != null) {
       setState(() {

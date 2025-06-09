@@ -10,7 +10,7 @@
 -dontwarn io.flutter.**
 
 # MainActivity
--keep class com.example.knittda.MainActivity { *; }
+-keep class com.tteuda.app.MainActivity { *; }
 
 # Kakao SDK
 -keep class com.kakao.** { *; }
@@ -34,3 +34,12 @@
     native <methods>;
 }
 
+# R8 오류 방지용 - Tink, Firebase, Sentry 등에서 필요
+-dontwarn com.google.errorprone.annotations.**
+-keep class com.google.errorprone.annotations.** { *; }
+
+-dontwarn javax.annotation.**
+-keep class javax.annotation.** { *; }
+
+-dontwarn javax.annotation.concurrent.**
+-keep class javax.annotation.concurrent.** { *; }

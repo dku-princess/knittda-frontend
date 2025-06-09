@@ -33,17 +33,10 @@ class WorkListItem extends StatelessWidget {
               children: [
                 Text(work.nickname),
                 SizedBox(height:14),
-                // Row(
-                //   children: [
-                //     Text("기록일", style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-                //     SizedBox(width: 4),
-                //     Text(DateUtilsHelper.toDotFormat(work.lastRecordAt), style: TextStyle(fontSize: 12)),
-                //   ],
-                // ),
               ],
             ),
             Spacer(), // 오른쪽 끝으로 버튼을 밀어줌
-            if (onPressed != null) // ✅ showButton 없이 이 조건만으로 제어
+            if (onPressed != null)
               TextButton(
                 onPressed: onPressed,
                 style: TextButton.styleFrom(

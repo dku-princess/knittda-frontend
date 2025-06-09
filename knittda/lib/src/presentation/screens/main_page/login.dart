@@ -17,8 +17,8 @@ class Login extends StatelessWidget {
             child: Center(
               child: Image.asset(
                 'assets/image/logo.png',
-                width: 100,
-                height: 50,
+                width: 150,
+                height: 150,
               )
             ),
           ),
@@ -36,7 +36,8 @@ class Login extends StatelessWidget {
                 }
               },
               child: Image.asset(
-                "assets/image/kakao_login_medium_wide.png",
+                "assets/image/kakao_login_large_wide.png",
+                width: 300,
               ),
             ),
           ),

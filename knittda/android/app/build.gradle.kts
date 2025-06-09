@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.knittda"
+    namespace = "com.tteuda.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -54,13 +54,13 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.knittda"
+        applicationId = "com.tteuda.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        versionCode = 3
+        versionName = "0.0.2"
 
         //키값 주입
         manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = kakaoKey
@@ -68,8 +68,8 @@ android {
 
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false              // 코드 난독화 활성화
-            isShrinkResources = false            // 사용되지 않는 리소스 제거
+            isMinifyEnabled = true              // 코드 난독화 활성화
+            isShrinkResources = true            // 사용되지 않는 리소스 제거
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"            // 사용자 정의 ProGuard 룰 파일

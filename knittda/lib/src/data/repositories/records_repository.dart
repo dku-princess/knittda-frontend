@@ -23,9 +23,9 @@ class RecordsRepository extends ChangeNotifier{
         deleteImageIds: deleteImageIds,
       );
 
-      // // 🔍 formData 확인
+      // formData 확인
       // for (final field in formData.fields) {
-      //   debugPrint('📦 field: ${field.key} = ${field.value} (type: ${field.value.runtimeType})');
+      //   debugPrint('field: ${field.key} = ${field.value} (type: ${field.value.runtimeType})');
       // }
 
       final res = await _dio.put<Map<String, dynamic>>(

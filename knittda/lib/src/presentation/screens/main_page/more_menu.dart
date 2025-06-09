@@ -25,6 +25,7 @@ class MoreMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         title: Padding(
           padding: EdgeInsets.only(left: 8.0, top: 8.0),
           child: Text(
@@ -42,8 +43,6 @@ class MoreMenu extends StatelessWidget {
         children: [
           SizedBox(height: 20),
           MoreMenuList(title: '로그아웃', onTab: () => onLogout(context)),
-          //MoreMenuList(title: '문의하기', onTab: () =>()),
-          //MoreMenuList(title: '회원탈퇴', onTab: () =>()),
         ],
       ),
     );

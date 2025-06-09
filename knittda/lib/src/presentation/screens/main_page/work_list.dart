@@ -60,6 +60,7 @@ class _WorkListState extends State<WorkList> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         toolbarHeight: 90,
         title: Padding(
           padding: const EdgeInsets.only(left: 8.0, top: 8.0),
