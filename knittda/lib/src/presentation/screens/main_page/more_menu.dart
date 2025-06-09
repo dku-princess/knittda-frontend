@@ -43,8 +43,6 @@ class MoreMenu extends StatelessWidget {
         children: [
           SizedBox(height: 20),
           MoreMenuList(title: '로그아웃', onTab: () => onLogout(context)),
-          //MoreMenuList(title: '문의하기', onTab: () =>()),
-          //MoreMenuList(title: '회원탈퇴', onTab: () =>()),
         ],
       ),
     );
