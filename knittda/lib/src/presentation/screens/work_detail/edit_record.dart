@@ -98,7 +98,7 @@ class _EditRecordState extends State<EditRecord> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 16),
-                  // 1. 작품 정보 + 감정 선택
+                  //태그 선택
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24.0),
                     child: Column(
@@ -200,7 +200,7 @@ class _EditRecordState extends State<EditRecord> {
 
                   const Divider(color: Color(0xFFE0E0E0), thickness: 8, height: 40),
 
-                  // 2. 사진 추가 영역
+                  // 사진 추가
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24.0),
                     child: Column(
@@ -276,7 +276,7 @@ class _EditRecordState extends State<EditRecord> {
                     ),
                   ),
 
-                  // 3. 텍스트 입력
+                  // 텍스트 입력
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24.0),
                     child: Column(
