@@ -25,6 +25,7 @@ class _SearchPatternsState extends State<SearchPatterns> {
   void _onSearchChanged() {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
+    //0.5초 동안 추가 입력이 없으면 검색 실행
     _debounce = Timer(const Duration(milliseconds: 500), () {
       final keyword = _searchController.text.trim();
       final viewModel = context.read<SearchViewModel>();
@@ -119,52 +120,4 @@ class _SearchPatternsState extends State<SearchPatterns> {
     );
   }
 
-  // Widget _buildInitialMessage(BuildContext context) {
-  //   return Center(
-  //     child: Column(
-  //       mainAxisSize: MainAxisSize.min,
-  //       children: [
-  //         const Text(
-  //           '도안을 선택하여 작품 정보 불러오기',
-  //           textAlign: TextAlign.center,
-  //           style: TextStyle(color: Colors.black87, fontSize: 16),
-  //         ),
-  //         const SizedBox(height: 10),
-  //         Text(
-  //           '도안이 없으면\n작품 정보를 직접 입력할 수도 있어요',
-  //           textAlign: TextAlign.center,
-  //           style: TextStyle(color: Colors.grey[800], fontSize: 14),
-  //         ),
-  //         const SizedBox(height: 30),
-  //         SizedBox(
-  //           width: 130,
-  //           height: 44,
-  //           child: TextButton(
-  //             onPressed: () {
-  //               Navigator.push(
-  //                 context,
-  //                 MaterialPageRoute(
-  //                   builder: (_) => ChangeNotifierProvider.value(
-  //                     value: context.read<AddWorkViewModel>(),
-  //                     child: AddWorkPage(),
-  //                   ),
-  //                 ),
-  //               );
-  //             },
-  //             style: TextButton.styleFrom(
-  //               backgroundColor: Color(0xFFE9F9F5),
-  //               shape: RoundedRectangleBorder(
-  //                 borderRadius: BorderRadius.circular(10),
-  //               ),
-  //             ),
-  //             child: const Text(
-  //               "직접 입력하기",
-  //               style: TextStyle(color: Color(0xFF00A367)),
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 }
