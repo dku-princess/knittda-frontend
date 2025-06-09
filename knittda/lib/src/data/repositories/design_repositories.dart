@@ -11,7 +11,7 @@ class DesignRepositories {
     ),
   );
 
-  //서버에서 도안 검색 결과 가져오기
+  // 서버에서 도안 검색 결과 가져오기
   Future<List<DesignModel>> searchDesign(String keyword) async{
     try{
       final res = await _dio.get<Map<String, dynamic>>(

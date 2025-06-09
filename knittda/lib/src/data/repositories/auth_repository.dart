@@ -23,20 +23,20 @@ class AuthRepository {
         ),
       );
 
-      // 1) HTTP 코드 체크
+      // HTTP 코드 체크
       if (res.statusCode != 200) {
         throw Exception('서버 오류: ${res.statusCode}');
       }
 
       debugPrint('서버 응답: ${res.data}');
 
-      // 2) 최상위 응답 파싱
+      // 최상위 응답 파싱
       final body = res.data;
       if (body == null || body['success'] != true) {
         throw Exception(body?['message'] ?? '알 수 없는 오류');
       }
 
-      // 3) 실제 데이터 꺼내기
+      // 실제 데이터 꺼내기
       final payload = body['data'] as Map<String, dynamic>?;
 
       final jwt  = payload?['jwt']  as String?;
@@ -72,7 +72,7 @@ class AuthRepository {
         ),
       );
 
-      // 1) HTTP 코드 체크
+      // HTTP 코드 체크
       if (res.statusCode != 200) {
         throw Exception('서버 오류: ${res.statusCode}');
       }
@@ -80,13 +80,13 @@ class AuthRepository {
       debugPrint('서버 응답: ${res.data}');
       debugPrint('서버 응답: $token');
 
-      // 2) 최상위 응답 파싱
+      // 최상위 응답 파싱
       final body = res.data;
       if (body == null || body['success'] != true) {
         throw Exception(body?['message'] ?? '알 수 없는 오류');
       }
 
-      // 3) 실제 데이터 꺼내기
+      // 실제 데이터 꺼내기
       final user = body['data'] as Map<String, dynamic>?;
 
       if (user == null) {
