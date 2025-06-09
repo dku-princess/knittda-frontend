@@ -59,8 +59,8 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = 2
-        versionName = "0.0.1"
+        versionCode = 3
+        versionName = "0.0.2"
 
         //키값 주입
         manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = kakaoKey
