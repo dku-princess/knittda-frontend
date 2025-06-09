@@ -14,7 +14,7 @@ class WorkRepository extends ChangeNotifier{
   List<WorkModel> _works = [];
   WorkModel? _work;
 
-  List<WorkModel> get works => List.unmodifiable(_works);
+  List<WorkModel> get works => List.unmodifiable(_works); //읽기 전용
   WorkModel? get work => _work;
 
   Future<void> updateWork(String accessToken, WorkModel work) async {

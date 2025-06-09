@@ -113,7 +113,6 @@ extension RecordModelMultipart on RecordModel {
   Future<FormData> toMultipartForm() async {
     final form = FormData();
 
-    // record는 JSON 형태의 문자열로 필드에 넣음
     form.fields.add(MapEntry(
       'record',
       jsonEncode({
@@ -151,15 +150,15 @@ extension RecordModelMultipart on RecordModel {
     });
 
     form.fields.add(MapEntry('record', recordJson));
-    //debugPrint('📦 record = $recordJson (type: ${recordJson.runtimeType})');
+    //debugPrint('record = $recordJson (type: ${recordJson.runtimeType})');
 
     if (deleteImageIds != null && deleteImageIds.isNotEmpty) {
       final deleteImageIdsJson = jsonEncode(deleteImageIds);
       form.fields.add(MapEntry('deleteImageIds', deleteImageIdsJson));
-      //debugPrint('🧪 deleteImageIds = $deleteImageIdsJson (type: ${deleteImageIdsJson.runtimeType})');
+      //debugPrint('deleteImageIds = $deleteImageIdsJson (type: ${deleteImageIdsJson.runtimeType})');
     }
 
-    // 3️⃣ 파일 추가
+    // 파일 추가
     if (files != null && files!.isNotEmpty) {
       for (final file in files!) {
         final multipart = await MultipartFile.fromFile(
@@ -169,7 +168,7 @@ extension RecordModelMultipart on RecordModel {
         );
 
         form.files.add(MapEntry('files', multipart));
-        //debugPrint('📷 file = ${file.name} (${file.path})');
+        //debugPrint('file = ${file.name} (${file.path})');
       }
     }
 
