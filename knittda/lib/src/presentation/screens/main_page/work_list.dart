@@ -139,7 +139,7 @@ class _WorkListState extends State<WorkList> {
             ),
           ),
 
-          if (DateTime.now().weekday == DateTime.monday)
+          if (DateTime.now().weekday == DateTime.wednesday)
             Positioned(
               bottom: 16,
               left: 16,
