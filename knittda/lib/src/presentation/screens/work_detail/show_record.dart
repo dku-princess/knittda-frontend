@@ -84,8 +84,9 @@ class _ShowRecordState extends State<ShowRecord> {
     }
 
     final height = MediaQuery.of(context).size.height / 3; //화면의 1/3
-    final dateStr = DateUtilsHelper.toDotFormat(record.createdAt!);
-    final timeStr = DateUtilsHelper.toHourMinuteFormat(record.createdAt!);
+    final corrected = record.createdAt!.add(const Duration(hours: 9));
+    final dateStr = DateUtilsHelper.toDotFormat(corrected);
+    final timeStr = DateUtilsHelper.toHourMinuteFormat(corrected);
 
     return Stack(
       children: [
