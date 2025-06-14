@@ -40,6 +40,8 @@ class _AddRecordState extends State<AddRecord> {
   RecordStatus? _selectedStatus;
   final TextEditingController _commentController = TextEditingController();
 
+  bool _submitting = false;
+
   Future<void> _pickImageFromGallery() async {
 
     if (_images.length >= 5) return;
@@ -65,8 +67,8 @@ class _AddRecordState extends State<AddRecord> {
 
   @override
   Widget build(BuildContext context) {
-    final AddRecordVM = context.read<AddRecordViewModel>();
-    final isBusy = AddRecordVM.isLoading;
+    final addRecordVM = context.watch<AddRecordViewModel>();
+    final isBusy = addRecordVM.isLoading || _submitting;
 
     return Stack(
       children: [
@@ -270,41 +272,39 @@ class _AddRecordState extends State<AddRecord> {
                       width: double.infinity,
                       height: 44,
                       child: TextButton(
-                        onPressed: isBusy // 중복클릭 방지
+                        onPressed: isBusy
                           ? null
                           : () async {
-                          if (_selectedStatus == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('진행 상태를 선택해주세요.')),
+                          if (_submitting) return;
+                          setState(() => _submitting = true);
+                          try {
+                            if (_selectedStatus == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('진행 상태를 선택해주세요.')));
+                              return;
+                            }
+                            if (_commentController.text.trim().isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('기록을 남겨주세요.')));
+                              return;
+                            }
+
+                            final record = RecordModel.forCreate(
+                              projectId: widget.work.id!,
+                              recordStatus: _selectedStatus!.name,
+                              tags: _selectedTags.toList(),
+                              comment: _commentController.text.trim(),
+                              files: _images,
                             );
-                            return;
-                          }
 
-                          if (_commentController.text.trim().isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('기록을 남겨주세요.')),
-                            );
-                            return;
-                          }
-
-                          final record = RecordModel.forCreate(
-                            projectId   : widget.work.id!,
-                            recordStatus: _selectedStatus?.name,
-                            tags        : _selectedTags.toList(),
-                            comment     : _commentController.text.trim(),
-                            files       : _images,
-                          );
-
-                          final success = await AddRecordVM.createRecord(record);
-                          if (!mounted) return;
-
-                          if (success) {
-                            Navigator.pop(context);
-                          } else {
-                            final error = AddRecordVM.errorMessage ?? '알 수 없는 오류';
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(error)),
-                            );
+                            final success = await addRecordVM.createRecord(record);
+                            if (!mounted) return;
+                            if (success) {
+                              Navigator.pop(context);
+                            } else {
+                              final error = addRecordVM.errorMessage ?? '알 수 없는 오류';
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+                            }
+                          } finally {
+                            if (mounted) setState(() => _submitting = false);
                           }
                         },
                         style: TextButton.styleFrom(
