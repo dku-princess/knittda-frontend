@@ -16,8 +16,9 @@ class RecordListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateStr = DateUtilsHelper.toDotFormat(record.createdAt!);
-    final timeStr = DateUtilsHelper.toHourMinuteFormat(record.createdAt!);
+    final corrected = record.createdAt!.add(const Duration(hours: 9));
+    final dateStr = DateUtilsHelper.toDotFormat(corrected);
+    final timeStr = DateUtilsHelper.toHourMinuteFormat(corrected);
 
     return GestureDetector(
       onTap: onTap,
