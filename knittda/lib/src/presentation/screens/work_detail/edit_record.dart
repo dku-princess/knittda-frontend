@@ -43,6 +43,8 @@ class _EditRecordState extends State<EditRecord> {
   final List<ImageModel> _serverImages = [];
   final List<int> _deleteImageIds = [];
 
+  bool _submitting = false;
+
   Future<void> _pickImageFromGallery() async {
 
     if (_images.length >= 5) return;
@@ -82,8 +84,8 @@ class _EditRecordState extends State<EditRecord> {
 
   @override
   Widget build(BuildContext context) {
-    final EditRecordVM = context.read<EditRecordViewModel>();
-    final isBusy = EditRecordVM.isLoading;
+    final editRecordVM = context.watch<EditRecordViewModel>();
+    final isBusy = editRecordVM.isLoading || _submitting;
 
     return Stack(
       children: [
@@ -311,37 +313,35 @@ class _EditRecordState extends State<EditRecord> {
                         onPressed: isBusy // 중복클릭 방지
                             ? null
                             : () async {
-                          if (_selectedStatus == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('진행 상태를 선택해주세요.')),
+                          if (_submitting) return;
+                          setState(() => _submitting = true);
+                          try {
+                            if (_selectedStatus == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('진행 상태를 선택해주세요.')));
+                              return;
+                            }
+                            if (_commentController.text.trim().isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('기록을 남겨주세요.')));
+                              return;
+                            }
+
+                            final updatedRecord = widget.record.copyWith(
+                              recordStatus: _selectedStatus!.name,
+                              tags: _selectedTags.toList(),
+                              comment: _commentController.text.trim(),
+                              files: _images,
                             );
-                            return;
-                          }
 
-                          if (_commentController.text.trim().isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('기록을 남겨주세요.')),
-                            );
-                            return;
-                          }
-
-                          final updatedRecord = widget.record.copyWith(
-                            id: widget.record.id,
-                            projectDto: widget.record.projectDto,
-                            recordStatus: _selectedStatus!.name,
-                            tags: _selectedTags.toList(),
-                            comment: _commentController.text.trim(),
-                            files: _images,
-                          );
-
-                          final success  = await EditRecordVM.updateRecord(updatedRecord, _deleteImageIds);
-                          if (!mounted) return;
-
-                          if (success && context.mounted) {
-                            Navigator.pop(context); // 수정 성공 표시
-                          } else {
-                            final error = EditRecordVM.errorMessage ?? "수정에 실패했습니다.";
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+                            final success = await editRecordVM.updateRecord(updatedRecord, _deleteImageIds);
+                            if (!mounted) return;
+                            if (success) {
+                              Navigator.pop(context);
+                            } else {
+                              final error = editRecordVM.errorMessage ?? '수정에 실패했습니다.';
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+                            }
+                          } finally {
+                            if (mounted) setState(() => _submitting = false);
                           }
                         },
                         style: TextButton.styleFrom(

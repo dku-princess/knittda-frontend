@@ -37,6 +37,8 @@ class _EditWorkState extends State<EditWork> {
   DesignModel? _selectedDesign;
   String? _networkImageUrl;
 
+  bool _submitting = false;
+
   Future<void> _pickImageFromGallery() async {
     final XFile? picked = await _picker.pickImage(
       source: ImageSource.gallery,
@@ -108,8 +110,8 @@ class _EditWorkState extends State<EditWork> {
 
   @override
   Widget build(BuildContext context) {
-    final EditWorkVM = context.read<EditWorkViewModel>();
-    final isBusy = EditWorkVM.isLoading;
+    final editWorkVM = context.watch<EditWorkViewModel>();
+    final isBusy = editWorkVM.isLoading || _submitting;
 
     return Stack(
       children: [
@@ -345,54 +347,50 @@ class _EditWorkState extends State<EditWork> {
                         onPressed: isBusy
                             ? null
                             : () async {
-                          final nickname = _nicknameController.text.trim();
-                          final customYarnInfo = _yarnController.text.trim();
-                          final customNeedleInfo = _needleController.text.trim();
-                          final title = _designController.text.trim();
-                          final designer = _designerController.text.trim();
+                          if (_submitting) return;
+                          setState(() => _submitting = true);
+                          try {
+                            final nickname = _nicknameController.text.trim();
+                            final customYarnInfo = _yarnController.text.trim();
+                            final customNeedleInfo = _needleController.text.trim();
+                            final title = _designController.text.trim();
+                            final designer = _designerController.text.trim();
 
-                          if (nickname.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('작품 이름을 작성해주세요.')),
-                            );
-                            return;
-                          }
-
-                          if (_goalDate != null) {
-                            final goalDate = DateUtilsHelper.fromDotFormat(_goalDate!);
-                            final now = DateTime.now();
-
-                            if (goalDate.isBefore(DateTime(now.year, now.month, now.day))) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('목표 날짜는 오늘 이후여야 합니다.')),
-                              );
+                            if (nickname.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('작품 이름을 작성해주세요.')));
                               return;
                             }
-                          }
 
-                          final work = widget.work.copyWith(
-                            designId: _selectedDesign?.id,
-                            nickname: nickname,
-                            customYarnInfo: customYarnInfo,
-                            customNeedleInfo: customNeedleInfo,
-                            goalDate: _goalDate != null ? DateUtilsHelper.fromDotFormat(_goalDate!) : null,
-                            file: _image,
-                            title: title,
-                            designer: designer,
-                          );
+                            if (_goalDate != null) {
+                              final goalDate = DateUtilsHelper.fromDotFormat(_goalDate!);
+                              final now = DateTime.now();
+                              if (goalDate.isBefore(DateTime(now.year, now.month, now.day))) {
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('목표 날짜는 오늘 이후여야 합니다.')));
+                                return;
+                              }
+                            }
 
-                          debugPrint('designId = ${_selectedDesign?.id}\n');
-
-                          final success = await EditWorkVM.updateWork(work);
-                          if (!mounted) return;
-
-                          if (success) {
-                            Navigator.pop(context); // <-- 성공 여부 반환
-                          } else {
-                            final error = EditWorkVM.errorMessage ?? '알 수 없는 오류';
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(error)),
+                            final updated = widget.work.copyWith(
+                              designId: _selectedDesign?.id,
+                              nickname: nickname,
+                              customYarnInfo: customYarnInfo,
+                              customNeedleInfo: customNeedleInfo,
+                              goalDate: _goalDate != null ? DateUtilsHelper.fromDotFormat(_goalDate!) : null,
+                              file: _image,
+                              title: title,
+                              designer: designer,
                             );
+
+                            final success = await editWorkVM.updateWork(updated);
+                            if (!mounted) return;
+                            if (success) {
+                              Navigator.pop(context);
+                            } else {
+                              final error = editWorkVM.errorMessage ?? '알 수 없는 오류';
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+                            }
+                          } finally {
+                            if (mounted) setState(() => _submitting = false);
                           }
                         },
                         style: TextButton.styleFrom(

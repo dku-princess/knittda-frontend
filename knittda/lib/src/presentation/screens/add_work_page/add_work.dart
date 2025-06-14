@@ -31,6 +31,8 @@ class _AddWorkState extends State<AddWork> {
   String? _goalDate;
   DesignModel? _selectedDesign;
 
+  bool _submitting = false;
+
   Future<void> _pickImageFromGallery() async {
     final XFile? picked = await _picker.pickImage(
       source: ImageSource.gallery,
@@ -73,8 +75,9 @@ class _AddWorkState extends State<AddWork> {
 
   @override
   Widget build(BuildContext context) {
-    final addWorkVM = context.read<AddWorkViewModel>();
-    final isBusy = addWorkVM.isLoading;
+    final addWorkVM = context.watch<AddWorkViewModel>();
+
+    final isBusy = addWorkVM.isLoading || _submitting;
 
     return Stack(
       children: [
@@ -308,58 +311,64 @@ class _AddWorkState extends State<AddWork> {
                         onPressed: isBusy
                             ? null
                             : () async {
-                          final nickname = _nicknameController.text.trim();
-                          final customYarnInfo = _yarnController.text.trim();
-                          final customNeedleInfo = _needleController.text.trim();
-                          final title = _designController.text.trim();
-                          final designer = _designerController.text.trim();
+                          if (_submitting) return;
+                          setState(() => _submitting = true);
+                          try {
+                            final nickname = _nicknameController.text.trim();
+                            final customYarnInfo = _yarnController.text.trim();
+                            final customNeedleInfo = _needleController.text.trim();
+                            final title = _designController.text.trim();
+                            final designer = _designerController.text.trim();
 
-                          if (nickname.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('작품 이름을 작성해주세요!')),
+                            if (nickname.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('작품 이름을 작성해주세요!')),
+                              );
+                              return;
+                            }
+
+                            if (_goalDate == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('목표 날짜를 선택해주세요!')),
+                              );
+                              return;
+                            }
+
+                            final goalDate = DateUtilsHelper.fromDotFormat(_goalDate!);
+                            final now = DateTime.now();
+
+                            if (goalDate.isBefore(DateTime(now.year, now.month, now.day))) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('목표 날짜는 오늘 이후여야 합니다.')),
+                              );
+                              return;
+                            }
+
+                            final work = WorkModel.forCreate(
+                              designId: _selectedDesign?.id,
+                              nickname: nickname,
+                              customYarnInfo: customYarnInfo,
+                              customNeedleInfo: customNeedleInfo,
+                              startDate: DateTime.now(),
+                              goalDate: _goalDate != null ? DateUtilsHelper.fromDotFormat(_goalDate!) : null,
+                              file: _image,
+                              title: title,
+                              designer: designer,
                             );
-                            return;
-                          }
 
-                          if (_goalDate == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('목표 날짜를 선택해주세요!')),
-                            );
-                            return;
-                          }
+                            final success = await addWorkVM.createWork(work);
+                            if (!mounted) return;
 
-                          final goalDate = DateUtilsHelper.fromDotFormat(_goalDate!);
-                          final now = DateTime.now();
-
-                          if (goalDate.isBefore(DateTime(now.year, now.month, now.day))) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('목표 날짜는 오늘 이후여야 합니다.')),
-                            );
-                            return;
-                          }
-
-                          final work = WorkModel.forCreate(
-                            designId: _selectedDesign?.id,
-                            nickname: nickname,
-                            customYarnInfo: customYarnInfo,
-                            customNeedleInfo: customNeedleInfo,
-                            startDate: DateTime.now(),
-                            goalDate: _goalDate != null ? DateUtilsHelper.fromDotFormat(_goalDate!) : null,
-                            file: _image,
-                            title: title,
-                            designer: designer,
-                          );
-
-                          final success = await addWorkVM.createWork(work);
-                          if (!mounted) return;
-
-                          if (success) {
-                            Navigator.pop(context);
-                          } else {
-                            final error = addWorkVM.errorMessage ?? '알 수 없는 오류';
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(error)),
-                            );
+                            if (success) {
+                              Navigator.pop(context);
+                            } else {
+                              final error = addWorkVM.errorMessage ?? '알 수 없는 오류';
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(error)),
+                              );
+                            }
+                          } finally {
+                            if (mounted) setState(() => _submitting = false);
                           }
                         },
                         style: TextButton.styleFrom(
