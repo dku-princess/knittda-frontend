@@ -55,12 +55,17 @@ class ReportRepository {
     }
   }
 
-  Future<ReportModel> getReport(String token) async {
+  Future<ReportModel> getReport(String token, {bool forceRefresh = false}) async {
     final weekId = DateUtilsHelper.getCurrentWeekId();
 
-    // 로컬 캐시 확인
-    final cached = await _local.load(weekId);
-    if (cached != null) return cached;
+    if (!forceRefresh) {
+      final cached = await _local.load(weekId);
+      if (cached != null) return cached;
+    }
+
+    // // 로컬 캐시 확인
+    // final cached = await _local.load(weekId);
+    // if (cached != null) return cached;
 
     // 캐시 없으면 서버 호출
     final fresh = await fetchReportFromServer(token);

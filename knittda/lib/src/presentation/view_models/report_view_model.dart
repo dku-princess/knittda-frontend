@@ -22,8 +22,8 @@ class ReportViewModel extends ChangeNotifier {
   String? _error;
   String? get error => _error;
 
-  Future<bool> fetchReport() async {
-    if (_report != null) return true;
+  Future<bool> fetchReport({bool forceRefresh = false}) async {
+    if (_report != null && !forceRefresh) return true;
 
     final token = _auth.jwt;
     if (token == null) {
@@ -37,7 +37,7 @@ class ReportViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final result = await _getReportUseCase(token);
+      final result = await _getReportUseCase(token, forceRefresh: forceRefresh);
       _report = result;
       return true;
     } catch (e) {

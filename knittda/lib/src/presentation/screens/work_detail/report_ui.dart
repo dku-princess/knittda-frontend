@@ -42,7 +42,7 @@ class _ReportUiState extends State<ReportUi> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ReportViewModel>().fetchReport();
+      context.read<ReportViewModel>().fetchReport(forceRefresh: true);
     });
   }
 
