@@ -141,7 +141,16 @@ class WorkRepository extends ChangeNotifier{
         throw Exception('잘못된 응답 형식');
       }
 
-      _work = WorkModel.fromJson(data);
+      final updated = WorkModel.fromJson(data);
+
+      final idx = _works.indexWhere((w) => w.id == updated.id);
+      if (idx != -1) {
+        _works[idx] = updated;
+      } else {
+        _works.add(updated);
+      }
+
+      _work = updated;
       notifyListeners();
 
     } on DioException catch (e) {

@@ -40,7 +40,7 @@ class WorkListItem extends StatelessWidget {
                   children: [
                     Text("기록일", style: TextStyle(fontSize: 14, color: Colors.grey[600])),
                     SizedBox(width: 4),
-                    Text(lastRecordAt, style: TextStyle(fontSize: 12)),
+                    Text(lastRecordAt, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
                   ],
                 ),
               ],

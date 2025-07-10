@@ -3,6 +3,7 @@ import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/models/record_model.dart';
 import 'package:knittda/src/data/models/work_model.dart';
 import 'package:knittda/src/presentation/view_models/add_record_view_model.dart';
+import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
 
@@ -298,6 +299,7 @@ class _AddRecordState extends State<AddRecord> {
                             final success = await addRecordVM.createRecord(record);
                             if (!mounted) return;
                             if (success) {
+                              await context.read<WorkViewModel>().getWork(widget.work.id!);
                               Navigator.pop(context);
                             } else {
                               final error = addRecordVM.errorMessage ?? '알 수 없는 오류';
