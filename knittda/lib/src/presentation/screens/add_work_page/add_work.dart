@@ -73,6 +73,70 @@ class _AddWorkState extends State<AddWork> {
     super.dispose();
   }
 
+  Future<void> _submitWork() async {
+    if (_submitting) return;
+    setState(() => _submitting = true);
+    try {
+      final nickname = _nicknameController.text.trim();
+      final customYarnInfo = _yarnController.text.trim();
+      final customNeedleInfo = _needleController.text.trim();
+      final title = _designController.text.trim();
+      final designer = _designerController.text.trim();
+
+      if (nickname.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('작품 이름을 작성해주세요!')),
+        );
+        return;
+      }
+
+      if (_goalDate == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('목표 날짜를 선택해주세요!')),
+        );
+        return;
+      }
+
+      final goalDate = DateUtilsHelper.fromDotFormat(_goalDate!);
+      final now = DateTime.now();
+
+      if (goalDate.isBefore(DateTime(now.year, now.month, now.day))) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('목표 날짜는 오늘 이후여야 합니다.')),
+        );
+        return;
+      }
+
+      final work = WorkModel.forCreate(
+        designId: _selectedDesign?.id,
+        nickname: nickname,
+        customYarnInfo: customYarnInfo,
+        customNeedleInfo: customNeedleInfo,
+        startDate: now,
+        goalDate: goalDate,
+        file: _image,
+        title: title,
+        designer: designer,
+      );
+
+      final addWorkVM = context.read<AddWorkViewModel>();
+      final success = await addWorkVM.createWork(work);
+
+      if (!mounted) return;
+
+      if (success) {
+        Navigator.pop(context);
+      } else {
+        final error = addWorkVM.errorMessage ?? '알 수 없는 오류';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final addWorkVM = context.watch<AddWorkViewModel>();
@@ -85,6 +149,23 @@ class _AddWorkState extends State<AddWork> {
           appBar: AppBar(
             title: const Text('작품 추가', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
             centerTitle: true,
+            actions: [
+              TextButton(
+                onPressed: isBusy ? null : _submitWork,
+                style: TextButton.styleFrom(
+                  backgroundColor: PRIMARY_COLOR,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text(
+                  '저장',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
           ),
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
@@ -304,85 +385,7 @@ class _AddWorkState extends State<AddWork> {
                     ),
 
                     SizedBox(height: 40,),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 44,
-                      child: TextButton(
-                        onPressed: isBusy
-                            ? null
-                            : () async {
-                          if (_submitting) return;
-                          setState(() => _submitting = true);
-                          try {
-                            final nickname = _nicknameController.text.trim();
-                            final customYarnInfo = _yarnController.text.trim();
-                            final customNeedleInfo = _needleController.text.trim();
-                            final title = _designController.text.trim();
-                            final designer = _designerController.text.trim();
 
-                            if (nickname.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('작품 이름을 작성해주세요!')),
-                              );
-                              return;
-                            }
-
-                            if (_goalDate == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('목표 날짜를 선택해주세요!')),
-                              );
-                              return;
-                            }
-
-                            final goalDate = DateUtilsHelper.fromDotFormat(_goalDate!);
-                            final now = DateTime.now();
-
-                            if (goalDate.isBefore(DateTime(now.year, now.month, now.day))) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('목표 날짜는 오늘 이후여야 합니다.')),
-                              );
-                              return;
-                            }
-
-                            final work = WorkModel.forCreate(
-                              designId: _selectedDesign?.id,
-                              nickname: nickname,
-                              customYarnInfo: customYarnInfo,
-                              customNeedleInfo: customNeedleInfo,
-                              startDate: DateTime.now(),
-                              goalDate: _goalDate != null ? DateUtilsHelper.fromDotFormat(_goalDate!) : null,
-                              file: _image,
-                              title: title,
-                              designer: designer,
-                            );
-
-                            final success = await addWorkVM.createWork(work);
-                            if (!mounted) return;
-
-                            if (success) {
-                              Navigator.pop(context);
-                            } else {
-                              final error = addWorkVM.errorMessage ?? '알 수 없는 오류';
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(error)),
-                              );
-                            }
-                          } finally {
-                            if (mounted) setState(() => _submitting = false);
-                          }
-                        },
-                        style: TextButton.styleFrom(
-                          backgroundColor: PRIMARY_COLOR,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: Text(
-                          "작품 추가하기",
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
