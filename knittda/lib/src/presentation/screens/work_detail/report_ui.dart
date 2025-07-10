@@ -117,7 +117,7 @@ class _ReportUiState extends State<ReportUi> {
 
                 //사진 설명
                 Text('${stage["label"]}'),
-                Text('${report.knittingLevel}cm'),
+                Text('${report.knittingLevel.toStringAsFixed(1)}cm'),
 
                 SizedBox(height: 35,),
                 Divider(),
