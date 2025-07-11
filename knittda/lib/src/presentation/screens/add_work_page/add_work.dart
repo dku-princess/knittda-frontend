@@ -51,7 +51,7 @@ class _AddWorkState extends State<AddWork> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2100),
       helpText: '목표 날짜 선택',
     );
@@ -100,12 +100,6 @@ class _AddWorkState extends State<AddWork> {
       final goalDate = DateUtilsHelper.fromDotFormat(_goalDate!);
       final now = DateTime.now();
 
-      if (goalDate.isBefore(DateTime(now.year, now.month, now.day))) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('목표 날짜는 오늘 이후여야 합니다.')),
-        );
-        return;
-      }
 
       final work = WorkModel.forCreate(
         designId: _selectedDesign?.id,
