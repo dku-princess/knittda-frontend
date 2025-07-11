@@ -82,6 +82,42 @@ class _EditRecordState extends State<EditRecord> {
     super.dispose();
   }
 
+  Future<void> _submitRecord() async {
+    if (_submitting) return;
+    setState(() => _submitting = true);
+    try {
+      if (_selectedStatus == null) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('진행 상태를 선택해주세요.')));
+        return;
+      }
+      if (_commentController.text.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('기록을 남겨주세요.')));
+        return;
+      }
+
+      final updatedRecord = widget.record.copyWith(
+        recordStatus: _selectedStatus!.name,
+        tags: _selectedTags.toList(),
+        comment: _commentController.text.trim(),
+        files: _images,
+      );
+
+      final editRecordVM = context.read<EditRecordViewModel>();
+      final success = await editRecordVM.updateRecord(updatedRecord, _deleteImageIds);
+
+      if (!mounted) return;
+
+      if (success) {
+        Navigator.pop(context);
+      } else {
+        final error = editRecordVM.errorMessage ?? '수정에 실패했습니다.';
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+      }
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final editRecordVM = context.watch<EditRecordViewModel>();
@@ -92,6 +128,24 @@ class _EditRecordState extends State<EditRecord> {
         Scaffold(
           appBar: AppBar(
             title: const Text("기록 수정"),
+            centerTitle: true,
+            actions: [
+              TextButton(
+                onPressed: isBusy ? null : _submitRecord,
+                style: TextButton.styleFrom(
+                  backgroundColor: PRIMARY_COLOR,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text(
+                  '저장',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
           ),
           body: AbsorbPointer(
             absorbing: isBusy,
@@ -306,54 +360,6 @@ class _EditRecordState extends State<EditRecord> {
                   const SizedBox(height: 40),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 44,
-                      child: TextButton(
-                        onPressed: isBusy // 중복클릭 방지
-                            ? null
-                            : () async {
-                          if (_submitting) return;
-                          setState(() => _submitting = true);
-                          try {
-                            if (_selectedStatus == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('진행 상태를 선택해주세요.')));
-                              return;
-                            }
-                            if (_commentController.text.trim().isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('기록을 남겨주세요.')));
-                              return;
-                            }
-
-                            final updatedRecord = widget.record.copyWith(
-                              recordStatus: _selectedStatus!.name,
-                              tags: _selectedTags.toList(),
-                              comment: _commentController.text.trim(),
-                              files: _images,
-                            );
-
-                            final success = await editRecordVM.updateRecord(updatedRecord, _deleteImageIds);
-                            if (!mounted) return;
-                            if (success) {
-                              Navigator.pop(context);
-                            } else {
-                              final error = editRecordVM.errorMessage ?? '수정에 실패했습니다.';
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
-                            }
-                          } finally {
-                            if (mounted) setState(() => _submitting = false);
-                          }
-                        },
-                        style: TextButton.styleFrom(
-                          backgroundColor: PRIMARY_COLOR,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: Text("기록 수정하기"),
-                      ),
-                    ),
                   ),
                   const SizedBox(height: 50),
                 ],
