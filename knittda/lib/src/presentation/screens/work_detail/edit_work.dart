@@ -93,8 +93,8 @@ class _EditWorkState extends State<EditWork> {
       _goalDate = DateUtilsHelper.toDotFormat(widget.work.goalDate!);
     }
 
-    if (widget.work.image?.imageUrl != null && widget.work.image!.imageUrl.isNotEmpty) {
-      _networkImageUrl = widget.work.image!.imageUrl;
+    if (widget.work.thumbnailUrl != null && widget.work.thumbnailUrl!.isNotEmpty) {
+      _networkImageUrl = widget.work.thumbnailUrl!;
     }
   }
 
