@@ -35,7 +35,7 @@ class WorkListItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(work.nickname, style: TextStyle(fontSize: 16),),
-                SizedBox(height:10),
+                SizedBox(height:14),
                 Row(
                   children: [
                     Text("기록일", style: TextStyle(fontSize: 14, color: Colors.grey[600])),
