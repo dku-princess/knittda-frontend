@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/models/work_model.dart';
-import '../image_box.dart';
+import '../work_image_box.dart';
 
 class WorkListItem extends StatelessWidget {
   final WorkModel work;
@@ -25,8 +25,8 @@ class WorkListItem extends StatelessWidget {
         ),
         child: Row(
           children: [
-            ImageBox(
-              networkImageUrl: work.thumbnailUrl,
+            WorkImageBox(
+              networkUrl: work.thumbnailUrl,
               width: 60,
               height: 60,
             ),
@@ -68,20 +68,28 @@ class WorkListItem extends StatelessWidget {
     );
   }
 
-  String _getRelativeDate(DateTime? date) {
-    if (date == null) return "-";
+  String _getRelativeDate(DateTime? serverUtc) {
+    if (serverUtc == null) return "-";
 
-    final now = DateTime.now();
-    final difference = now.difference(date);
+    // 1) UTC → KST(+9)
+    DateTime _toKST(DateTime dt) => dt.toUtc().add(const Duration(hours: 9));
+    final kstDateTime = _toKST(serverUtc);
+    final kstNowTime  = _toKST(DateTime.now());
 
-    if (difference.inDays == 0) {
+    // 2) 시·분·초를 0 으로 맞춰 ‘날짜만’ 비교
+    final kstDate = DateTime(kstDateTime.year, kstDateTime.month, kstDateTime.day);
+    final kstToday = DateTime(kstNowTime.year, kstNowTime.month, kstNowTime.day);
+
+    final diffDays = kstToday.difference(kstDate).inDays;
+
+    if (diffDays == 0) {
       return '오늘';
-    } else if (difference.inDays == 1) {
+    } else if (diffDays == 1) {
       return '어제';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays}일 전';
+    } else if (diffDays < 7) {
+      return '$diffDays일 전';
     } else {
-      return DateUtilsHelper.toDotFormat(date);
+      return DateUtilsHelper.toDotFormat(kstDate); // 예: 2025.07.10
     }
   }
 }
