@@ -56,8 +56,10 @@ class _EditWorkState extends State<EditWork> {
   Future<void> _pickGoalDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
+      initialDate: _goalDate != null
+          ? DateUtilsHelper.fromDotFormat(_goalDate!)
+          : (widget.work.startDate ?? DateTime.now()),
+      firstDate: widget.work.startDate ?? DateTime.now(),
       lastDate: DateTime(2100),
       helpText: '목표 날짜 선택',
     );
@@ -121,15 +123,6 @@ class _EditWorkState extends State<EditWork> {
       if (nickname.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('작품 이름을 작성해주세요.')));
         return;
-      }
-
-      if (_goalDate != null) {
-        final goalDate = DateUtilsHelper.fromDotFormat(_goalDate!);
-        final now = DateTime.now();
-        if (goalDate.isBefore(DateTime(now.year, now.month, now.day))) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('목표 날짜는 오늘 이후여야 합니다.')));
-          return;
-        }
       }
 
       final updated = widget.work.copyWith(
