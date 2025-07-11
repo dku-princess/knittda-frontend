@@ -4,7 +4,8 @@ import 'package:knittda/src/presentation/screens/main_page/login.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:provider/provider.dart';
 //import 'package:knittda/src/presentation/screens/work_detail/report_ui.dart';
-
+// 우정우정스
+//깃크라켄 학습
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
