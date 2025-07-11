@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/models/design_model.dart';
-import 'package:knittda/src/data/models/image_model.dart';
+//import 'package:knittda/src/data/models/image_model.dart';
 
 import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
@@ -24,7 +24,7 @@ class WorkModel {
   final String? status;
   final DateTime? lastRecordAt;
   final DateTime? createdAt;
-  final ImageModel? image;
+  final String? thumbnailUrl;
 
   final String? title;
   final String? designer;
@@ -46,7 +46,7 @@ class WorkModel {
     this.status,
     this.lastRecordAt,
     this.createdAt,
-    this.image,
+    this.thumbnailUrl,
 
     this.title,
     this.designer,
@@ -80,7 +80,7 @@ class WorkModel {
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
           : null,
-      image: json['image'] != null ? ImageModel.fromJson(json['image']) : null,
+      thumbnailUrl: json['thumbnailUrl'],
 
       title: null,
       designer: null,
@@ -138,7 +138,7 @@ class WorkModel {
       status: null,
       lastRecordAt: null,
       createdAt: null,
-      image: null,
+      thumbnailUrl: null,
 
       title: title,
       designer: designer,
@@ -160,7 +160,7 @@ class WorkModel {
     DateTime? startDate,
     DateTime? endDate,
     DateTime? goalDate,
-    ImageModel? image,
+    String? thumbnailUrl,
     XFile? file,
     String? title,
     String? designer,
@@ -180,7 +180,7 @@ class WorkModel {
       startDate: startDate ?? this.startDate,
       endDate: endDate,
       goalDate: goalDate ?? this.goalDate,
-      image: image ?? this.image,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
       file: file ?? this.file,
       title: title ?? this.title,
       designer: designer ?? this.designer,

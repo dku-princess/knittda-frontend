@@ -26,7 +26,7 @@ class WorkListItem extends StatelessWidget {
         child: Row(
           children: [
             ImageBox(
-              networkImageUrl: work.image?.imageUrl,
+              networkImageUrl: work.thumbnailUrl,
               width: 60,
               height: 60,
             ),

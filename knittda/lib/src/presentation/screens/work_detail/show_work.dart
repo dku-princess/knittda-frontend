@@ -202,7 +202,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             ImageBox(
-                              networkImageUrl: work.image?.imageUrl,
+                              networkImageUrl: work.thumbnailUrl,
                               height: 100,
                               width: 100,
                             ),
