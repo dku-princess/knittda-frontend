@@ -66,6 +66,44 @@ class _AddRecordState extends State<AddRecord> {
     super.dispose();
   }
 
+  Future<void> _submitRecord() async {
+    if (_submitting) return;
+    setState(() => _submitting = true);
+    try {
+      if (_selectedStatus == null) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('진행 상태를 선택해주세요.')));
+        return;
+      }
+      if (_commentController.text.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('기록을 남겨주세요.')));
+        return;
+      }
+
+      final record = RecordModel.forCreate(
+        projectId: widget.work.id!,
+        recordStatus: _selectedStatus!.name,
+        tags: _selectedTags.toList(),
+        comment: _commentController.text.trim(),
+        files: _images,
+      );
+
+      final addRecordVM = context.read<AddRecordViewModel>();
+      final success = await addRecordVM.createRecord(record);
+
+      if (!mounted) return;
+
+      if (success) {
+        await context.read<WorkViewModel>().getWork(widget.work.id!);
+        Navigator.pop(context);
+      } else {
+        final error = addRecordVM.errorMessage ?? '알 수 없는 오류';
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+      }
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final addRecordVM = context.watch<AddRecordViewModel>();
@@ -75,7 +113,25 @@ class _AddRecordState extends State<AddRecord> {
       children: [
         Scaffold(
           appBar: AppBar(
-            title: const Text("기록 추가"),
+            title: const Text('기록 추가', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+            centerTitle: true,
+            actions: [
+              TextButton(
+                onPressed: isBusy ? null : _submitRecord,
+                style: TextButton.styleFrom(
+                  backgroundColor: PRIMARY_COLOR,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text(
+                  '저장',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
           ),
           body: AbsorbPointer(
             absorbing: isBusy,
@@ -269,56 +325,6 @@ class _AddRecordState extends State<AddRecord> {
                   const SizedBox(height: 40),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 44,
-                      child: TextButton(
-                        onPressed: isBusy
-                          ? null
-                          : () async {
-                          if (_submitting) return;
-                          setState(() => _submitting = true);
-                          try {
-                            if (_selectedStatus == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('진행 상태를 선택해주세요.')));
-                              return;
-                            }
-                            if (_commentController.text.trim().isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('기록을 남겨주세요.')));
-                              return;
-                            }
-
-                            final record = RecordModel.forCreate(
-                              projectId: widget.work.id!,
-                              recordStatus: _selectedStatus!.name,
-                              tags: _selectedTags.toList(),
-                              comment: _commentController.text.trim(),
-                              files: _images,
-                            );
-
-                            final success = await addRecordVM.createRecord(record);
-                            if (!mounted) return;
-                            if (success) {
-                              await context.read<WorkViewModel>().getWork(widget.work.id!);
-                              Navigator.pop(context);
-                            } else {
-                              final error = addRecordVM.errorMessage ?? '알 수 없는 오류';
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
-                            }
-                          } finally {
-                            if (mounted) setState(() => _submitting = false);
-                          }
-                        },
-                        style: TextButton.styleFrom(
-                          backgroundColor: PRIMARY_COLOR,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: Text("기록 추가하기"),
-                      ),
-                    ),
                   ),
                   const SizedBox(height: 50),
                 ],
