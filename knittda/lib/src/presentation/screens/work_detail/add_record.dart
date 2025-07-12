@@ -43,21 +43,45 @@ class _AddRecordState extends State<AddRecord> {
 
   bool _submitting = false;
 
-  Future<void> _pickImageFromGallery() async {
-
+  Future<void> _pickImage(ImageSource source) async {
     if (_images.length >= 5) return;
 
     final XFile? picked = await _picker.pickImage(
-      source: ImageSource.gallery,
+      source: source,
       maxWidth: 1024,
       maxHeight: 1024,
-      //imageQuality: 85,//이미지 압축률
     );
     if (picked != null) {
-      setState(() {
-        _images.add(picked);
-      });
+      setState(() => _images.add(picked));
     }
+  }
+
+  void _showImageSourceActionSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('카메라로 촬영'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('갤러리에서 선택'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -277,7 +301,7 @@ class _AddRecordState extends State<AddRecord> {
                               // + 버튼
                               if (_images.length < 5)
                                 GestureDetector(
-                                  onTap: _pickImageFromGallery,
+                                  onTap: _showImageSourceActionSheet,
                                   child: Container(
                                     width: 100,
                                     height: 100,

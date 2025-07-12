@@ -45,20 +45,45 @@ class _EditRecordState extends State<EditRecord> {
 
   bool _submitting = false;
 
-  Future<void> _pickImageFromGallery() async {
-
+  Future<void> _pickImage(ImageSource source) async {
     if (_images.length >= 5) return;
 
     final XFile? picked = await _picker.pickImage(
-      source: ImageSource.gallery,
+      source: source,
       maxWidth: 1024,
       maxHeight: 1024,
     );
     if (picked != null) {
-      setState(() {
-        _images.add(picked);
-      });
+      setState(() => _images.add(picked));
     }
+  }
+
+  void _showImageSourceActionSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('카메라로 촬영'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('갤러리에서 선택'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -312,7 +337,7 @@ class _EditRecordState extends State<EditRecord> {
                               // 이미지 추가 버튼 (최대 5장 제한)
                               if (_serverImages.length + _images.length < 5)
                                 GestureDetector(
-                                  onTap: _pickImageFromGallery,
+                                  onTap: _showImageSourceActionSheet,
                                   child: Container(
                                     width: 100,
                                     height: 100,
