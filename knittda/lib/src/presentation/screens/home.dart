@@ -4,7 +4,7 @@ import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/presentation/screens/main_page/mypage.dart';
 import 'package:knittda/src/presentation/screens/main_page/work.dart';
 import 'package:knittda/src/presentation/screens/main_page/work_list.dart';
-import 'package:knittda/src/presentation/screens/main_page/feed.dart';
+import 'package:knittda/src/presentation/screens/feed/feed.dart';
 
 // 바텀네비게이션 리스트
 final List<BottomNavigationBarItem> myTabs = <BottomNavigationBarItem>[
