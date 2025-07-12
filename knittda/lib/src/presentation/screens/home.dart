@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 
-import 'package:knittda/src/presentation/screens/main_page/more_menu.dart';
 import 'package:knittda/src/presentation/screens/main_page/mypage.dart';
 import 'package:knittda/src/presentation/screens/main_page/work.dart';
 import 'package:knittda/src/presentation/screens/main_page/work_list.dart';
@@ -25,10 +24,6 @@ final List<BottomNavigationBarItem> myTabs = <BottomNavigationBarItem>[
     icon: Icon(Icons.person), // 텍스트 제거
     label: '',
   ),
-  BottomNavigationBarItem(
-    icon: Icon(Icons.menu), // 텍스트 제거
-    label: '',
-  ),
 ];
 
 //바텀네비게이션 클릭 시 이동할 페이지 목록
@@ -37,7 +32,6 @@ final List<Widget> _widgetOptions = <Widget>[
   const Work(),
   const Feed(),
   const Mypage(),
-  const MoreMenu(),
 ];
 
 class Home extends StatefulWidget {
