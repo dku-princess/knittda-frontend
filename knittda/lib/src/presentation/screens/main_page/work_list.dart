@@ -105,6 +105,7 @@ class _WorkListState extends State<WorkList> {
                     itemBuilder: (context, index) {
                       final work = filteredWorks[index];
                       return WorkListItem(
+                        key: ValueKey(work.id),
                         work: work,
                         onTap: () {
                           Navigator.push(
