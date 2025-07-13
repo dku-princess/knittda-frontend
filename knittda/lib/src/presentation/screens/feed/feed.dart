@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/screens/feed/feed_search.dart';
+import 'package:knittda/src/presentation/widgets/listitems/feed_list_item.dart';
 
 class Feed extends StatelessWidget {
   const Feed({super.key});
@@ -35,7 +36,10 @@ class Feed extends StatelessWidget {
       ),
 
       body: Center(
-        child: Text("Feed"),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          child: FeedListItem(),
+        ),
       ),
     );
   }
