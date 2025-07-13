@@ -23,98 +23,86 @@ class FeedListItem extends StatelessWidget {
 
         child: Column(
           children: [
-            // 프로필
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                //프로필 사진
                 CircleAvatar(
                   backgroundColor: Colors.grey[300],
                 ),
                 const SizedBox(width: 12),
+
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Expanded(
-                            child: Text(
-                              '이름',
-                              style: const TextStyle(fontSize: 14),
-                            ),
-                          ),
                           Text(
-                            "2025.07.13 10:45",
-                            style: const TextStyle(fontSize: 12, color: Colors.grey),
+                            '이름  |  작품이름',
+                            style: const TextStyle(fontSize: 14),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 2),
-                      Text('작품이름'),
+                      const SizedBox(height: 10),
+
+                      Text(
+                        '2025.07.13 10:45',
+                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+
+                      //사진
+                      Container(
+                        height: 200,
+                        decoration: BoxDecoration(
+                          color: Colors.grey, // 배경색 회색
+                          borderRadius: BorderRadius.circular(6), // 모서리 둥글게
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      //본문
+                      Text(
+                        "코딩 학교 대학교 시험 종강",
+                        style: const TextStyle(fontSize: 14),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 10),
+
+                      LayoutBuilder( //화면의 가로 너비를 알아내기 위해 사용
+                        builder: (context, constraints) {
+                          const double tagSpacing = 10;
+                          double usedWidth = 0;
+                          List<Widget> limitedTags = [];
+                          int hiddenCount = 0;
+
+                          for (final tag in tags) {
+                            final tagWidth = (tag.length * 12) + 24;
+                            final plusTagWidth = 40; // 대략적인 +N의 폭
+
+                            if (usedWidth + tagWidth + plusTagWidth > constraints.maxWidth) {
+                              hiddenCount = tags.length - limitedTags.length;
+                              if (hiddenCount > 0) {
+                                limitedTags.add(_buildTagChip('+$hiddenCount'));
+                              }
+                              break;
+                            }
+
+                            usedWidth += tagWidth + tagSpacing;
+                            limitedTags.add(_buildTagChip(tag));
+                          }
+
+                          return Wrap(
+                            spacing: tagSpacing,
+                            children: limitedTags,
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 10),
-
-            Padding(
-              padding: const EdgeInsets.only(left: 52),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-
-                children: [
-                  //사진
-                  Container(
-                    height: 200,
-                    decoration: BoxDecoration(
-                      color: Colors.grey, // 배경색 회색
-                      borderRadius: BorderRadius.circular(6), // 모서리 둥글게
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  //본문
-                  Text(
-                    "코딩 학교 대학교 시험 종강",
-                    style: const TextStyle(fontSize: 14),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 10),
-
-                  LayoutBuilder( //화면의 가로 너비를 알아내기 위해 사용
-                    builder: (context, constraints) {
-                      const double tagSpacing = 10;
-                      double usedWidth = 0;
-                      List<Widget> limitedTags = [];
-                      int hiddenCount = 0;
-
-                      for (final tag in tags) {
-                        final tagWidth = (tag.length * 12) + 24;
-                        final plusTagWidth = 40; // 대략적인 +N의 폭
-
-                        if (usedWidth + tagWidth + plusTagWidth > constraints.maxWidth) {
-                          hiddenCount = tags.length - limitedTags.length;
-                          if (hiddenCount > 0) {
-                            limitedTags.add(_buildTagChip('+$hiddenCount'));
-                          }
-                          break;
-                        }
-
-                        usedWidth += tagWidth + tagSpacing;
-                        limitedTags.add(_buildTagChip(tag));
-                      }
-
-                      return Wrap(
-                        spacing: tagSpacing,
-                        children: limitedTags,
-                      );
-                    },
-                  ),
-
-                ],
-              ),
             ),
           ],
         ),
