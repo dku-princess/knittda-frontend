@@ -243,28 +243,28 @@ class _AddWorkState extends State<AddWork> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      trailing: IconButton(
-                        icon: Icon(Icons.search),
-                        onPressed: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ChangeNotifierProvider(
-                                create: (_) => SearchViewModel(searchDesignUseCase: SearchDesignUseCase(designRepositories: DesignRepositories())),
-                                child: SearchPatterns(),
-                              ),
-                            ),
-                          );
-
-                          if (result != null && result is DesignModel) {
-                            setState(() {
-                              _designController.text = result.title ?? '';
-                              _designerController.text = result.designer ?? '';
-                              _selectedDesign = result;
-                            });
-                          }
-                        },
-                      ),
+                      // trailing: IconButton(
+                      //   icon: Icon(Icons.search),
+                      //   onPressed: () async {
+                      //     final result = await Navigator.push(
+                      //       context,
+                      //       MaterialPageRoute(
+                      //         builder: (_) => ChangeNotifierProvider(
+                      //           create: (_) => SearchViewModel(searchDesignUseCase: SearchDesignUseCase(designRepositories: DesignRepositories())),
+                      //           child: SearchPatterns(),
+                      //         ),
+                      //       ),
+                      //     );
+                      //
+                      //     if (result != null && result is DesignModel) {
+                      //       setState(() {
+                      //         _designController.text = result.title ?? '';
+                      //         _designerController.text = result.designer ?? '';
+                      //         _selectedDesign = result;
+                      //       });
+                      //     }
+                      //   },
+                      // ),
                     ),
                     SizedBox(height: 10),
 
