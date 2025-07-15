@@ -21,6 +21,8 @@ class FeedListItem extends StatelessWidget {
     return GestureDetector(
       onTap: (){},
       child: Container(
+        padding: const EdgeInsets.only(top: 8, bottom: 16),
+
         //바닥 선
         decoration: BoxDecoration(
           border: Border(
@@ -44,6 +46,8 @@ class FeedListItem extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+
+                      //사용자 이름, 작품이름
                       Row(
                         children: [
                           Text(
@@ -54,10 +58,12 @@ class FeedListItem extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
 
+                      //시간
                       Text(
                         '$dateStr $timeStr',
                         style: const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
+                      const SizedBox(height: 10),
 
                       //사진
                       if (feed.record.images != null && feed.record.images!.isNotEmpty) ...[
@@ -70,7 +76,7 @@ class FeedListItem extends StatelessWidget {
                             height: 200,
                           )
                               : PageView.builder(
-                            controller: PageController(viewportFraction: 0.5),
+                            controller: PageController(viewportFraction: 0.6),
                             itemCount: feed.record.images!.length,
                             padEnds: false,
                             itemBuilder: (context, index) {
@@ -102,32 +108,50 @@ class FeedListItem extends StatelessWidget {
 
 
                       if (feed.record.tags != null && feed.record.tags!.isNotEmpty) ...[
-                        LayoutBuilder( //화면의 가로 너비를 알아내기 위해 사용
+                        LayoutBuilder(
                           builder: (context, constraints) {
-                            const double tagSpacing = 10;
+                            const double spacing = 8;          // 칩 사이 간격
+                            const double plusChipWidth = 40;   // '+N' 칩 예상폭 (조금 넉넉히)
+                            const double charWidth = 14;       // 한 글자 폭을 넉넉히(12 → 14) 잡는다
+                            const double safety = 12;          // 남겨 두는 여유 폭
+
                             double usedWidth = 0;
-                            List<Widget> limitedTags = [];
-                            int hiddenCount = 0;
+                            int hidden = 0;
+                            final List<Widget> chips = [];
 
-                            for (final tag in feed.record.tags!) {
-                              final tagWidth = (tag.length * 12) + 24;
-                              final plusTagWidth = 40; // 대략적인 +N의 폭
+                            for (int i = 0; i < feed.record.tags!.length; i++) {
+                              final tag = feed.record.tags![i];
+                              // padding + border까지 포함한 칩 폭 (보수적으로)
+                              final double tagWidth = tag.length * charWidth + 32;
 
-                              if (usedWidth + tagWidth + plusTagWidth > constraints.maxWidth) {
-                                hiddenCount = feed.record.tags!.length - limitedTags.length;
-                                if (hiddenCount > 0) {
-                                  limitedTags.add(_buildTagChip('+$hiddenCount'));
-                                }
-                                break;
+                              // 앞으로 남은 태그 수
+                              final int remain = feed.record.tags!.length - i - 1;
+
+                              // 남은 게 있으면 +N 칩 폭까지 미리 확보
+                              final double reserve = remain > 0 ? spacing + plusChipWidth : 0;
+
+                              // spacing 은 chips가 비어있지 않을 때만
+                              final double nextSpacing = chips.isEmpty ? 0 : spacing;
+
+                              if (usedWidth + nextSpacing + tagWidth + reserve > constraints.maxWidth - safety) {
+                                hidden = feed.record.tags!.length - i;
+                                break;                   // 더 못 넣음 → 탈출
                               }
 
-                              usedWidth += tagWidth + tagSpacing;
-                              limitedTags.add(_buildTagChip(tag));
+                              // 칩 추가
+                              if (chips.isNotEmpty) usedWidth += spacing;
+                              usedWidth += tagWidth;
+                              chips.add(_buildTagChip(tag));
                             }
 
+                            if (hidden > 0) {
+                              chips.add(_buildTagChip('+$hidden'));
+                            }
+
+                            // Wrap 으로 한 줄에만 배치 (폭 부족하면 알아서 줄바꿈, 하지만 보수적 계산 덕분에 99% 한 줄)
                             return Wrap(
-                              spacing: tagSpacing,
-                              children: limitedTags,
+                              spacing: spacing,
+                              children: chips,
                             );
                           },
                         ),
