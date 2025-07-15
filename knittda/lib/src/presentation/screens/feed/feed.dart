@@ -38,7 +38,7 @@ class Feed extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24),
-          child: FeedListItem(),
+          child: Text("feed"),
         ),
       ),
     );
