@@ -1,15 +1,18 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:knittda/src/data/repositories/feed_repository.dart';
 import 'package:knittda/src/data/repositories/records_repository.dart';
 import 'package:knittda/src/data/repositories/report_repository.dart';
 import 'package:knittda/src/data/repositories/work_repository.dart';
 import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_work_use_case.dart';
+import 'package:knittda/src/domain/use_case/feed_service.dart';
 import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_report_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_works_use_case.dart';
+import 'package:knittda/src/presentation/view_models/feed_view_model.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/report_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
@@ -28,6 +31,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'env.dart';
+import 'package:dio/dio.dart';
 
 // 앱 실행
 Future<void> main() async {
@@ -169,6 +173,28 @@ Future<void> main() async {
                 getReportUseCase: getReportUseCase,
               );
             },
+          ),
+
+          // ① Dio
+          Provider<Dio>(
+            create: (_) => Dio(BaseOptions(baseUrl: baseUrl)),
+          ),
+
+          // ② Repository (Dio 의존)
+          ProxyProvider<Dio, FeedRepository>(
+            update: (_, dio, __) => FeedRepository(dio),
+          ),
+
+          // ③ Service (Repository 의존)
+          ProxyProvider<FeedRepository, FeedService>(
+            update: (_, repo, __) => FeedService(repo),
+          ),
+
+          // ④ ViewModel (Service 의존) ─ 필요 시 화면별 분리도 가능
+          ChangeNotifierProvider<FeedViewModel>(
+            create: (context) => FeedViewModel(
+              context.read<FeedService>(),
+            ),
           ),
         ],
         child: const MyApp(),
