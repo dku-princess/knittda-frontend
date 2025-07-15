@@ -1,22 +1,19 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:knittda/env.dart';
 import 'package:knittda/src/data/models/feed_model.dart';
 
-class FeedRepository extends ChangeNotifier {
-  final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: baseUrl, // baseUrl은 따로 선언되어 있다고 가정
-    ),
-  );
+class FeedRemoteException implements Exception {
+  final Object error;
+  final StackTrace stackTrace;
+  FeedRemoteException(this.error, this.stackTrace);
 
-  List<FeedModel> _feeds = [];
-  FeedModel? _feed;
+  @override
+  String toString() => 'FeedRemoteException: $error\n$stackTrace';
+}
 
-  List<FeedModel> get feeds => List.unmodifiable(_feeds);
-  FeedModel? get feed => _feed;
+class FeedRepository {
+  final Dio _dio;
+  FeedRepository(this._dio);
 
-  /// 피드 목록 조회 (Pagination)
   Future<List<FeedModel>> fetchFeeds({
     required int page,
     required int size,
@@ -25,34 +22,17 @@ class FeedRepository extends ChangeNotifier {
     try {
       final res = await _dio.get<Map<String, dynamic>>(
         '/api/v1/feed/',
-        data: {
-          "page": page,
-          "size": size,
-          "sort": sort ?? [],
+        queryParameters: {
+          'page': page,
+          'size': size,
+          if (sort != null) 'sort': sort.join(','),
         },
       );
 
-      if (res.statusCode != 200) {
-        throw Exception('서버 오류: ${res.statusCode}');
-      }
-
-      final data = res.data;
-      if (data == null || data['data'] == null) {
-        throw Exception('응답 데이터가 없습니다.');
-      }
-
-      final content = data['data']['content'];
-      if (content == null || content is! List) {
-        throw Exception('content가 없습니다.');
-      }
-
-      _feeds = content.map<FeedModel>((e) => FeedModel.fromJson(e)).toList();
-      notifyListeners();
-      return _feeds;
-    } on DioException catch (e) {
-      throw Exception('네트워크 오류: ${e.message}');
-    } catch (e) {
-      throw Exception('피드 조회 중 오류: $e');
+      final content = res.data?['data']?['content'] as List<dynamic>? ?? [];
+      return content.map((e) => FeedModel.fromJson(e)).toList();
+    } on DioException catch (e, s) {
+      throw FeedRemoteException(e, s);
     }
   }
 }
