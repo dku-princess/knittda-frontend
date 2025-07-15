@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
-import 'package:knittda/src/data/models/design_model.dart';
-import 'package:knittda/src/data/repositories/design_repositories.dart';
-import 'package:knittda/src/domain/use_case/search_design_use_case.dart';
-import 'package:knittda/src/presentation/screens/add_work_page/search_patterns.dart';
 import 'package:knittda/src/presentation/view_models/edit_work_view_model.dart';
-import 'package:knittda/src/presentation/view_models/search_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/core/constants/color.dart';
@@ -33,43 +28,9 @@ class _EditWorkState extends State<EditWork> {
 
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
-  String? _goalDate;
-  DesignModel? _selectedDesign;
+  DateTime? _goalDate;
   String? _networkImageUrl;
-
   bool _submitting = false;
-
-  Future<void> _pickImageFromGallery() async {
-    final XFile? picked = await _picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1024,
-      maxHeight: 1024,
-      //imageQuality: 85,//이미지 압축률
-    );
-    if (picked != null) {
-      setState(() {
-        _image = picked;
-      });
-    }
-  }
-
-  Future<void> _pickGoalDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _goalDate != null
-          ? DateUtilsHelper.fromDotFormat(_goalDate!)
-          : (widget.work.startDate ?? DateTime.now()),
-      firstDate: widget.work.startDate ?? DateTime.now(),
-      lastDate: DateTime(2100),
-      helpText: '목표 날짜 선택',
-    );
-
-    if (picked != null) {
-      setState(() {
-        _goalDate = DateUtilsHelper.toDotFormat(picked);
-      });
-    }
-  }
 
   @override
   void initState() {
@@ -77,22 +38,17 @@ class _EditWorkState extends State<EditWork> {
     _nicknameController.text = widget.work.nickname;
 
     final design = widget.work.designDto;
-
     if (design != null &&
         (design.title?.trim().isNotEmpty == true || design.designer?.trim().isNotEmpty == true)) {
-      _selectedDesign = design;
       _designController.text = design.title ?? '';
       _designerController.text = design.designer ?? '';
-    } else {
-      _designController.text = '';
-      _designerController.text = '';
     }
 
     _yarnController.text = widget.work.customYarnInfo ?? '';
     _needleController.text = widget.work.customNeedleInfo ?? '';
 
     if (widget.work.goalDate != null) {
-      _goalDate = DateUtilsHelper.toDotFormat(widget.work.goalDate!);
+      _goalDate = widget.work.goalDate;
     }
 
     if (widget.work.thumbnailUrl != null && widget.work.thumbnailUrl!.isNotEmpty) {
@@ -110,6 +66,39 @@ class _EditWorkState extends State<EditWork> {
     super.dispose();
   }
 
+  // 갤러리에서 이미지 선택 함수
+  Future<void> _pickImageFromGallery() async {
+    final XFile? picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      //imageQuality: 85,//이미지 압축률
+    );
+    if (picked != null) {
+      setState(() {
+        _image = picked;
+      });
+    }
+  }
+
+  // 캘린더에서 목표날짜 선택 함수
+  Future<void> _pickGoalDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _goalDate ?? widget.work.startDate ?? DateTime.now(),
+      firstDate: widget.work.startDate ?? DateTime.now(),
+      lastDate: DateTime(2100),
+      helpText: '목표 날짜 선택',
+    );
+
+    if (picked != null) {
+      setState(() {
+        _goalDate = picked;
+      });
+    }
+  }
+
+  //저장 함수
   Future<void> _submitWork() async{
     if (_submitting) return;
     setState(() => _submitting = true);
@@ -121,19 +110,28 @@ class _EditWorkState extends State<EditWork> {
       final designer = _designerController.text.trim();
 
       if (nickname.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('작품 이름을 작성해주세요.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('작품 이름을 작성해주세요.')));
+        setState(() => _submitting = false);
+        return;
+      }
+
+      if (_image == null && (_networkImageUrl == null || _networkImageUrl!.isEmpty)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('이미지를 선택해주세요.')),
+        );
+        setState(() => _submitting = false);
         return;
       }
 
       final updated = widget.work.copyWith(
-        designId: _selectedDesign?.id,
         nickname: nickname,
-        customYarnInfo: customYarnInfo,
-        customNeedleInfo: customNeedleInfo,
-        goalDate: _goalDate != null ? DateUtilsHelper.fromDotFormat(_goalDate!) : null,
+        customYarnInfo: customYarnInfo.isNotEmpty ? customYarnInfo : null,
+        customNeedleInfo: customNeedleInfo.isNotEmpty ? customNeedleInfo : null,
+        goalDate: _goalDate,
         file: _image,
-        title: title,
-        designer: designer,
+        designTitle: title.isNotEmpty ? title : null,
+        designer: designer.isNotEmpty ? designer : null,
       );
 
       final editWorkVM = context.read<EditWorkViewModel>();
@@ -164,6 +162,7 @@ class _EditWorkState extends State<EditWork> {
             title: const Text('작품 수정', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
             centerTitle: true,
             actions: [
+              //저장버튼
               TextButton(
                 onPressed: isBusy ? null : _submitWork,
                 style: TextButton.styleFrom(
@@ -181,6 +180,7 @@ class _EditWorkState extends State<EditWork> {
               const SizedBox(width: 8),
             ],
           ),
+
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
             child: AbsorbPointer(
@@ -216,6 +216,8 @@ class _EditWorkState extends State<EditWork> {
                           ),
                         ),
                         const SizedBox(width: 16),
+
+                        //작품 이름, 목표 날짜
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,7 +248,11 @@ class _EditWorkState extends State<EditWork> {
                                     side: BorderSide(color: PRIMARY_COLOR),
                                   ),
                                 ),
-                                child: Text(_goalDate ?? "목표 날짜"),
+                                child: Text(
+                                  _goalDate != null
+                                      ? DateUtilsHelper.toDotFormat(_goalDate!)
+                                      : "목표 날짜",
+                                ),
                               ),
                             ],
                           ),
@@ -265,28 +271,6 @@ class _EditWorkState extends State<EditWork> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      // trailing: IconButton(
-                      //   icon: Icon(Icons.search),
-                      //   onPressed: () async {
-                      //     final result = await Navigator.push(
-                      //       context,
-                      //       MaterialPageRoute(
-                      //         builder: (_) => ChangeNotifierProvider(
-                      //           create: (_) => SearchViewModel(searchDesignUseCase: SearchDesignUseCase(designRepositories: DesignRepositories())),
-                      //           child: SearchPatterns(),
-                      //         ),
-                      //       ),
-                      //     );
-                      //
-                      //     if (result != null && result is DesignModel) {
-                      //       setState(() {
-                      //         _designController.text = result.title ?? '';
-                      //         _designerController.text = result.designer ?? '';
-                      //         _selectedDesign = result;
-                      //       });
-                      //     }
-                      //   },
-                      // ),
                     ),
                     SizedBox(height: 10),
 
@@ -297,25 +281,10 @@ class _EditWorkState extends State<EditWork> {
                     SizedBox(height: 10),
                     TextField(
                       controller: _designController,
-                      readOnly: _selectedDesign != null,
                       decoration: InputDecoration(
                         isDense: true,
-                        filled: _selectedDesign != null,
-                        fillColor: Colors.grey[200],
                         contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                        suffixIcon: _selectedDesign != null
-                            ? IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () {
-                            setState(() {
-                              _selectedDesign = null;
-                              _designController.clear();
-                              _designerController.clear();
-                            });
-                          },
-                        )
-                            : null,
                       ),
                       style: const TextStyle(fontSize: 14),
                     ),
@@ -328,25 +297,11 @@ class _EditWorkState extends State<EditWork> {
                     SizedBox(height: 10),
                     TextField(
                       controller: _designerController,
-                      readOnly: _selectedDesign != null,
                       decoration: InputDecoration(
                         isDense: true,
-                        filled: _selectedDesign != null,
                         fillColor: Colors.grey[200],
                         contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                        suffixIcon: _selectedDesign != null
-                            ? IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () {
-                            setState(() {
-                              _selectedDesign = null;
-                              _designController.clear();
-                              _designerController.clear();
-                            });
-                          },
-                        )
-                            : null,
                       ),
                       style: const TextStyle(fontSize: 14),
                     ),

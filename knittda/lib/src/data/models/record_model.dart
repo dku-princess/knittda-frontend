@@ -20,7 +20,6 @@ class RecordModel {
 
   //서버가 보내는 값
   final int? id;
-  final WorkModel? projectDto;
   final DateTime? createdAt;
   final List<ImageModel>? images;
 
@@ -31,14 +30,13 @@ class RecordModel {
     this.comment,
     this.files,
     this.id,
-    this.projectDto,
     this.createdAt,
     this.images,
   });
 
   factory RecordModel.fromJson(Map<String, dynamic> json) {
     return RecordModel(
-      projectId: json['projectDto']['id'],
+      projectId: json['projectId'],
       recordStatus: json['recordStatus'],
 
       tags: (json['tags'] as List?)?.map((e) => e.toString()).toList(),
@@ -49,9 +47,6 @@ class RecordModel {
       id: json['id'],
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'])
-          : null,
-      projectDto: json['projectDto'] != null
-          ? WorkModel.fromJson(json['projectDto'])
           : null,
       images: (json['images'] as List?)
           ?.where((e) => e != null)
@@ -78,7 +73,6 @@ class RecordModel {
 
       // 서버 응답 필드 → null로 초기화
       id: id,
-      projectDto: null,
       createdAt: null,
       images: null,
     );
@@ -102,7 +96,6 @@ class RecordModel {
       comment: comment ?? this.comment,
       files: files ?? this.files,
       id: id ?? this.id,
-      projectDto: projectDto ?? this.projectDto,
       createdAt: createdAt ?? this.createdAt,
       images: images ?? this.images,
     );

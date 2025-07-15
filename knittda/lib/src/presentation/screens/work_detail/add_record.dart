@@ -171,8 +171,9 @@ class _AddRecordState extends State<AddRecord> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        WorkListItem(work: widget.work),
-                        const SizedBox(height: 35),
+                        //WorkListItem(work: widget.work),
+                        //const SizedBox(height: 35),
+
                         const Text("오늘은 뜨개는 어떠셨어요?", style: TextStyle(fontSize: 20)),
                         const SizedBox(height: 16),
                         Wrap(

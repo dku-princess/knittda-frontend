@@ -3,13 +3,11 @@ import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/models/design_model.dart';
-//import 'package:knittda/src/data/models/image_model.dart';
 
 import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
 
 class WorkModel {
-  final int? designId;
   final String nickname;
   final String? customYarnInfo;
   final String? customNeedleInfo;
@@ -26,12 +24,11 @@ class WorkModel {
   final DateTime? createdAt;
   final String? thumbnailUrl;
 
-  final String? title;
+  final String? designTitle;
   final String? designer;
   final bool? visible;
 
   WorkModel({
-    this.designId,
     required this.nickname,
     this.customYarnInfo,
     this.customNeedleInfo,
@@ -48,17 +45,16 @@ class WorkModel {
     this.createdAt,
     this.thumbnailUrl,
 
-    this.title,
+    this.designTitle,
     this.designer,
     this.visible,
   });
 
   factory WorkModel.fromJson(Map<String, dynamic> json) {
     return WorkModel(
-      designId: json['designDto']?['id'],
       nickname: json['nickname'],
-      customYarnInfo: json['customYarnInfo'],
-      customNeedleInfo: json['customNeedleInfo'],
+      customYarnInfo: json['yarnInfo'],
+      customNeedleInfo: json['needleInfo'],
       startDate: json['startDate'] != null
           ? DateTime.tryParse(json['startDate'])
           : null,
@@ -82,48 +78,26 @@ class WorkModel {
           : null,
       thumbnailUrl: json['thumbnailUrl'],
 
-      title: null,
+      designTitle: null,
       designer: null,
       visible: null,
     );
   }
 
-  // Map<String, dynamic> toJson() {
-  //   return {
-  //     'project': {
-  //       // 'projectId': id,
-  //       // 'designId': designId,
-  //       // 'nickname': nickname,
-  //       // 'customYarnInfo': customYarnInfo ?? '',
-  //       // 'customNeedleInfo': customNeedleInfo ?? '',
-  //       // 'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
-  //       // 'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
-  //       // 'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
-  //       // 'title': title,
-  //       // 'designer': designer,
-  //       // 'visible': false,
-  //       'status': status
-  //     },
-  //     //'file': file?.path,
-  //   };
-  // }
-
   factory WorkModel.forCreate({
     int? id,
-    int? designId,
     required String nickname,
     String? customYarnInfo,
     String? customNeedleInfo,
     DateTime? startDate,
     DateTime? endDate,
-    DateTime? goalDate,
-    XFile? file,
-    String? title,
+    required DateTime goalDate,
+    required XFile file,
+    String? designTitle,
     String? designer,
     bool visible = false,
   }) {
     return WorkModel(
-      designId: designId,
       nickname: nickname,
       customYarnInfo: customYarnInfo,
       customNeedleInfo: customNeedleInfo,
@@ -140,7 +114,7 @@ class WorkModel {
       createdAt: null,
       thumbnailUrl: null,
 
-      title: title,
+      designTitle: designTitle,
       designer: designer,
       visible: visible,
     );
@@ -149,7 +123,6 @@ class WorkModel {
   WorkModel copyWith({
     int? id,
     DesignModel? designDto,
-    int? designId,
     int? userId,
     String? nickname,
     String? status,
@@ -162,14 +135,13 @@ class WorkModel {
     DateTime? goalDate,
     String? thumbnailUrl,
     XFile? file,
-    String? title,
+    String? designTitle,
     String? designer,
     bool? visible,
   }) {
     return WorkModel(
       id: id ?? this.id,
       designDto: designDto ?? this.designDto,
-      designId: designId ?? this.designId,
       userId: userId ?? this.userId,
       nickname: nickname ?? this.nickname,
       status: status ?? this.status,
@@ -182,7 +154,7 @@ class WorkModel {
       goalDate: goalDate ?? this.goalDate,
       thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
       file: file ?? this.file,
-      title: title ?? this.title,
+      designTitle: designTitle ?? this.designTitle,
       designer: designer ?? this.designer,
       visible: visible ?? this.visible,
     );
@@ -198,15 +170,14 @@ extension WorkModelMultipart on WorkModel {
       'project',
       jsonEncode({
         'projectId': id,
-        'designId': designId,
         'nickname': nickname,
-        'customYarnInfo': customYarnInfo,
-        'customNeedleInfo': customNeedleInfo,
+        'yarnInfo': customYarnInfo,
+        'needleInfo': customNeedleInfo,
         'status': status,
         'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
         'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
         'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
-        'title': title,
+        'designTitle': designTitle,
         'designer': designer,
         'visible': visible,
       }),
@@ -226,3 +197,23 @@ extension WorkModelMultipart on WorkModel {
     return form;
   }
 }
+
+// Map<String, dynamic> toJson() {
+//   return {
+//     'project': {
+//       // 'projectId': id,
+//       // 'designId': designId,
+//       // 'nickname': nickname,
+//       // 'customYarnInfo': customYarnInfo ?? '',
+//       // 'customNeedleInfo': customNeedleInfo ?? '',
+//       // 'startDate': startDate != null ? DateUtilsHelper.toHyphenFormat(startDate!) : null,
+//       // 'endDate': endDate != null ? DateUtilsHelper.toHyphenFormat(endDate!) : null,
+//       // 'goalDate': goalDate != null ? DateUtilsHelper.toHyphenFormat(goalDate!) : null,
+//       // 'title': title,
+//       // 'designer': designer,
+//       // 'visible': false,
+//       'status': status
+//     },
+//     //'file': file?.path,
+//   };
+// }
