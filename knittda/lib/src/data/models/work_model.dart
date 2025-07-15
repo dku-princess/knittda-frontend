@@ -15,18 +15,17 @@ class WorkModel {
   final DateTime? endDate;
   final DateTime? goalDate;
   final XFile? file;
-
-  final int? id;
-  final DesignModel? designDto;
-  final int? userId;
-  final String? status;
-  final DateTime? lastRecordAt;
-  final DateTime? createdAt;
-  final String? thumbnailUrl;
-
   final String? designTitle;
   final String? designer;
   final bool? visible;
+
+  final int? id;
+  final DesignModel? design;
+  final int? userId;
+  final String? status;
+  final String? thumbnailUrl;
+  final DateTime? lastRecordAt;
+  final DateTime? createdAt;
 
   WorkModel({
     required this.nickname,
@@ -36,25 +35,24 @@ class WorkModel {
     this.endDate,
     this.goalDate,
     this.file,
-
-    this.id,
-    this.designDto,
-    this.userId,
-    this.status,
-    this.lastRecordAt,
-    this.createdAt,
-    this.thumbnailUrl,
-
     this.designTitle,
     this.designer,
     this.visible,
+
+    this.id,
+    this.design,
+    this.userId,
+    this.status,
+    this.thumbnailUrl,
+    this.lastRecordAt,
+    this.createdAt,
   });
 
   factory WorkModel.fromJson(Map<String, dynamic> json) {
     return WorkModel(
       nickname: json['nickname'],
-      customYarnInfo: json['yarnInfo'],
-      customNeedleInfo: json['needleInfo'],
+      customYarnInfo: null,
+      customNeedleInfo: null,
       startDate: json['startDate'] != null
           ? DateTime.tryParse(json['startDate'])
           : null,
@@ -65,27 +63,25 @@ class WorkModel {
           ? DateTime.tryParse(json['goalDate'])
           : null,
       file: null,
+      designTitle: null,
+      designer: null,
+      visible: null,
 
       id: json['id'],
-      designDto: json['designDto'] != null ? DesignModel.fromJson(json['designDto']) : null,
+      design: json['design'] != null ? DesignModel.fromJson(json['design']) : null,
       userId: json['userId'],
       status: json['status'],
+      thumbnailUrl: json['thumbnailUrl'],
       lastRecordAt: json['lastRecordAt'] != null
           ? DateTime.parse(json['lastRecordAt'])
           : null,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
           : null,
-      thumbnailUrl: json['thumbnailUrl'],
-
-      designTitle: null,
-      designer: null,
-      visible: null,
     );
   }
 
   factory WorkModel.forCreate({
-    int? id,
     required String nickname,
     String? customYarnInfo,
     String? customNeedleInfo,
@@ -105,24 +101,23 @@ class WorkModel {
       endDate: endDate,
       goalDate: goalDate,
       file: file,
+      designTitle: designTitle,
+      designer: designer,
+      visible: visible,
 
-      id: id,
-      designDto: null,
+      id: null,
+      design: null,
       userId: null,
       status: null,
       lastRecordAt: null,
       createdAt: null,
       thumbnailUrl: null,
-
-      designTitle: designTitle,
-      designer: designer,
-      visible: visible,
     );
   }
 
   WorkModel copyWith({
     int? id,
-    DesignModel? designDto,
+    DesignModel? design,
     int? userId,
     String? nickname,
     String? status,
@@ -141,7 +136,7 @@ class WorkModel {
   }) {
     return WorkModel(
       id: id ?? this.id,
-      designDto: designDto ?? this.designDto,
+      design: design ?? this.design,
       userId: userId ?? this.userId,
       nickname: nickname ?? this.nickname,
       status: status ?? this.status,

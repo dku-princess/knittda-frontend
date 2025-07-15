@@ -76,7 +76,7 @@ class _AddWorkState extends State<AddWork> {
       final nickname = _nicknameController.text.trim();
       final customYarnInfo = _yarnController.text.trim();
       final customNeedleInfo = _needleController.text.trim();
-      final title = _designController.text.trim();
+      final design = _designController.text.trim();
       final designer = _designerController.text.trim();
 
       if (nickname.isEmpty) {
@@ -113,7 +113,7 @@ class _AddWorkState extends State<AddWork> {
         startDate: now,
         goalDate: _goalDate!,
         file: _image!,
-        designTitle: title.isNotEmpty ? title : null,
+        designTitle: design.isNotEmpty ? design : null,
         designer: designer.isNotEmpty ? designer : null,
       );
 

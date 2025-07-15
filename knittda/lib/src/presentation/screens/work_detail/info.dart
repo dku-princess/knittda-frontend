@@ -25,9 +25,9 @@ class Info extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                      (work.designDto?.title?.trim().isEmpty ?? true)
+                      (work.design?.title?.trim().isEmpty ?? true)
                           ? '정보를 추가해 주세요'
-                          : work.designDto!.title!,
+                          : work.design!.title!,
                       style: TextStyle(fontSize: 16)
                   ),
                 ),
@@ -47,9 +47,9 @@ class Info extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                      (work.designDto?.designer?.trim().isEmpty ?? true)
+                      (work.design?.designer?.trim().isEmpty ?? true)
                           ? '정보를 추가해 주세요'
-                          : work.designDto!.designer!,
+                          : work.design!.designer!,
                       style: TextStyle(fontSize: 16)
                   ),
                 ),
@@ -71,9 +71,9 @@ class Info extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                      (work.customYarnInfo?.trim().isEmpty ?? true)
+                      (work.design?.yarnInfo?.trim().isEmpty ?? true)
                           ? '정보를 추가해 주세요'
-                          : work.customYarnInfo!,
+                          : work.design!.yarnInfo!,
                       style: TextStyle(fontSize: 16)
                   ),
                 ),
@@ -94,9 +94,9 @@ class Info extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                      (work.customNeedleInfo?.trim().isEmpty ?? true)
+                      (work.design?.needleInfo?.trim().isEmpty ?? true)
                          ? '정보를 추가해 주세요'
-                         : work.customNeedleInfo!,
+                         : work.design!.needleInfo!,
                       style: TextStyle(fontSize: 16)
                   ),
                 ),
