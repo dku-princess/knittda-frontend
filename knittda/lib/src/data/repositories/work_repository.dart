@@ -130,7 +130,7 @@ class WorkRepository {
       throw Exception('서버 오류: ${res.statusCode}');
     }
 
-    debugPrint('작품 삭제 서버 응답: ${res.data}');
+    //debugPrint('작품 삭제 서버 응답: ${res.data}');
 
     final body = res.data;
     if (body == null || body['success'] != true) {

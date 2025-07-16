@@ -94,7 +94,6 @@ Future<void> main() async {
               return AuthRepository(dio);
             },
           ),
-
           /// AuthViewModel — SocialLogin, AuthRepository, TokenStorage 주입
           ChangeNotifierProvider<AuthViewModel>(
             create: (context) => AuthViewModel(
@@ -111,8 +110,7 @@ Future<void> main() async {
               return WorkRepository(dio);
             },
           ),
-
-          /// WorkUseCases
+          // WorkUseCases
           Provider<WorkUseCases>(
             create: (context) {
               final repository = context.read<WorkRepository>();
@@ -125,7 +123,6 @@ Future<void> main() async {
               );
             },
           ),
-
           /// WorkViewModel
           ChangeNotifierProvider<WorkViewModel>(
             create: (context) {
@@ -143,7 +140,7 @@ Future<void> main() async {
               return RecordRepository(dio);
             },
           ),
-
+          // recordUseCases
           Provider<RecordUseCases>(
             create: (context) {
               final repository = context.read<RecordRepository>();
@@ -156,7 +153,7 @@ Future<void> main() async {
               );
             },
           ),
-
+          // recordViewModel
           ChangeNotifierProvider<RecordViewModel>(
             create: (context) {
               final useCases = context.read<RecordUseCases>();
@@ -166,22 +163,25 @@ Future<void> main() async {
             },
           ),
 
+          /// ReportRepository
           Provider<ReportRepository>(
-            create: (_) => ReportRepository(),
+            create: (context) {
+              final dio = context.read<Dio>();
+              return ReportRepository(dio);
+            },
           ),
-          ProxyProvider<ReportRepository, GetReportUseCase>(
-            update: (_, repo, __) => GetReportUseCase(reportRepository: repo),
+          /// GetReportUseCase
+          Provider<GetReportUseCase>(
+            create: (context) {
+              final repository = context.read<ReportRepository>();
+              return GetReportUseCase(repository);
+            },
           ),
-          ChangeNotifierProxyProvider2<AuthViewModel, GetReportUseCase, ReportViewModel>(
-            create: (ctx) => ReportViewModel(
-              authViewModel: ctx.read<AuthViewModel>(),
-              getReportUseCase: ctx.read<GetReportUseCase>(),
-            ),
-            update: (ctx, auth, getReportUseCase, prev) {
-              return ReportViewModel(
-                authViewModel: auth,
-                getReportUseCase: getReportUseCase,
-              );
+          /// ReportViewModel
+          ChangeNotifierProvider<ReportViewModel>(
+            create: (context) {
+              final getReportUseCase = context.read<GetReportUseCase>();
+              return ReportViewModel(getReportUseCase);
             },
           ),
 
