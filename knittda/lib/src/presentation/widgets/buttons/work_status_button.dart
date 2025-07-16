@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/models/work_model.dart';
-import 'package:knittda/src/presentation/view_models/edit_work_view_model.dart';
 
 class WorkStatusButton extends StatefulWidget {
   final WorkModel work;
