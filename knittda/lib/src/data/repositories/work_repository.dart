@@ -4,12 +4,9 @@ import 'package:knittda/src/data/models/work_model.dart';
 import 'package:knittda/env.dart';
 
 class WorkRepository extends ChangeNotifier{
-  final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: baseUrl,
-      contentType: 'application/json',
-    ),
-  );
+  final Dio _dio;
+
+  WorkRepository(this._dio);
 
   List<WorkModel> _works = [];
   WorkModel? _work;
@@ -17,7 +14,7 @@ class WorkRepository extends ChangeNotifier{
   List<WorkModel> get works => List.unmodifiable(_works); //읽기 전용
   WorkModel? get work => _work;
 
-  Future<void> updateWork(String accessToken, WorkModel work) async {
+  Future<void> updateWork(WorkModel work) async {
     try {
       final formData =  await work.toMultipartForm();
 
@@ -33,11 +30,6 @@ class WorkRepository extends ChangeNotifier{
       final res = await _dio.put<Map<String, dynamic>>(
         '/api/v1/projects/',
         data: formData,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
       );
 
       if (res.statusCode != 200) {
@@ -80,16 +72,10 @@ class WorkRepository extends ChangeNotifier{
 
 
   //서버에서 작품 삭제하기
-  Future<void> deleteWork(String accessToken, int projectId) async {
+  Future<void> deleteWork(int projectId) async {
     try{
       final res = await _dio.delete<Map<String, dynamic>>(
         '/api/v1/projects/$projectId',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-            'projectId': '$projectId'
-          },
-        ),
       );
 
       if (res.statusCode != 200) {
@@ -112,17 +98,12 @@ class WorkRepository extends ChangeNotifier{
       throw Exception('작품 생성하기 중 오류: $e');
     }
   }
+
   //서버에서 작품 단건 조회하기
-  Future<void> getWork(String accessToken, int projectId) async {
+  Future<void> getWork(int projectId) async {
     try{
       final res = await _dio.get<Map<String, dynamic>>(
         '/api/v1/projects/$projectId',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-            'projectId': '$projectId'
-          },
-        ),
       );
 
       if (res.statusCode != 200) {
@@ -161,15 +142,10 @@ class WorkRepository extends ChangeNotifier{
   }
 
   //서버에서 작품 목록 가져오기
-  Future<void> getWorks(String accessToken) async{
+  Future<void> getWorks() async{
     try{
       final res = await _dio.get<Map<String, dynamic>>(
         '/api/v1/projects/',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
       );
 
       if (res.statusCode != 200) {
@@ -199,18 +175,13 @@ class WorkRepository extends ChangeNotifier{
   }
 
   //작품 생성하기
-  Future<void> createWork(String accessToken, WorkModel work) async {
+  Future<void> createWork(WorkModel work) async {
     try {
       final formData =  await work.toMultipartForm();
 
       final res = await _dio.post<Map<String, dynamic>>(
         '/api/v1/projects/',
         data: formData,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
       );
 
       if (res.statusCode != 200) {

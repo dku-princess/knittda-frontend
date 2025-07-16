@@ -4,6 +4,7 @@ import 'package:knittda/src/data/repositories/records_repository.dart';
 import 'package:knittda/src/data/repositories/work_repository.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
+import 'package:knittda/src/domain/use_case/work_use_cases.dart';
 import 'package:knittda/src/presentation/screens/add_work_page/add_work.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
 import 'package:knittda/src/presentation/screens/work_detail/report_ui.dart';
@@ -176,11 +177,8 @@ class _WorkListState extends State<WorkList> {
           MaterialPageRoute(
             builder: (_) => ChangeNotifierProvider<AddWorkViewModel>(
               create: (_) => AddWorkViewModel(
-                authViewModel: context.read<AuthViewModel>(),
-                createWorkUseCase: CreateWorkUseCase(
-                  workRepository: context.read<WorkRepository>(),
-                ),
-                workRepository: context.read<WorkRepository>(),
+                useCases: context.read<WorkUseCases>(),
+                repository: context.read<WorkRepository>(),
               ),
               child: AddWork(),
             ),

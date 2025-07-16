@@ -4,6 +4,7 @@ import 'package:knittda/src/data/repositories/records_repository.dart';
 import 'package:knittda/src/data/repositories/work_repository.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_work_use_case.dart';
+import 'package:knittda/src/domain/use_case/work_use_cases.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
 import 'package:knittda/src/presentation/screens/work_detail/diary.dart';
 import 'package:knittda/src/presentation/screens/work_detail/edit_work.dart';
@@ -90,11 +91,8 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
     final topPadding = MediaQuery.of(context).padding.top; //상태바 높이
 
     final editVM = EditWorkViewModel(
-      authViewModel: context.read<AuthViewModel>(),
-      updateWorkUseCase: UpdateWorkUseCase(
-        workRepository: context.read<WorkRepository>(),
-      ),
-      workRepository: context.read<WorkRepository>(),
+      useCases: context.read<WorkUseCases>(),
+      repository: context.read<WorkRepository>(),
     );
 
     if (_isLoading) {
@@ -167,11 +165,8 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                             MaterialPageRoute(
                               builder: (_) => ChangeNotifierProvider(
                                 create: (_) => EditWorkViewModel(
-                                  authViewModel: context.read<AuthViewModel>(),
-                                  updateWorkUseCase: UpdateWorkUseCase(
-                                    workRepository: context.read<WorkRepository>(),
-                                  ),
-                                  workRepository: context.read<WorkRepository>(),
+                                  useCases: context.read<WorkUseCases>(),
+                                  repository: context.read<WorkRepository>(),
                                 ),
                                 child: EditWork(work: work),
                               ),

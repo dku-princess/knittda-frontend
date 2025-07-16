@@ -2,21 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/data/repositories/work_repository.dart';
 import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
 import 'package:knittda/src/data/models/work_model.dart';
+import 'package:knittda/src/domain/use_case/work_use_cases.dart';
 import 'auth_view_model.dart';
 
 class AddWorkViewModel extends ChangeNotifier {
-  final CreateWorkUseCase _createUseCase;
-  final AuthViewModel _auth;
-
+  final WorkUseCases useCases;
   final WorkRepository repository;
 
   AddWorkViewModel({
-    required AuthViewModel authViewModel,
-    required CreateWorkUseCase createWorkUseCase,
-    required WorkRepository workRepository
-  })  : _auth = authViewModel,
-        _createUseCase = createWorkUseCase,
-        repository = workRepository;
+    required this.useCases,
+    required this.repository,
+  });
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -32,16 +28,9 @@ class AddWorkViewModel extends ChangeNotifier {
   }
 
   Future<bool> createWork(WorkModel work) async {
-    final token = _auth.jwt;
-    if (token == null) {
-      _error = '로그인이 필요합니다.';
-      notifyListeners();
-      return false;
-    }
-
     _setLoading(true);
     try {
-      await _createUseCase(token, work);
+      await useCases.createWork(work);
       _error = null;
       return true;
     } catch (e) {
