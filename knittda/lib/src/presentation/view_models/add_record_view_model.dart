@@ -1,21 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:knittda/src/data/models/record_model.dart';
-import 'package:knittda/src/data/repositories/records_repository.dart';
+import 'package:knittda/src/data/repositories/record_repository.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
-import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
+import 'package:knittda/src/domain/use_case/record_use_cases.dart';
 
 class AddRecordViewModel extends ChangeNotifier {
-  AuthViewModel _auth;
-  final CreateRecordUseCase _createUseCase;
-  final RecordsRepository repository;
+  final RecordUseCases useCases;
+  final RecordRepository repository;
 
   AddRecordViewModel({
-    required AuthViewModel authViewModel,
-    required CreateRecordUseCase createRecordUseCase,
-    required RecordsRepository recordsRepository,
-  })  : _auth = authViewModel,
-        _createUseCase = createRecordUseCase,
-        repository = recordsRepository;
+    required this.useCases,
+    required this.repository,
+  });
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -31,16 +27,9 @@ class AddRecordViewModel extends ChangeNotifier {
   }
 
   Future<bool> createRecord(RecordModel record) async {
-    final token = _auth.jwt;
-    if (token == null) {
-      _error = '로그인이 필요합니다.';
-      notifyListeners();
-      return false;
-    }
-
     _setLoading(true);
     try {
-      await _createUseCase(token, record);
+      await useCases.createRecord(record);
       _error   = null;
 
       return true;
