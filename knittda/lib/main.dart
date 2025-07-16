@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:knittda/src/data/data_sources/auth_interceptor.dart';
 import 'package:knittda/src/data/repositories/feed_repository.dart';
 import 'package:knittda/src/data/repositories/records_repository.dart';
 import 'package:knittda/src/data/repositories/report_repository.dart';
@@ -22,10 +23,9 @@ import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 
 import 'package:provider/provider.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
-import 'package:knittda/src/data/datasources/kakao_login.dart';
+import 'package:knittda/src/data/data_sources/kakao_login.dart';
 import 'package:knittda/src/data/repositories/auth_repository.dart';
 import 'package:knittda/src/core/storage/token_storage.dart';
-import 'package:knittda/src/presentation/view_models/user_view_model.dart';
 
 import 'dart:async';
 import 'package:flutter/widgets.dart';
@@ -63,21 +63,40 @@ Future<void> main() async {
     runApp(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider<AuthViewModel>(
-            //lazy: false,
-            create: (_) => AuthViewModel(
-              KaKaoLogin(),
-              AuthRepository(),
-              TokenStorage(),
-            ),
+          /// TokenStorage — 싱글톤
+          Provider<TokenStorage>(
+            create: (_) => TokenStorage(),
           ),
-          ChangeNotifierProxyProvider<AuthViewModel, UserViewModel>(
-            create: (ctx) => UserViewModel(ctx.read<AuthViewModel>()),
-            update: (ctx, auth, prev) {
-              prev?.update(auth);
-              return prev ?? UserViewModel(auth);
+
+          /// Dio — TokenStorage 주입
+          Provider<Dio>(
+            create: (context) {
+              final tokenStorage = context.read<TokenStorage>();
+              final dio = Dio(
+                BaseOptions(baseUrl: baseUrl),
+              );
+              dio.interceptors.add(AuthInterceptor(tokenStorage));
+              return dio;
             },
           ),
+
+          /// AuthRepository — Dio 주입
+          Provider<AuthRepository>(
+            create: (context) {
+              final dio = context.read<Dio>();
+              return AuthRepository(dio);
+            },
+          ),
+
+          /// AuthViewModel — SocialLogin, AuthRepository, TokenStorage 주입
+          ChangeNotifierProvider<AuthViewModel>(
+            create: (context) => AuthViewModel(
+              KaKaoLogin(),
+              context.read<AuthRepository>(),
+              context.read<TokenStorage>(),
+            ),
+          ),
+
           ChangeNotifierProvider<WorkRepository>(create: (_) => WorkRepository()),
           ProxyProvider<WorkRepository, DeleteWorkUseCase>(
             update: (_, repo, __) => DeleteWorkUseCase(workRepository: repo),
@@ -173,11 +192,6 @@ Future<void> main() async {
                 getReportUseCase: getReportUseCase,
               );
             },
-          ),
-
-          // ① Dio
-          Provider<Dio>(
-            create: (_) => Dio(BaseOptions(baseUrl: baseUrl)),
           ),
 
           // ② Repository (Dio 의존)

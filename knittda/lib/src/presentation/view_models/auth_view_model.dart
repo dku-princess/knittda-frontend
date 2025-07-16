@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:knittda/src/data/datasources/social_login.dart';
+import 'package:knittda/src/data/data_sources/social_login.dart';
 import 'package:knittda/src/core/storage/token_storage.dart';
 
 import 'package:knittda/src/data/models/user_model.dart';
@@ -20,8 +20,12 @@ class AuthViewModel extends ChangeNotifier {
   UserModel? _user;
   AuthStatus _status = AuthStatus.loading;
 
-  AuthViewModel(this._socialLogin, this._authRepo, this._storage) {
-    _init(); // 생성 직후 자동 로그인 시도
+  AuthViewModel(
+      this._socialLogin,
+      this._authRepo,
+      this._storage,
+      ) {
+    _init(); // 생성 시 자동 로그인 시도
   }
 
   //getter — 외부에선 읽기 전용
@@ -43,6 +47,7 @@ class AuthViewModel extends ChangeNotifier {
       _jwt   = result.jwt;
       _user  = result.user;
       _status = AuthStatus.authenticated;
+
       await _storage.save(_jwt!);
 
       notifyListeners();
@@ -61,14 +66,16 @@ class AuthViewModel extends ChangeNotifier {
       _jwt = await _storage.read();
       if (_jwt == null) throw 'no token';
 
-      final result = await _authRepo.me(_jwt!);
+      final result = await _authRepo.me();
       _user   = result.user;
       _status = AuthStatus.authenticated;
+
       debugPrint('자동 로그인 성공');
     } catch (_) {
       _jwt    = null;
       _user   = null;
       _status = AuthStatus.unauthenticated;
+
       debugPrint('자동 로그인 실패');
     }
     notifyListeners();
