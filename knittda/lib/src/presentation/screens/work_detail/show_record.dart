@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
-import 'package:knittda/src/data/repositories/records_repository.dart';
+import 'package:knittda/src/data/repositories/record_repository.dart';
+import 'package:knittda/src/domain/use_case/record_use_cases.dart';
 import 'package:knittda/src/domain/use_case/update_record_use_case.dart';
 import 'package:knittda/src/presentation/screens/work_detail/edit_record.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
@@ -100,11 +101,8 @@ class _ShowRecordState extends State<ShowRecord> {
                     MaterialPageRoute(
                       builder: (_) => ChangeNotifierProvider(
                         create: (_) => EditRecordViewModel(
-                          authViewModel: context.read<AuthViewModel>(),
-                          updateRecordUseCase: UpdateRecordUseCase(
-                            recordsRepository: context.read<RecordsRepository>(),
-                          ),
-                          recordsRepository: context.read<RecordsRepository>(),
+                          useCases: context.read<RecordUseCases>(),
+                          repository: context.read<RecordRepository>(),
                         ),
                         child: EditRecord(record: record),
                       ),

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
-import 'package:knittda/src/data/repositories/records_repository.dart';
+import 'package:knittda/src/data/repositories/record_repository.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
+import 'package:knittda/src/domain/use_case/record_use_cases.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
 import 'package:knittda/src/presentation/screens/work_detail/diary.dart';
 import 'package:knittda/src/presentation/screens/work_detail/edit_work.dart';
@@ -122,11 +123,8 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                   MaterialPageRoute(
                     builder: (_) => ChangeNotifierProvider(
                       create: (_) => AddRecordViewModel(
-                        authViewModel: context.read<AuthViewModel>(),
-                        createRecordUseCase: CreateRecordUseCase(
-                          recordsRepository: context.read<RecordsRepository>(),
-                        ),
-                        recordsRepository: context.read<RecordsRepository>(),
+                        useCases: context.read<RecordUseCases>(),
+                        repository: context.read<RecordRepository>(),
                       ),
                       child: AddRecord(work: work),
                     ),

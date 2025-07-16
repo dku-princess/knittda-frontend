@@ -2,9 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/data_sources/auth_interceptor.dart';
 import 'package:knittda/src/data/repositories/feed_repository.dart';
-import 'package:knittda/src/data/repositories/records_repository.dart';
+import 'package:knittda/src/data/repositories/record_repository.dart';
 import 'package:knittda/src/data/repositories/report_repository.dart';
 import 'package:knittda/src/data/repositories/work_repository.dart';
+import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_work_use_case.dart';
@@ -14,6 +15,8 @@ import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_report_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_works_use_case.dart';
+import 'package:knittda/src/domain/use_case/record_use_cases.dart';
+import 'package:knittda/src/domain/use_case/update_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_work_use_case.dart';
 import 'package:knittda/src/presentation/view_models/feed_view_model.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
@@ -133,41 +136,34 @@ Future<void> main() async {
             },
           ),
 
-          ChangeNotifierProvider<RecordsRepository>(create: (_) => RecordsRepository()),
-          ProxyProvider<RecordsRepository, DeleteRecordUseCase>(
-            update: (_, repo, __) => DeleteRecordUseCase(recordsRepository: repo),
+          // record
+          ChangeNotifierProvider<RecordRepository>(
+            create: (context) {
+              final dio = context.read<Dio>();
+              return RecordRepository(dio);
+            },
           ),
-          ProxyProvider<RecordsRepository, GetRecordUseCase>(
-            update: (_, repo, __) => GetRecordUseCase(recordsRepository: repo),
+
+          Provider<RecordUseCases>(
+            create: (context) {
+              final repository = context.read<RecordRepository>();
+              return RecordUseCases(
+                createRecord: CreateRecordUseCase(repository),
+                deleteRecord: DeleteRecordUseCase(repository),
+                getRecord: GetRecordUseCase(repository),
+                getRecords: GetRecordsUseCase(repository),
+                updateRecord: UpdateRecordUseCase(repository),
+              );
+            },
           ),
-          ProxyProvider<RecordsRepository, GetRecordsUseCase>(
-            update: (_, repo, __) => GetRecordsUseCase(recordsRepository: repo),
-          ),
-          ChangeNotifierProxyProvider5<
-              AuthViewModel,
-              DeleteRecordUseCase,
-              GetRecordUseCase,
-              GetRecordsUseCase,
-              RecordsRepository,
-              RecordViewModel>(
-            create: (ctx) => RecordViewModel(
-              authViewModel: ctx.read<AuthViewModel>(),
-              deleteRecordUseCase: ctx.read<DeleteRecordUseCase>(),
-              getRecordUseCase: ctx.read<GetRecordUseCase>(),
-              getRecordsUseCase: ctx.read<GetRecordsUseCase>(),
-              recordsRepository: ctx.read<RecordsRepository>(),
-            ),
-            update: (ctx, auth, deleteUseCase, getRecordUseCase, getRecordsUseCase, recordsRepository,prev) {
-              if (prev != null) {
-                prev.update(auth);
-                return prev;
-              }
+
+          ChangeNotifierProvider<RecordViewModel>(
+            create: (context) {
+              final useCases = context.read<RecordUseCases>();
+              final repository = context.read<RecordRepository>();
               return RecordViewModel(
-                authViewModel: auth,
-                deleteRecordUseCase: deleteUseCase,
-                getRecordUseCase: getRecordUseCase,
-                getRecordsUseCase: getRecordsUseCase,
-                recordsRepository: recordsRepository
+                useCases: useCases,
+                repository: repository,
               );
             },
           ),
@@ -191,11 +187,12 @@ Future<void> main() async {
             },
           ),
 
-          // ② Repository (Dio 의존)
-          ProxyProvider<Dio, FeedRepository>(
-            update: (_, dio, __) => FeedRepository(dio),
+          Provider<FeedRepository>(
+            create: (context) {
+              final dio = context.read<Dio>();
+              return FeedRepository(dio);
+            },
           ),
-
           // ③ Service (Repository 의존)
           ProxyProvider<FeedRepository, FeedService>(
             update: (_, repo, __) => FeedService(repo),

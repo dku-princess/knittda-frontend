@@ -1,14 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/record_model.dart';
-import 'package:knittda/env.dart';
 
-class RecordsRepository extends ChangeNotifier{
-  final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: baseUrl,
-    ),
-  );
+class RecordRepository extends ChangeNotifier{
+  final Dio _dio;
+
+  RecordRepository(this._dio);
 
   List<RecordModel> _records = [];
   RecordModel? _record;
@@ -17,7 +14,7 @@ class RecordsRepository extends ChangeNotifier{
   RecordModel? get record => _record;
 
   //record 수정
-  Future<void> updateRecord(String accessToken, RecordModel record, List<int>? deleteImageIds) async {
+  Future<void> updateRecord(RecordModel record, List<int>? deleteImageIds) async {
     try{
       final formData = await record.toEditMultipartForm(
         deleteImageIds: deleteImageIds,
@@ -31,11 +28,6 @@ class RecordsRepository extends ChangeNotifier{
       final res = await _dio.put<Map<String, dynamic>>(
         '/api/v1/records/',
         data: formData,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
       );
 
       if (res.statusCode != 200) {
@@ -74,16 +66,10 @@ class RecordsRepository extends ChangeNotifier{
   }
 
   //record 상세 조회
-  Future<void> getRecord(String accessToken, int recordId) async {
+  Future<void> getRecord(int recordId) async {
     try{
       final res = await _dio.get<Map<String, dynamic>>(
         '/api/v1/records/$recordId',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-            'projectId': '$recordId'
-          },
-        ),
       );
 
       if (res.statusCode != 200) {
@@ -113,16 +99,10 @@ class RecordsRepository extends ChangeNotifier{
   }
 
   //프로젝트별 record 조회
-  Future<void> getRecords(String accessToken, int projectId) async{
+  Future<void> getRecords(int projectId) async{
     try{
       final res = await _dio.get<Map<String, dynamic>>(
         '/api/v1/records/projects/$projectId',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-            'projectId': '$projectId'
-          },
-        ),
       );
 
       if (res.statusCode != 200) {
@@ -151,7 +131,7 @@ class RecordsRepository extends ChangeNotifier{
     }
   }
 
-  Future<void> createRecord(String accessToken, RecordModel record) async {
+  Future<void> createRecord(RecordModel record) async {
     try {
       final formData = await record.toMultipartForm();
 
@@ -167,12 +147,6 @@ class RecordsRepository extends ChangeNotifier{
       final res = await _dio.post<Map<String, dynamic>>(
         '/api/v1/records/',
         data: formData,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-            //'Content-Type': 'multipart/form-data',
-          },
-        ),
       );
 
       if (res.statusCode != 200) {
@@ -210,16 +184,10 @@ class RecordsRepository extends ChangeNotifier{
     }
   }
 
-  Future<void> deleteRecord(String accessToken, int recordId) async{
+  Future<void> deleteRecord(int recordId) async{
     try{
       final res = await _dio.delete<Map<String, dynamic>>(
         '/api/v1/records/$recordId',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-            'recordId': '$recordId'
-          },
-        ),
       );
 
       if (res.statusCode != 200) {
