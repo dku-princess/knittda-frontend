@@ -71,25 +71,28 @@ class WorkListItem extends StatelessWidget {
   String _getRelativeDate(DateTime? serverUtc) {
     if (serverUtc == null) return "-";
 
-    // 1) UTC → KST(+9)
-    DateTime _toKST(DateTime dt) => dt.toUtc().add(const Duration(hours: 9));
-    final kstDateTime = _toKST(serverUtc);
-    final kstNowTime  = _toKST(DateTime.now());
+    // 서버에서 받은 UTC를 KST로 변환
+    DateTime _toKST(DateTime dt) {
+      return dt.add(const Duration(hours: 9));
+    }
 
-    // 2) 시·분·초를 0 으로 맞춰 ‘날짜만’ 비교
-    final kstDate = DateTime(kstDateTime.year, kstDateTime.month, kstDateTime.day);
-    final kstToday = DateTime(kstNowTime.year, kstNowTime.month, kstNowTime.day);
+    final kstServerTime = _toKST(serverUtc);
+    final kstNow = DateTime.now(); // 현재 로컬 시간대 (KST 환경이라면 OK)
 
-    final diffDays = kstToday.difference(kstDate).inDays;
+    // 날짜 부분만 비교 (시·분·초 제거)
+    final kstServerDate = DateTime(kstServerTime.year, kstServerTime.month, kstServerTime.day);
+    final kstToday = DateTime(kstNow.year, kstNow.month, kstNow.day);
+
+    final diffDays = kstServerDate.difference(kstToday).inDays;
 
     if (diffDays == 0) {
       return '오늘';
-    } else if (diffDays == 1) {
+    } else if (diffDays == -1) {
       return '어제';
-    } else if (diffDays < 7) {
-      return '$diffDays일 전';
+    } else if (diffDays < 0 && diffDays >= -6) {
+      return '${-diffDays}일 전';
     } else {
-      return DateUtilsHelper.toDotFormat(kstDate); // 예: 2025.07.10
+      return DateUtilsHelper.toDotFormat(kstServerDate); // 예: 2025.07.10
     }
   }
 }
