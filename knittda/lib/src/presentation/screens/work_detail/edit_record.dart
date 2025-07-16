@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/models/image_model.dart';
 import 'package:knittda/src/data/models/record_model.dart';
-import 'package:knittda/src/presentation/view_models/edit_record_view_model.dart';
+import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
-import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -127,15 +126,15 @@ class _EditRecordState extends State<EditRecord> {
         files: _images,
       );
 
-      final editRecordVM = context.read<EditRecordViewModel>();
-      final success = await editRecordVM.updateRecord(updatedRecord, _deleteImageIds);
+      final viewModel = context.read<RecordViewModel>();
+      final success = await viewModel.updateRecord(updatedRecord, _deleteImageIds);
 
       if (!mounted) return;
 
       if (success) {
         Navigator.pop(context);
       } else {
-        final error = editRecordVM.errorMessage ?? '수정에 실패했습니다.';
+        final error = viewModel.error ?? '수정에 실패했습니다.';
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
       }
     } finally {
@@ -145,8 +144,8 @@ class _EditRecordState extends State<EditRecord> {
 
   @override
   Widget build(BuildContext context) {
-    final editRecordVM = context.watch<EditRecordViewModel>();
-    final isBusy = editRecordVM.isLoading || _submitting;
+    final viewModel = context.watch<RecordViewModel>();
+    final isBusy = viewModel.isLoading || _submitting;
 
     return Stack(
       children: [

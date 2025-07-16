@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
-import 'package:knittda/src/data/repositories/record_repository.dart';
-import 'package:knittda/src/data/repositories/work_repository.dart';
-import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
-import 'package:knittda/src/domain/use_case/record_use_cases.dart';
-import 'package:knittda/src/domain/use_case/work_use_cases.dart';
+
 import 'package:knittda/src/presentation/screens/add_work_page/add_work.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
 import 'package:knittda/src/presentation/screens/work_detail/report_ui.dart';
 import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
-import 'package:knittda/src/presentation/view_models/add_record_view_model.dart';
-import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import 'package:knittda/src/presentation/widgets/buttons/work_state_button.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
@@ -110,14 +104,7 @@ class _WorkListState extends State<WorkList> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                              builder: (_) => ChangeNotifierProvider(
-                                create: (_) => AddRecordViewModel(
-                                  useCases: context.read<RecordUseCases>(),
-                                  repository: context.read<RecordRepository>(),
-                                ),
-                                child: AddRecord(work: work),
-                              ),
+                            MaterialPageRoute(builder: (_) => AddRecord(work: work)
                             ),
                           );
                         },

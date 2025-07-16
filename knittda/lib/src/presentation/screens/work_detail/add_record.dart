@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/models/record_model.dart';
 import 'package:knittda/src/data/models/work_model.dart';
-import 'package:knittda/src/presentation/view_models/add_record_view_model.dart';
+import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
-import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -111,8 +110,8 @@ class _AddRecordState extends State<AddRecord> {
         files: _images,
       );
 
-      final addRecordVM = context.read<AddRecordViewModel>();
-      final success = await addRecordVM.createRecord(record);
+      final viewModel = context.read<RecordViewModel>();
+      final success = await viewModel.createRecord(record);
 
       if (!mounted) return;
 
@@ -120,7 +119,7 @@ class _AddRecordState extends State<AddRecord> {
         await context.read<WorkViewModel>().getWork(widget.work.id!);
         Navigator.pop(context);
       } else {
-        final error = addRecordVM.errorMessage ?? '알 수 없는 오류';
+        final error = viewModel.error ?? '알 수 없는 오류';
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
       }
     } finally {
@@ -130,8 +129,8 @@ class _AddRecordState extends State<AddRecord> {
 
   @override
   Widget build(BuildContext context) {
-    final addRecordVM = context.watch<AddRecordViewModel>();
-    final isBusy = addRecordVM.isLoading || _submitting;
+    final viewModel = context.watch<RecordViewModel>();
+    final isBusy = viewModel.isLoading || _submitting;
 
     return Stack(
       children: [

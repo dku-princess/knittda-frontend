@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
-import 'package:knittda/src/data/repositories/record_repository.dart';
-import 'package:knittda/src/domain/use_case/record_use_cases.dart';
-import 'package:knittda/src/domain/use_case/update_record_use_case.dart';
 import 'package:knittda/src/presentation/screens/work_detail/edit_record.dart';
-import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
-import 'package:knittda/src/presentation/view_models/edit_record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
@@ -39,9 +34,9 @@ class _ShowRecordState extends State<ShowRecord> {
 
   Future<void> _fetchRecord() async {
     try {
-      final recordVM = context.read<RecordViewModel>();
+      final viewModel = context.read<RecordViewModel>();
 
-      await recordVM.getRecord(widget.recordId);
+      await viewModel.getRecord(widget.recordId);
     } catch (e) {
       debugPrint('기록 불러오기 오류: $e');
       if (!mounted) return;
@@ -58,10 +53,10 @@ class _ShowRecordState extends State<ShowRecord> {
 
   @override
   Widget build(BuildContext context) {
-    final recordVM = context.watch<RecordViewModel>();
-    final record = recordVM.record;
-    final error = recordVM.errorMessage;
-    final isBusy = recordVM.isLoading;
+    final viewModel = context.watch<RecordViewModel>();
+    final record = viewModel.record;
+    final error = viewModel.error;
+    final isBusy = viewModel.isLoading;
 
     if (_isLoading) {
       return Scaffold(
@@ -73,7 +68,7 @@ class _ShowRecordState extends State<ShowRecord> {
     if (error != null) {
       return Scaffold(
         appBar: AppBar(),
-        body: Center(child: Text('에러 발생: ${recordVM.errorMessage}')),
+        body: Center(child: Text('에러 발생: ${viewModel.error}')),
       );
     }
 
@@ -95,22 +90,15 @@ class _ShowRecordState extends State<ShowRecord> {
           appBar: AppBar(
             actions: [
               EditDeleteMenu(
-                onEdit: () async {
-                  await Navigator.push(
+                onEdit: () {
+                  Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => ChangeNotifierProvider(
-                        create: (_) => EditRecordViewModel(
-                          useCases: context.read<RecordUseCases>(),
-                          repository: context.read<RecordRepository>(),
-                        ),
-                        child: EditRecord(record: record),
-                      ),
+                    MaterialPageRoute(builder: (_) => EditRecord(record: record)
                     ),
                   );
                 },
                 onDelete: () async {
-                  final success = await recordVM.deleteRecord(record.id!);
+                  final success = await viewModel.deleteRecord(record.id!);
 
                   if (!context.mounted) return;
 
