@@ -5,6 +5,7 @@ import 'package:knittda/src/data/repositories/feed_repository.dart';
 import 'package:knittda/src/data/repositories/records_repository.dart';
 import 'package:knittda/src/data/repositories/report_repository.dart';
 import 'package:knittda/src/data/repositories/work_repository.dart';
+import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/feed_service.dart';
@@ -13,6 +14,7 @@ import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_report_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_works_use_case.dart';
+import 'package:knittda/src/domain/use_case/update_work_use_case.dart';
 import 'package:knittda/src/presentation/view_models/feed_view_model.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/report_view_model.dart';
@@ -32,6 +34,8 @@ import 'package:flutter/widgets.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'env.dart';
 import 'package:dio/dio.dart';
+
+import 'src/domain/use_case/work_use_cases.dart';
 
 // 앱 실행
 Future<void> main() async {
@@ -97,45 +101,40 @@ Future<void> main() async {
             ),
           ),
 
-          ChangeNotifierProvider<WorkRepository>(create: (_) => WorkRepository()),
-          ProxyProvider<WorkRepository, DeleteWorkUseCase>(
-            update: (_, repo, __) => DeleteWorkUseCase(workRepository: repo),
+          // work
+          ChangeNotifierProvider<WorkRepository>(
+            create: (context) {
+              final dio = context.read<Dio>();
+              return WorkRepository(dio);
+            },
           ),
-          ProxyProvider<WorkRepository, GetWorkUseCase>(
-            update: (_, repo, __) => GetWorkUseCase(workRepository: repo),
-          ),
-          ProxyProvider<WorkRepository, GetWorksUseCase>(
-            update: (_, repo, __) => GetWorksUseCase(workRepository: repo),
-          ),
-          ChangeNotifierProxyProvider5<
-              AuthViewModel,
-              DeleteWorkUseCase,
-              GetWorkUseCase,
-              GetWorksUseCase,
-              WorkRepository,
-              WorkViewModel>(
-            create: (ctx) => WorkViewModel(
-              authViewModel: ctx.read<AuthViewModel>(),
-              deleteWorkUseCase: ctx.read<DeleteWorkUseCase>(),
-              getWorkUseCase: ctx.read<GetWorkUseCase>(),
-              getWorksUseCase: ctx.read<GetWorksUseCase>(),
-              workRepository: ctx.read<WorkRepository>(),
-            ),
-            update: (ctx, auth, deleteUseCase, getWorkUseCase, getWorksUseCase, workRepository,prev) {
-              if (prev != null) {
-                prev.update(auth);
-                return prev;
-              }
 
-              return WorkViewModel(
-                authViewModel: auth,
-                deleteWorkUseCase: deleteUseCase,
-                getWorkUseCase: getWorkUseCase,
-                getWorksUseCase: getWorksUseCase,
-                workRepository: workRepository
+          /// WorkUseCases
+          Provider<WorkUseCases>(
+            create: (context) {
+              final repository = context.read<WorkRepository>();
+              return WorkUseCases(
+                createWork: CreateWorkUseCase(repository),
+                deleteWork: DeleteWorkUseCase(repository),
+                getWork: GetWorkUseCase(repository),
+                getWorks: GetWorksUseCase(repository),
+                updateWork: UpdateWorkUseCase(repository),
               );
             },
           ),
+
+          /// WorkViewModel
+          ChangeNotifierProvider<WorkViewModel>(
+            create: (context) {
+              final useCases = context.read<WorkUseCases>();
+              final repository = context.read<WorkRepository>();
+              return WorkViewModel(
+                useCases: useCases,
+                repository: repository,
+              );
+            },
+          ),
+
           ChangeNotifierProvider<RecordsRepository>(create: (_) => RecordsRepository()),
           ProxyProvider<RecordsRepository, DeleteRecordUseCase>(
             update: (_, repo, __) => DeleteRecordUseCase(recordsRepository: repo),

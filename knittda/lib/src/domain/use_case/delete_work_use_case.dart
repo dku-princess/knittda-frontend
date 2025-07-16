@@ -3,15 +3,15 @@ import 'package:knittda/src/data/repositories/work_repository.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 class DeleteWorkUseCase {
-  final WorkRepository workRepository;
+  final WorkRepository _repository;
 
-  DeleteWorkUseCase({
-    required this.workRepository,
-  });
+  DeleteWorkUseCase(
+    this._repository,
+  );
 
-  Future<void> call(String accessToken, int projectId) async {
+  Future<void> call(int projectId) async {
     try {
-      await workRepository.deleteWork(accessToken, projectId);
+      await _repository.deleteWork(projectId);
     } catch (e, stack) {
       await Sentry.captureException(e, stackTrace: stack);
       debugPrint('DeleteWorkUseCase 오류: $e\n$stack');
