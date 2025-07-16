@@ -14,8 +14,8 @@ class Diary extends StatelessWidget {
       return Center(child: CircularProgressIndicator());
     }
 
-    if (recordVM.errorMessage != null) {
-      return Center(child: Text('에러 발생: ${recordVM.errorMessage}'));
+    if (recordVM.error != null) {
+      return Center(child: Text('에러 발생: ${recordVM.error}'));
     }
 
     if (records == null || records.isEmpty) {

@@ -137,7 +137,7 @@ Future<void> main() async {
           ),
 
           // record
-          ChangeNotifierProvider<RecordRepository>(
+          Provider<RecordRepository>(
             create: (context) {
               final dio = context.read<Dio>();
               return RecordRepository(dio);
@@ -160,10 +160,8 @@ Future<void> main() async {
           ChangeNotifierProvider<RecordViewModel>(
             create: (context) {
               final useCases = context.read<RecordUseCases>();
-              final repository = context.read<RecordRepository>();
               return RecordViewModel(
-                useCases: useCases,
-                repository: repository,
+               useCases,
               );
             },
           ),

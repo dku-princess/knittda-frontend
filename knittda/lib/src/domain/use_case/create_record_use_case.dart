@@ -10,13 +10,14 @@ class CreateRecordUseCase {
     this._repository,
   );
 
-  Future<void> call(RecordModel record) async {
+  Future<RecordModel> call(RecordModel record) async {
     try {
-      await _repository.createRecord(record);
+      final created = await _repository.createRecord(record);
+      return created;
     } catch (e, stack) {
       await Sentry.captureException(e, stackTrace: stack);
       debugPrint('CreateRecordUseCase 오류: $e\n$stack');
-      rethrow; // 호출 측에서 catch 가능하게 재던짐
+      rethrow;
     }
   }
 }
