@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
-import 'package:knittda/src/presentation/view_models/edit_work_view_model.dart';
+import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/core/constants/color.dart';
@@ -132,15 +132,15 @@ class _EditWorkState extends State<EditWork> {
         designer: designer.isNotEmpty ? designer : null,
       );
 
-      final editWorkVM = context.read<EditWorkViewModel>();
-      final success = await editWorkVM.updateWork(updated);
+      final viewModel = context.read<WorkViewModel>();
+      final success = await viewModel.updateWork(updated);
 
       if (!mounted) return;
 
       if (success) {
         Navigator.pop(context);
       } else {
-        final error = editWorkVM.errorMessage ?? '알 수 없는 오류';
+        final error = viewModel.error ?? '알 수 없는 오류';
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
       }
     } finally {
@@ -150,8 +150,8 @@ class _EditWorkState extends State<EditWork> {
 
   @override
   Widget build(BuildContext context) {
-    final editWorkVM = context.watch<EditWorkViewModel>();
-    final isBusy = editWorkVM.isLoading || _submitting;
+    final viewModel = context.watch<WorkViewModel>();
+    final isBusy = viewModel.isLoading || _submitting;
 
     return Stack(
       children: [

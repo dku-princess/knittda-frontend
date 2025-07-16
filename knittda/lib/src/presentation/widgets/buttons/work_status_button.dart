@@ -5,12 +5,13 @@ import 'package:knittda/src/presentation/view_models/edit_work_view_model.dart';
 
 class WorkStatusButton extends StatefulWidget {
   final WorkModel work;
-  final EditWorkViewModel editVM;
+  final Future<bool> Function(WorkModel) updateWork;
+
 
   const WorkStatusButton({
     super.key,
     required this.work,
-    required this.editVM,
+    required this.updateWork,
   });
 
   @override
@@ -35,6 +36,7 @@ class _WorkStatusButtonState extends State<WorkStatusButton> {
 
   Future<void> _toggleStatus() async {
     if (_isUpdating) return;
+
     final newStatus = _status == 'IN_PROGRESS' ? 'DONE' : 'IN_PROGRESS';
 
     setState(() => _isUpdating = true);
@@ -44,7 +46,7 @@ class _WorkStatusButtonState extends State<WorkStatusButton> {
       endDate: newStatus == 'DONE' ? DateTime.now() : null,
     );
 
-    final success = await widget.editVM.updateWork(updatedWork);
+    final success = await widget.updateWork(updatedWork);
 
     setState(() => _isUpdating = false);
 

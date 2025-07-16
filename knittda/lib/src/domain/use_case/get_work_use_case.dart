@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
-//import 'package:knittda/src/data/models/work_model.dart';
+import 'package:knittda/src/data/models/work_model.dart';
 import 'package:knittda/src/data/repositories/work_repository.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 class GetWorkUseCase {
   final WorkRepository _repository;
 
-  GetWorkUseCase(
-    this._repository,
-  );
+  GetWorkUseCase(this._repository);
 
-  Future<void> call(int projectId) async {
+  Future<WorkModel> call(int projectId) async {
     try {
-      await _repository.getWork(projectId);
+      final work = await _repository.getWork(projectId);
+      return work;
     } catch (e, stack) {
       await Sentry.captureException(e, stackTrace: stack);
       debugPrint('GetWorkUseCase 오류: $e\n$stack');
-      rethrow; // 호출 측에서 catch 가능하게 재던짐
+      rethrow;
     }
   }
 }

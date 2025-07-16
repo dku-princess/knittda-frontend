@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/repositories/records_repository.dart';
-import 'package:knittda/src/data/repositories/work_repository.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
-import 'package:knittda/src/domain/use_case/update_work_use_case.dart';
-import 'package:knittda/src/domain/use_case/work_use_cases.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
 import 'package:knittda/src/presentation/screens/work_detail/diary.dart';
 import 'package:knittda/src/presentation/screens/work_detail/edit_work.dart';
@@ -12,7 +9,6 @@ import 'package:knittda/src/presentation/screens/work_detail/info.dart';
 import 'package:knittda/src/presentation/screens/work_detail/report.dart';
 import 'package:knittda/src/presentation/view_models/add_record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
-import 'package:knittda/src/presentation/view_models/edit_work_view_model.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_view_model.dart';
 import 'package:knittda/src/presentation/widgets/buttons/work_status_button.dart';
@@ -47,8 +43,11 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: tabs.length, vsync: this, initialIndex: widget.initialTabIndex);
-    _tabController.addListener(() { setState(() {});});
+    _tabController = TabController(
+      length: tabs.length,
+      vsync: this,
+      initialIndex: widget.initialTabIndex,
+    )..addListener(() => setState(() {}));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _getWorkAndRecords();
@@ -64,10 +63,10 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
   Future<void> _getWorkAndRecords() async {
     try {
       final workViewModel = context.read<WorkViewModel>();
-      final recordVM = context.read<RecordViewModel>();
+      final recordViewModel = context.read<RecordViewModel>();
 
       await workViewModel.getWork(widget.projectId);
-      await recordVM.getRecords(widget.projectId);
+      await recordViewModel.getRecords(widget.projectId);
     } catch (e) {
       debugPrint('작품 불러오기 오류: $e');
       if (!mounted) return;
@@ -84,16 +83,11 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final workVM = context.watch<WorkViewModel>();
-    final work = workVM.work;
-    final error = workVM.errorMessage;
-    final isBusy = workVM.isLoading;
+    final viewModel = context.watch<WorkViewModel>();
+    final work = viewModel.work;
+    final error = viewModel.error;
+    final isBusy = viewModel.isLoading;
     final topPadding = MediaQuery.of(context).padding.top; //상태바 높이
-
-    final editVM = EditWorkViewModel(
-      useCases: context.read<WorkUseCases>(),
-      repository: context.read<WorkRepository>(),
-    );
 
     if (_isLoading) {
       return Scaffold(
@@ -105,7 +99,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
     if (error != null) {
       return Scaffold(
         appBar: AppBar(),
-        body: Center(child: Text('에러 발생: ${workVM.errorMessage}')),
+        body: Center(child: Text('에러 발생: ${viewModel.error}')),
       );
     }
 
@@ -159,22 +153,17 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                     ),
                     actions: [
                       EditDeleteMenu(
-                        onEdit: () async {
-                          await Navigator.push(
+                        onEdit: () {
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => ChangeNotifierProvider(
-                                create: (_) => EditWorkViewModel(
-                                  useCases: context.read<WorkUseCases>(),
-                                  repository: context.read<WorkRepository>(),
-                                ),
-                                child: EditWork(work: work),
-                              ),
+                              builder: (_) =>  EditWork(work: work),
                             ),
                           );
                         },
+
                         onDelete: () async {
-                          final success = await workVM.deleteWork(work.id!);
+                          final success = await viewModel.deleteWork(work.id!);
 
                           if (!context.mounted) return;
 
@@ -190,6 +179,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                         deleteDialogContent: '정말 이 작품을 삭제하시겠습니까?',
                       )
                     ],
+
                     flexibleSpace: FlexibleSpaceBar( //확장영역
                       background: Padding(
                         padding: EdgeInsets.only(top: topPadding + 56, left: 24),
@@ -212,7 +202,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                                 SizedBox(height: 10),
                                 WorkStatusButton(
                                   work: work,
-                                  editVM: editVM,
+                                  updateWork: viewModel.updateWork,
                                 ),
                               ],
                             ),

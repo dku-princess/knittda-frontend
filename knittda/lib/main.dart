@@ -102,7 +102,7 @@ Future<void> main() async {
           ),
 
           // work
-          ChangeNotifierProvider<WorkRepository>(
+          Provider<WorkRepository>(
             create: (context) {
               final dio = context.read<Dio>();
               return WorkRepository(dio);
@@ -127,10 +127,8 @@ Future<void> main() async {
           ChangeNotifierProvider<WorkViewModel>(
             create: (context) {
               final useCases = context.read<WorkUseCases>();
-              final repository = context.read<WorkRepository>();
               return WorkViewModel(
-                useCases: useCases,
-                repository: repository,
+                useCases,
               );
             },
           ),
