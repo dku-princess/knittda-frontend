@@ -29,7 +29,7 @@ class Report extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final recordVM = context.watch<RecordViewModel>();
-    final records = recordVM.records ?? [];
+    final records = recordVM.records;
 
     final latestRecord = records.isNotEmpty ? records.last : null;
     final percent = statusToPercent(latestRecord?.recordStatus);

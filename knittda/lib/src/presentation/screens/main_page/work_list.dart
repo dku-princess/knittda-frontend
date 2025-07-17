@@ -42,7 +42,7 @@ class _WorkListState extends State<WorkList> {
     final viewModel = context.watch<WorkViewModel>();
     final works = viewModel.works;
 
-    final filteredWorks = (works ?? []).where((work) => work.status == _filterStatus).toList();
+    final filteredWorks = works.where((work) => work.status == _filterStatus).toList();
 
     return Scaffold(
       appBar: AppBar(
