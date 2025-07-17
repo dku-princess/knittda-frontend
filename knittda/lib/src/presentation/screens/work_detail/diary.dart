@@ -18,7 +18,7 @@ class Diary extends StatelessWidget {
       return Center(child: Text('에러 발생: ${recordVM.error}'));
     }
 
-    if (records == null || records.isEmpty) {
+    if (records.isEmpty) {
       return Center(child: Text('기록이 없습니다.'));
     }
 
