@@ -23,7 +23,6 @@ import 'package:knittda/src/domain/use_case/update_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/work_use_cases.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:knittda/src/presentation/view_models/feed_view_model.dart';
-import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/report_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_list_view_model.dart';
 import 'package:provider/provider.dart';
@@ -83,9 +82,6 @@ Future<List<SingleChildWidget>> getProviders() async {
         getRecords:   GetRecordsUseCase(repo),
         updateRecord: UpdateRecordUseCase(repo),
       ),
-    ),
-    ChangeNotifierProvider<RecordViewModel>(
-      create: (context) => RecordViewModel(context.read<RecordUseCases>()),
     ),
 
     ProxyProvider<Dio, ReportRepository>(

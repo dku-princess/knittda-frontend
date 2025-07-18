@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/domain/use_case/record_use_cases.dart';
 import 'package:knittda/src/domain/use_case/work_use_cases.dart';
 
 import 'package:knittda/src/presentation/screens/add_work_page/add_work.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
 import 'package:knittda/src/presentation/screens/work_detail/report_ui.dart';
 import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
+import 'package:knittda/src/presentation/view_models/record_form_view_model.dart';
+import 'package:knittda/src/presentation/view_models/record_list_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_detail_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_form_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_list_view_model.dart';
@@ -100,9 +103,17 @@ class _WorkListState extends State<WorkList> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => ChangeNotifierProvider(
-                                create: (_) => WorkDetailViewModel(context.read<WorkUseCases>())
-                                  ..load(work.id!),
+                              builder: (_) => MultiProvider(
+                                providers: [
+                                  ChangeNotifierProvider(
+                                    create: (_) => WorkDetailViewModel(context.read<WorkUseCases>())
+                                      ..load(work.id!),                          // 작품 상세 선로드
+                                  ),
+                                  ChangeNotifierProvider(
+                                    create: (_) => RecordListViewModel(context.read<RecordUseCases>())
+                                      ..refresh(work.id!),                       // 기록 목록 선로드
+                                  ),
+                                ],
                                 child: ShowWork(projectId: work.id!),
                               ),
                             ),
@@ -112,7 +123,15 @@ class _WorkListState extends State<WorkList> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => AddRecord(work: work)
+                            MaterialPageRoute(
+                              builder: (_) => ChangeNotifierProvider(
+                                create: (_) => RecordFormViewModel(
+                                  useCases: context.read<RecordUseCases>(),
+                                  listViewModel: null,
+                                  detailViewModel: null,
+                                ),
+                                child: AddRecord(work: work),
+                              ),
                             ),
                           );
                         },
@@ -162,6 +181,7 @@ class _WorkListState extends State<WorkList> {
                 create: (context) => WorkFormViewModel(
                   useCases: context.read<WorkUseCases>(),
                   listViewModel: context.read<WorkListViewModel>(),
+                  detailViewModel: null,
                 ),
                 child: const AddWork(),
               ),

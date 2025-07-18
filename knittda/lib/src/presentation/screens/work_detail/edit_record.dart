@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/models/image_model.dart';
 import 'package:knittda/src/data/models/record_model.dart';
-import 'package:knittda/src/presentation/view_models/record_view_model.dart';
+import 'package:knittda/src/presentation/view_models/record_form_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
 
 import 'package:image_picker/image_picker.dart';
@@ -41,8 +41,6 @@ class _EditRecordState extends State<EditRecord> {
 
   final List<ImageModel> _serverImages = [];
   final List<int> _deleteImageIds = [];
-
-  bool _submitting = false;
 
   Future<void> _pickImage(ImageSource source) async {
     if (_images.length >= 5) return;
@@ -107,45 +105,42 @@ class _EditRecordState extends State<EditRecord> {
   }
 
   Future<void> _submitRecord() async {
-    if (_submitting) return;
-    setState(() => _submitting = true);
-    try {
-      if (_selectedStatus == null) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('진행 상태를 선택해주세요.')));
-        return;
-      }
-      if (_commentController.text.trim().isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('기록을 남겨주세요.')));
-        return;
-      }
+    final recordFormViewModel = context.read<RecordFormViewModel>();
+    if (recordFormViewModel.isSaving) return;
 
-      final updatedRecord = widget.record.copyWith(
-        recordStatus: _selectedStatus!.name,
-        tags: _selectedTags.toList(),
-        comment: _commentController.text.trim(),
-        files: _images,
-      );
-
-      final viewModel = context.read<RecordViewModel>();
-      final success = await viewModel.updateRecord(updatedRecord, _deleteImageIds);
-
-      if (!mounted) return;
-
-      if (success) {
-        Navigator.pop(context);
-      } else {
-        final error = viewModel.error ?? '수정에 실패했습니다.';
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
-      }
-    } finally {
-      if (mounted) setState(() => _submitting = false);
+    if (_selectedStatus == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('진행 상태를 선택해주세요.')));
+      return;
     }
+    if (_commentController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('기록을 남겨주세요.')));
+      return;
+    }
+
+    final updatedRecord = widget.record.copyWith(
+      recordStatus: _selectedStatus!.name,
+      tags: _selectedTags.toList(),
+      comment: _commentController.text.trim(),
+      files: _images,
+    );
+
+    final saved = await recordFormViewModel.save(updatedRecord, deleteImageIds: _deleteImageIds);
+
+    if (!mounted) return;
+
+    if (saved != null) {
+      Navigator.pop(context);
+    } else {
+      final error = recordFormViewModel.error ?? '수정에 실패했습니다.';
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+    }
+
   }
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<RecordViewModel>();
-    final isBusy = viewModel.isLoading || _submitting;
+    final recordFormViewModel = context.watch<RecordFormViewModel>();
+    final isBusy = recordFormViewModel.isSaving;
 
     return Stack(
       children: [
@@ -393,9 +388,11 @@ class _EditRecordState extends State<EditRecord> {
           ),
         ),
         if (isBusy)
-          const ColoredBox(
-            color: Colors.black26,
-            child: Center(child: CircularProgressIndicator()),
+          const Positioned.fill(
+            child: ColoredBox(
+              color: Colors.black26,
+              child: Center(child: CircularProgressIndicator()),
+            ),
           ),
       ],
     );

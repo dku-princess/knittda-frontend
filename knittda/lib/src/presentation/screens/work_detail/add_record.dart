@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/models/record_model.dart';
 import 'package:knittda/src/data/models/work_model.dart';
-import 'package:knittda/src/presentation/view_models/record_view_model.dart';
+import 'package:knittda/src/presentation/view_models/record_form_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_list_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
 
@@ -40,7 +40,6 @@ class _AddRecordState extends State<AddRecord> {
   RecordStatus? _selectedStatus;
   final TextEditingController _commentController = TextEditingController();
 
-  bool _submitting = false;
 
   Future<void> _pickImage(ImageSource source) async {
     if (_images.length >= 5) return;
@@ -90,47 +89,44 @@ class _AddRecordState extends State<AddRecord> {
   }
 
   Future<void> _submitRecord() async {
-    if (_submitting) return;
-    setState(() => _submitting = true);
-    try {
-      if (_selectedStatus == null) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('진행 상태를 선택해주세요.')));
-        return;
-      }
-      if (_commentController.text.trim().isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('기록을 남겨주세요.')));
-        return;
-      }
+    final recordFormViewModel = context.read<RecordFormViewModel>();
+    if (recordFormViewModel.isSaving) return;
 
-      final record = RecordModel.forCreate(
-        projectId: widget.work.id!,
-        recordStatus: _selectedStatus!.name,
-        tags: _selectedTags.toList(),
-        comment: _commentController.text.trim(),
-        files: _images,
-      );
-
-      final viewModel = context.read<RecordViewModel>();
-      final success = await viewModel.createRecord(record);
-
-      if (!mounted) return;
-
-      if (success) {
-        await context.read<WorkListViewModel>().refresh();
-        Navigator.pop(context);
-      } else {
-        final error = viewModel.error ?? '알 수 없는 오류';
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
-      }
-    } finally {
-      if (mounted) setState(() => _submitting = false);
+    if (_selectedStatus == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('진행 상태를 선택해주세요.')));
+      return;
     }
+    if (_commentController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('기록을 남겨주세요.')));
+      return;
+    }
+
+    final record = RecordModel.forCreate(
+      projectId: widget.work.id!,
+      recordStatus: _selectedStatus!.name,
+      tags: _selectedTags.toList(),
+      comment: _commentController.text.trim(),
+      files: _images,
+    );
+
+    final saved = await recordFormViewModel.save(record);
+
+    if (!mounted) return;
+
+    if (saved != null) {
+      await context.read<WorkListViewModel>().refresh();
+      Navigator.pop(context);
+    } else {
+      final error = recordFormViewModel.error ?? '알 수 없는 오류';
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+    }
+
   }
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<RecordViewModel>();
-    final isBusy = viewModel.isLoading || _submitting;
+    final recordFormViewModel = context.watch<RecordFormViewModel>();
+    final isBusy = recordFormViewModel.isSaving;
 
     return Stack(
       children: [
@@ -156,6 +152,7 @@ class _AddRecordState extends State<AddRecord> {
               const SizedBox(width: 8),
             ],
           ),
+
           body: AbsorbPointer(
             absorbing: isBusy,
             child: SingleChildScrollView(
@@ -357,9 +354,11 @@ class _AddRecordState extends State<AddRecord> {
           ),
         ),
         if (isBusy)
-          const ColoredBox(
-            color: Colors.black26,
-            child: Center(child: CircularProgressIndicator()),
+          const Positioned.fill(
+            child: ColoredBox(
+              color: Colors.black26,
+              child: Center(child: CircularProgressIndicator()),
+            ),
           ),
       ],
     );
