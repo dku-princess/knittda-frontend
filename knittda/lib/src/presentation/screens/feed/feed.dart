@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/domain/use_case/record_use_cases.dart';
+import 'package:knittda/src/domain/use_case/work_use_cases.dart';
 import 'package:knittda/src/presentation/screens/feed/feed_search.dart';
+import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
 import 'package:knittda/src/presentation/view_models/feed_view_model.dart';
+import 'package:knittda/src/presentation/view_models/record_list_view_model.dart';
+import 'package:knittda/src/presentation/view_models/work_detail_view_model.dart';
 import 'package:knittda/src/presentation/widgets/listitems/feed_list_item.dart';
 import 'package:provider/provider.dart';
 
@@ -87,7 +92,29 @@ class _FeedState extends State<Feed> {
                     child: Center(child: CircularProgressIndicator()),
                   );
                 }
-                return FeedListItem(feed: vm.feeds[index]);
+                return FeedListItem(
+                  feed: vm.feeds[index],
+                  onTap: () {
+                    final workVM = WorkDetailViewModel(context.read<WorkUseCases>())
+                      ..load(vm.feeds[index].projectId);
+                    final recordVM = RecordListViewModel(context.read<RecordUseCases>())
+                      ..refresh(vm.feeds[index].projectId);
+
+                    // ❷ value 패턴으로 그대로 넘김
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => MultiProvider(
+                          providers: [
+                            ChangeNotifierProvider.value(value: workVM),
+                            ChangeNotifierProvider.value(value: recordVM),
+                          ],
+                          child: ShowWork(projectId: vm.feeds[index].projectId),
+                        ),
+                      ),
+                    );
+                  },
+                );
               },
             ),
           );
