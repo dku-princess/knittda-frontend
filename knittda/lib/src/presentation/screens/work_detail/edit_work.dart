@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
-import 'package:knittda/src/presentation/view_models/work_list_view_model.dart';
+import 'package:knittda/src/presentation/view_models/work_form_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/core/constants/color.dart';
@@ -30,7 +30,6 @@ class _EditWorkState extends State<EditWork> {
   XFile? _image;
   DateTime? _goalDate;
   String? _networkImageUrl;
-  bool _submitting = false;
 
   @override
   void initState() {
@@ -98,60 +97,55 @@ class _EditWorkState extends State<EditWork> {
 
   //저장 함수
   Future<void> _submitWork() async{
-    if (_submitting) return;
-    setState(() => _submitting = true);
-    try {
-      final nickname = _nicknameController.text.trim();
-      final customYarnInfo = _yarnController.text.trim();
-      final customNeedleInfo = _needleController.text.trim();
-      final design = _designController.text.trim();
-      final designer = _designerController.text.trim();
+    final workFormViewModel = context.read<WorkFormViewModel>();
+    if (workFormViewModel.isSaving) return;
 
-      if (nickname.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('작품 이름을 작성해주세요.')));
-        setState(() => _submitting = false);
-        return;
-      }
+    final nickname = _nicknameController.text.trim();
+    final customYarnInfo = _yarnController.text.trim();
+    final customNeedleInfo = _needleController.text.trim();
+    final design = _designController.text.trim();
+    final designer = _designerController.text.trim();
 
-      if (_image == null && (_networkImageUrl == null || _networkImageUrl!.isEmpty)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('이미지를 선택해주세요.')),
-        );
-        setState(() => _submitting = false);
-        return;
-      }
+    if (nickname.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('작품 이름을 작성해주세요.')));
+      return;
+    }
 
-      final updated = widget.work.copyWith(
-        nickname: nickname,
-        customYarnInfo: customYarnInfo.isNotEmpty ? customYarnInfo : null,
-        customNeedleInfo: customNeedleInfo.isNotEmpty ? customNeedleInfo : null,
-        goalDate: _goalDate,
-        file: _image,
-        designTitle: design.isNotEmpty ? design : null,
-        designer: designer.isNotEmpty ? designer : null,
+    if (_image == null && (_networkImageUrl == null || _networkImageUrl!.isEmpty)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('이미지를 선택해주세요.')),
       );
+      return;
+    }
 
-      final viewModel = context.read<WorkListViewModel>();
-      final success = await viewModel.updateWork(updated);
+    final updated = widget.work.copyWith(
+      nickname: nickname,
+      customYarnInfo: customYarnInfo.isNotEmpty ? customYarnInfo : null,
+      customNeedleInfo: customNeedleInfo.isNotEmpty ? customNeedleInfo : null,
+      goalDate: _goalDate,
+      file: _image,
+      designTitle: design.isNotEmpty ? design : null,
+      designer: designer.isNotEmpty ? designer : null,
+    );
 
-      if (!mounted) return;
+    final saved = await workFormViewModel.save(updated);
 
-      if (success) {
-        Navigator.pop(context);
-      } else {
-        final error = viewModel.error ?? '알 수 없는 오류';
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
-      }
-    } finally {
-      if (mounted) setState(() => _submitting = false);
+    if (!mounted) return;
+
+    if (saved != null) {
+      Navigator.pop(context);
+    } else {
+      final error = workFormViewModel.error ?? '알 수 없는 오류';
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<WorkListViewModel>();
-    final isBusy = viewModel.isLoading || _submitting;
+    final workFormViewModel = context.watch<WorkFormViewModel>();
+    final isBusy = workFormViewModel.isSaving;
 
     return Stack(
       children: [
@@ -361,9 +355,11 @@ class _EditWorkState extends State<EditWork> {
           ),
         ),
         if (isBusy)
-          const ColoredBox(
-            color: Colors.black26,
-            child: Center(child: CircularProgressIndicator()),
+          const Positioned.fill(
+            child: ColoredBox(
+              color: Colors.black26,
+              child: Center(child: CircularProgressIndicator()),
+            ),
           ),
       ],
     );

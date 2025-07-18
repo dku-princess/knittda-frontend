@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/domain/use_case/work_use_cases.dart';
 
 import 'package:knittda/src/presentation/screens/add_work_page/add_work.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
 import 'package:knittda/src/presentation/screens/work_detail/report_ui.dart';
 import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
+import 'package:knittda/src/presentation/view_models/work_detail_view_model.dart';
+import 'package:knittda/src/presentation/view_models/work_form_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_list_view_model.dart';
 import 'package:knittda/src/presentation/widgets/buttons/work_state_button.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
@@ -34,7 +37,7 @@ class _WorkListState extends State<WorkList> {
 
   Future<void> _getWorks() async {
     final viewModel = context.read<WorkListViewModel>();
-    await viewModel.getWorks();
+    await viewModel.refresh();
   }
 
   @override
@@ -97,10 +100,15 @@ class _WorkListState extends State<WorkList> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => ShowWork(projectId: work.id!),
+                              builder: (_) => ChangeNotifierProvider(
+                                create: (_) => WorkDetailViewModel(context.read<WorkUseCases>())
+                                  ..load(work.id!),
+                                child: ShowWork(projectId: work.id!),
+                              ),
                             ),
                           );
                         },
+
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -150,7 +158,13 @@ class _WorkListState extends State<WorkList> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => AddWork(),
+              builder: (_) => ChangeNotifierProvider(
+                create: (context) => WorkFormViewModel(
+                  useCases: context.read<WorkUseCases>(),
+                  listViewModel: context.read<WorkListViewModel>(),
+                ),
+                child: const AddWork(),
+              ),
             ),
           );
         },
