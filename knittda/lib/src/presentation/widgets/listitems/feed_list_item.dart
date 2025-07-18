@@ -6,10 +6,12 @@ import 'package:knittda/src/presentation/widgets/image_box.dart';
 
 class FeedListItem extends StatelessWidget {
   final FeedModel feed;
+  final VoidCallback onTap;
 
   const FeedListItem({
     super.key,
     required this.feed,
+    required this.onTap,
   });
 
   @override
@@ -19,7 +21,7 @@ class FeedListItem extends StatelessWidget {
     final timeStr = DateUtilsHelper.toHourMinuteFormat(corrected);
 
     return GestureDetector(
-      onTap: (){},
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.only(top: 8, bottom: 16),
 

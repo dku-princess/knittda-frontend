@@ -7,6 +7,7 @@ import 'package:knittda/src/presentation/screens/work_detail/diary.dart';
 import 'package:knittda/src/presentation/screens/work_detail/edit_work.dart';
 import 'package:knittda/src/presentation/screens/work_detail/info.dart';
 import 'package:knittda/src/presentation/screens/work_detail/report.dart';
+import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:knittda/src/presentation/view_models/record_form_view_model.dart';
 import 'package:knittda/src/presentation/view_models/record_list_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_detail_view_model.dart';
@@ -66,6 +67,11 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
     final error = workDetailViewModel.error;
     final topPadding = MediaQuery.of(context).padding.top; //상태바 높이
 
+    final currentUserId = context.read<AuthViewModel>().user?.id;
+    final isOwner = currentUserId != null && work?.userId == 8;
+    debugPrint('currentUserId: $currentUserId');
+    debugPrint('currentUserId: ${work?.userId}');
+
     if (loading) {
       return Scaffold(
         appBar: AppBar(),
@@ -89,7 +95,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
     return DefaultTabController(
       length: tabs.length,
       child: Scaffold(
-        floatingActionButton: _tabController.index == 1
+        floatingActionButton: (isOwner && _tabController.index == 1)
             ? FloatingActionButton(
           onPressed: () {
             Navigator.push(
@@ -124,41 +130,43 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                     Navigator.pop(context);
                   },
                 ),
-                actions: [
-                  EditDeleteMenu(
-                    onEdit: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ChangeNotifierProvider(
-                            create: (_) => WorkFormViewModel(
-                              useCases: context.read<WorkUseCases>(),
-                              listViewModel: context.read<WorkListViewModel>(),
-                              detailViewModel: context.read<WorkDetailViewModel>(),
+                actions: isOwner
+                  ?[
+                    EditDeleteMenu(
+                      onEdit: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ChangeNotifierProvider(
+                              create: (_) => WorkFormViewModel(
+                                useCases: context.read<WorkUseCases>(),
+                                listViewModel: context.read<WorkListViewModel>(),
+                                detailViewModel: context.read<WorkDetailViewModel>(),
+                              ),
+                              child: EditWork(work: work),
                             ),
-                            child: EditWork(work: work),
                           ),
-                        ),
-                      );
-                    },
-
-                    onDelete: () async {
-                      final success = await context.read<WorkListViewModel>().remove(work.id!);
-
-                      if (!context.mounted) return;
-
-                      if (success) {
-                        Navigator.pop(context);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('삭제 중 오류가 발생했습니다')),
                         );
-                      }
-                    },
-                    deleteDialogTitle: '작품 삭제',
-                    deleteDialogContent: '정말 이 작품을 삭제하시겠습니까?',
-                  )
-                ],
+                      },
+
+                      onDelete: () async {
+                        final success = await context.read<WorkListViewModel>().remove(work.id!);
+
+                        if (!context.mounted) return;
+
+                        if (success) {
+                          Navigator.pop(context);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('삭제 중 오류가 발생했습니다')),
+                          );
+                        }
+                      },
+                      deleteDialogTitle: '작품 삭제',
+                      deleteDialogContent: '정말 이 작품을 삭제하시겠습니까?',
+                    )
+                  ]
+                  : [],
 
                 flexibleSpace: FlexibleSpaceBar( //확장영역
                   background: Padding(
@@ -180,9 +188,8 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                               style: TextStyle(fontSize: 20),
                             ),
                             SizedBox(height: 10),
-                            WorkStatusButton(
-                              work: work,
-                            ),
+
+                            if (isOwner) WorkStatusButton(work: work),
                           ],
                         ),
                       ],

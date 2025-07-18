@@ -29,7 +29,6 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   //getter — 외부에선 읽기 전용
-  String? get jwt => _jwt;
   UserModel? get user => _user;
   AuthStatus get status => _status;
 
