@@ -25,7 +25,7 @@ import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:knittda/src/presentation/view_models/feed_view_model.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
 import 'package:knittda/src/presentation/view_models/report_view_model.dart';
-import 'package:knittda/src/presentation/view_models/work_view_model.dart';
+import 'package:knittda/src/presentation/view_models/work_list_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -68,8 +68,8 @@ Future<List<SingleChildWidget>> getProviders() async {
         updateWork:  UpdateWorkUseCase(repo),
       ),
     ),
-    ChangeNotifierProvider<WorkViewModel>(
-      create: (context) => WorkViewModel(context.read<WorkUseCases>()),
+    ChangeNotifierProvider<WorkListViewModel>(
+      create: (context) => WorkListViewModel(context.read<WorkUseCases>()),
     ),
 
     ProxyProvider<Dio, RecordRepository>(

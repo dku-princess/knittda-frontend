@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
-import 'package:knittda/src/presentation/view_models/work_view_model.dart';
+import 'package:knittda/src/presentation/view_models/work_list_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/core/constants/color.dart';
@@ -132,7 +132,7 @@ class _EditWorkState extends State<EditWork> {
         designer: designer.isNotEmpty ? designer : null,
       );
 
-      final viewModel = context.read<WorkViewModel>();
+      final viewModel = context.read<WorkListViewModel>();
       final success = await viewModel.updateWork(updated);
 
       if (!mounted) return;
@@ -150,7 +150,7 @@ class _EditWorkState extends State<EditWork> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<WorkViewModel>();
+    final viewModel = context.watch<WorkListViewModel>();
     final isBusy = viewModel.isLoading || _submitting;
 
     return Stack(
