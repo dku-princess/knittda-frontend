@@ -6,7 +6,7 @@ import 'package:knittda/src/presentation/screens/work_detail/edit_work.dart';
 import 'package:knittda/src/presentation/screens/work_detail/info.dart';
 import 'package:knittda/src/presentation/screens/work_detail/report.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
-import 'package:knittda/src/presentation/view_models/work_view_model.dart';
+import 'package:knittda/src/presentation/view_models/work_list_view_model.dart';
 import 'package:knittda/src/presentation/widgets/buttons/work_status_button.dart';
 import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
@@ -58,7 +58,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
 
   Future<void> _getWorkAndRecords() async {
     try {
-      final workViewModel = context.read<WorkViewModel>();
+      final workViewModel = context.read<WorkListViewModel>();
       final recordViewModel = context.read<RecordViewModel>();
 
       await workViewModel.getWork(widget.projectId);
@@ -79,7 +79,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<WorkViewModel>();
+    final viewModel = context.watch<WorkListViewModel>();
     final work = viewModel.work;
     final error = viewModel.error;
     final isBusy = viewModel.isLoading;

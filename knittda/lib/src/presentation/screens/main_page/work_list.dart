@@ -5,7 +5,7 @@ import 'package:knittda/src/presentation/screens/add_work_page/add_work.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
 import 'package:knittda/src/presentation/screens/work_detail/report_ui.dart';
 import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
-import 'package:knittda/src/presentation/view_models/work_view_model.dart';
+import 'package:knittda/src/presentation/view_models/work_list_view_model.dart';
 import 'package:knittda/src/presentation/widgets/buttons/work_state_button.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
 import 'package:provider/provider.dart';
@@ -33,13 +33,13 @@ class _WorkListState extends State<WorkList> {
   }
 
   Future<void> _getWorks() async {
-    final viewModel = context.read<WorkViewModel>();
+    final viewModel = context.read<WorkListViewModel>();
     await viewModel.getWorks();
   }
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<WorkViewModel>();
+    final viewModel = context.watch<WorkListViewModel>();
     final works = viewModel.works;
 
     final filteredWorks = works.where((work) => work.status == _filterStatus).toList();

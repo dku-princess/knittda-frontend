@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/domain/use_case/work_use_cases.dart';
 import 'package:knittda/src/data/models/work_model.dart';
 
-class WorkViewModel extends ChangeNotifier {
+class WorkListViewModel extends ChangeNotifier {
   final WorkUseCases useCases;
 
-  WorkViewModel(this.useCases,);
+  WorkListViewModel(this.useCases,);
 
   bool _isLoading = false;
   String? _error;
