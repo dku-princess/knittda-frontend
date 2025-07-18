@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
+import 'package:knittda/src/domain/use_case/record_use_cases.dart';
 import 'package:knittda/src/presentation/screens/work_detail/edit_record.dart';
-import 'package:knittda/src/presentation/view_models/record_view_model.dart';
+import 'package:knittda/src/presentation/view_models/record_detail_view_model.dart';
+import 'package:knittda/src/presentation/view_models/record_form_view_model.dart';
+import 'package:knittda/src/presentation/view_models/record_list_view_model.dart';
 import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
@@ -17,48 +20,15 @@ class ShowRecord extends StatefulWidget {
 }
 
 class _ShowRecordState extends State<ShowRecord> {
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchRecord();
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  Future<void> _fetchRecord() async {
-    try {
-      final viewModel = context.read<RecordViewModel>();
-
-      await viewModel.getRecord(widget.recordId);
-    } catch (e) {
-      debugPrint('기록 불러오기 오류: $e');
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('기록 정보를 불러오는 데 실패했습니다.')),
-      );
-    } finally {
-      if (!mounted) return;
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<RecordViewModel>();
-    final record = viewModel.record;
-    final error = viewModel.error;
-    final isBusy = viewModel.isLoading;
+    final recordDetailViewModel = context.watch<RecordDetailViewModel>();
+    final record = recordDetailViewModel.record;
+    final error = recordDetailViewModel.error;
+    final isBusy = recordDetailViewModel.isLoading;
 
-    if (_isLoading) {
+    if (isBusy) {
       return Scaffold(
         appBar: AppBar(),
         body: Center(child: CircularProgressIndicator()),
@@ -68,7 +38,7 @@ class _ShowRecordState extends State<ShowRecord> {
     if (error != null) {
       return Scaffold(
         appBar: AppBar(),
-        body: Center(child: Text('에러 발생: ${viewModel.error}')),
+        body: Center(child: Text('에러 발생: ${recordDetailViewModel.error}')),
       );
     }
 
@@ -93,12 +63,20 @@ class _ShowRecordState extends State<ShowRecord> {
                 onEdit: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => EditRecord(record: record)
+                    MaterialPageRoute(
+                      builder: (_) => ChangeNotifierProvider(
+                        create: (_) => RecordFormViewModel(
+                          useCases: context.read<RecordUseCases>(),
+                          listViewModel: context.read<RecordListViewModel>(),
+                          detailViewModel: context.read<RecordDetailViewModel>(),
+                        ),
+                        child: EditRecord(record: record),
+                      ),
                     ),
                   );
                 },
                 onDelete: () async {
-                  final success = await viewModel.deleteRecord(record.id!);
+                  final success =  await context.read<RecordListViewModel>().remove(record.id!);
 
                   if (!context.mounted) return;
 
@@ -106,7 +84,7 @@ class _ShowRecordState extends State<ShowRecord> {
                     Navigator.pop(context);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(error ?? '삭제 중 오류가 발생했습니다')),
+                      SnackBar(content: Text('삭제 중 오류가 발생했습니다')),
                     );
                   }
                 },

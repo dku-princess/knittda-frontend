@@ -72,7 +72,7 @@ class RecordModel {
       files: files,
 
       // 서버 응답 필드 → null로 초기화
-      id: id,
+      id: null,
       createdAt: null,
       images: null,
     );
