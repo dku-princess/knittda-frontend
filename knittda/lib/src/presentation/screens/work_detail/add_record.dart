@@ -116,7 +116,7 @@ class _AddRecordState extends State<AddRecord> {
       if (!mounted) return;
 
       if (success) {
-        await context.read<WorkListViewModel>().getWork(widget.work.id!);
+        await context.read<WorkListViewModel>().refresh();
         Navigator.pop(context);
       } else {
         final error = viewModel.error ?? '알 수 없는 오류';

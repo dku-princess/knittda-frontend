@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/domain/use_case/work_use_cases.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
 import 'package:knittda/src/presentation/screens/work_detail/diary.dart';
 import 'package:knittda/src/presentation/screens/work_detail/edit_work.dart';
 import 'package:knittda/src/presentation/screens/work_detail/info.dart';
 import 'package:knittda/src/presentation/screens/work_detail/report.dart';
 import 'package:knittda/src/presentation/view_models/record_view_model.dart';
+import 'package:knittda/src/presentation/view_models/work_detail_view_model.dart';
+import 'package:knittda/src/presentation/view_models/work_form_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_list_view_model.dart';
 import 'package:knittda/src/presentation/widgets/buttons/work_status_button.dart';
 import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
@@ -58,16 +61,13 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
 
   Future<void> _getWorkAndRecords() async {
     try {
-      final workViewModel = context.read<WorkListViewModel>();
       final recordViewModel = context.read<RecordViewModel>();
-
-      await workViewModel.getWork(widget.projectId);
       await recordViewModel.getRecords(widget.projectId);
     } catch (e) {
-      debugPrint('작품 불러오기 오류: $e');
+      debugPrint('기록 불러오기 오류: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('작품 정보를 불러오는 데 실패했습니다.')),
+        SnackBar(content: Text('기록을 불러오는 데 실패했습니다.')),
       );
     } finally {
       if (!mounted) return;
@@ -79,7 +79,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<WorkListViewModel>();
+    final viewModel = context.watch<WorkDetailViewModel>();
     final work = viewModel.work;
     final error = viewModel.error;
     final isBusy = viewModel.isLoading;
@@ -143,13 +143,20 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) =>  EditWork(work: work),
+                              builder: (_) => ChangeNotifierProvider(
+                                create: (_) => WorkFormViewModel(
+                                  useCases: context.read<WorkUseCases>(),
+                                  listViewModel: context.read<WorkListViewModel>(),
+                                  detailViewModel: context.read<WorkDetailViewModel>(),
+                                ),
+                                child: EditWork(work: work),
+                              ),
                             ),
                           );
                         },
 
                         onDelete: () async {
-                          final success = await viewModel.deleteWork(work.id!);
+                          final success = await context.read<WorkListViewModel>().remove(work.id!);
 
                           if (!context.mounted) return;
 
@@ -188,7 +195,6 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                                 SizedBox(height: 10),
                                 WorkStatusButton(
                                   work: work,
-                                  updateWork: viewModel.updateWork,
                                 ),
                               ],
                             ),
