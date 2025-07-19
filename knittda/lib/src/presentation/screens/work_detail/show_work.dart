@@ -25,7 +25,7 @@ class ShowWork extends StatefulWidget {
   const ShowWork({
     super.key,
     required this.projectId,
-    this.initialTabIndex = 0,
+    this.initialTabIndex = 1,
   });
 
   @override
