@@ -12,4 +12,19 @@ class FeedService {
   }) {
     return _repo.fetchFeeds(page: page, size: size, sort: sort);
   }
+
+  Future<List<FeedModel>> searchFeeds({
+    required String keyword,
+    required int page,
+    int size = 10,
+    List<String>? sort,
+  }) {
+    return _repo.searchFeeds(
+      keyword: keyword,
+      page : page,
+      size : size,
+      sort : sort,
+    );
+  }
+
 }

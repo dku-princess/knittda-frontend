@@ -35,4 +35,29 @@ class FeedRepository {
       throw FeedRemoteException(e, s);
     }
   }
+
+  Future<List<FeedModel>> searchFeeds({
+    required String keyword,
+    required int page,
+    required int size,
+    List<String>? sort,
+  }) async {
+    try {
+      final res = await _dio.get<Map<String, dynamic>>(
+        '/api/v1/feed/v2/search',
+        queryParameters: {
+          'keyword': keyword,
+          'page' : page,
+          'size' : size,
+          if (sort != null) 'sort': sort.join(','),
+        },
+      );
+
+      final content = res.data?['data']?['content'] as List<dynamic>? ?? [];
+      return content.map((e) => FeedModel.fromJson(e)).toList();
+    } on DioException catch (e, s) {
+      throw FeedRemoteException(e, s);
+    }
+  }
+
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/domain/use_case/feed_service.dart';
 import 'package:knittda/src/domain/use_case/record_use_cases.dart';
 import 'package:knittda/src/domain/use_case/work_use_cases.dart';
 import 'package:knittda/src/presentation/screens/feed/feed_search.dart';
 import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
+import 'package:knittda/src/presentation/view_models/feed_search_view_model.dart';
 import 'package:knittda/src/presentation/view_models/feed_view_model.dart';
 import 'package:knittda/src/presentation/view_models/record_list_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_detail_view_model.dart';
@@ -32,9 +34,9 @@ class _FeedState extends State<Feed> {
   }
 
   void _onScroll() {
-    final vm = context.read<FeedViewModel>();
+    final feedVM = context.read<FeedViewModel>();
     if (_scroll.position.pixels >= _scroll.position.maxScrollExtent - 200) {
-      vm.loadMore();
+      feedVM.loadMore();
     }
   }
 
@@ -60,10 +62,17 @@ class _FeedState extends State<Feed> {
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => FeedSearch()),
-            ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ChangeNotifierProvider(
+                      create: (_) => FeedSearchViewModel(context.read<FeedService>()),
+                      child: const FeedSearch(),
+                    ),
+                  ),
+                );
+              }
           ),
         ],
       ),
@@ -81,8 +90,7 @@ class _FeedState extends State<Feed> {
             onRefresh: vm.refresh,
             child: ListView.separated(
               controller: _scroll,
-              padding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               itemCount: vm.hasNext ? vm.feeds.length + 1 : vm.feeds.length,
               separatorBuilder: (_, __) => const SizedBox(height: 8),
               itemBuilder: (_, index) {
@@ -92,15 +100,16 @@ class _FeedState extends State<Feed> {
                     child: Center(child: CircularProgressIndicator()),
                   );
                 }
+
+                final feed = vm.feeds[index];
                 return FeedListItem(
-                  feed: vm.feeds[index],
+                  feed: feed,
                   onTap: () {
                     final workVM = WorkDetailViewModel(context.read<WorkUseCases>())
-                      ..load(vm.feeds[index].projectId);
+                      ..load(feed.projectId);
                     final recordVM = RecordListViewModel(context.read<RecordUseCases>())
-                      ..refresh(vm.feeds[index].projectId);
+                      ..refresh(feed.projectId);
 
-                    // ❷ value 패턴으로 그대로 넘김
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -109,7 +118,7 @@ class _FeedState extends State<Feed> {
                             ChangeNotifierProvider.value(value: workVM),
                             ChangeNotifierProvider.value(value: recordVM),
                           ],
-                          child: ShowWork(projectId: vm.feeds[index].projectId),
+                          child: ShowWork(projectId: feed.projectId),
                         ),
                       ),
                     );
