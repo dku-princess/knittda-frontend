@@ -12,7 +12,7 @@ class ReportViewModel extends ChangeNotifier {
   ReportModel? _report;
   ReportModel? get report => _report;
 
-  bool _isLoading = false;
+  bool _isLoading = true;
   bool get isLoading => _isLoading;
 
   String? _error;

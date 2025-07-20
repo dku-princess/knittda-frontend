@@ -15,6 +15,7 @@ import 'package:knittda/src/domain/use_case/feed_service.dart';
 import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_report_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_work_previews_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_works_use_case.dart';
 import 'package:knittda/src/domain/use_case/record_use_cases.dart';
@@ -65,6 +66,7 @@ Future<List<SingleChildWidget>> getProviders() async {
         getWork:     GetWorkUseCase(repo),
         getWorks:    GetWorksUseCase(repo),
         updateWork:  UpdateWorkUseCase(repo),
+        getWorkPreviews: GetWorkPreviewsUseCase(repo),
       ),
     ),
     ChangeNotifierProvider<WorkListViewModel>(

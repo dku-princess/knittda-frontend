@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:knittda/src/data/models/work_model.dart';
+import 'package:knittda/src/data/models/work_preview_model.dart';
 
 class WorkRepository {
   final Dio _dio;
@@ -136,4 +137,27 @@ class WorkRepository {
       throw Exception(body?['message'] ?? '알 수 없는 오류');
     }
   }
+
+  Future<List<WorkPreviewModel>> getWorkPreviews() async {
+    final res = await _dio.get<Map<String, dynamic>>(
+      '/api/v1/projects/previews',
+    );
+
+    if (res.statusCode != 200){
+      throw Exception('서버 오류: ${res.statusCode}');
+    }
+
+    final body = res.data;
+    if (body == null || body['success'] != true) {
+      throw Exception(body?['message'] ?? '알 수 없는 오류');
+    }
+
+    final data = body['data'] as List<dynamic>?;
+    if (data == null) {
+      throw Exception('잘못된 응답 형식');
+    }
+
+    return data.map((e) => WorkPreviewModel.fromJson(e)).toList();
+  }
+
 }
