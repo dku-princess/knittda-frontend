@@ -1,9 +1,10 @@
-import 'dart:typed_data';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/presentation/view_models/report_view_model.dart';
 import 'package:knittda/src/utils/capture_util.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 
 final List<Map<String, dynamic>> scoreRanges = [
   {"min": 0, "max": 0, "label": "바나나독", "image": "assets/image/stage/stage1.png"},
@@ -35,6 +36,8 @@ class ReportUi extends StatefulWidget {
 }
 
 class _ReportUiState extends State<ReportUi> {
+  static const platform = MethodChannel("com.knittda/image_saver");
+
   @override
   void initState() {
     super.initState();
@@ -46,11 +49,27 @@ class _ReportUiState extends State<ReportUi> {
   Future<void> _saveReportImage() async {
     final bytes = await captureWidget(captureKey);
     if (bytes != null) {
-      await saveImageToGallery(bytes);
+      await platform.invokeMethod("saveImage", {"bytes": bytes});
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("리포트가 저장되었습니다!")),
         );
+      }
+    }
+  }
+
+  Future<void> _shareToKakao() async {
+    final bytes = await captureWidget(captureKey);
+    if (bytes != null) {
+      final success = await platform.invokeMethod("saveImage", {"bytes": bytes});
+      if (success == true) {
+        await platform.invokeMethod("shareKakao");
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("이미지 저장 실패")),
+          );
+        }
       }
     }
   }
@@ -76,7 +95,12 @@ class _ReportUiState extends State<ReportUi> {
             icon: const Icon(Icons.download),
             onPressed: _saveReportImage,
             tooltip: "이미지 저장",
-          )
+          ),
+          IconButton(
+            icon: const Icon(Icons.share),
+            onPressed: _shareToKakao,
+            tooltip: "카카오톡으로 공유",
+          ),
         ],
       ),
       backgroundColor: Colors.grey[300],

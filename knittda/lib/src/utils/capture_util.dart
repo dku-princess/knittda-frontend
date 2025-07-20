@@ -21,3 +21,12 @@ Future<void> saveImageToGallery(Uint8List bytes) async {
     debugPrint('Error saving image: $e');
   }
 }
+
+Future<void> shareToKakao() async {
+  try {
+    await platform.invokeMethod('shareKakao');
+  } catch (e) {
+    debugPrint('카카오톡 공유 실패: $e');
+  }
+}
+
