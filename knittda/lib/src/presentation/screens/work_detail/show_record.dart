@@ -12,8 +12,13 @@ import 'package:provider/provider.dart';
 
 class ShowRecord extends StatefulWidget {
   final int recordId;
+  final bool isOwner;
 
-  const ShowRecord({super.key, required this.recordId});
+  const ShowRecord({
+    super.key,
+    required this.recordId,
+    required this.isOwner,
+  });
 
   @override
   State<ShowRecord> createState() => _ShowRecordState();
@@ -23,10 +28,10 @@ class _ShowRecordState extends State<ShowRecord> {
 
   @override
   Widget build(BuildContext context) {
-    final recordDetailViewModel = context.watch<RecordDetailViewModel>();
-    final record = recordDetailViewModel.record;
-    final error = recordDetailViewModel.error;
-    final isBusy = recordDetailViewModel.isLoading;
+    final recordDetailVM = context.watch<RecordDetailViewModel>();
+    final record = recordDetailVM.record;
+    final error = recordDetailVM.error;
+    final isBusy = recordDetailVM.isLoading;
 
     if (isBusy) {
       return Scaffold(
@@ -38,7 +43,7 @@ class _ShowRecordState extends State<ShowRecord> {
     if (error != null) {
       return Scaffold(
         appBar: AppBar(),
-        body: Center(child: Text('에러 발생: ${recordDetailViewModel.error}')),
+        body: Center(child: Text('에러 발생: $error')),
       );
     }
 
@@ -58,7 +63,8 @@ class _ShowRecordState extends State<ShowRecord> {
       children: [
         Scaffold(
           appBar: AppBar(
-            actions: [
+            actions: widget.isOwner
+                ? [
               EditDeleteMenu(
                 onEdit: () {
                   Navigator.push(
@@ -91,7 +97,8 @@ class _ShowRecordState extends State<ShowRecord> {
                 deleteDialogTitle: '기록 삭제',
                 deleteDialogContent: '정말 이 기록을 삭제하시겠습니까?',
               )
-            ],
+            ]
+                : [],
           ),
           body: ListView(
             children: [

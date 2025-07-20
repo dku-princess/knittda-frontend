@@ -7,7 +7,8 @@ import 'package:knittda/src/presentation/widgets/listitems/record_list_item.dart
 import 'package:provider/provider.dart';
 
 class Diary extends StatelessWidget {
-  const Diary({super.key});
+  final bool isOwner;
+  const Diary({super.key, required this.isOwner});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +37,7 @@ class Diary extends StatelessWidget {
           return RecordListItem(
             record: record,
             onTap: (){
-              final recordListViewModel = context.read<RecordListViewModel>();
+              final recordListVM = context.read<RecordListViewModel>();
 
               Navigator.push(
                 context,
@@ -44,7 +45,7 @@ class Diary extends StatelessWidget {
                   builder: (_) => MultiProvider(
                     providers: [
                       // 이미 존재하는 리스트 VM 전달
-                      ChangeNotifierProvider.value(value: recordListViewModel),
+                      ChangeNotifierProvider.value(value: recordListVM),
 
                       // 상세 VM은 새로 생성
                       ChangeNotifierProvider(
@@ -53,7 +54,10 @@ class Diary extends StatelessWidget {
                         )..load(record.id!),
                       ),
                     ],
-                    child: ShowRecord(recordId: record.id!),
+                    child: ShowRecord(
+                      recordId: record.id!,
+                      isOwner : isOwner,
+                    ),
                   ),
                 ),
               );

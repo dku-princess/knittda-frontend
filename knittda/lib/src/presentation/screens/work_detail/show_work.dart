@@ -59,12 +59,12 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final workDetailViewModel   = context.watch<WorkDetailViewModel>();
-    final recordListViewModel = context.watch<RecordListViewModel>();
+    final workDetailVM   = context.watch<WorkDetailViewModel>();
+    final recordListVM = context.watch<RecordListViewModel>();
 
-    final work = workDetailViewModel.work;
-    final loading  = workDetailViewModel.isLoading || recordListViewModel.isLoading;
-    final error = workDetailViewModel.error;
+    final work = workDetailVM.work;
+    final loading  = workDetailVM.isLoading || recordListVM.isLoading;
+    final error = workDetailVM.error;
     final topPadding = MediaQuery.of(context).padding.top; //상태바 높이
 
     final currentUserId = context.read<AuthViewModel>().user?.id;
@@ -82,7 +82,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
     if (error != null) {
       return Scaffold(
         appBar: AppBar(),
-        body: Center(child: Text('에러 발생: ${workDetailViewModel.error}')),
+        body: Center(child: Text('에러 발생: $error')),
       );
     }
 
@@ -211,7 +211,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
             controller: _tabController,
             children: [
               Info(work:work),
-              Diary(),
+              Diary(isOwner: isOwner),
               Report(work:work),
             ],
           ),
