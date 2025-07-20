@@ -1,5 +1,6 @@
 import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_work_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_work_previews_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_works_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_work_use_case.dart';
@@ -10,6 +11,7 @@ class WorkUseCases {
   final GetWorkUseCase getWork;
   final GetWorksUseCase getWorks;
   final UpdateWorkUseCase updateWork;
+  final GetWorkPreviewsUseCase getWorkPreviews;
 
   WorkUseCases({
     required this.createWork,
@@ -17,5 +19,6 @@ class WorkUseCases {
     required this.getWork,
     required this.getWorks,
     required this.updateWork,
+    required this.getWorkPreviews,
   });
 }
