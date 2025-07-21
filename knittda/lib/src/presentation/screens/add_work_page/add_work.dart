@@ -175,18 +175,27 @@ class _AddWorkState extends State<AddWork> {
                         // 대표 사진
                         GestureDetector(
                           onTap: _pickImage,
-                          child: ImageBox(
-                            localImageUrl: _image?.path,
+                          child: _image != null
+                              ? ImageBox(
+                            localImageUrl: _image!.path,
                             width: 110,
                             height: 110,
-                            showIcon: _image == null, // 이미지가 없으면 + 아이콘
-                            onRemove: _image != null
-                                ? () {
+                            onRemove: () {
                               setState(() {
                                 _image = null;
                               });
-                            }
-                                : null,
+                            },
+                          )
+                              : Container(
+                            width: 110,
+                            height: 110,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Center(
+                              child: Icon(Icons.add, color: Colors.white, size: 40),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 16),
