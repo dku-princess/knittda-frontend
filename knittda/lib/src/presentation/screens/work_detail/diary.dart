@@ -12,15 +12,15 @@ class Diary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final recordListViewModel = context.watch<RecordListViewModel>();
-    final records = recordListViewModel.records;
+    final recordListVM = context.watch<RecordListViewModel>();
+    final records = recordListVM.records;
 
-    if (recordListViewModel.isLoading) {
+    if (recordListVM.isLoading) {
       return Center(child: CircularProgressIndicator());
     }
 
-    if (recordListViewModel.error != null) {
-      return Center(child: Text('에러 발생: ${recordListViewModel.error}'));
+    if (recordListVM.error != null) {
+      return Center(child: Text('에러 발생: ${recordListVM.error}'));
     }
 
     if (records.isEmpty) {

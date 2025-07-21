@@ -97,8 +97,8 @@ class _EditWorkState extends State<EditWork> {
 
   //저장 함수
   Future<void> _submitWork() async{
-    final workFormViewModel = context.read<WorkFormViewModel>();
-    if (workFormViewModel.isSaving) return;
+    final workFormVM = context.read<WorkFormViewModel>();
+    if (workFormVM.isSaving) return;
 
     final nickname = _nicknameController.text.trim();
     final customYarnInfo = _yarnController.text.trim();
@@ -129,14 +129,14 @@ class _EditWorkState extends State<EditWork> {
       designer: designer.isNotEmpty ? designer : null,
     );
 
-    final saved = await workFormViewModel.save(updated);
+    final saved = await workFormVM.save(updated);
 
     if (!mounted) return;
 
     if (saved != null) {
       Navigator.pop(context);
     } else {
-      final error = workFormViewModel.error ?? '알 수 없는 오류';
+      final error = workFormVM.error ?? '알 수 없는 오류';
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(error)));
     }
@@ -144,8 +144,8 @@ class _EditWorkState extends State<EditWork> {
 
   @override
   Widget build(BuildContext context) {
-    final workFormViewModel = context.watch<WorkFormViewModel>();
-    final isBusy = workFormViewModel.isSaving;
+    final workFormVM = context.watch<WorkFormViewModel>();
+    final isBusy = workFormVM.isSaving;
 
     return Stack(
       children: [

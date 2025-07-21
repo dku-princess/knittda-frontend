@@ -19,21 +19,21 @@ class Mypage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthViewModel>();
+    final authVM = context.watch<AuthViewModel>();
 
-    if (auth.status == AuthStatus.loading) {
+    if (authVM.status == AuthStatus.loading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
-    if (auth.status == AuthStatus.unauthenticated || auth.user == null) {
+    if (authVM.status == AuthStatus.unauthenticated || authVM.user == null) {
       return const Scaffold(
         body: Center(child: Text('로그인이 필요합니다.')),
       );
     }
 
-    final user = auth.user!;
+    final user = authVM.user!;
 
     return Scaffold(
       appBar: AppBar(

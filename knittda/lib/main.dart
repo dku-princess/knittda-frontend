@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/di/provider_setup.dart';
 import './src/app.dart';
-import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:flutter/widgets.dart';
