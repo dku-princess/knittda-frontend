@@ -191,20 +191,29 @@ class _EditWorkState extends State<EditWork> {
                       children: [
                         GestureDetector(
                           onTap: _pickImageFromGallery,
-                          child: ImageBox(
+                          child: (_image != null || (_networkImageUrl?.isNotEmpty ?? false))
+                              ? ImageBox(
                             localImageUrl: _image?.path,
                             networkImageUrl: _networkImageUrl,
                             width: 110,
                             height: 110,
-                            showIcon: _image == null && (_networkImageUrl?.isEmpty ?? true),
-                            onRemove: (_image != null || (_networkImageUrl?.isNotEmpty ?? false))
-                                ? () {
+                            onRemove: () {
                               setState(() {
                                 _image = null;
                                 _networkImageUrl = null;
                               });
-                            }
-                                : null,
+                            },
+                          )
+                              : Container(
+                            width: 110,
+                            height: 110,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Center(
+                              child: Icon(Icons.add, color: Colors.white, size: 40),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 16),
