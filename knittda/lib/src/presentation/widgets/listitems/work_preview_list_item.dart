@@ -32,7 +32,8 @@ class WorkPreviewListItem extends StatelessWidget {
               '${workPreview.userName}  |  ${workPreview.projectName}',
               style: const TextStyle(fontSize: 14),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20
+            ),
 
             if (images.isNotEmpty)
               LayoutBuilder(
@@ -110,7 +111,7 @@ class WorkPreviewListItem extends StatelessWidget {
                 },
               ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
           ],
         ),
       ),
