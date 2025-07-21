@@ -1,68 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
-import 'package:knittda/src/data/repositories/records_repository.dart';
-import 'package:knittda/src/domain/use_case/update_record_use_case.dart';
+import 'package:knittda/src/domain/use_case/record_use_cases.dart';
 import 'package:knittda/src/presentation/screens/work_detail/edit_record.dart';
-import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
-import 'package:knittda/src/presentation/view_models/edit_record_view_model.dart';
-import 'package:knittda/src/presentation/view_models/record_view_model.dart';
+import 'package:knittda/src/presentation/view_models/record_detail_view_model.dart';
+import 'package:knittda/src/presentation/view_models/record_form_view_model.dart';
+import 'package:knittda/src/presentation/view_models/record_list_view_model.dart';
 import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
-import 'package:knittda/src/presentation/widgets/image_box.dart';
+//import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
 
 class ShowRecord extends StatefulWidget {
   final int recordId;
+  final bool isOwner;
 
-  const ShowRecord({super.key, required this.recordId});
+  const ShowRecord({
+    super.key,
+    required this.recordId,
+    required this.isOwner,
+  });
 
   @override
   State<ShowRecord> createState() => _ShowRecordState();
 }
 
 class _ShowRecordState extends State<ShowRecord> {
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchRecord();
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  Future<void> _fetchRecord() async {
-    try {
-      final recordVM = context.read<RecordViewModel>();
-
-      await recordVM.getRecord(widget.recordId);
-    } catch (e) {
-      debugPrint('기록 불러오기 오류: $e');
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('기록 정보를 불러오는 데 실패했습니다.')),
-      );
-    } finally {
-      if (!mounted) return;
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    final recordVM = context.watch<RecordViewModel>();
-    final record = recordVM.record;
-    final error = recordVM.errorMessage;
-    final isBusy = recordVM.isLoading;
+    final recordDetailVM = context.watch<RecordDetailViewModel>();
+    final record = recordDetailVM.record;
+    final error = recordDetailVM.error;
+    final isBusy = recordDetailVM.isLoading;
 
-    if (_isLoading) {
+    if (isBusy) {
       return Scaffold(
         appBar: AppBar(),
         body: Center(child: CircularProgressIndicator()),
@@ -72,7 +43,7 @@ class _ShowRecordState extends State<ShowRecord> {
     if (error != null) {
       return Scaffold(
         appBar: AppBar(),
-        body: Center(child: Text('에러 발생: ${recordVM.errorMessage}')),
+        body: Center(child: Text('에러 발생: $error')),
       );
     }
 
@@ -92,19 +63,18 @@ class _ShowRecordState extends State<ShowRecord> {
       children: [
         Scaffold(
           appBar: AppBar(
-            actions: [
+            actions: widget.isOwner
+                ? [
               EditDeleteMenu(
-                onEdit: () async {
-                  await Navigator.push(
+                onEdit: () {
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => ChangeNotifierProvider(
-                        create: (_) => EditRecordViewModel(
-                          authViewModel: context.read<AuthViewModel>(),
-                          updateRecordUseCase: UpdateRecordUseCase(
-                            recordsRepository: context.read<RecordsRepository>(),
-                          ),
-                          recordsRepository: context.read<RecordsRepository>(),
+                        create: (_) => RecordFormViewModel(
+                          useCases: context.read<RecordUseCases>(),
+                          listViewModel: context.read<RecordListViewModel>(),
+                          detailViewModel: context.read<RecordDetailViewModel>(),
                         ),
                         child: EditRecord(record: record),
                       ),
@@ -112,7 +82,7 @@ class _ShowRecordState extends State<ShowRecord> {
                   );
                 },
                 onDelete: () async {
-                  final success = await recordVM.deleteRecord(record.id!);
+                  final success =  await context.read<RecordListViewModel>().remove(record.id!);
 
                   if (!context.mounted) return;
 
@@ -120,14 +90,15 @@ class _ShowRecordState extends State<ShowRecord> {
                     Navigator.pop(context);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(error ?? '삭제 중 오류가 발생했습니다')),
+                      SnackBar(content: Text('삭제 중 오류가 발생했습니다')),
                     );
                   }
                 },
                 deleteDialogTitle: '기록 삭제',
                 deleteDialogContent: '정말 이 기록을 삭제하시겠습니까?',
               )
-            ],
+            ]
+                : [],
           ),
           body: ListView(
             children: [
@@ -136,10 +107,28 @@ class _ShowRecordState extends State<ShowRecord> {
                 SizedBox(
                   height: height,
                   child: record.images!.length == 1
-                      ? ImageBox(
-                    networkImageUrl: record.images!.first.imageUrl,
-                    width: double.infinity,
-                    height: height,
+                      ? ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.network(
+                      record.images!.first.imageUrl,
+                      width: double.infinity,
+                      height: height,
+                      fit: BoxFit.cover,
+
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                      },
+
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey.shade300,
+                          alignment: Alignment.center,
+                          child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                        );
+                      },
+
+                    ),
                   )
                       : PageView.builder(
                     itemCount: record.images!.length,
@@ -149,10 +138,27 @@ class _ShowRecordState extends State<ShowRecord> {
                       final image = record.images![index];
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: ImageBox(
-                          networkImageUrl: image.imageUrl,
-                          width: double.infinity,
-                          height: height,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child:Image.network(
+                            image.imageUrl,
+                            width: double.infinity,
+                            height: height,
+                            fit: BoxFit.cover,
+
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                            },
+
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Colors.grey.shade300,
+                                alignment: Alignment.center,
+                                child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                              );
+                            },
+                          ),
                         ),
                       );
                     },
