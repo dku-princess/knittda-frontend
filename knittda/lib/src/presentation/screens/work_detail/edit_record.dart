@@ -105,8 +105,8 @@ class _EditRecordState extends State<EditRecord> {
   }
 
   Future<void> _submitRecord() async {
-    final recordFormViewModel = context.read<RecordFormViewModel>();
-    if (recordFormViewModel.isSaving) return;
+    final recordFormVM = context.read<RecordFormViewModel>();
+    if (recordFormVM.isSaving) return;
 
     if (_selectedStatus == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('진행 상태를 선택해주세요.')));
@@ -124,14 +124,14 @@ class _EditRecordState extends State<EditRecord> {
       files: _images,
     );
 
-    final saved = await recordFormViewModel.save(updatedRecord, deleteImageIds: _deleteImageIds);
+    final saved = await recordFormVM.save(updatedRecord, deleteImageIds: _deleteImageIds);
 
     if (!mounted) return;
 
     if (saved != null) {
       Navigator.pop(context);
     } else {
-      final error = recordFormViewModel.error ?? '수정에 실패했습니다.';
+      final error = recordFormVM.error ?? '수정에 실패했습니다.';
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
     }
 
@@ -139,8 +139,8 @@ class _EditRecordState extends State<EditRecord> {
 
   @override
   Widget build(BuildContext context) {
-    final recordFormViewModel = context.watch<RecordFormViewModel>();
-    final isBusy = recordFormViewModel.isSaving;
+    final recordFormVM = context.watch<RecordFormViewModel>();
+    final isBusy = recordFormVM.isSaving;
 
     return Stack(
       children: [

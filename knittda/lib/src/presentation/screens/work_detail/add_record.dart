@@ -89,8 +89,8 @@ class _AddRecordState extends State<AddRecord> {
   }
 
   Future<void> _submitRecord() async {
-    final recordFormViewModel = context.read<RecordFormViewModel>();
-    if (recordFormViewModel.isSaving) return;
+    final recordFormVM = context.read<RecordFormViewModel>();
+    if (recordFormVM.isSaving) return;
 
     if (_selectedStatus == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('진행 상태를 선택해주세요.')));
@@ -109,7 +109,7 @@ class _AddRecordState extends State<AddRecord> {
       files: _images,
     );
 
-    final saved = await recordFormViewModel.save(record);
+    final saved = await recordFormVM.save(record);
 
     if (!mounted) return;
 
@@ -117,7 +117,7 @@ class _AddRecordState extends State<AddRecord> {
       await context.read<WorkListViewModel>().refresh();
       Navigator.pop(context);
     } else {
-      final error = recordFormViewModel.error ?? '알 수 없는 오류';
+      final error = recordFormVM.error ?? '알 수 없는 오류';
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
     }
 
@@ -125,8 +125,8 @@ class _AddRecordState extends State<AddRecord> {
 
   @override
   Widget build(BuildContext context) {
-    final recordFormViewModel = context.watch<RecordFormViewModel>();
-    final isBusy = recordFormViewModel.isSaving;
+    final recordFormVM = context.watch<RecordFormViewModel>();
+    final isBusy = recordFormVM.isSaving;
 
     return Stack(
       children: [

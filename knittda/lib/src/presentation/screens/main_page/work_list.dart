@@ -39,14 +39,14 @@ class _WorkListState extends State<WorkList> {
   }
 
   Future<void> _getWorks() async {
-    final viewModel = context.read<WorkListViewModel>();
-    await viewModel.refresh();
+    final workListVM = context.read<WorkListViewModel>();
+    await workListVM.refresh();
   }
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<WorkListViewModel>();
-    final works = viewModel.works;
+    final workListVM = context.watch<WorkListViewModel>();
+    final works = workListVM.works;
 
     final filteredWorks = works.where((work) => work.status == _filterStatus).toList();
 
@@ -80,10 +80,10 @@ class _WorkListState extends State<WorkList> {
                 ),
                 const SizedBox(height: 20),
                 Expanded(
-                  child: viewModel.isLoading
+                  child: workListVM.isLoading
                       ? const Center(child: CircularProgressIndicator())
-                      : viewModel.error != null
-                      ? Center(child: Text('에러 발생: ${viewModel.error}'))
+                      : workListVM.error != null
+                      ? Center(child: Text('에러 발생: ${workListVM.error}'))
                       : filteredWorks.isEmpty
                       ? const Center(
                     child: Text(
