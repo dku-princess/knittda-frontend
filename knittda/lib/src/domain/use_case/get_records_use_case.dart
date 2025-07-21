@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
-//import 'package:knittda/src/data/models/record_model.dart';
-import 'package:knittda/src/data/repositories/records_repository.dart';
+import 'package:knittda/src/data/models/record_model.dart';
+import 'package:knittda/src/data/repositories/record_repository.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 class GetRecordsUseCase {
-  final RecordsRepository recordsRepository;
+  final RecordRepository _repository;
 
-  GetRecordsUseCase({
-    required this.recordsRepository,
-  });
+  GetRecordsUseCase(
+    this._repository,
+  );
 
-  Future<void> call(String accessToken, int projectId) async {
+  Future<List<RecordModel>> call(int projectId) async {
     try {
-      await recordsRepository.getRecords(accessToken, projectId);
+      final records = await _repository.getRecords(projectId);
+      return records;
     } catch (e, stack) {
       await Sentry.captureException(e, stackTrace: stack);
       debugPrint('GetRecordUseCase 오류: $e\n$stack');

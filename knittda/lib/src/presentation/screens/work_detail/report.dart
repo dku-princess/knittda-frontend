@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/models/work_model.dart';
-import 'package:knittda/src/presentation/view_models/record_view_model.dart';
+import 'package:knittda/src/presentation/view_models/record_list_view_model.dart';
 import 'package:provider/provider.dart';
 
 int statusToPercent(String? status) {
@@ -28,8 +28,8 @@ class Report extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final recordVM = context.watch<RecordViewModel>();
-    final records = recordVM.records ?? [];
+    final recordListVM = context.watch<RecordListViewModel>();
+    final records = recordListVM.records;
 
     final latestRecord = records.isNotEmpty ? records.last : null;
     final percent = statusToPercent(latestRecord?.recordStatus);

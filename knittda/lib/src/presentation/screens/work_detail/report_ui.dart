@@ -15,7 +15,7 @@ final List<Map<String, dynamic>> scoreRanges = [
   {"min": 41, "max": 50, "label": "아하 소년", "image": "assets/image/stage/stage6.png"},
   {"min": 51, "max": 60, "label": "뜨뜨뜨 사후르", "image": "assets/image/stage/stage7.png"},
   {"min": 61, "max": 70, "label": "뜨랄랄레로 뜨랄랄라", "image": "assets/image/stage/stage8.png"},
-  {"min": 71, "max": 80, "label": "뜨피노사우르스", "image": "assets/image/stage/stage9.png"},
+  {"min": 71, "max": double.infinity, "label": "뜨피노사우르스", "image": "assets/image/stage/stage9.png"},
 ];
 
 Map<String, String?> scoreToStage(double score) {

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
-import 'package:knittda/src/data/repositories/records_repository.dart';
-import 'package:knittda/src/data/repositories/work_repository.dart';
-import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
-import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
+import 'package:knittda/src/domain/use_case/record_use_cases.dart';
+import 'package:knittda/src/domain/use_case/work_use_cases.dart';
+
 import 'package:knittda/src/presentation/screens/add_work_page/add_work.dart';
 import 'package:knittda/src/presentation/screens/work_detail/add_record.dart';
 import 'package:knittda/src/presentation/screens/work_detail/report_ui.dart';
 import 'package:knittda/src/presentation/screens/work_detail/show_work.dart';
-import 'package:knittda/src/presentation/view_models/add_record_view_model.dart';
-import 'package:knittda/src/presentation/view_models/add_work_view_model.dart';
-import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
-import 'package:knittda/src/presentation/view_models/work_view_model.dart';
+import 'package:knittda/src/presentation/view_models/record_form_view_model.dart';
+import 'package:knittda/src/presentation/view_models/record_list_view_model.dart';
+import 'package:knittda/src/presentation/view_models/work_detail_view_model.dart';
+import 'package:knittda/src/presentation/view_models/work_form_view_model.dart';
+import 'package:knittda/src/presentation/view_models/work_list_view_model.dart';
 import 'package:knittda/src/presentation/widgets/buttons/work_state_button.dart';
 import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
 import 'package:provider/provider.dart';
@@ -39,24 +39,16 @@ class _WorkListState extends State<WorkList> {
   }
 
   Future<void> _getWorks() async {
-    try {
-      final workVM = context.read<WorkViewModel>();
-      await workVM.getWorks();
-    } catch (e) {
-      debugPrint('작품 불러오기 오류: $e');
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('작품을 불러오는 데 실패했습니다.')),
-      );
-    }
+    final workListVM = context.read<WorkListViewModel>();
+    await workListVM.refresh();
   }
 
   @override
   Widget build(BuildContext context) {
-    final workVM = context.watch<WorkViewModel>();
-    final works = workVM.works;
+    final workListVM = context.watch<WorkListViewModel>();
+    final works = workListVM.works;
 
-    final filteredWorks = (works ?? []).where((work) => work.status == _filterStatus).toList();
+    final filteredWorks = works.where((work) => work.status == _filterStatus).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -88,10 +80,10 @@ class _WorkListState extends State<WorkList> {
                 ),
                 const SizedBox(height: 20),
                 Expanded(
-                  child: workVM.isLoading
+                  child: workListVM.isLoading
                       ? const Center(child: CircularProgressIndicator())
-                      : workVM.errorMessage != null
-                      ? Center(child: Text('에러 발생: ${workVM.errorMessage}'))
+                      : workListVM.error != null
+                      ? Center(child: Text('에러 발생: ${workListVM.error}'))
                       : filteredWorks.isEmpty
                       ? const Center(
                     child: Text(
@@ -105,26 +97,38 @@ class _WorkListState extends State<WorkList> {
                     itemBuilder: (context, index) {
                       final work = filteredWorks[index];
                       return WorkListItem(
+                        key: ValueKey(work.id),
                         work: work,
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => ShowWork(projectId: work.id!),
+                              builder: (_) => MultiProvider(
+                                providers: [
+                                  ChangeNotifierProvider(
+                                    create: (_) => WorkDetailViewModel(context.read<WorkUseCases>())
+                                      ..load(work.id!),                          // 작품 상세 선로드
+                                  ),
+                                  ChangeNotifierProvider(
+                                    create: (_) => RecordListViewModel(context.read<RecordUseCases>())
+                                      ..refresh(work.id!),                       // 기록 목록 선로드
+                                  ),
+                                ],
+                                child: ShowWork(projectId: work.id!),
+                              ),
                             ),
                           );
                         },
+
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (_) => ChangeNotifierProvider(
-                                create: (_) => AddRecordViewModel(
-                                  authViewModel: context.read<AuthViewModel>(),
-                                  createRecordUseCase: CreateRecordUseCase(
-                                    recordsRepository: context.read<RecordsRepository>(),
-                                  ),
-                                  recordsRepository: context.read<RecordsRepository>(),
+                                create: (_) => RecordFormViewModel(
+                                  useCases: context.read<RecordUseCases>(),
+                                  listViewModel: null,
+                                  detailViewModel: null,
                                 ),
                                 child: AddRecord(work: work),
                               ),
@@ -139,7 +143,11 @@ class _WorkListState extends State<WorkList> {
             ),
           ),
 
+<<<<<<< HEAD
           //if (DateTime.now().weekday == DateTime.saturday)
+=======
+          if (DateTime.now().weekday == DateTime.sunday)
+>>>>>>> upstream/develop
             Positioned(
               bottom: 16,
               left: 16,
@@ -169,24 +177,21 @@ class _WorkListState extends State<WorkList> {
     return FloatingActionButton(
       backgroundColor: PRIMARY_COLOR,
       tooltip: '작품 추가',
-      onPressed: () async {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ChangeNotifierProvider<AddWorkViewModel>(
-              create: (_) => AddWorkViewModel(
-                authViewModel: context.read<AuthViewModel>(),
-                createWorkUseCase: CreateWorkUseCase(
-                  workRepository: context.read<WorkRepository>(),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ChangeNotifierProvider(
+                create: (context) => WorkFormViewModel(
+                  useCases: context.read<WorkUseCases>(),
+                  listViewModel: context.read<WorkListViewModel>(),
+                  detailViewModel: null,
                 ),
-                workRepository: context.read<WorkRepository>(),
+                child: const AddWork(),
               ),
-              child: AddWork(),
             ),
-          ),
-        );
-
-      },
+          );
+        },
       child: Icon(Icons.add, color: Colors.white)
     );
   }
