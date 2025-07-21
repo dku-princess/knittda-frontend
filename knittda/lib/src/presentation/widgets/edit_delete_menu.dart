@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class EditDeleteMenu extends StatelessWidget {
@@ -8,12 +7,12 @@ class EditDeleteMenu extends StatelessWidget {
   final String deleteDialogContent;
 
   const EditDeleteMenu({
-    Key? key,
+    super.key,
     required this.onEdit,
     required this.onDelete,
     this.deleteDialogTitle = '삭제',
     this.deleteDialogContent = '정말 삭제하시겠습니까?',
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

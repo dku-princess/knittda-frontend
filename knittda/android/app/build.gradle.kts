@@ -1,3 +1,4 @@
+// android/app/build.gradle.kts
 import java.util.Properties
 
 plugins {
@@ -21,60 +22,64 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
-    /** ───────────────────────────────────────────────
-     *  Kakao Native App Key를 local.properties에서 읽어오기
-     * ─────────────────────────────────────────────── */
+    /* ───────────────────────────────────────────────
+       Kakao Native App Key를 local.properties에서 읽어오기
+       ─────────────────────────────────────────────── */
     val kakaoKey: String by lazy {
         val propsFile = rootDir.resolve("local.properties")
         val props = Properties()
-        if (propsFile.exists()) {
-            props.load(propsFile.inputStream())
-        }
+        if (propsFile.exists()) props.load(propsFile.inputStream())
+
         props.getProperty("KAKAO_NATIVE_APP_KEY")?.trim()
             ?: error("KAKAO_NATIVE_APP_KEY not found in local.properties")
     }
 
-    /** ───────────────────────────────────────────────
-     *  릴리즈 키 등록 (key.properties 파일 읽기)
-     * ─────────────────────────────────────────────── */
+    /* ───────────────────────────────────────────────
+       릴리즈 키 등록 (key.properties 파일 읽기)
+       ─────────────────────────────────────────────── */
     val keystorePropertiesFile = rootProject.file("key.properties")
-    val keystoreProperties = Properties()
-    if (keystorePropertiesFile.exists()) {
-        keystoreProperties.load(keystorePropertiesFile.inputStream())
+    val keystoreProperties = Properties().apply {
+        if (keystorePropertiesFile.exists()) {
+            load(keystorePropertiesFile.inputStream())
+        }
     }
 
     signingConfigs {
-        create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = file(keystoreProperties["storeFile"] as String)
-            storePassword = keystoreProperties["storePassword"] as String
+        // release 서명은 keystore 파일이 있을 때만 만든다
+        if (keystorePropertiesFile.exists()) {
+            create("release") {
+                keyAlias      = keystoreProperties["keyAlias"]?.toString()
+                keyPassword   = keystoreProperties["keyPassword"]?.toString()
+                storeFile     = file(keystoreProperties["storeFile"]?.toString())
+                storePassword = keystoreProperties["storePassword"]?.toString()
+            }
         }
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.tteuda.app"
-        // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = 3
         versionName = "0.0.2"
 
-        //키값 주입
+        // manifest 키 주입
         manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = kakaoKey
     }
 
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = true              // 코드 난독화 활성화
-            isShrinkResources = true            // 사용되지 않는 리소스 제거
+            // keystore 없으면 signingConfig 를 붙이지 않는다
+            if (keystorePropertiesFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"            // 사용자 정의 ProGuard 룰 파일
+                "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
         }
     }
 }

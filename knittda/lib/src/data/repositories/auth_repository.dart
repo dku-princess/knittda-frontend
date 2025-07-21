@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../models/user_model.dart';
-import 'package:knittda/env.dart';
 
 class AuthRepository {
-  final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: baseUrl,
-      contentType: 'application/json',
-    ),
-  );
+  final Dio _dio;
+
+  AuthRepository(this._dio);
 
   Future<({String jwt, UserModel user})> loginWithKakao(String token) async {
     try {
@@ -38,7 +34,6 @@ class AuthRepository {
 
       // 실제 데이터 꺼내기
       final payload = body['data'] as Map<String, dynamic>?;
-
       final jwt  = payload?['jwt']  as String?;
       final user = payload?['user'] as Map<String, dynamic>?;
 
@@ -60,13 +55,12 @@ class AuthRepository {
     }
   }
 
-  Future<({UserModel user})> me(String token) async {
+  Future<({UserModel user})> me() async {
     try {
       final res = await _dio.get<Map<String, dynamic>>(
         '/api/v1/auth/me',
         options: Options(
           headers: {
-            'Authorization': 'Bearer $token',
             'Accept': 'application/json',
           },
         ),
@@ -78,7 +72,6 @@ class AuthRepository {
       }
 
       debugPrint('서버 응답: ${res.data}');
-      debugPrint('서버 응답: $token');
 
       // 최상위 응답 파싱
       final body = res.data;
@@ -88,7 +81,6 @@ class AuthRepository {
 
       // 실제 데이터 꺼내기
       final user = body['data'] as Map<String, dynamic>?;
-
       if (user == null) {
         throw Exception('잘못된 응답 형식');
       }

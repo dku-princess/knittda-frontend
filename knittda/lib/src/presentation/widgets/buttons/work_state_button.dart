@@ -39,6 +39,7 @@ class _WorkStateButtonState extends State<WorkStateButton> {
             label,
             style: TextStyle(
               color: isSelected ? PRIMARY_COLOR : Colors.grey,
+              fontSize: 16,
               decoration: isSelected ? TextDecoration.underline : TextDecoration.none,
               decorationColor: PRIMARY_COLOR,
             ),
