@@ -15,7 +15,6 @@ import 'package:knittda/src/presentation/view_models/work_form_view_model.dart';
 import 'package:knittda/src/presentation/view_models/work_list_view_model.dart';
 import 'package:knittda/src/presentation/widgets/buttons/work_status_button.dart';
 import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
-import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
 
 class ShowWork extends StatefulWidget {
@@ -174,11 +173,35 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ImageBox(
-                          networkImageUrl: work.thumbnailUrl,
+                        work.thumbnailUrl != null && work.thumbnailUrl!.isNotEmpty
+                            ? Image.network(
+                          work.thumbnailUrl!,
                           height: 100,
                           width: 100,
+                          fit: BoxFit.cover,
+
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                          },
+
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: Colors.grey.shade300,
+                              alignment: Alignment.center,
+                              child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                            );
+                          },
+                        ) : SizedBox(
+                          height: 100,
+                          width: 100,
+                          child: Container(
+                            color: Colors.grey.shade300,
+                            alignment: Alignment.center,
+                            child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                          ),
                         ),
+
                         SizedBox(width: 26),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

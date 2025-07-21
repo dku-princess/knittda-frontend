@@ -7,7 +7,7 @@ import 'package:knittda/src/presentation/view_models/record_detail_view_model.da
 import 'package:knittda/src/presentation/view_models/record_form_view_model.dart';
 import 'package:knittda/src/presentation/view_models/record_list_view_model.dart';
 import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
-import 'package:knittda/src/presentation/widgets/image_box.dart';
+//import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
 
 class ShowRecord extends StatefulWidget {
@@ -107,10 +107,28 @@ class _ShowRecordState extends State<ShowRecord> {
                 SizedBox(
                   height: height,
                   child: record.images!.length == 1
-                      ? ImageBox(
-                    networkImageUrl: record.images!.first.imageUrl,
-                    width: double.infinity,
-                    height: height,
+                      ? ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.network(
+                      record.images!.first.imageUrl,
+                      width: double.infinity,
+                      height: height,
+                      fit: BoxFit.cover,
+
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                      },
+
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey.shade300,
+                          alignment: Alignment.center,
+                          child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                        );
+                      },
+
+                    ),
                   )
                       : PageView.builder(
                     itemCount: record.images!.length,
@@ -120,10 +138,27 @@ class _ShowRecordState extends State<ShowRecord> {
                       final image = record.images![index];
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: ImageBox(
-                          networkImageUrl: image.imageUrl,
-                          width: double.infinity,
-                          height: height,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child:Image.network(
+                            image.imageUrl,
+                            width: double.infinity,
+                            height: height,
+                            fit: BoxFit.cover,
+
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                            },
+
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Colors.grey.shade300,
+                                alignment: Alignment.center,
+                                child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                              );
+                            },
+                          ),
                         ),
                       );
                     },

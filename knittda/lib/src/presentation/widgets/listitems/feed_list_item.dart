@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/models/feed_model.dart';
-import 'package:knittda/src/presentation/widgets/image_box.dart';
 
 class FeedListItem extends StatelessWidget {
   final FeedModel feed;
@@ -39,9 +38,25 @@ class FeedListItem extends StatelessWidget {
               children: [
                 //프로필 사진
                 CircleAvatar(
+                  radius: 20,
                   backgroundColor: Colors.grey[300],
-                  backgroundImage: NetworkImage(feed.profileImageUrl),
+                  child: ClipOval(
+                    child: Image.network(
+                      feed.profileImageUrl,
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[300],
+                          alignment: Alignment.center,
+                          child: Icon(Icons.person, size: 24, color: Colors.white),
+                        );
+                      },
+                    ),
+                  ),
                 ),
+
                 const SizedBox(width: 12),
 
                 Expanded(
@@ -72,10 +87,27 @@ class FeedListItem extends StatelessWidget {
                         SizedBox(
                           height: 200,
                           child: feed.record.images!.length == 1
-                              ? ImageBox(
-                            networkImageUrl: feed.record.images!.first.imageUrl,
-                            width: double.infinity,
-                            height: 200,
+                              ? ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: Image.network(
+                              feed.record.images!.first.imageUrl,
+                              width: double.infinity,
+                              height: 200,
+                              fit: BoxFit.cover,
+
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                              },
+
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: Colors.grey.shade300,
+                                  alignment: Alignment.center,
+                                  child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                                );
+                              },
+                            ),
                           )
                               : PageView.builder(
                             controller: PageController(viewportFraction: 0.6),
@@ -85,10 +117,27 @@ class FeedListItem extends StatelessWidget {
                               final image = feed.record.images![index];
                               return Padding(
                                 padding: const EdgeInsets.only(right: 8.0),
-                                child: ImageBox(
-                                  networkImageUrl: image.imageUrl,
-                                  width: double.infinity,
-                                  height: 200,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(6),
+                                  child: Image.network(
+                                    image.imageUrl,
+                                    width: double.infinity,
+                                    height: 200,
+                                    fit: BoxFit.cover,
+
+                                    loadingBuilder: (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                                    },
+
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        color: Colors.grey.shade300,
+                                        alignment: Alignment.center,
+                                        child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                                      );
+                                    },
+                                  ),
                                 ),
                               );
                             },
