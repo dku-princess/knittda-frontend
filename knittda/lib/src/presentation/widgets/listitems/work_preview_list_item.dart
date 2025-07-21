@@ -53,7 +53,7 @@ class WorkPreviewListItem extends StatelessWidget {
                           width: itemWidth,
                           height: 120,
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(6),
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
