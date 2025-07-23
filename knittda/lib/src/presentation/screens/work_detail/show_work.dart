@@ -172,31 +172,37 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         work.thumbnailUrl != null && work.thumbnailUrl!.isNotEmpty
-                            ? Image.network(
-                          work.thumbnailUrl!,
-                          height: 100,
-                          width: 100,
-                          fit: BoxFit.cover,
+                            ? ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: Image.network(
+                            work.thumbnailUrl!,
+                            height: 100,
+                            width: 100,
+                            fit: BoxFit.cover,
 
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return const Center(child: CircularProgressIndicator(strokeWidth: 2));
-                          },
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                            },
 
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Colors.grey.shade300,
+                                alignment: Alignment.center,
+                                child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                              );
+                            },
+                          ),
+                        ) : ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: SizedBox(
+                            height: 100,
+                            width: 100,
+                            child: Container(
                               color: Colors.grey.shade300,
                               alignment: Alignment.center,
                               child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
-                            );
-                          },
-                        ) : SizedBox(
-                          height: 100,
-                          width: 100,
-                          child: Container(
-                            color: Colors.grey.shade300,
-                            alignment: Alignment.center,
-                            child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                            ),
                           ),
                         ),
 
