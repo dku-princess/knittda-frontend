@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:knittda/src/domain/use_case/record_use_cases.dart';
 import 'package:knittda/src/domain/use_case/work_use_cases.dart';
@@ -68,37 +70,53 @@ class _WorkState extends State<Work> {
             );
           }
 
-          // 3) 정상 데이터
           return RefreshIndicator(
             onRefresh: vm.refresh,
-            child: ListView.separated(
-              controller: _scroll,
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              itemCount: vm.previews.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
-              itemBuilder: (context, index) {
-                final preview = vm.previews[index];
-                return WorkPreviewListItem(
-                  workPreview: preview,
-                  onTap: () {
-                    // 작품 상세 & 기록 목록 뷰모델 준비
-                    final workVM = WorkDetailViewModel(context.read<WorkUseCases>())
-                      ..load(preview.projectId);
-                    final recordVM = RecordListViewModel(context.read<RecordUseCases>())
-                      ..refresh(preview.projectId);
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                const double maxItemWidth = 220;
 
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => MultiProvider(
-                          providers: [
-                            ChangeNotifierProvider.value(value: workVM),
-                            ChangeNotifierProvider.value(value: recordVM),
-                          ],
-                          child: ShowWork(projectId: preview.projectId),
-                        ),
-                      ),
+                final int crossAxisCount = math.max(2, math.min(6, (constraints.maxWidth / maxItemWidth).floor()));
+
+
+                return GridView.builder(
+                  controller: _scroll,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 0.85,
+                  ),
+
+                  itemCount: vm.previews.length,
+                  itemBuilder: (context, index) {
+                    final preview = vm.previews[index];
+                    return WorkPreviewListItem(
+                      workPreview: preview,
+                      onTap: () {
+                        final workVM = WorkDetailViewModel(
+                            context.read<WorkUseCases>())
+                          ..load(preview.projectId);
+                        final recordVM = RecordListViewModel(
+                            context.read<RecordUseCases>())
+                          ..refresh(preview.projectId);
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                              MultiProvider(
+                                providers: [
+                                  ChangeNotifierProvider.value(value: workVM),
+                                  ChangeNotifierProvider.value(value: recordVM),
+                                ],
+                                child: ShowWork(projectId: preview.projectId),
+                              ),
+                          ),
+                        );
+                      },
                     );
                   },
                 );
