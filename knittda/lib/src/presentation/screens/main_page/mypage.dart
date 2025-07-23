@@ -10,6 +10,8 @@ class Mypage extends StatelessWidget {
     final auth = context.read<AuthViewModel>();
     await auth.logout();
 
+    if (!context.mounted) return;
+
     // 네비게이션 스택 초기화
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const Login()),

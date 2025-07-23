@@ -117,23 +117,26 @@ class _EditRecordState extends State<EditRecord> {
       return;
     }
 
-    final updatedRecord = widget.record.copyWith(
-      recordStatus: _selectedStatus!.name,
-      tags: _selectedTags.toList(),
-      comment: _commentController.text.trim(),
-      files: _images,
+    final saved = await recordFormVM.save(
+      widget.record.copyWith(
+        recordStatus: _selectedStatus!.name,
+        tags: _selectedTags.toList(),
+        comment: _commentController.text.trim(),
+        files: _images,
+      ),
+      deleteImageIds: _deleteImageIds,
     );
-
-    final saved = await recordFormVM.save(updatedRecord, deleteImageIds: _deleteImageIds);
 
     if (!mounted) return;
 
-    if (saved != null) {
-      Navigator.pop(context);
-    } else {
-      final error = recordFormVM.error ?? '수정에 실패했습니다.';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+    if (saved == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(recordFormVM.error ?? '수정에 실패했습니다.')),
+      );
+      return;
     }
+
+    Navigator.of(context).pop();
 
   }
 
