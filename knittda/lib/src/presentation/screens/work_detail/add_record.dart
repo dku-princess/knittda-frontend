@@ -90,6 +90,7 @@ class _AddRecordState extends State<AddRecord> {
 
   Future<void> _submitRecord() async {
     final recordFormVM = context.read<RecordFormViewModel>();
+
     if (recordFormVM.isSaving) return;
 
     if (_selectedStatus == null) {
@@ -101,25 +102,29 @@ class _AddRecordState extends State<AddRecord> {
       return;
     }
 
-    final record = RecordModel.forCreate(
-      projectId: widget.work.id!,
-      recordStatus: _selectedStatus!.name,
-      tags: _selectedTags.toList(),
-      comment: _commentController.text.trim(),
-      files: _images,
+    final saved = await recordFormVM.save(
+      RecordModel.forCreate(
+        projectId: widget.work.id!,
+        recordStatus: _selectedStatus!.name,
+        tags: _selectedTags.toList(),
+        comment: _commentController.text.trim(),
+        files: _images,
+      ),
     );
-
-    final saved = await recordFormVM.save(record);
 
     if (!mounted) return;
 
-    if (saved != null) {
-      await context.read<WorkListViewModel>().refresh();
-      Navigator.pop(context);
-    } else {
-      final error = recordFormVM.error ?? '알 수 없는 오류';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+    if (saved == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(recordFormVM.error ?? '알 수 없는 오류')),
+      );
+      return;
     }
+
+    await context.read<WorkListViewModel>().refresh();
+    if (!mounted) return;
+
+    Navigator.of(context).pop();
 
   }
 

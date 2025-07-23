@@ -67,9 +67,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
     final topPadding = MediaQuery.of(context).padding.top; //상태바 높이
 
     final currentUserId = context.read<AuthViewModel>().user?.id;
-    final isOwner = currentUserId != null && work?.userId == 8;
-    debugPrint('currentUserId: $currentUserId');
-    debugPrint('currentUserId: ${work?.userId}');
+    final isOwner = currentUserId != null && work?.userId == currentUserId;
 
     if (loading) {
       return Scaffold(
