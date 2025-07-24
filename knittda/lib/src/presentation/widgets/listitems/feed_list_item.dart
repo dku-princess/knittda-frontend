@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/models/feed_model.dart';
+import 'package:knittda/src/presentation/widgets/image_viewer_screen.dart';
 
 class FeedListItem extends StatelessWidget {
   final FeedModel feed;
@@ -82,31 +83,43 @@ class FeedListItem extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
 
-                      //사진
+// 사진
                       if (feed.record.images != null && feed.record.images!.isNotEmpty) ...[
                         SizedBox(
                           height: 200,
                           child: feed.record.images!.length == 1
-                              ? ClipRRect(
-                            borderRadius: BorderRadius.circular(6),
-                            child: Image.network(
-                              feed.record.images!.first.imageUrl,
-                              width: double.infinity,
-                              height: 200,
-                              fit: BoxFit.cover,
-
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return const Center(child: CircularProgressIndicator(strokeWidth: 2));
-                              },
-
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  color: Colors.grey.shade300,
-                                  alignment: Alignment.center,
-                                  child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
-                                );
-                              },
+                              ? GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ImageViewerScreen(
+                                    imageUrl: feed.record.images!.first.imageUrl,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: Image.network(
+                                feed.record.images!.first.imageUrl,
+                                width: double.infinity,
+                                height: 200,
+                                fit: BoxFit.cover,
+                                loadingBuilder: (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return const Center(
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  );
+                                },
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: Colors.grey.shade300,
+                                    alignment: Alignment.center,
+                                    child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                                  );
+                                },
+                              ),
                             ),
                           )
                               : PageView.builder(
@@ -117,26 +130,34 @@ class FeedListItem extends StatelessWidget {
                               final image = feed.record.images![index];
                               return Padding(
                                 padding: const EdgeInsets.only(right: 8.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(6),
-                                  child: Image.network(
-                                    image.imageUrl,
-                                    width: double.infinity,
-                                    height: 200,
-                                    fit: BoxFit.cover,
-
-                                    loadingBuilder: (context, child, loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      return const Center(child: CircularProgressIndicator(strokeWidth: 2));
-                                    },
-
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Container(
-                                        color: Colors.grey.shade300,
-                                        alignment: Alignment.center,
-                                        child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
-                                      );
-                                    },
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => ImageViewerScreen(imageUrl: image.imageUrl),
+                                      ),
+                                    );
+                                  },
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(6),
+                                    child: Image.network(
+                                      image.imageUrl,
+                                      width: double.infinity,
+                                      height: 200,
+                                      fit: BoxFit.cover,
+                                      loadingBuilder: (context, child, loadingProgress) {
+                                        if (loadingProgress == null) return child;
+                                        return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                                      },
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Container(
+                                          color: Colors.grey.shade300,
+                                          alignment: Alignment.center,
+                                          child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                                        );
+                                      },
+                                    ),
                                   ),
                                 ),
                               );
@@ -145,6 +166,7 @@ class FeedListItem extends StatelessWidget {
                         ),
                         const SizedBox(height: 10),
                       ],
+
 
                       //본문
                       if (feed.record.comment != null && feed.record.comment!.isNotEmpty) ...[

@@ -143,11 +143,7 @@ class _WorkListState extends State<WorkList> {
             ),
           ),
 
-<<<<<<< HEAD
-          //if (DateTime.now().weekday == DateTime.saturday)
-=======
-          if (DateTime.now().weekday == DateTime.sunday)
->>>>>>> upstream/develop
+          //if (DateTime.now().weekday == DateTime.sunday)
             Positioned(
               bottom: 16,
               left: 16,

@@ -74,6 +74,17 @@ class _ReportUiState extends State<ReportUi> {
     }
   }
 
+  Future<void> _shareReportImage() async {
+    final bytes = await captureWidget(captureKey);
+    if (bytes != null) {
+      try {
+        await platform.invokeMethod('shareImage', {'bytes': bytes});
+      } on PlatformException catch (e) {
+        debugPrint("iOS 공유 오류: ${e.message}");
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final reportVM = context.watch<ReportViewModel>();
@@ -98,7 +109,7 @@ class _ReportUiState extends State<ReportUi> {
           ),
           IconButton(
             icon: const Icon(Icons.share),
-            onPressed: _shareToKakao,
+            onPressed: Platform.isIOS ? _shareReportImage : _shareToKakao,
             tooltip: "카카오톡으로 공유",
           ),
         ],
