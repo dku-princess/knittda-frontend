@@ -4,16 +4,16 @@ import 'package:knittda/src/data/repositories/report_repository.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 class GetReportUseCase {
-  final ReportRepository reportRepository;
+  final ReportRepository _repository;
 
-  GetReportUseCase({
-    required this.reportRepository,
-  });
+  GetReportUseCase(
+    this._repository,
+  );
 
-  Future<ReportModel> call (String accessToken) async {
+  Future<ReportModel> call () async {
     try {
-      final result = await reportRepository.getReport(accessToken);
-      return result;
+      final report = await _repository.getReport();
+      return report;
     } catch (e, stack) {
       await Sentry.captureException(e, stackTrace: stack);
       debugPrint('GetReportUseCase 오류: $e\n$stack');

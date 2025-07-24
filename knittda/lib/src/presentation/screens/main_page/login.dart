@@ -8,7 +8,7 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final loginViewModel = context.read<AuthViewModel>();
+    final authVM = context.read<AuthViewModel>();
 
     return Scaffold(
       body: Column(
@@ -26,7 +26,7 @@ class Login extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 150),
             child: GestureDetector(
               onTap: () async {
-                final success = await loginViewModel.loginWithKakao();
+                final success = await authVM.loginWithKakao();
                 if (success) {
                   //네비게이션 스택 완전 초기화
                   Navigator.of(context).pushAndRemoveUntil(

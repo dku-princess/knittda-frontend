@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/models/record_model.dart';
-import 'package:knittda/src/presentation/widgets/image_box.dart';
+import 'package:knittda/src/presentation/widgets/image_viewer_screen.dart';
 
 class RecordListItem extends StatelessWidget {
   final RecordModel record;
@@ -43,14 +43,44 @@ class RecordListItem extends StatelessWidget {
             const SizedBox(height: 16),
 
             // 이미지들
+            // 이미지들
             if (record.images != null && record.images!.isNotEmpty) ...[
               SizedBox(
                 height: 200,
                 child: record.images!.length == 1
-                    ? ImageBox(
-                  networkImageUrl: record.images!.first.imageUrl,
-                  width: double.infinity,
-                  height: 200,
+                    ? GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ImageViewerScreen(
+                          imageUrl: record.images!.first.imageUrl,
+                        ),
+                      ),
+                    );
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.network(
+                      record.images!.first.imageUrl,
+                      width: double.infinity,
+                      height: 200,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey.shade300,
+                          alignment: Alignment.center,
+                          child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                        );
+                      },
+                    ),
+                  ),
                 )
                     : PageView.builder(
                   controller: PageController(viewportFraction: 0.85),
@@ -60,10 +90,39 @@ class RecordListItem extends StatelessWidget {
                     final image = record.images![index];
                     return Padding(
                       padding: const EdgeInsets.only(right: 8.0),
-                      child: ImageBox(
-                        networkImageUrl: image.imageUrl,
-                        width: double.infinity,
-                        height: 200,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ImageViewerScreen(
+                                imageUrl: image.imageUrl,
+                              ),
+                            ),
+                          );
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: Image.network(
+                            image.imageUrl,
+                            width: double.infinity,
+                            height: 200,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const Center(
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Colors.grey.shade300,
+                                alignment: Alignment.center,
+                                child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                              );
+                            },
+                          ),
+                        ),
                       ),
                     );
                   },

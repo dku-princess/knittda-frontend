@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
-import 'package:knittda/src/data/models/design_model.dart';
-import 'package:knittda/src/data/repositories/design_repositories.dart';
-import 'package:knittda/src/domain/use_case/search_design_use_case.dart';
-import 'package:knittda/src/presentation/screens/add_work_page/search_patterns.dart';
-import 'package:knittda/src/presentation/view_models/add_work_view_model.dart';
-import 'package:knittda/src/presentation/view_models/search_view_model.dart';
+import 'package:knittda/src/presentation/view_models/work_form_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/core/constants/color.dart';
@@ -28,12 +23,20 @@ class _AddWorkState extends State<AddWork> {
 
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
-  String? _goalDate;
-  DesignModel? _selectedDesign;
+  DateTime? _goalDate;
 
-  bool _submitting = false;
+  @override
+  void dispose() {
+    _nicknameController.dispose();
+    _designController.dispose();
+    _designerController.dispose();
+    _yarnController.dispose();
+    _needleController.dispose();
+    super.dispose();
+  }
 
-  Future<void> _pickImageFromGallery() async {
+  // 갤러리에서 이미지 선택 함수
+  Future<void> _pickImage() async {
     final XFile? picked = await _picker.pickImage(
       source: ImageSource.gallery,
       maxWidth: 1024,
@@ -47,37 +50,85 @@ class _AddWorkState extends State<AddWork> {
     }
   }
 
+  // 캘린더에서 목표날짜 선택 함수
   Future<void> _pickGoalDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2100),
       helpText: '목표 날짜 선택',
     );
 
     if (picked != null) {
       setState(() {
-        _goalDate = DateUtilsHelper.toDotFormat(picked);
+        _goalDate = picked;
       });
     }
   }
 
-  @override
-  void dispose() {
-    _nicknameController.dispose();
-    _designController.dispose();
-    _designerController.dispose();
-    _yarnController.dispose();
-    _needleController.dispose();
-    super.dispose();
+  // 저장 함수
+  Future<void> _submitWork() async {
+    final workFormVM = context.read<WorkFormViewModel>();
+    if (workFormVM.isSaving) return;
+
+    final nickname = _nicknameController.text.trim();
+    final customYarnInfo = _yarnController.text.trim();
+    final customNeedleInfo = _needleController.text.trim();
+    final design = _designController.text.trim();
+    final designer = _designerController.text.trim();
+
+    if (nickname.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('작품 이름을 작성해주세요.')),
+      );
+      return;
+    }
+
+    if (_goalDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('목표 날짜를 선택해주세요.')),
+      );
+      return;
+    }
+
+    if (_image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('이미지를 선택해주세요.')),
+      );
+      return;
+    }
+
+    final now = DateTime.now();
+
+    final work = WorkModel.forCreate(
+      nickname: nickname,
+      customYarnInfo: customYarnInfo.isNotEmpty ? customYarnInfo : null,
+      customNeedleInfo: customNeedleInfo.isNotEmpty ? customNeedleInfo : null,
+      startDate: now,
+      goalDate: _goalDate!,
+      file: _image!,
+      designTitle: design.isNotEmpty ? design : null,
+      designer: designer.isNotEmpty ? designer : null,
+    );
+
+    final saved = await workFormVM.save(work);
+
+    if (!mounted) return;
+
+    if (saved != null) {
+      Navigator.pop(context);          // 성공
+    } else {
+      final error = workFormVM.error ?? '알 수 없는 오류';
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error)));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final addWorkVM = context.watch<AddWorkViewModel>();
-
-    final isBusy = addWorkVM.isLoading || _submitting;
+    final workFormVM = context.watch<WorkFormViewModel>();
+    final isBusy = workFormVM.isSaving;
 
     return Stack(
       children: [
@@ -85,7 +136,26 @@ class _AddWorkState extends State<AddWork> {
           appBar: AppBar(
             title: const Text('작품 추가', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
             centerTitle: true,
+            actions: [
+              //저장 버튼
+              TextButton(
+                onPressed: isBusy ? null : _submitWork,
+                style: TextButton.styleFrom(
+                  backgroundColor: PRIMARY_COLOR,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text(
+                  '저장',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
           ),
+
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
             child: AbsorbPointer(
@@ -102,23 +172,35 @@ class _AddWorkState extends State<AddWork> {
                     SizedBox(height: 20,),
                     Row(
                       children: [
+                        // 대표 사진
                         GestureDetector(
-                          onTap: _pickImageFromGallery,
-                          child: ImageBox(
-                            localImageUrl: _image?.path,
+                          onTap: _pickImage,
+                          child: _image != null
+                              ? ImageBox(
+                            localImageUrl: _image!.path,
                             width: 110,
                             height: 110,
-                            showIcon: _image == null, // 이미지가 없으면 + 아이콘
-                            onRemove: _image != null
-                                ? () {
+                            onRemove: () {
                               setState(() {
                                 _image = null;
                               });
-                            }
-                                : null,
+                            },
+                          )
+                              : Container(
+                            width: 110,
+                            height: 110,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Center(
+                              child: Icon(Icons.add, color: Colors.white, size: 40),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 16),
+
+                        // 작품 이름, 목표 날짜
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,7 +231,9 @@ class _AddWorkState extends State<AddWork> {
                                     side: BorderSide(color: PRIMARY_COLOR),
                                   ),
                                 ),
-                                child: Text(_goalDate ?? "목표 날짜"),
+                                child: Text(
+                                  _goalDate != null ? DateUtilsHelper.toDotFormat(_goalDate!) : "목표 날짜",
+                                ),
                               ),
                             ],
                           ),
@@ -168,28 +252,6 @@ class _AddWorkState extends State<AddWork> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      trailing: IconButton(
-                        icon: Icon(Icons.search),
-                        onPressed: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ChangeNotifierProvider(
-                                create: (_) => SearchViewModel(searchDesignUseCase: SearchDesignUseCase(designRepositories: DesignRepositories())),
-                                child: SearchPatterns(),
-                              ),
-                            ),
-                          );
-
-                          if (result != null && result is DesignModel) {
-                            setState(() {
-                              _designController.text = result.title ?? '';
-                              _designerController.text = result.designer ?? '';
-                              _selectedDesign = result;
-                            });
-                          }
-                        },
-                      ),
                     ),
                     SizedBox(height: 10),
 
@@ -200,25 +262,10 @@ class _AddWorkState extends State<AddWork> {
                     SizedBox(height: 10),
                     TextField(
                       controller: _designController,
-                      readOnly: _selectedDesign != null,
                       decoration: InputDecoration(
                         isDense: true,
-                        filled: _selectedDesign != null,
-                        fillColor: Colors.grey[200],
                         contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                        suffixIcon: _selectedDesign != null
-                            ? IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () {
-                            setState(() {
-                              _selectedDesign = null;
-                              _designController.clear();
-                              _designerController.clear();
-                            });
-                          },
-                        )
-                            : null,
                       ),
                       style: const TextStyle(fontSize: 14),
                     ),
@@ -231,25 +278,10 @@ class _AddWorkState extends State<AddWork> {
                     SizedBox(height: 10),
                     TextField(
                       controller: _designerController,
-                      readOnly: _selectedDesign != null,
                       decoration: InputDecoration(
                         isDense: true,
-                        filled: _selectedDesign != null,
-                        fillColor: Colors.grey[200],
                         contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                        suffixIcon: _selectedDesign != null
-                            ? IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () {
-                            setState(() {
-                              _selectedDesign = null;
-                              _designController.clear();
-                              _designerController.clear();
-                            });
-                          },
-                        )
-                            : null,
                       ),
                       style: const TextStyle(fontSize: 14),
                     ),
@@ -304,85 +336,7 @@ class _AddWorkState extends State<AddWork> {
                     ),
 
                     SizedBox(height: 40,),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 44,
-                      child: TextButton(
-                        onPressed: isBusy
-                            ? null
-                            : () async {
-                          if (_submitting) return;
-                          setState(() => _submitting = true);
-                          try {
-                            final nickname = _nicknameController.text.trim();
-                            final customYarnInfo = _yarnController.text.trim();
-                            final customNeedleInfo = _needleController.text.trim();
-                            final title = _designController.text.trim();
-                            final designer = _designerController.text.trim();
 
-                            if (nickname.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('작품 이름을 작성해주세요!')),
-                              );
-                              return;
-                            }
-
-                            if (_goalDate == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('목표 날짜를 선택해주세요!')),
-                              );
-                              return;
-                            }
-
-                            final goalDate = DateUtilsHelper.fromDotFormat(_goalDate!);
-                            final now = DateTime.now();
-
-                            if (goalDate.isBefore(DateTime(now.year, now.month, now.day))) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('목표 날짜는 오늘 이후여야 합니다.')),
-                              );
-                              return;
-                            }
-
-                            final work = WorkModel.forCreate(
-                              designId: _selectedDesign?.id,
-                              nickname: nickname,
-                              customYarnInfo: customYarnInfo,
-                              customNeedleInfo: customNeedleInfo,
-                              startDate: DateTime.now(),
-                              goalDate: _goalDate != null ? DateUtilsHelper.fromDotFormat(_goalDate!) : null,
-                              file: _image,
-                              title: title,
-                              designer: designer,
-                            );
-
-                            final success = await addWorkVM.createWork(work);
-                            if (!mounted) return;
-
-                            if (success) {
-                              Navigator.pop(context);
-                            } else {
-                              final error = addWorkVM.errorMessage ?? '알 수 없는 오류';
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(error)),
-                              );
-                            }
-                          } finally {
-                            if (mounted) setState(() => _submitting = false);
-                          }
-                        },
-                        style: TextButton.styleFrom(
-                          backgroundColor: PRIMARY_COLOR,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: Text(
-                          "작품 추가하기",
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -390,9 +344,11 @@ class _AddWorkState extends State<AddWork> {
           ),
         ),
         if (isBusy)
-          const ColoredBox(
-            color: Colors.black26,
-            child: Center(child: CircularProgressIndicator()),
+          const Positioned.fill(
+            child: ColoredBox(
+              color: Colors.black26,
+              child: Center(child: CircularProgressIndicator()),
+            ),
           ),
       ],
     );

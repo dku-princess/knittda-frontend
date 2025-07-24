@@ -2,12 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/models/record_model.dart';
 import 'package:knittda/src/data/models/work_model.dart';
-import 'package:knittda/src/presentation/view_models/add_record_view_model.dart';
+import 'package:knittda/src/presentation/view_models/record_form_view_model.dart';
+import 'package:knittda/src/presentation/view_models/work_list_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
-import 'package:knittda/src/presentation/widgets/listitems/work_list_item.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'dart:math';
+
+//기록 아이디어를 위한 문장 리스트
+final List<String> knittingPrompts = [
+  "뜨개질하면서 어떤 생각을 하셨나요?",
+  "실의 촉감은 어땠나요?",
+  "이번 패턴은 어려웠나요, 쉬웠나요?",
+  "하루 중 언제 뜨개를 하셨나요?",
+  "누구를 떠올리며 만들었나요?",
+  "이전 기록과 비교해서 어떤가요?",
+  "오늘은 몇 줄이나 떴나요?",
+  "실수는 없었나요?",
+  "멋진 뜨개 여정, 뜨다와 함께 해 주셔서 감사합니다!",
+  "오늘 뜨개 시간이 힐링이 되었나요?",
+  "감정을 색으로 표현한다면?",
+  "이 작품은 누구에게 주실 계획인가요?",
+  "완성까지 얼마나 걸릴 것 같나요?",
+  "오늘의 뜨개 제목을 붙여보자면?",
+  "오늘도 한 페이지를 써내려가는 당신, 멋진 뜨개인!",
+  "오늘의 실 구매처는?",
+  "어떤 패턴 참고하셨나요?",
+  "기억하고 싶은 특별한 순간이 있었나요?",
+  "오늘 기분은 10점 만 점에 몇 점인가요?",
+  "패턴 수정한 부분이 있나요?",
+  "오늘 뜨개 진도는 얼마나 나갔나요? 사실, 꾸준함이 중요하죠!",
+  "오늘은 어떤 음악을 들으며 뜨개를 했나요?"
+];
+
+final String randomPrompt = (knittingPrompts..shuffle()).first;
+
 
 //기록 상태
 enum RecordStatus {
@@ -40,23 +70,46 @@ class _AddRecordState extends State<AddRecord> {
   RecordStatus? _selectedStatus;
   final TextEditingController _commentController = TextEditingController();
 
-  bool _submitting = false;
 
-  Future<void> _pickImageFromGallery() async {
-
+  Future<void> _pickImage(ImageSource source) async {
     if (_images.length >= 5) return;
 
     final XFile? picked = await _picker.pickImage(
-      source: ImageSource.gallery,
+      source: source,
       maxWidth: 1024,
       maxHeight: 1024,
-      //imageQuality: 85,//이미지 압축률
     );
     if (picked != null) {
-      setState(() {
-        _images.add(picked);
-      });
+      setState(() => _images.add(picked));
     }
+  }
+
+  void _showImageSourceActionSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('카메라로 촬영'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('갤러리에서 선택'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -65,17 +118,71 @@ class _AddRecordState extends State<AddRecord> {
     super.dispose();
   }
 
+  Future<void> _submitRecord() async {
+    final recordFormVM = context.read<RecordFormViewModel>();
+    if (recordFormVM.isSaving) return;
+
+    if (_selectedStatus == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('진행 상태를 선택해주세요.')));
+      return;
+    }
+    if (_commentController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('기록을 남겨주세요.')));
+      return;
+    }
+
+    final record = RecordModel.forCreate(
+      projectId: widget.work.id!,
+      recordStatus: _selectedStatus!.name,
+      tags: _selectedTags.toList(),
+      comment: _commentController.text.trim(),
+      files: _images,
+    );
+
+    final saved = await recordFormVM.save(record);
+
+    if (!mounted) return;
+
+    if (saved != null) {
+      await context.read<WorkListViewModel>().refresh();
+      Navigator.pop(context);
+    } else {
+      final error = recordFormVM.error ?? '알 수 없는 오류';
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+    }
+
+  }
+
   @override
   Widget build(BuildContext context) {
-    final addRecordVM = context.watch<AddRecordViewModel>();
-    final isBusy = addRecordVM.isLoading || _submitting;
+    final recordFormVM = context.watch<RecordFormViewModel>();
+    final isBusy = recordFormVM.isSaving;
 
     return Stack(
       children: [
         Scaffold(
           appBar: AppBar(
-            title: const Text("기록 추가"),
+            title: const Text('기록 추가', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+            centerTitle: true,
+            actions: [
+              TextButton(
+                onPressed: isBusy ? null : _submitRecord,
+                style: TextButton.styleFrom(
+                  backgroundColor: PRIMARY_COLOR,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text(
+                  '저장',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
           ),
+
           body: AbsorbPointer(
             absorbing: isBusy,
             child: SingleChildScrollView(
@@ -90,8 +197,9 @@ class _AddRecordState extends State<AddRecord> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        WorkListItem(work: widget.work),
-                        const SizedBox(height: 35),
+                        //WorkListItem(work: widget.work),
+                        //const SizedBox(height: 35),
+
                         const Text("오늘은 뜨개는 어떠셨어요?", style: TextStyle(fontSize: 20)),
                         const SizedBox(height: 16),
                         Wrap(
@@ -220,7 +328,7 @@ class _AddRecordState extends State<AddRecord> {
                               // + 버튼
                               if (_images.length < 5)
                                 GestureDetector(
-                                  onTap: _pickImageFromGallery,
+                                  onTap: _showImageSourceActionSheet,
                                   child: Container(
                                     width: 100,
                                     height: 100,
@@ -247,6 +355,10 @@ class _AddRecordState extends State<AddRecord> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text("뜨개 기록을 남겨주세요", style: TextStyle(fontSize: 20)),
+                        Text(
+                          randomPrompt,
+                          style: const TextStyle(fontSize: 20, color: Colors.grey),
+                        ),
                         const SizedBox(height: 16),
                         TextField(
                           maxLines: 8,
@@ -265,58 +377,10 @@ class _AddRecordState extends State<AddRecord> {
                     ),
                   ),
 
+
                   const SizedBox(height: 40),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 44,
-                      child: TextButton(
-                        onPressed: isBusy
-                          ? null
-                          : () async {
-                          if (_submitting) return;
-                          setState(() => _submitting = true);
-                          try {
-                            if (_selectedStatus == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('진행 상태를 선택해주세요.')));
-                              return;
-                            }
-                            if (_commentController.text.trim().isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('기록을 남겨주세요.')));
-                              return;
-                            }
-
-                            final record = RecordModel.forCreate(
-                              projectId: widget.work.id!,
-                              recordStatus: _selectedStatus!.name,
-                              tags: _selectedTags.toList(),
-                              comment: _commentController.text.trim(),
-                              files: _images,
-                            );
-
-                            final success = await addRecordVM.createRecord(record);
-                            if (!mounted) return;
-                            if (success) {
-                              Navigator.pop(context);
-                            } else {
-                              final error = addRecordVM.errorMessage ?? '알 수 없는 오류';
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
-                            }
-                          } finally {
-                            if (mounted) setState(() => _submitting = false);
-                          }
-                        },
-                        style: TextButton.styleFrom(
-                          backgroundColor: PRIMARY_COLOR,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: Text("기록 추가하기"),
-                      ),
-                    ),
                   ),
                   const SizedBox(height: 50),
                 ],
@@ -325,9 +389,11 @@ class _AddRecordState extends State<AddRecord> {
           ),
         ),
         if (isBusy)
-          const ColoredBox(
-            color: Colors.black26,
-            child: Center(child: CircularProgressIndicator()),
+          const Positioned.fill(
+            child: ColoredBox(
+              color: Colors.black26,
+              child: Center(child: CircularProgressIndicator()),
+            ),
           ),
       ],
     );
