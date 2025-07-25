@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:knittda/src/domain/use_case/record_use_cases.dart';
 import 'package:knittda/src/domain/use_case/work_use_cases.dart';
@@ -74,20 +72,16 @@ class _WorkState extends State<Work> {
             onRefresh: vm.refresh,
             child: LayoutBuilder(
               builder: (context, constraints) {
-                const double maxItemWidth = 220;
-
-                final int crossAxisCount = math.max(2, math.min(6, (constraints.maxWidth / maxItemWidth).floor()));
-
-
                 return GridView.builder(
                   controller: _scroll,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  padding: const EdgeInsets.all(16),
                   physics: const AlwaysScrollableScrollPhysics(),
+
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: crossAxisCount,
+                    crossAxisCount: 2,
                     mainAxisSpacing: 16,
                     crossAxisSpacing: 16,
-                    childAspectRatio: 0.85,
+                    childAspectRatio: 0.82,
                   ),
 
                   itemCount: vm.previews.length,
