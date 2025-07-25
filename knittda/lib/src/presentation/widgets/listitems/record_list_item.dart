@@ -19,10 +19,10 @@ class RecordListItem extends StatelessWidget {
     final dateStr = DateUtilsHelper.toDotFormat(corrected);
     final timeStr = DateUtilsHelper.toHourMinuteFormat(corrected);
 
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 20.0),
+        padding:  const EdgeInsets.only(top: 20, bottom: 16, right: 20, left: 20),
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(color: Colors.grey.shade300),

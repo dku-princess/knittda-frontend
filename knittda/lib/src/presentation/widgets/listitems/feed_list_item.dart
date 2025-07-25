@@ -19,10 +19,10 @@ class FeedListItem extends StatelessWidget {
     final dateStr = DateUtilsHelper.toDotFormat(corrected);
     final timeStr = DateUtilsHelper.toHourMinuteFormat(corrected);
 
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.only(top: 8, bottom: 16),
+        padding:  const EdgeInsets.only(top: 20, bottom: 16, right: 20, left: 20),
 
         //바닥 선
         decoration: BoxDecoration(

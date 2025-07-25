@@ -74,7 +74,7 @@ class _WorkState extends State<Work> {
               builder: (context, constraints) {
                 return GridView.builder(
                   controller: _scroll,
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(20),
                   physics: const AlwaysScrollableScrollPhysics(),
 
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

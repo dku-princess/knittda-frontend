@@ -8,7 +8,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'env.dart';
-import 'package:flutter/services.dart';
+//import 'package:flutter/services.dart';
 
 // 앱 실행
 Future<void> main() async {
