@@ -22,7 +22,7 @@ class FeedListItem extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding:  const EdgeInsets.only(top: 20, bottom: 16, right: 20, left: 20),
+        padding:  const EdgeInsets.only(top: 20, bottom: 16, right: 24, left: 24),
 
         //바닥 선
         decoration: BoxDecoration(
@@ -84,8 +84,8 @@ class FeedListItem extends StatelessWidget {
 
                       //사진
                       if (feed.record.images != null && feed.record.images!.isNotEmpty) ...[
-                        SizedBox(
-                          height: 200,
+                        AspectRatio(
+                          aspectRatio: 16/9,
                           child: feed.record.images!.length == 1
                               ? ClipRRect(
                             borderRadius: BorderRadius.circular(6),

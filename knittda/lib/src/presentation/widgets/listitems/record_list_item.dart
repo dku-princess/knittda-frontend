@@ -22,7 +22,7 @@ class RecordListItem extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding:  const EdgeInsets.only(top: 20, bottom: 16, right: 20, left: 20),
+        padding:  const EdgeInsets.only(top: 20, bottom: 16, right: 24, left: 24),
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(color: Colors.grey.shade300),
@@ -43,15 +43,14 @@ class RecordListItem extends StatelessWidget {
 
             // 이미지들
             if (record.images != null && record.images!.isNotEmpty) ...[
-              SizedBox(
-                height: 200,
+              AspectRatio(
+                aspectRatio: 16/9,
                 child: record.images!.length == 1
                     ? ClipRRect(
                   borderRadius: BorderRadius.circular(6),
                   child: Image.network(
                     record.images!.first.imageUrl,
                     width: double.infinity,
-                    height: 200,
                     fit: BoxFit.cover,
 
                     loadingBuilder: (context, child, loadingProgress) {
@@ -82,7 +81,6 @@ class RecordListItem extends StatelessWidget {
                         child: Image.network(
                           image.imageUrl,
                           width: double.infinity,
-                          height: 200,
                           fit: BoxFit.cover,
 
                           loadingBuilder: (context, child, loadingProgress) {
