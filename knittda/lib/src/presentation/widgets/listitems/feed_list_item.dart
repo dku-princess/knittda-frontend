@@ -23,7 +23,7 @@ class _FeedListItemState extends State<FeedListItem> {
   @override
   void initState() {
     super.initState();
-    _pageCtrl = PageController(viewportFraction: 0.6);
+    _pageCtrl = PageController(viewportFraction: 0.8);
   }
 
   @override
