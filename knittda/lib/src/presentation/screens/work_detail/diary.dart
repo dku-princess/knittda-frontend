@@ -27,14 +27,12 @@ class Diary extends StatelessWidget {
       return Center(child: Text('기록이 없습니다.'));
     }
 
-    return Padding(
-      padding: EdgeInsets.all(26.0),
-      child: ListView.builder(
-        padding: EdgeInsets.zero,
-        itemCount: records.length,
-        itemBuilder: (context, index) {
-          final record = records[index];
-          return RecordListItem(
+    return ListView.builder(
+      padding: EdgeInsets.zero,
+      itemCount: records.length,
+      itemBuilder: (context, index) {
+        final record = records[index];
+        return RecordListItem(
             record: record,
             onTap: (){
               final recordListVM = context.read<RecordListViewModel>();
@@ -62,9 +60,8 @@ class Diary extends StatelessWidget {
                 ),
               );
             }
-          );
-        },
-      ),
+        );
+      },
     );
   }
 }
