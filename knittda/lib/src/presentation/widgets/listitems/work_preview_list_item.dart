@@ -18,73 +18,75 @@ class WorkPreviewListItem extends StatelessWidget {
         : null;
 
     return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.zero,
       color: Colors.white,
-      elevation: 4,
+      elevation: 5,
       shadowColor: Colors.black26,
       child: InkWell(
-        borderRadius: BorderRadius.circular(8),
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 제목
-              Text(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            //썸네일
+            AspectRatio(
+              aspectRatio: 4 / 3,
+              child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                  child: imageUrl != null
+                      ? Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                    },
+
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey.shade300,
+                        alignment: Alignment.center,
+                        child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                      );
+
+                    },
+                  )
+                      : Container(
+                    color: Colors.grey.shade300,
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                  )
+              ),
+            ),
+
+            // 제목
+            Padding(
+              padding: const EdgeInsets.only(top: 12, left: 10, bottom: 5),
+              child: Text(
                 workPreview.projectName,
                 style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
+            ),
 
-              const SizedBox(height: 2),
+            const SizedBox(height: 2),
 
-              // 작성자
-              Text(
+            // 작성자
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Text(
                 workPreview.userName,
                 style: const TextStyle(fontSize: 12, color: Colors.grey),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
+            ),
 
-              const SizedBox(height: 14),
+            //const SizedBox(height: 20),
 
-              // 썸네일
-              Expanded(
-                child: AspectRatio(
-                  aspectRatio: 3 / 2,
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: imageUrl != null
-                          ? Image.network(
-                        imageUrl,
-                        fit: BoxFit.cover,
-
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const Center(child: CircularProgressIndicator(strokeWidth: 2));
-                        },
-
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey.shade300,
-                            alignment: Alignment.center,
-                            child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
-                          );
-
-                        },
-                      )
-                          : Container(
-                        color: Colors.grey.shade300,
-                        alignment: Alignment.center,
-                        child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
-                      )
-                  ),
-                ),
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     );
