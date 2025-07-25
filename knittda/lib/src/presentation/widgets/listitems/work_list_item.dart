@@ -25,10 +25,39 @@ class WorkListItem extends StatelessWidget {
         ),
         child: Row(
           children: [
-            WorkImageBox(
-              networkUrl: work.thumbnailUrl,
-              width: 60,
-              height: 60,
+            work.thumbnailUrl != null && work.thumbnailUrl!.isNotEmpty
+                ? ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: Image.network(
+                work.thumbnailUrl!,
+                height: 60,
+                width: 60,
+                fit: BoxFit.cover,
+
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                },
+
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: Colors.grey.shade300,
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                  );
+                },
+              ),
+            ) : ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: SizedBox(
+                height: 60,
+                width: 60,
+                child: Container(
+                  color: Colors.grey.shade300,
+                  alignment: Alignment.center,
+                  child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                ),
+              ),
             ),
             SizedBox(width: 10), // 이미지와 텍스트 사이 여백 추가
             Column(
