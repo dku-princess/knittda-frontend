@@ -3,7 +3,7 @@ import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/models/feed_model.dart';
 
-class FeedListItem extends StatelessWidget {
+class FeedListItem extends StatefulWidget {
   final FeedModel feed;
   final VoidCallback onTap;
 
@@ -14,13 +14,33 @@ class FeedListItem extends StatelessWidget {
   });
 
   @override
+  State<FeedListItem> createState() => _FeedListItemState();
+}
+
+class _FeedListItemState extends State<FeedListItem> {
+  late final PageController _pageCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageCtrl = PageController(viewportFraction: 0.6);
+  }
+
+  @override
+  void dispose() {
+    _pageCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final feed = widget.feed;
     final corrected = feed.record.createdAt!.add(const Duration(hours: 9));
     final dateStr = DateUtilsHelper.toDotFormat(corrected);
     final timeStr = DateUtilsHelper.toHourMinuteFormat(corrected);
 
     return InkWell(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Container(
         padding:  const EdgeInsets.only(top: 20, bottom: 16, right: 24, left: 24),
 
@@ -85,14 +105,12 @@ class FeedListItem extends StatelessWidget {
                       //사진
                       if (feed.record.images != null && feed.record.images!.isNotEmpty) ...[
                         AspectRatio(
-                          aspectRatio: 16/9,
+                          aspectRatio: 3/2,
                           child: feed.record.images!.length == 1
                               ? ClipRRect(
                             borderRadius: BorderRadius.circular(6),
                             child: Image.network(
                               feed.record.images!.first.imageUrl,
-                              width: double.infinity,
-                              height: 200,
                               fit: BoxFit.cover,
 
                               loadingBuilder: (context, child, loadingProgress) {
@@ -110,7 +128,8 @@ class FeedListItem extends StatelessWidget {
                             ),
                           )
                               : PageView.builder(
-                            controller: PageController(viewportFraction: 0.6),
+                            key: PageStorageKey(feed.record.id),
+                            controller: _pageCtrl,
                             itemCount: feed.record.images!.length,
                             padEnds: false,
                             itemBuilder: (context, index) {
@@ -121,8 +140,6 @@ class FeedListItem extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(6),
                                   child: Image.network(
                                     image.imageUrl,
-                                    width: double.infinity,
-                                    height: 200,
                                     fit: BoxFit.cover,
 
                                     loadingBuilder: (context, child, loadingProgress) {

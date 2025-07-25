@@ -3,7 +3,7 @@ import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/models/record_model.dart';
 
-class RecordListItem extends StatelessWidget {
+class RecordListItem extends StatefulWidget {
   final RecordModel record;
   final VoidCallback onTap;
 
@@ -14,13 +14,33 @@ class RecordListItem extends StatelessWidget {
   });
 
   @override
+  State<RecordListItem> createState() => _RecordListItemState();
+}
+
+class _RecordListItemState extends State<RecordListItem> {
+  late final PageController _pageCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageCtrl = PageController(viewportFraction: 0.8);
+  }
+
+  @override
+  void dispose() {
+    _pageCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final record = widget.record;
     final corrected = record.createdAt!.add(const Duration(hours: 9));
     final dateStr = DateUtilsHelper.toDotFormat(corrected);
     final timeStr = DateUtilsHelper.toHourMinuteFormat(corrected);
 
     return InkWell(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Container(
         padding:  const EdgeInsets.only(top: 20, bottom: 16, right: 24, left: 24),
         decoration: BoxDecoration(
@@ -44,13 +64,12 @@ class RecordListItem extends StatelessWidget {
             // 이미지들
             if (record.images != null && record.images!.isNotEmpty) ...[
               AspectRatio(
-                aspectRatio: 16/9,
+                aspectRatio: 3/2,
                 child: record.images!.length == 1
                     ? ClipRRect(
                   borderRadius: BorderRadius.circular(6),
                   child: Image.network(
                     record.images!.first.imageUrl,
-                    width: double.infinity,
                     fit: BoxFit.cover,
 
                     loadingBuilder: (context, child, loadingProgress) {
@@ -69,7 +88,8 @@ class RecordListItem extends StatelessWidget {
                   ),
                 )
                     : PageView.builder(
-                  controller: PageController(viewportFraction: 0.85),
+                  key: PageStorageKey(record.id),
+                  controller: _pageCtrl,
                   itemCount: record.images!.length,
                   padEnds: false,
                   itemBuilder: (context, index) {
@@ -80,7 +100,6 @@ class RecordListItem extends StatelessWidget {
                         borderRadius: BorderRadius.circular(6),
                         child: Image.network(
                           image.imageUrl,
-                          width: double.infinity,
                           fit: BoxFit.cover,
 
                           loadingBuilder: (context, child, loadingProgress) {

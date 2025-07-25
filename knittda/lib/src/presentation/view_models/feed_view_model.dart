@@ -31,8 +31,15 @@ class FeedViewModel extends ChangeNotifier {
 
   Future<void> loadMore() async {
     if (_isLoading || !_hasNext) return;
+
     _page += 1;
+    final before = _feeds.length;
+
     await _load(append: true);
+
+    if (_feeds.length == before) {
+      _page -= 1;
+    }
   }
 
   Future<void> refresh() => loadInitial();
