@@ -7,7 +7,6 @@ import 'package:knittda/src/presentation/view_models/record_detail_view_model.da
 import 'package:knittda/src/presentation/view_models/record_form_view_model.dart';
 import 'package:knittda/src/presentation/view_models/record_list_view_model.dart';
 import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
-//import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
 
 class ShowRecord extends StatefulWidget {
@@ -25,6 +24,19 @@ class ShowRecord extends StatefulWidget {
 }
 
 class _ShowRecordState extends State<ShowRecord> {
+  late final PageController _pageCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageCtrl = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +66,6 @@ class _ShowRecordState extends State<ShowRecord> {
       );
     }
 
-    final height = MediaQuery.of(context).size.height / 3; //화면의 1/3
     final corrected = record.createdAt!.add(const Duration(hours: 9));
     final dateStr = DateUtilsHelper.toDotFormat(corrected);
     final timeStr = DateUtilsHelper.toHourMinuteFormat(corrected);
@@ -104,15 +115,13 @@ class _ShowRecordState extends State<ShowRecord> {
             children: [
               //이미지
               if (record.images != null && record.images!.isNotEmpty) ...[
-                SizedBox(
-                  height: height,
+                AspectRatio(
+                  aspectRatio: 3 / 2,
                   child: record.images!.length == 1
                       ? ClipRRect(
                     borderRadius: BorderRadius.circular(6),
                     child: Image.network(
                       record.images!.first.imageUrl,
-                      width: double.infinity,
-                      height: height,
                       fit: BoxFit.cover,
 
                       loadingBuilder: (context, child, loadingProgress) {
@@ -131,9 +140,10 @@ class _ShowRecordState extends State<ShowRecord> {
                     ),
                   )
                       : PageView.builder(
-                    itemCount: record.images!.length,
+                    key: PageStorageKey(record.id),
+                    controller: _pageCtrl,
                     padEnds: false,
-                    controller: PageController(),
+                    itemCount: record.images!.length,
                     itemBuilder: (context, index) {
                       final image = record.images![index];
                       return Padding(
@@ -142,8 +152,6 @@ class _ShowRecordState extends State<ShowRecord> {
                           borderRadius: BorderRadius.circular(6),
                           child:Image.network(
                             image.imageUrl,
-                            width: double.infinity,
-                            height: height,
                             fit: BoxFit.cover,
 
                             loadingBuilder: (context, child, loadingProgress) {
