@@ -16,6 +16,7 @@ import 'package:knittda/src/presentation/view_models/work_list_view_model.dart';
 import 'package:knittda/src/presentation/widgets/buttons/work_status_button.dart';
 import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
 import 'package:provider/provider.dart';
+import 'package:characters/characters.dart';
 
 class ShowWork extends StatefulWidget {
   final int projectId;
@@ -89,6 +90,11 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
       );
     }
 
+    final int lineCnt = (work.nickname.characters.length / 15).ceil();
+    const double lineHeight = 24.0;
+    final double extraH     = (lineCnt - 1) * lineHeight;
+    final double appBarH    = 210.0 + extraH;
+
     return DefaultTabController(
       length: tabs.length,
       child: Scaffold(
@@ -119,7 +125,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
             return [
               SliverAppBar(
                 pinned: true, //appbar 고정
-                expandedHeight: 210.0, //확장 높이
+                expandedHeight: appBarH,
                 //backgroundColor: Colors.white, //배경 흰색
                 leading: IconButton( //뒤로가기 버튼
                   icon: Icon(Icons.arrow_back, color: Colors.black),
@@ -167,7 +173,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
 
                 flexibleSpace: FlexibleSpaceBar( //확장영역
                   background: Padding(
-                    padding: EdgeInsets.only(top: topPadding + 56, left: 24),
+                    padding: EdgeInsets.only(top: topPadding + 56.0, left: 24, right: 24),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -207,18 +213,20 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                         ),
 
                         SizedBox(width: 26),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              work.nickname,
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            SizedBox(height: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                work.nickname,
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              SizedBox(height: 10),
 
-                            if (isOwner) WorkStatusButton(work: work),
-                          ],
-                        ),
+                              if (isOwner) WorkStatusButton(work: work),
+                            ],
+                          ),
+                        )
                       ],
                     ),
                   ),

@@ -1,6 +1,3 @@
-import 'dart:io';
-import 'package:flutter/material.dart';
-
 // class WorkImageBox extends StatefulWidget {
 //   final String? networkUrl;   // http/https
 //   final String? localPath;    // 기기 파일 경로
