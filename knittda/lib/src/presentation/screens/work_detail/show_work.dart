@@ -186,10 +186,10 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                             width: 100,
                             fit: BoxFit.cover,
 
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return const Center(child: CircularProgressIndicator(strokeWidth: 2));
-                            },
+                            // loadingBuilder: (context, child, loadingProgress) {
+                            //   if (loadingProgress == null) return child;
+                            //   return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                            // },
 
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
