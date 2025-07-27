@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../models/user_model.dart';
 
@@ -24,7 +23,7 @@ class AuthRepository {
         throw Exception('서버 오류: ${res.statusCode}');
       }
 
-      debugPrint('서버 응답: ${res.data}');
+      //debugPrint('서버 응답: ${res.data}');
 
       // 최상위 응답 파싱
       final body = res.data;
@@ -71,7 +70,7 @@ class AuthRepository {
         throw Exception('서버 오류: ${res.statusCode}');
       }
 
-      debugPrint('서버 응답: ${res.data}');
+      //debugPrint('서버 응답: ${res.data}');
 
       // 최상위 응답 파싱
       final body = res.data;

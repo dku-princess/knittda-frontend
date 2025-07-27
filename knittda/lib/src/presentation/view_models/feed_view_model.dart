@@ -64,8 +64,8 @@ class FeedViewModel extends ChangeNotifier {
           ..addAll(newFeeds);
       }
       _hasNext = newFeeds.length == _pageSize;
-    } catch (e, s) {
-      debugPrintStack(label: 'Feed load error: $e', stackTrace: s);
+    } catch (e) {
+      //debugPrintStack(label: 'Feed load error: $e', stackTrace: s);
       _error = '피드를 불러오는 데 실패했습니다';
     } finally {
       _isLoading = false;

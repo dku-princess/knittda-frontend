@@ -2,8 +2,6 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
 import 'package:knittda/src/data/data_sources/social_login.dart';
 
-import 'package:flutter/material.dart';
-
 class KaKaoLogin implements SocialLogin {
   @override
   Future<String?> login() async {

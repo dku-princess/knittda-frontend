@@ -65,8 +65,8 @@ class FeedSearchViewModel extends ChangeNotifier {
           ..addAll(newFeeds);
       }
       _hasNext = newFeeds.length == _pageSize;
-    } catch (e, s) {
-      debugPrintStack(label: 'Feed search error: $e', stackTrace: s);
+    } catch (e) {
+      //debugPrintStack(label: 'Feed search error: $e', stackTrace: s);
       _error = '검색에 실패했습니다';
     } finally {
       _isLoading = false;

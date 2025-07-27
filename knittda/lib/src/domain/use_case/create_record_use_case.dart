@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/record_model.dart';
 import 'package:knittda/src/data/repositories/record_repository.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -16,7 +15,7 @@ class CreateRecordUseCase {
       return created;
     } catch (e, stack) {
       await Sentry.captureException(e, stackTrace: stack);
-      debugPrint('CreateRecordUseCase 오류: $e\n$stack');
+      //debugPrint('CreateRecordUseCase 오류: $e\n$stack');
       rethrow;
     }
   }
