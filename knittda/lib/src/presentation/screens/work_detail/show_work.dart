@@ -33,6 +33,7 @@ class ShowWork extends StatefulWidget {
 
 class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin{
   late TabController _tabController;
+  late ScrollController _scrollController;
 
   final List<Tab> tabs = <Tab>[
     Tab(text:'정보'),
@@ -43,15 +44,28 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
   @override
   void initState() {
     super.initState();
+
+    _scrollController = ScrollController();
+
     _tabController = TabController(
       length: tabs.length,
       vsync: this,
       initialIndex: widget.initialTabIndex,
-    )..addListener(() => setState(() {}));
+    )..addListener(_handleTabChange);
+
+  }
+
+  void _handleTabChange() {
+    if (_tabController.indexIsChanging && _scrollController.hasClients) {
+      _scrollController.jumpTo(0);
+    }
+
+    if (!_tabController.indexIsChanging) setState(() {});
   }
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _tabController.dispose();
     super.dispose();
   }
@@ -67,9 +81,7 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
     final topPadding = MediaQuery.of(context).padding.top; //상태바 높이
 
     final currentUserId = context.read<AuthViewModel>().user?.id;
-    final isOwner = currentUserId != null && work?.userId == 8;
-    debugPrint('currentUserId: $currentUserId');
-    debugPrint('currentUserId: ${work?.userId}');
+    final isOwner = currentUserId != null && work?.userId == currentUserId;
 
     if (loading) {
       return Scaffold(
@@ -91,99 +103,105 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
       );
     }
 
-    return DefaultTabController(
-      length: tabs.length,
-      child: Scaffold(
-        floatingActionButton: (isOwner && _tabController.index == 1)
-            ? FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ChangeNotifierProvider(
-                  create: (_) => RecordFormViewModel(
-                    useCases: context.read<RecordUseCases>(),
-                    listViewModel: context.read<RecordListViewModel>(),
-                    detailViewModel: null,
-                  ),
-                  child: AddRecord(work: work),
+    final int lineCnt = (work.nickname.characters.length / 15).ceil();
+    const double lineHeight = 24.0;
+    final double extraH     = (lineCnt - 1) * lineHeight;
+    final double appBarH    = 210.0 + extraH;
+
+    return Scaffold(
+      floatingActionButton: (isOwner && _tabController.index == 1)
+          ? FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ChangeNotifierProvider(
+                create: (_) => RecordFormViewModel(
+                  useCases: context.read<RecordUseCases>(),
+                  listViewModel: context.read<RecordListViewModel>(),
+                  detailViewModel: null,
                 ),
+                child: AddRecord(work: work),
               ),
-            );
-          },
-          backgroundColor: PRIMARY_COLOR,
-          child: const Icon(Icons.add, color: Colors.white),
-        )
-            : null,
+            ),
+          );
+        },
+        backgroundColor: PRIMARY_COLOR,
+        child: const Icon(Icons.add, color: Colors.white),
+      )
+          : null,
 
-        body: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return [
-              SliverAppBar(
-                pinned: true, //appbar 고정
-                expandedHeight: 210.0, //확장 높이
-                //backgroundColor: Colors.white, //배경 흰색
-                leading: IconButton( //뒤로가기 버튼
-                  icon: Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                actions: isOwner
+      body: NestedScrollView(
+        controller: _scrollController,
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              pinned: true, //appbar 고정
+              expandedHeight: appBarH,
+              //backgroundColor: Colors.white, //배경 흰색
+              leading: IconButton( //뒤로가기 버튼
+                icon: Icon(Icons.arrow_back, color: Colors.black),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              actions: isOwner
                   ?[
-                    EditDeleteMenu(
-                      onEdit: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ChangeNotifierProvider(
-                              create: (_) => WorkFormViewModel(
-                                useCases: context.read<WorkUseCases>(),
-                                listViewModel: context.read<WorkListViewModel>(),
-                                detailViewModel: context.read<WorkDetailViewModel>(),
-                              ),
-                              child: EditWork(work: work),
-                            ),
+                EditDeleteMenu(
+                  onEdit: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ChangeNotifierProvider(
+                          create: (_) => WorkFormViewModel(
+                            useCases: context.read<WorkUseCases>(),
+                            listViewModel: context.read<WorkListViewModel>(),
+                            detailViewModel: context.read<WorkDetailViewModel>(),
                           ),
-                        );
-                      },
+                          child: EditWork(work: work),
+                        ),
+                      ),
+                    );
+                  },
 
-                      onDelete: () async {
-                        final success = await context.read<WorkListViewModel>().remove(work.id!);
+                  onDelete: () async {
+                    final success = await context.read<WorkListViewModel>().remove(work.id!);
 
-                        if (!context.mounted) return;
+                    if (!context.mounted) return;
 
-                        if (success) {
-                          Navigator.pop(context);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('삭제 중 오류가 발생했습니다')),
-                          );
-                        }
-                      },
-                      deleteDialogTitle: '작품 삭제',
-                      deleteDialogContent: '정말 이 작품을 삭제하시겠습니까?',
-                    )
-                  ]
+                    if (success) {
+                      Navigator.pop(context);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('삭제 중 오류가 발생했습니다')),
+                      );
+                    }
+                  },
+                  deleteDialogTitle: '작품 삭제',
+                  deleteDialogContent: '정말 이 작품을 삭제하시겠습니까?',
+                )
+              ]
                   : [],
 
-                flexibleSpace: FlexibleSpaceBar( //확장영역
-                  background: Padding(
-                    padding: EdgeInsets.only(top: topPadding + 56, left: 24),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        work.thumbnailUrl != null && work.thumbnailUrl!.isNotEmpty
-                            ? Image.network(
+              flexibleSpace: FlexibleSpaceBar( //확장영역
+                background: Padding(
+                  padding: EdgeInsets.only(top: topPadding + 56.0, left: 24, right: 24),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      work.thumbnailUrl != null && work.thumbnailUrl!.isNotEmpty
+                          ? ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: Image.network(
                           work.thumbnailUrl!,
                           height: 100,
                           width: 100,
                           fit: BoxFit.cover,
 
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return const Center(child: CircularProgressIndicator(strokeWidth: 2));
-                          },
+                          // loadingBuilder: (context, child, loadingProgress) {
+                          //   if (loadingProgress == null) return child;
+                          //   return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                          // },
 
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
@@ -192,7 +210,10 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                               child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
                             );
                           },
-                        ) : SizedBox(
+                        ),
+                      ) : ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: SizedBox(
                           height: 100,
                           width: 100,
                           child: Container(
@@ -201,9 +222,11 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                             child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
                           ),
                         ),
+                      ),
 
-                        SizedBox(width: 26),
-                        Column(
+                      SizedBox(width: 26),
+                      Expanded(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
@@ -215,29 +238,34 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                             if (isOwner) WorkStatusButton(work: work),
                           ],
                         ),
-                      ],
-                    ),
+                      )
+                    ],
                   ),
                 ),
-                bottom: TabBar(
-                  controller: _tabController,
-                  tabs: tabs,
-                  indicatorColor: Colors.black87, //tabbar 밑줄 색상
-                  labelColor: Colors.black87, //선택된 영역 글자 색
-                  unselectedLabelColor: Colors.grey, //선택 안된 영역 글자색
-                ),
               ),
-            ];
-          },
-          body: TabBarView(
-            physics: NeverScrollableScrollPhysics(),
-            controller: _tabController,
-            children: [
-              Info(work:work),
-              Diary(isOwner: isOwner),
-              Report(work:work),
-            ],
-          ),
+              bottom: TabBar(
+                controller: _tabController,
+                tabs: tabs,
+                indicatorColor: Colors.black87, //tabbar 밑줄 색상
+                labelColor: Colors.black87, //선택된 영역 글자 색
+                unselectedLabelColor: Colors.grey, //선택 안된 영역 글자색
+                onTap: (index) {
+                  if (index == _tabController.index && _scrollController.hasClients) {
+                    _scrollController.jumpTo(0);
+                  }
+                },
+              ),
+            ),
+          ];
+        },
+        body: TabBarView(
+          physics: NeverScrollableScrollPhysics(),
+          controller: _tabController,
+          children: [
+            Info(work:work),
+            Diary(isOwner: isOwner),
+            Report(work:work),
+          ],
         ),
       ),
     );

@@ -10,6 +10,8 @@ class Mypage extends StatelessWidget {
     final auth = context.read<AuthViewModel>();
     await auth.logout();
 
+    if (!context.mounted) return;
+
     // 네비게이션 스택 초기화
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const Login()),
@@ -88,6 +90,36 @@ class Mypage extends StatelessWidget {
             title: const Text('로그아웃'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => onLogout(context),
+          ),
+
+          //회원탈퇴
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+            title: const Text('회원 탈퇴'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () async {
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text('회원탈퇴'),
+                  content: Text('정말 탈퇴하시겠습니까?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: Text('취소'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+
+                      child: Text('탈퇴', style: TextStyle(color: Colors.red)),
+                    ),
+                  ],
+                ),
+              );
+              if (confirmed == true) {
+                debugPrint("탈퇴버튼 누름");
+              }
+            },
           ),
         ],
       ),

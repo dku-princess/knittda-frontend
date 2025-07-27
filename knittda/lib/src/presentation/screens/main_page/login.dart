@@ -27,11 +27,12 @@ class Login extends StatelessWidget {
             child: GestureDetector(
               onTap: () async {
                 final success = await authVM.loginWithKakao();
+
+                if (!context.mounted) return;
                 if (success) {
-                  //네비게이션 스택 완전 초기화
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (_) => const Home()),
-                        (route) => false,
+                        (_) => false,
                   );
                 }
               },

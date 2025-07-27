@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/models/work_model.dart';
-import '../work_image_box.dart';
 
 class WorkListItem extends StatelessWidget {
   final WorkModel work;
@@ -25,30 +24,72 @@ class WorkListItem extends StatelessWidget {
         ),
         child: Row(
           children: [
-            WorkImageBox(
-              networkUrl: work.thumbnailUrl,
-              width: 60,
-              height: 60,
-            ),
-            SizedBox(width: 10), // 이미지와 텍스트 사이 여백 추가
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(work.nickname, style: TextStyle(fontSize: 16),),
-                SizedBox(height:14),
-                Row(
-                  children: [
-                    Text("기록일", style: TextStyle(fontSize: 14, color: Colors.grey[600])),
-                    SizedBox(width: 4),
-                    Text(lastRecordAt, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
-                  ],
+            //썸네일
+            work.thumbnailUrl != null && work.thumbnailUrl!.isNotEmpty
+                ? ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: Image.network(
+                work.thumbnailUrl!,
+                height: 60,
+                width: 60,
+                fit: BoxFit.cover,
+
+                // loadingBuilder: (context, child, loadingProgress) {
+                //   if (loadingProgress == null) return child;
+                //   return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                // },
+
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: Colors.grey.shade300,
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                  );
+                },
+              ),
+            ) : ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: SizedBox(
+                height: 60,
+                width: 60,
+                child: Container(
+                  color: Colors.grey.shade300,
+                  alignment: Alignment.center,
+                  child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
                 ),
-              ],
+              ),
             ),
-            Spacer(), // 오른쪽 끝으로 버튼을 밀어줌
-            if (onPressed != null)
+
+            SizedBox(width: 10), // 이미지와 텍스트 사이 여백 추가
+
+            //닉네임, 날짜
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    work.nickname,
+                    style: TextStyle(fontSize: 16),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(height:14),
+                  Row(
+                    children: [
+                      Text("기록일", style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+                      SizedBox(width: 4),
+                      Text(lastRecordAt, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            // 추가 버튼
+            if (onPressed != null) ...[
+              const SizedBox(width: 8),
               TextButton(
-                onPressed: onPressed,
+                onPressed: onPressed,   // null 아님 → 활성
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.grey[300],
                   minimumSize: const Size(0, 0),
@@ -57,11 +98,10 @@ class WorkListItem extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: Text(
-                  '추가',
-                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                ),
+                child: Text('추가',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 14)),
               ),
+            ],
           ],
         ),
       ),
