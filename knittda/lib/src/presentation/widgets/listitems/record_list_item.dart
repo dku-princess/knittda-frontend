@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/models/record_model.dart';
+import 'package:knittda/src/presentation/widgets/image_viewer_screen.dart';
 
 class RecordListItem extends StatelessWidget {
   final RecordModel record;
@@ -18,6 +19,7 @@ class RecordListItem extends StatelessWidget {
     final corrected = record.createdAt!.add(const Duration(hours: 9));
     final dateStr = DateUtilsHelper.toDotFormat(corrected);
     final timeStr = DateUtilsHelper.toHourMinuteFormat(corrected);
+    final imageUrls = record.images!.map((e) => e.imageUrl).toList();
 
     return GestureDetector(
       onTap: onTap,
@@ -46,57 +48,77 @@ class RecordListItem extends StatelessWidget {
               SizedBox(
                 height: 200,
                 child: record.images!.length == 1
-                    ? ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: Image.network(
-                    record.images!.first.imageUrl,
-                    width: double.infinity,
-                    height: 200,
-                    fit: BoxFit.cover,
-
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return const Center(child: CircularProgressIndicator(strokeWidth: 2));
-                    },
-
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: Colors.grey.shade300,
-                        alignment: Alignment.center,
-                        child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
-                      );
-                    },
-
+                    ? GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ImageViewerScreen(
+                          imageUrls: imageUrls,
+                          initialIndex: 0,
+                        ),
+                      ),
+                    );
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.network(
+                      imageUrls.first,
+                      width: double.infinity,
+                      height: 200,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey.shade300,
+                          alignment: Alignment.center,
+                          child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                        );
+                      },
+                    ),
                   ),
                 )
                     : PageView.builder(
                   controller: PageController(viewportFraction: 0.85),
-                  itemCount: record.images!.length,
+                  itemCount: imageUrls.length,
                   padEnds: false,
                   itemBuilder: (context, index) {
-                    final image = record.images![index];
                     return Padding(
                       padding: const EdgeInsets.only(right: 8.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(6),
-                        child: Image.network(
-                          image.imageUrl,
-                          width: double.infinity,
-                          height: 200,
-                          fit: BoxFit.cover,
-
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return const Center(child: CircularProgressIndicator(strokeWidth: 2));
-                          },
-
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: Colors.grey.shade300,
-                              alignment: Alignment.center,
-                              child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
-                            );
-                          },
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ImageViewerScreen(
+                                imageUrls: imageUrls,
+                                initialIndex: index,
+                              ),
+                            ),
+                          );
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: Image.network(
+                            imageUrls[index],
+                            width: double.infinity,
+                            height: 200,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Colors.grey.shade300,
+                                alignment: Alignment.center,
+                                child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     );
@@ -105,7 +127,6 @@ class RecordListItem extends StatelessWidget {
               ),
               const SizedBox(height: 16),
             ],
-
 
             // 본문
             if (record.comment != null && record.comment!.isNotEmpty) ...[
@@ -120,7 +141,7 @@ class RecordListItem extends StatelessWidget {
 
             // 태그
             if (record.tags != null && record.tags!.isNotEmpty) ...[
-              LayoutBuilder( //화면의 가로 너비를 알아내기 위해 사용
+              LayoutBuilder(
                 builder: (context, constraints) {
                   const double tagSpacing = 10;
                   double usedWidth = 0;
@@ -128,8 +149,7 @@ class RecordListItem extends StatelessWidget {
                   int hiddenCount = 0;
 
                   for (final tag in record.tags!) {
-                    final tagWidth = (tag.length * 12) + 24; //각 태그의 대략적인 너비 계산
-                    //현재까지 너비 + 이번 태그 더했을 때 화면 너비 초과하면, 남은 태구 개수를 +N 형태로 계산
+                    final tagWidth = (tag.length * 12) + 24;
                     if (usedWidth + tagWidth > constraints.maxWidth) {
                       hiddenCount = record.tags!.length - limitedTags.length;
                       if (hiddenCount > 0) {
