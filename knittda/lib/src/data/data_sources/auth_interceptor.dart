@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:knittda/src/core/storage/token_storage.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class AuthInterceptor extends Interceptor {
   final TokenStorage _storage;
@@ -12,18 +12,13 @@ class AuthInterceptor extends Interceptor {
       RequestOptions options, RequestInterceptorHandler handler) async {
     try {
       final jwt = await _storage.read();
-      if (jwt != null) {
+      final hasToken = jwt?.isNotEmpty == true;
+
+      if (hasToken) {
         options.headers['Authorization'] = 'Bearer $jwt';
-        // if (kDebugMode) {
-        //   debugPrint('[AuthInterceptor] JWT attached: $jwt');
-        // }
-      } else {
-        // if (kDebugMode) {
-        //   debugPrint('[AuthInterceptor] No JWT found.');
-        // }
       }
-    } catch (e) {
-      //debugPrint('[AuthInterceptor] Error reading token: $e');
+    } catch (e, s) {
+      await Sentry.captureException(e, stackTrace: s);
     }
 
     handler.next(options);

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:knittda/src/data/models/feed_model.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class FeedRemoteException implements Exception {
   final Object error;
@@ -32,6 +33,7 @@ class FeedRepository {
       final content = res.data?['data']?['content'] as List<dynamic>? ?? [];
       return content.map((e) => FeedModel.fromJson(e)).toList();
     } on DioException catch (e, s) {
+      await Sentry.captureException(e, stackTrace: s);
       throw FeedRemoteException(e, s);
     }
   }
@@ -56,6 +58,7 @@ class FeedRepository {
       final content = res.data?['data']?['content'] as List<dynamic>? ?? [];
       return content.map((e) => FeedModel.fromJson(e)).toList();
     } on DioException catch (e, s) {
+      await Sentry.captureException(e, stackTrace: s);
       throw FeedRemoteException(e, s);
     }
   }
