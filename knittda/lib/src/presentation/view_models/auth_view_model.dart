@@ -50,12 +50,12 @@ class AuthViewModel extends ChangeNotifier {
       await _storage.save(_jwt!);
 
       notifyListeners();
-      debugPrint('카카오 로그인 성공');
+      //debugPrint('카카오 로그인 성공');
       return true;
     } catch (e) {
       _status = AuthStatus.unauthenticated;
       notifyListeners();
-      debugPrint('카카오 로그인 실패: $e');
+      //debugPrint('카카오 로그인 실패: $e');
       return false;
     }
   }
@@ -69,13 +69,13 @@ class AuthViewModel extends ChangeNotifier {
       _user   = result.user;
       _status = AuthStatus.authenticated;
 
-      debugPrint('자동 로그인 성공');
+      //debugPrint('자동 로그인 성공');
     } catch (_) {
       _jwt    = null;
       _user   = null;
       _status = AuthStatus.unauthenticated;
 
-      debugPrint('자동 로그인 실패');
+      //debugPrint('자동 로그인 실패');
     }
     notifyListeners();
   }

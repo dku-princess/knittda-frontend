@@ -43,11 +43,14 @@ class _WorkStatusButtonState extends State<WorkStatusButton> {
       final useCases = context.read<WorkUseCases>();
       final updated = await useCases.updateWork(update);
 
+      if (!mounted) return;
+
       // 전역 리스트 갱신
       context.read<WorkListViewModel>().insertOrReplace(updated);
 
       setState(() => _status = newStatus);
     } catch (_) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('상태 변경에 실패했습니다.')),
       );

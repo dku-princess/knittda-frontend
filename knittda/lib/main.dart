@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'env.dart';
+import 'package:flutter/services.dart';
 
 // 앱 실행
 Future<void> main() async {
@@ -15,6 +16,12 @@ Future<void> main() async {
     // 바인딩 초기화는 반드시 runZoned 내부에서
     WidgetsFlutterBinding.ensureInitialized();
 
+    //세로 방향 고정
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp
+    ]);
+
+    //provider 모음 생성
     final providers = await getProviders();
 
     if (!kDebugMode) {
@@ -30,6 +37,7 @@ Future<void> main() async {
       await SentryFlutter.init((options) {
         options.dsn = SentryFlutterDns;
         options.attachStacktrace = true;
+        options.sendDefaultPii = false;
       });
     }
 

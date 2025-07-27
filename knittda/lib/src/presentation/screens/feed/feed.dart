@@ -92,9 +92,9 @@ class _FeedState extends State<Feed> {
             onRefresh: vm.refresh,
             child: ListView.separated(
               controller: _scroll,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              //padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               itemCount: vm.hasNext ? vm.feeds.length + 1 : vm.feeds.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              separatorBuilder: (_, __) => const SizedBox.shrink(),
               itemBuilder: (_, index) {
                 if (index == vm.feeds.length) {
                   return const Padding(

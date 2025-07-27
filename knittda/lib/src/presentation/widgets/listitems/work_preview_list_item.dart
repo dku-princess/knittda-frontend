@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/work_preview_model.dart';
 
@@ -14,104 +13,79 @@ class WorkPreviewListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final images = (workPreview.recentImageUrls ?? []).take(3).toList();
+    final String? imageUrl = (workPreview.recentImageUrls?.isNotEmpty ?? false)
+        ? workPreview.recentImageUrls!.first
+        : null;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.only(top: 8, bottom: 16),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Colors.grey.shade300),
-          ),
-        ),
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.zero,
+      color: Colors.white,
+      elevation: 5,
+      shadowColor: Colors.black26,
+      child: InkWell(
+        onTap: onTap,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              '${workPreview.userName}  |  ${workPreview.projectName}',
-              style: const TextStyle(fontSize: 14),
-            ),
-            const SizedBox(height: 20
-            ),
+            //썸네일
+            AspectRatio(
+              aspectRatio: 4 / 3,
+              child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                  child: imageUrl != null
+                      ? Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
 
-            if (images.isNotEmpty)
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final itemWidth = (constraints.maxWidth - 10 * 2) / 3;
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                    },
 
-                  return Row(
-                    children: List.generate(images.length, (index) {
-                      final isLast = index == images.length - 1;
-                      final url = images[index];
-
-                      return Padding(
-                        padding: EdgeInsets.only(
-                          right: index == images.length - 1 ? 0 : 10,
-                        ),
-                        child: SizedBox(
-                          width: itemWidth,
-                          height: 120,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(6),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Image.network(
-                                  url,
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  fit: BoxFit.cover,
-                                  // 로딩 중 스피너
-                                  loadingBuilder: (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return const Center(child: CircularProgressIndicator(strokeWidth: 2));
-                                  },
-                                  // 실패 시 대체 UI
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      color: Colors.grey.shade200,
-                                      alignment: Alignment.center,
-                                      child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
-                                    );
-                                  },
-                                ),
-                                if (isLast)
-                                  Positioned.fill(
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        BackdropFilter(
-                                          filter: ImageFilter.blur(
-                                            sigmaX: 6,
-                                            sigmaY: 6,
-                                          ),
-                                          child: Container(
-                                            color: Colors.transparent,
-                                          ),
-                                        ),
-                                        Text(
-                                          '+ ${workPreview.recordNum}',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ),
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey.shade300,
+                        alignment: Alignment.center,
+                        child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
                       );
-                    }),
-                  );
-                },
-              ),
 
-            const SizedBox(height: 20),
+                    },
+                  )
+                      : Container(
+                    color: Colors.grey.shade300,
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                  )
+              ),
+            ),
+
+            // 제목
+            Padding(
+              padding: const EdgeInsets.only(top: 12, left: 10, bottom: 5),
+              child: Text(
+                workPreview.projectName,
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+
+            const SizedBox(height: 2),
+
+            // 작성자
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Text(
+                workPreview.userName,
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+
+            //const SizedBox(height: 20),
+
           ],
         ),
       ),

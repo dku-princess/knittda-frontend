@@ -31,8 +31,15 @@ class FeedViewModel extends ChangeNotifier {
 
   Future<void> loadMore() async {
     if (_isLoading || !_hasNext) return;
+
     _page += 1;
+    final before = _feeds.length;
+
     await _load(append: true);
+
+    if (_feeds.length == before) {
+      _page -= 1;
+    }
   }
 
   Future<void> refresh() => loadInitial();
@@ -57,8 +64,8 @@ class FeedViewModel extends ChangeNotifier {
           ..addAll(newFeeds);
       }
       _hasNext = newFeeds.length == _pageSize;
-    } catch (e, s) {
-      debugPrintStack(label: 'Feed load error: $e', stackTrace: s);
+    } catch (e) {
+      //debugPrintStack(label: 'Feed load error: $e', stackTrace: s);
       _error = '피드를 불러오는 데 실패했습니다';
     } finally {
       _isLoading = false;
