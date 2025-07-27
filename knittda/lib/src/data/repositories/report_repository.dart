@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/models/report_model.dart';
 
@@ -21,7 +20,7 @@ class ReportRepository {
       throw Exception('서버 오류: ${res.statusCode}');
     }
 
-    debugPrint('리포트 서버 응답: ${res.data}');
+    //debugPrint('리포트 서버 응답: ${res.data}');
 
     final body = res.data;
 

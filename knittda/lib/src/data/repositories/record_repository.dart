@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/record_model.dart';
 
 class RecordRepository {
@@ -131,7 +130,7 @@ class RecordRepository {
       throw Exception('서버 오류: ${res.statusCode}');
     }
 
-    debugPrint('기록 삭제 서버 응답: ${res.data}');
+    //debugPrint('기록 삭제 서버 응답: ${res.data}');
 
     final body = res.data;
     if (body == null || body['success'] != true) {
