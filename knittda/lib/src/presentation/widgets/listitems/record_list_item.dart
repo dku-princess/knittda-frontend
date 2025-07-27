@@ -19,6 +19,7 @@ class RecordListItem extends StatelessWidget {
     final corrected = record.createdAt!.add(const Duration(hours: 9));
     final dateStr = DateUtilsHelper.toDotFormat(corrected);
     final timeStr = DateUtilsHelper.toHourMinuteFormat(corrected);
+    final imageUrls = record.images!.map((e) => e.imageUrl).toList();
 
     return GestureDetector(
       onTap: onTap,
@@ -43,7 +44,6 @@ class RecordListItem extends StatelessWidget {
             const SizedBox(height: 16),
 
             // 이미지들
-            // 이미지들
             if (record.images != null && record.images!.isNotEmpty) ...[
               SizedBox(
                 height: 200,
@@ -54,7 +54,8 @@ class RecordListItem extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (_) => ImageViewerScreen(
-                          imageUrl: record.images!.first.imageUrl,
+                          imageUrls: imageUrls,
+                          initialIndex: 0,
                         ),
                       ),
                     );
@@ -62,15 +63,13 @@ class RecordListItem extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(6),
                     child: Image.network(
-                      record.images!.first.imageUrl,
+                      imageUrls.first,
                       width: double.infinity,
                       height: 200,
                       fit: BoxFit.cover,
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) return child;
-                        return const Center(
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        );
+                        return const Center(child: CircularProgressIndicator(strokeWidth: 2));
                       },
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
@@ -84,10 +83,9 @@ class RecordListItem extends StatelessWidget {
                 )
                     : PageView.builder(
                   controller: PageController(viewportFraction: 0.85),
-                  itemCount: record.images!.length,
+                  itemCount: imageUrls.length,
                   padEnds: false,
                   itemBuilder: (context, index) {
-                    final image = record.images![index];
                     return Padding(
                       padding: const EdgeInsets.only(right: 8.0),
                       child: GestureDetector(
@@ -96,7 +94,8 @@ class RecordListItem extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (_) => ImageViewerScreen(
-                                imageUrl: image.imageUrl,
+                                imageUrls: imageUrls,
+                                initialIndex: index,
                               ),
                             ),
                           );
@@ -104,15 +103,13 @@ class RecordListItem extends StatelessWidget {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(6),
                           child: Image.network(
-                            image.imageUrl,
+                            imageUrls[index],
                             width: double.infinity,
                             height: 200,
                             fit: BoxFit.cover,
                             loadingBuilder: (context, child, loadingProgress) {
                               if (loadingProgress == null) return child;
-                              return const Center(
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              );
+                              return const Center(child: CircularProgressIndicator(strokeWidth: 2));
                             },
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
@@ -131,7 +128,6 @@ class RecordListItem extends StatelessWidget {
               const SizedBox(height: 16),
             ],
 
-
             // 본문
             if (record.comment != null && record.comment!.isNotEmpty) ...[
               Text(
@@ -145,7 +141,7 @@ class RecordListItem extends StatelessWidget {
 
             // 태그
             if (record.tags != null && record.tags!.isNotEmpty) ...[
-              LayoutBuilder( //화면의 가로 너비를 알아내기 위해 사용
+              LayoutBuilder(
                 builder: (context, constraints) {
                   const double tagSpacing = 10;
                   double usedWidth = 0;
@@ -153,8 +149,7 @@ class RecordListItem extends StatelessWidget {
                   int hiddenCount = 0;
 
                   for (final tag in record.tags!) {
-                    final tagWidth = (tag.length * 12) + 24; //각 태그의 대략적인 너비 계산
-                    //현재까지 너비 + 이번 태그 더했을 때 화면 너비 초과하면, 남은 태구 개수를 +N 형태로 계산
+                    final tagWidth = (tag.length * 12) + 24;
                     if (usedWidth + tagWidth > constraints.maxWidth) {
                       hiddenCount = record.tags!.length - limitedTags.length;
                       if (hiddenCount > 0) {

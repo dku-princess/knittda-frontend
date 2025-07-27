@@ -7,7 +7,7 @@ import 'package:knittda/src/presentation/view_models/record_detail_view_model.da
 import 'package:knittda/src/presentation/view_models/record_form_view_model.dart';
 import 'package:knittda/src/presentation/view_models/record_list_view_model.dart';
 import 'package:knittda/src/presentation/widgets/edit_delete_menu.dart';
-//import 'package:knittda/src/presentation/widgets/image_box.dart';
+import 'package:knittda/src/presentation/widgets/image_viewer_screen.dart'; // ✅ 추가
 import 'package:provider/provider.dart';
 
 class ShowRecord extends StatefulWidget {
@@ -25,7 +25,6 @@ class ShowRecord extends StatefulWidget {
 }
 
 class _ShowRecordState extends State<ShowRecord> {
-
   @override
   Widget build(BuildContext context) {
     final recordDetailVM = context.watch<RecordDetailViewModel>();
@@ -54,10 +53,11 @@ class _ShowRecordState extends State<ShowRecord> {
       );
     }
 
-    final height = MediaQuery.of(context).size.height / 3; //화면의 1/3
+    final height = MediaQuery.of(context).size.height / 3;
     final corrected = record.createdAt!.add(const Duration(hours: 9));
     final dateStr = DateUtilsHelper.toDotFormat(corrected);
     final timeStr = DateUtilsHelper.toHourMinuteFormat(corrected);
+    final imageUrls = record.images!.map((e) => e.imageUrl).toList();
 
     return Stack(
       children: [
@@ -82,15 +82,13 @@ class _ShowRecordState extends State<ShowRecord> {
                   );
                 },
                 onDelete: () async {
-                  final success =  await context.read<RecordListViewModel>().remove(record.id!);
-
+                  final success = await context.read<RecordListViewModel>().remove(record.id!);
                   if (!context.mounted) return;
-
                   if (success) {
                     Navigator.pop(context);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('삭제 중 오류가 발생했습니다')),
+                      const SnackBar(content: Text('삭제 중 오류가 발생했습니다')),
                     );
                   }
                 },
@@ -102,62 +100,82 @@ class _ShowRecordState extends State<ShowRecord> {
           ),
           body: ListView(
             children: [
-              //이미지
+              // 이미지
               if (record.images != null && record.images!.isNotEmpty) ...[
                 SizedBox(
                   height: height,
                   child: record.images!.length == 1
-                      ? ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
-                    child: Image.network(
-                      record.images!.first.imageUrl,
-                      width: double.infinity,
-                      height: height,
-                      fit: BoxFit.cover,
-
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return const Center(child: CircularProgressIndicator(strokeWidth: 2));
-                      },
-
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey.shade300,
-                          alignment: Alignment.center,
-                          child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
-                        );
-                      },
-
+                      ? GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ImageViewerScreen(
+                            imageUrls: imageUrls,
+                            initialIndex: 0,
+                          ),
+                        ),
+                      );
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: Image.network(
+                        imageUrls.first,
+                        width: double.infinity,
+                        height: height,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.grey.shade300,
+                            alignment: Alignment.center,
+                            child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                          );
+                        },
+                      ),
                     ),
                   )
                       : PageView.builder(
-                    itemCount: record.images!.length,
+                    itemCount: imageUrls.length,
                     padEnds: false,
                     controller: PageController(),
                     itemBuilder: (context, index) {
-                      final image = record.images![index];
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(6),
-                          child:Image.network(
-                            image.imageUrl,
-                            width: double.infinity,
-                            height: height,
-                            fit: BoxFit.cover,
-
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return const Center(child: CircularProgressIndicator(strokeWidth: 2));
-                            },
-
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: Colors.grey.shade300,
-                                alignment: Alignment.center,
-                                child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
-                              );
-                            },
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ImageViewerScreen(
+                                  imageUrls: imageUrls,
+                                  initialIndex: index,
+                                ),
+                              ),
+                            );
+                          },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: Image.network(
+                              imageUrls[index],
+                              width: double.infinity,
+                              height: height,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: Colors.grey.shade300,
+                                  alignment: Alignment.center,
+                                  child: const Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                                );
+                              },
+                            ),
                           ),
                         ),
                       );
@@ -167,25 +185,25 @@ class _ShowRecordState extends State<ShowRecord> {
                 const SizedBox(height: 16),
               ],
 
+              // 날짜 및 시간
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 26.0),
+                padding: const EdgeInsets.symmetric(horizontal: 26.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    //시간
                     Row(
                       children: [
                         Text(dateStr, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                        SizedBox(width: 10,),
+                        const SizedBox(width: 10),
                         Text(timeStr, style: const TextStyle(fontSize: 12, color: Colors.grey)),
                       ],
                     ),
                     const SizedBox(height: 26),
 
-                    //comment
+                    // 코멘트
                     if (record.comment != null && record.comment!.isNotEmpty) ...[
                       Text(
-                        record.comment ?? '',
+                        record.comment!,
                         style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(height: 40),
@@ -207,7 +225,7 @@ class _ShowRecordState extends State<ShowRecord> {
                               ),
                               child: Text(
                                 tag,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: PRIMARY_COLOR,
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,

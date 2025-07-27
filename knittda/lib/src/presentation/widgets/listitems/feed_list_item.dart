@@ -19,25 +19,23 @@ class FeedListItem extends StatelessWidget {
     final corrected = feed.record.createdAt!.add(const Duration(hours: 9));
     final dateStr = DateUtilsHelper.toDotFormat(corrected);
     final timeStr = DateUtilsHelper.toHourMinuteFormat(corrected);
+    final imageUrls = feed.record.images!.map((e) => e.imageUrl).toList();
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.only(top: 8, bottom: 16),
-
-        //바닥 선
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(color: Colors.grey.shade300),
           ),
         ),
-
         child: Column(
           children: [
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //프로필 사진
+                // 프로필 사진
                 CircleAvatar(
                   radius: 20,
                   backgroundColor: Colors.grey[300],
@@ -51,39 +49,31 @@ class FeedListItem extends StatelessWidget {
                         return Container(
                           color: Colors.grey[300],
                           alignment: Alignment.center,
-                          child: Icon(Icons.person, size: 24, color: Colors.white),
+                          child: const Icon(Icons.person, size: 24, color: Colors.white),
                         );
                       },
                     ),
                   ),
                 ),
-
                 const SizedBox(width: 12),
 
+                // 사용자 정보 + 기록
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
-                      //사용자 이름, 작품이름
-                      Row(
-                        children: [
-                          Text(
-                            '${feed.userName}  |  ${feed.projectName}',
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ],
+                      Text(
+                        '${feed.userName}  |  ${feed.projectName}',
+                        style: const TextStyle(fontSize: 14),
                       ),
                       const SizedBox(height: 10),
-
-                      //시간
                       Text(
                         '$dateStr $timeStr',
                         style: const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                       const SizedBox(height: 10),
 
-// 사진
+                      // 이미지
                       if (feed.record.images != null && feed.record.images!.isNotEmpty) ...[
                         SizedBox(
                           height: 200,
@@ -94,7 +84,8 @@ class FeedListItem extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) => ImageViewerScreen(
-                                    imageUrl: feed.record.images!.first.imageUrl,
+                                    imageUrls: imageUrls,
+                                    initialIndex: 0,
                                   ),
                                 ),
                               );
@@ -102,15 +93,13 @@ class FeedListItem extends StatelessWidget {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(6),
                               child: Image.network(
-                                feed.record.images!.first.imageUrl,
+                                imageUrls.first,
                                 width: double.infinity,
                                 height: 200,
                                 fit: BoxFit.cover,
                                 loadingBuilder: (context, child, loadingProgress) {
                                   if (loadingProgress == null) return child;
-                                  return const Center(
-                                    child: CircularProgressIndicator(strokeWidth: 2),
-                                  );
+                                  return const Center(child: CircularProgressIndicator(strokeWidth: 2));
                                 },
                                 errorBuilder: (context, error, stackTrace) {
                                   return Container(
@@ -124,10 +113,9 @@ class FeedListItem extends StatelessWidget {
                           )
                               : PageView.builder(
                             controller: PageController(viewportFraction: 0.6),
-                            itemCount: feed.record.images!.length,
+                            itemCount: imageUrls.length,
                             padEnds: false,
                             itemBuilder: (context, index) {
-                              final image = feed.record.images![index];
                               return Padding(
                                 padding: const EdgeInsets.only(right: 8.0),
                                 child: GestureDetector(
@@ -135,14 +123,17 @@ class FeedListItem extends StatelessWidget {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) => ImageViewerScreen(imageUrl: image.imageUrl),
+                                        builder: (_) => ImageViewerScreen(
+                                          imageUrls: imageUrls,
+                                          initialIndex: index,
+                                        ),
                                       ),
                                     );
                                   },
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(6),
                                     child: Image.network(
-                                      image.imageUrl,
+                                      imageUrls[index],
                                       width: double.infinity,
                                       height: 200,
                                       fit: BoxFit.cover,
@@ -167,8 +158,7 @@ class FeedListItem extends StatelessWidget {
                         const SizedBox(height: 10),
                       ],
 
-
-                      //본문
+                      // 코멘트
                       if (feed.record.comment != null && feed.record.comment!.isNotEmpty) ...[
                         Text(
                           feed.record.comment!,
@@ -179,14 +169,14 @@ class FeedListItem extends StatelessWidget {
                         const SizedBox(height: 10),
                       ],
 
-
+                      // 태그
                       if (feed.record.tags != null && feed.record.tags!.isNotEmpty) ...[
                         LayoutBuilder(
                           builder: (context, constraints) {
-                            const double spacing = 8;          // 칩 사이 간격
-                            const double plusChipWidth = 40;   // '+N' 칩 예상폭 (조금 넉넉히)
-                            const double charWidth = 14;       // 한 글자 폭을 넉넉히(12 → 14) 잡는다
-                            const double safety = 12;          // 남겨 두는 여유 폭
+                            const double spacing = 8;
+                            const double plusChipWidth = 40;
+                            const double charWidth = 14;
+                            const double safety = 12;
 
                             double usedWidth = 0;
                             int hidden = 0;
@@ -194,24 +184,16 @@ class FeedListItem extends StatelessWidget {
 
                             for (int i = 0; i < feed.record.tags!.length; i++) {
                               final tag = feed.record.tags![i];
-                              // padding + border까지 포함한 칩 폭 (보수적으로)
                               final double tagWidth = tag.length * charWidth + 32;
-
-                              // 앞으로 남은 태그 수
                               final int remain = feed.record.tags!.length - i - 1;
-
-                              // 남은 게 있으면 +N 칩 폭까지 미리 확보
                               final double reserve = remain > 0 ? spacing + plusChipWidth : 0;
-
-                              // spacing 은 chips가 비어있지 않을 때만
                               final double nextSpacing = chips.isEmpty ? 0 : spacing;
 
                               if (usedWidth + nextSpacing + tagWidth + reserve > constraints.maxWidth - safety) {
                                 hidden = feed.record.tags!.length - i;
-                                break;                   // 더 못 넣음 → 탈출
+                                break;
                               }
 
-                              // 칩 추가
                               if (chips.isNotEmpty) usedWidth += spacing;
                               usedWidth += tagWidth;
                               chips.add(_buildTagChip(tag));
@@ -221,7 +203,6 @@ class FeedListItem extends StatelessWidget {
                               chips.add(_buildTagChip('+$hidden'));
                             }
 
-                            // Wrap 으로 한 줄에만 배치 (폭 부족하면 알아서 줄바꿈, 하지만 보수적 계산 덕분에 99% 한 줄)
                             return Wrap(
                               spacing: spacing,
                               children: chips,
@@ -229,7 +210,7 @@ class FeedListItem extends StatelessWidget {
                           },
                         ),
                         const SizedBox(height: 10),
-                      ]
+                      ],
                     ],
                   ),
                 ),
