@@ -14,16 +14,16 @@ class AuthInterceptor extends Interceptor {
       final jwt = await _storage.read();
       if (jwt != null) {
         options.headers['Authorization'] = 'Bearer $jwt';
-        if (kDebugMode) {
-          debugPrint('[AuthInterceptor] JWT attached: $jwt');
-        }
+        // if (kDebugMode) {
+        //   debugPrint('[AuthInterceptor] JWT attached: $jwt');
+        // }
       } else {
-        if (kDebugMode) {
-          debugPrint('[AuthInterceptor] No JWT found.');
-        }
+        // if (kDebugMode) {
+        //   debugPrint('[AuthInterceptor] No JWT found.');
+        // }
       }
     } catch (e) {
-      debugPrint('[AuthInterceptor] Error reading token: $e');
+      //debugPrint('[AuthInterceptor] Error reading token: $e');
     }
 
     handler.next(options);
