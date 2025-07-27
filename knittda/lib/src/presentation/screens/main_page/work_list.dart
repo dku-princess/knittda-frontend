@@ -93,6 +93,7 @@ class _WorkListState extends State<WorkList> {
                     ),
                   )
                       : ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 80),
                     itemCount: filteredWorks.length,
                     itemBuilder: (context, index) {
                       final work = filteredWorks[index];
