@@ -1,7 +1,16 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/presentation/view_models/report_view_model.dart';
 import 'package:provider/provider.dart';
+
+import 'dart:io';
+import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:gal/gal.dart';
+import 'dart:typed_data';
 
 final List<Map<String, dynamic>> scoreRanges = [
   {"min": 0, "max": 0, "label": "바나나독", "image": "assets/image/stage/stage1.png"},
@@ -38,12 +47,70 @@ class ReportUi extends StatefulWidget {
 }
 
 class _ReportUiState extends State<ReportUi> {
+  // Screenshot 컨트롤러
+  final GlobalKey _captureKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ReportViewModel>().fetchReport();
     });
+  }
+
+  Future<Uint8List?> _capture() async {
+    final ctx = _captureKey.currentContext;
+    if (ctx == null) return null;  // 뷰가 아직 없을 때 대비
+
+    // 첫 프레임 미도달 대비
+    final boundary = ctx.findRenderObject() as RenderRepaintBoundary;
+    if (boundary.debugNeedsPaint) {
+      await Future.delayed(const Duration(milliseconds: 16));
+      return _capture();
+    }
+
+    final image = await boundary.toImage(pixelRatio: 3.0);     // 해상도 ↑
+    final byteData = await image.toByteData(format: ImageByteFormat.png);
+    return byteData?.buffer.asUint8List();
+  }
+
+  // 저장 버튼 로직
+  Future<void> _saveToGallery() async {
+    try {
+      Uint8List? bytes = await _capture();
+      if (bytes == null) return;
+
+      await Gal.putImageBytes(bytes, album: 'KnittingReport');
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('갤러리에 저장되었습니다!')),
+      );
+    } catch (e) {
+      debugPrint('Save error: $e');
+    }
+  }
+
+  // 공유 버튼 로직
+  Future<void> _shareReport() async {
+    try {
+      final bytes = await _capture();
+      if (bytes == null) return;
+
+      final dir  = await getTemporaryDirectory();
+      final file = await File(
+        '${dir.path}/report_${DateTime.now().millisecondsSinceEpoch}.png',
+      ).writeAsBytes(bytes);
+
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          text: '이번 주 뜨개 리포트',
+        ),
+      );
+    } catch (e) {
+      debugPrint('Share error: $e');
+    }
   }
 
   @override
@@ -70,13 +137,28 @@ class _ReportUiState extends State<ReportUi> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[300], // AppBar 배경색도 동일하게
+
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.save_alt),
+            tooltip: '저장',
+            onPressed: _saveToGallery,
+          ),
+          IconButton(
+            icon: const Icon(Icons.share),
+            tooltip: '공유',
+            onPressed: _shareReport,
+          ),
+        ],
       ),
+
       backgroundColor: Colors.grey[300],
 
-      body: ListView(
+      body:SingleChildScrollView(
         padding: const EdgeInsets.only(top: 16, bottom: 24, right: 24, left: 24),
-        children: [
-          Container(
+        child: RepaintBoundary(
+          key: _captureKey,
+          child: Container(
             padding: const EdgeInsets.only(top:45, bottom: 45, right: 24.0, left: 24.0),
             decoration: BoxDecoration(
               color: Color(0xFFF2F2F7),
@@ -224,7 +306,7 @@ class _ReportUiState extends State<ReportUi> {
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
