@@ -1,15 +1,15 @@
 import 'package:knittda/src/data/models/record_model.dart';
 
 class FeedModel {
-  final String userName;
-  final String profileImageUrl;
+  final String? userName;
+  final String? profileImageUrl;
   final String projectName;
   final int projectId;
   final RecordModel record;
 
   FeedModel({
-    required this.userName,
-    required this.profileImageUrl,
+    this.userName,
+    this.profileImageUrl,
     required this.projectName,
     required this.projectId,
     required this.record
