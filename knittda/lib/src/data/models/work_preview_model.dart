@@ -1,6 +1,6 @@
 class WorkPreviewModel {
   final int projectId;
-  final String userName;
+  final String? userName;
   final String projectName;
   final int recordNum;
   final DateTime? lastRecordAt;
@@ -8,7 +8,7 @@ class WorkPreviewModel {
 
   WorkPreviewModel({
     required this.projectId,
-    required this.userName,
+    this.userName,
     required this.projectName,
     required this.recordNum,
     this.lastRecordAt,
