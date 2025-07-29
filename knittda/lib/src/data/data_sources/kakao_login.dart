@@ -46,4 +46,15 @@ class KaKaoLogin implements SocialLogin {
       return false;
     }
   }
+
+  @override
+  Future<bool> unlink() async {
+    try {
+      await UserApi.instance.unlink();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
 }
