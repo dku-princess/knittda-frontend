@@ -35,14 +35,14 @@ Future<void> main() async {
 
       // Sentry 초기화
       await SentryFlutter.init((options) {
-        options.dsn = SentryFlutterDns;
+        options.dsn = Env.SentryFlutterDns;
         options.attachStacktrace = true;
         options.sendDefaultPii = false;
       });
     }
 
     // Kakao SDK 초기화 (필수 키 입력!)
-    KakaoSdk.init(nativeAppKey: kakaoNativeAppKey);
+    KakaoSdk.init(nativeAppKey: Env.kakaoNativeAppKey);
 
     // 앱 실행
     runApp(

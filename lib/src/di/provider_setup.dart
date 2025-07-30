@@ -40,7 +40,7 @@ Future<List<SingleChildWidget>> getProviders() async {
 
     Provider<Dio>(
       create: (_) {
-        final dio = Dio(BaseOptions(baseUrl: baseUrl));
+        final dio = Dio(BaseOptions(baseUrl: Env.apiBaseUrl));
         dio.interceptors.add(AuthInterceptor(tokenStorage));
         return dio;
       },
