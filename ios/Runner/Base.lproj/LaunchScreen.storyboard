@@ -19,7 +19,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" misplaced="YES" image="LaunchImage" highlighted="YES" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YRO-k0-Ey4">
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" misplaced="YES" image="LaunchImage" highlightedImage="LaunchImage" highlighted="YES" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YRO-k0-Ey4">
                                 <rect key="frame" x="100" y="217" width="193" height="181"/>
                                 <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="small"/>
                             </imageView>
