@@ -97,5 +97,33 @@ class AuthRepository {
       throw Exception('사용자 정보 불러오기 중 오류: $e');
     }
   }
+
+  Future<bool> signout() async {
+    try {
+      final res = await _dio.delete<Map<String, dynamic>>(
+        '/api/v1/auth/signout',
+        options: Options(
+          headers: {
+            'Accept': 'application/json',
+          },
+        ),
+      );
+
+      // 성공 조건만 확인
+      if (res.statusCode == 200 && res.data?['success'] == true) {
+        return true;
+      }
+
+      // 200이 아닌 모든 경우 → 예외
+      throw Exception(res.data?['message'] ?? '탈퇴 실패');
+    } on DioException catch (e) {
+      // DioException(네트워크 오류 등)은 하나로 묶어서 던지기
+      throw Exception('네트워크 오류: ${e.message}');
+    } catch (e) {
+      // 기타 예외도 동일하게
+      throw Exception('탈퇴 중 오류: $e');
+    }
+  }
+
 }
 

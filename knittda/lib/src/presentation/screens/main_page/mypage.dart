@@ -19,6 +19,23 @@ class Mypage extends StatelessWidget {
     );
   }
 
+  void onSignout(BuildContext context) async {
+    final ok = await context.read<AuthViewModel>().signout();
+
+    if (!context.mounted) return;
+
+    if (ok) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const Login()),
+            (_) => false,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('탈퇴에 실패했어요. 잠시 후 다시 시도해 주세요.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authVM = context.watch<AuthViewModel>();
@@ -117,7 +134,8 @@ class Mypage extends StatelessWidget {
                 ),
               );
               if (confirmed == true) {
-                debugPrint("탈퇴버튼 누름");
+                if (!context.mounted) return;
+                onSignout(context);
               }
             },
           ),

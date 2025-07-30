@@ -77,7 +77,7 @@ class WorkPreviewListItem extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Text(
-                workPreview.userName,
+                workPreview.userName ?? '탈퇴한 사용자',
                 style: const TextStyle(fontSize: 12, color: Colors.grey),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
