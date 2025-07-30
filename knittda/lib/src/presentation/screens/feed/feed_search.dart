@@ -84,10 +84,13 @@ class _FeedSearchState extends State<FeedSearch> {
           if (vm.feeds.isEmpty) {
             return const Center(child: Text('검색어를 입력하세요'));
           }
+          if (!vm.isLoading && vm.feeds.isEmpty) {
+            return const Center(child: Text('검색 결과가 없습니다'));
+          }
 
           return ListView.separated(
             controller: _scroll,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            //padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             itemCount: vm.hasNext ? vm.feeds.length + 1 : vm.feeds.length,
             separatorBuilder: (_, __) => const SizedBox(height: 8),
             itemBuilder: (_, index) {

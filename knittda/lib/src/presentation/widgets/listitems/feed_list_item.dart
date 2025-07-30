@@ -63,21 +63,7 @@ class _FeedListItemState extends State<FeedListItem> {
                 CircleAvatar(
                   radius: 20,
                   backgroundColor: Colors.grey[300],
-                  child: ClipOval(
-                    child: Image.network(
-                      feed.profileImageUrl,
-                      width: 40,
-                      height: 40,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey[300],
-                          alignment: Alignment.center,
-                          child: Icon(Icons.person, size: 24, color: Colors.white),
-                        );
-                      },
-                    ),
-                  ),
+                  backgroundImage: feed.profileImageUrl != null ? NetworkImage(feed.profileImageUrl!) : null,
                 ),
 
                 const SizedBox(width: 12),
@@ -91,7 +77,7 @@ class _FeedListItemState extends State<FeedListItem> {
                       Row(
                         children: [
                           Text(
-                            '${feed.userName}  |  ${feed.projectName}',
+                            '${feed.userName ?? '탈퇴한 사용자'}  |  ${feed.projectName}',
                             style: const TextStyle(fontSize: 14),
                           ),
                         ],

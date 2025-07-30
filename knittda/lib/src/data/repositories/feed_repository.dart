@@ -46,7 +46,7 @@ class FeedRepository {
   }) async {
     try {
       final res = await _dio.get<Map<String, dynamic>>(
-        '/api/v1/feed/v2/search',
+        '/api/v1/feed/search',
         queryParameters: {
           'keyword': keyword,
           'page' : page,

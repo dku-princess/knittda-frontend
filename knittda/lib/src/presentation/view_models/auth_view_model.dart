@@ -37,9 +37,18 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   Future<bool> loginWithKakao() async {
+    _status = AuthStatus.loading;
+    notifyListeners();
+
     try {
       final token = await _socialLogin.login();
-      if (token == null) return false;
+
+      //토큰이 없으면 즉시 상태 복구
+      if (token == null) {
+        _status = AuthStatus.unauthenticated;
+        notifyListeners();
+        return false;
+      }
 
       final result = await _authRepo.loginWithKakao(token);
 
@@ -88,5 +97,37 @@ class AuthViewModel extends ChangeNotifier {
     _user   = null;
     _status = AuthStatus.unauthenticated;
     notifyListeners();
+  }
+
+  Future<bool> signout() async {
+    _status = AuthStatus.loading;
+    notifyListeners();
+
+    try {
+      // 1) 서버 계정 삭제
+      final backendOk = await _authRepo.signout();
+
+      // 2) 카카오 연결 해제
+      final kakaoOk = await _socialLogin.unlink();
+
+      if (!backendOk || !kakaoOk) throw Exception('탈퇴 처리 실패');
+
+      // 3) 로컬 정리
+      await _storage.delete();
+      _jwt  = null;
+      _user = null;
+      _status = AuthStatus.unauthenticated;
+      notifyListeners();
+      return true;
+
+    } catch (e) {
+      //실패하면 로그아웃 상태로 간다
+      await _storage.delete();
+      _jwt = null;
+      _user = null;
+      _status = AuthStatus.unauthenticated;
+      notifyListeners();
+      return false;
+    }
   }
 }
