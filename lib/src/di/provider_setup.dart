@@ -97,8 +97,17 @@ Future<List<SingleChildWidget>> getProviders() async {
     ProxyProvider<ReportRepository, GetReportUseCase>(
       update: (_, repo, __) => GetReportUseCase(repo),
     ),
-    ChangeNotifierProvider<ReportViewModel>(
+    ChangeNotifierProxyProvider<AuthViewModel, ReportViewModel>(
       create: (context) => ReportViewModel(context.read<GetReportUseCase>()),
+      update: (context, auth, vm) {
+        vm ??= ReportViewModel(context.read<GetReportUseCase>());
+
+        // 탈퇴/로그아웃 등으로 인증 해제되면 화면 메모리 캐시도 즉시 정리
+        if (auth.status == AuthStatus.unauthenticated) {
+          vm.reset();
+        }
+        return vm;
+      },
     ),
 
     ProxyProvider<Dio, FeedRepository>(

@@ -25,17 +25,19 @@ final List<Map<String, dynamic>> scoreRanges = [
 ];
 
 Map<String, String?> scoreToStage(double score) {
-  final result = scoreRanges.firstWhere(
-        (range) => score >= range["min"] && score <= range["max"],
-    orElse: () => {
-      "label": "범위를 벗어남",
-      "image": null,
-    },
-  );
-
+  for (final r in scoreRanges) {
+    final double min = (r["min"] as num).toDouble();
+    final double max = (r["max"] as num).toDouble();
+    if (score >= min && score <= max) {
+      return {
+        "label": r["label"] as String,
+        "image": r["image"] as String?,
+      };
+    }
+  }
   return {
-    "label": result["label"],
-    "image": result["image"],
+    "label": "범위를 벗어남",
+    "image": null,
   };
 }
 
@@ -58,27 +60,68 @@ class _ReportUiState extends State<ReportUi> {
     });
   }
 
+  Future<bool> _ensureGalleryPermission() async {
+    try {
+      final has = await Gal.hasAccess(toAlbum: true);
+      if (has) return true;
+
+      final granted = await Gal.requestAccess(toAlbum: true);
+      if (!granted) {
+        if (!mounted) return false;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('사진 접근 권한이 없어 저장할 수 없어요. 설정에서 권한을 허용해 주세요.')),
+        );
+      }
+      return granted;
+    } catch (e) {
+      debugPrint('Permission error: $e');
+      if (!mounted) return false;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('권한 확인 중 오류가 발생했어요: $e')),
+      );
+      return false;
+    }
+  }
+
   Future<Uint8List?> _capture() async {
     final ctx = _captureKey.currentContext;
-    if (ctx == null) return null;  // 뷰가 아직 없을 때 대비
+    if (ctx == null) return null;
 
-    // 첫 프레임 미도달 대비
-    final boundary = ctx.findRenderObject() as RenderRepaintBoundary;
-    if (boundary.debugNeedsPaint) {
-      await Future.delayed(const Duration(milliseconds: 16));
-      return _capture();
-    }
+    final boundary = ctx.findRenderObject() as RenderRepaintBoundary?;
+    if (boundary == null) return null;
 
-    final image = await boundary.toImage(pixelRatio: 3.0);     // 해상도 ↑
+    final rawDpr =
+        View.maybeOf(ctx)?.devicePixelRatio
+            ?? WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    final start = rawDpr.clamp(1.0, 3.0);
+
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted || !boundary.attached) return null;
+
+    final size = boundary.size;
+    final maxSide = size.width > size.height ? size.width : size.height;
+    final maxSafeRatio = maxSide > 0 ? (4096.0 / maxSide) : 1.0;
+    final r = start > maxSafeRatio ? maxSafeRatio : start;
+
+    final image = await boundary.toImage(pixelRatio: r);
     final byteData = await image.toByteData(format: ImageByteFormat.png);
     return byteData?.buffer.asUint8List();
   }
 
+
   // 저장 버튼 로직
   Future<void> _saveToGallery() async {
     try {
-      Uint8List? bytes = await _capture();
-      if (bytes == null) return;
+      if (!await _ensureGalleryPermission()) return;
+
+      final bytes = await _capture();
+      if (bytes == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('이미지 캡처에 실패했어요. 잠시 후 다시 시도해 주세요.')),
+        );
+        return;
+      }
 
       await Gal.putImageBytes(bytes, album: 'KnittingReport');
 
@@ -88,14 +131,29 @@ class _ReportUiState extends State<ReportUi> {
       );
     } catch (e) {
       debugPrint('Save error: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('저장 중 오류가 발생했어요: $e')),
+      );
     }
   }
 
   // 공유 버튼 로직
-  Future<void> _shareReport() async {
+  Future<void> _shareReport(BuildContext anchorContext) async {
     try {
+      final box = anchorContext.findRenderObject() as RenderBox?;
+      final Rect origin = box != null
+          ? (box.localToGlobal(Offset.zero) & box.size)
+          : const Rect.fromLTWH(0, 0, 1, 1);
+
       final bytes = await _capture();
-      if (bytes == null) return;
+      if (bytes == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('이미지 캡처에 실패했어요. 잠시 후 다시 시도해 주세요.')),
+        );
+        return;
+      }
 
       final dir  = await getTemporaryDirectory();
       final file = await File(
@@ -106,10 +164,15 @@ class _ReportUiState extends State<ReportUi> {
         ShareParams(
           files: [XFile(file.path)],
           text: '이번 주 뜨개 리포트',
+          sharePositionOrigin: origin,
         ),
       );
     } catch (e) {
       debugPrint('Share error: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('공유 중 오류가 발생했어요: $e')),
+      );
     }
   }
 
@@ -133,6 +196,7 @@ class _ReportUiState extends State<ReportUi> {
     }
 
     final stage = scoreToStage(report.knittingLevel);
+    final String? stageImage = stage["image"];
 
     return Scaffold(
       appBar: AppBar(
@@ -144,10 +208,12 @@ class _ReportUiState extends State<ReportUi> {
             tooltip: '저장',
             onPressed: _saveToGallery,
           ),
-          IconButton(
-            icon: const Icon(Icons.share),
-            tooltip: '공유',
-            onPressed: _shareReport,
+          Builder(
+            builder: (buttonContext) => IconButton(
+              icon: const Icon(Icons.share),
+              tooltip: '공유',
+              onPressed: () => _shareReport(buttonContext),
+            ),
           ),
         ],
       ),
@@ -179,7 +245,7 @@ class _ReportUiState extends State<ReportUi> {
                       TextSpan(text: '이번 주는\n'),
                       TextSpan(
                         text: '${stage["label"]} 만큼\n',
-                        style: TextStyle(color: PRIMARY_COLOR), // 원하는 색상으로 변경
+                        style: TextStyle(color: PRIMARY_COLOR),
                       ),
                       TextSpan(text: '떴어요'),
                     ],
@@ -188,12 +254,14 @@ class _ReportUiState extends State<ReportUi> {
 
                 SizedBox(height: 26,),
 
-                Image.asset(
-                  stage["image"]!,
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.contain,
-                ),
+                if (stageImage != null)
+                  AspectRatio(
+                    aspectRatio: 4 / 3, // width : height
+                    child: Image.asset(
+                      stageImage,
+                      fit: BoxFit.contain, // 전체가 보이게
+                    ),
+                  ),
 
                 SizedBox(height: 16,),
 
