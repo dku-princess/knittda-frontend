@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/core/storage/report_local_data_source.dart';
 
 import 'package:knittda/src/data/data_sources/social_login.dart';
 import 'package:knittda/src/core/storage/token_storage.dart';
@@ -52,11 +53,19 @@ class AuthViewModel extends ChangeNotifier {
 
       final result = await _authRepo.loginWithKakao(token);
 
+      final prevUserId = await _storage.readUserId();
+      final newUserId  = result.user.id.toString();
+
+      if (prevUserId != null && prevUserId != newUserId) {
+        await ReportLocalDataSource().clear();
+      }
+
       _jwt   = result.jwt;
       _user  = result.user;
       _status = AuthStatus.authenticated;
 
       await _storage.save(_jwt!);
+      await _storage.saveUserId(newUserId);
 
       notifyListeners();
       //debugPrint('카카오 로그인 성공');
@@ -84,7 +93,7 @@ class AuthViewModel extends ChangeNotifier {
       _user   = null;
       _status = AuthStatus.unauthenticated;
 
-      //debugPrint('자동 로그인 실패');
+      await _storage.delete();
     }
     notifyListeners();
   }
@@ -113,7 +122,10 @@ class AuthViewModel extends ChangeNotifier {
       if (!backendOk || !kakaoOk) throw Exception('탈퇴 처리 실패');
 
       // 3) 로컬 정리
+      await ReportLocalDataSource().clear();
       await _storage.delete();
+      await _storage.deleteUserId();
+
       _jwt  = null;
       _user = null;
       _status = AuthStatus.unauthenticated;
@@ -122,7 +134,10 @@ class AuthViewModel extends ChangeNotifier {
 
     } catch (e) {
       //실패하면 로그아웃 상태로 간다
+      await ReportLocalDataSource().clear();
       await _storage.delete();
+      await _storage.deleteUserId();
+
       _jwt = null;
       _user = null;
       _status = AuthStatus.unauthenticated;
