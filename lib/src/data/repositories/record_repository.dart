@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:knittda/src/data/models/record_model.dart';
 
 class RecordRepository {
@@ -136,6 +137,28 @@ class RecordRepository {
     if (body == null || body['success'] != true) {
       throw Exception(body?['message'] ?? '알 수 없는 오류');
     }
+  }
+
+  Future<String> getQuestion(int projectId) async {
+    final res = await _dio.get<Map<String, dynamic>>(
+      '/api/v1/questions/generate/$projectId',
+    );
+
+    if (res.statusCode != 200) {
+      throw Exception('서버 오류: ${res.statusCode}');
+    }
+
+    final body = res.data;
+    if (body == null || body['success'] != true) {
+      throw Exception(body?['message'] ?? '알 수 없는 오류');
+    }
+
+    final question = body['data'];
+    if (question is! String || question.trim().isEmpty) {
+      throw Exception('질문 형식이 잘못되었거나 비어 있습니다.');
+    }
+
+    return question;
   }
 
 }

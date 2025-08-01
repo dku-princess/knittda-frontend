@@ -8,9 +8,11 @@ class RecordFormViewModel extends ChangeNotifier {
   final RecordUseCases useCases;
   final RecordListViewModel? _listViewModel;
   final RecordDetailViewModel? _detailViewModel;
+  final int projectId;
 
   RecordFormViewModel({
     required this.useCases,
+    required this.projectId,
     RecordListViewModel? listViewModel,
     RecordDetailViewModel? detailViewModel,
   }) : _listViewModel = listViewModel,
@@ -18,9 +20,30 @@ class RecordFormViewModel extends ChangeNotifier {
 
   bool _isSaving = false;
   String? _error;
+  String? _prompt;
+  bool _isPromptLoading = false;
 
   bool get isSaving => _isSaving;
   String? get error => _error;
+  String? get prompt => _prompt;
+  bool get isPromptLoading => _isPromptLoading;
+
+  Future<void> init() async {
+    await loadQuestion();
+  }
+
+  Future<void> loadQuestion() async {
+    _isPromptLoading = true;
+    notifyListeners();
+    try {
+      _prompt = await useCases.getQuestion(projectId);
+    } catch (_) {
+      _prompt = null; // 실패 시 UI에서 폴백 처리
+    } finally {
+      _isPromptLoading = false;
+      notifyListeners();
+    }
+  }
 
   Future<RecordModel?> save(RecordModel record, {List<int>? deleteImageIds}) async {
 
