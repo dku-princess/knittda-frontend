@@ -236,7 +236,10 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                             ),
                             SizedBox(height: 10),
 
-                            if (isOwner) WorkStatusButton(work: work),
+                            WorkStatusButton(
+                              work: work,
+                              isOwner: isOwner,
+                            ),
                           ],
                         ),
                       )
