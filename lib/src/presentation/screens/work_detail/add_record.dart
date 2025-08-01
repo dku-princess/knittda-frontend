@@ -53,19 +53,6 @@ class AddRecord extends StatefulWidget {
 }
 
 class _AddRecordState extends State<AddRecord> {
-  late final String _randomPrompt;
-
-  @override
-  void initState() {
-    super.initState();
-    _randomPrompt = _pickRandomPrompt();   // 화면이 열릴 때마다 실행
-  }
-
-  String _pickRandomPrompt() {
-    final list = List.of(knittingPrompts)..shuffle(); // 원본 보호
-    return list.first;
-  }
-
   final List<String> _tags = [
     "푸르시오", "지쳤어요", "실수했어요", "함뜨했어요", "완벽 해요",
     "실이 부족해요", "무한 메리야스 뜨기", "무늬 뜨기", "배색 뜨기",
@@ -78,6 +65,12 @@ class _AddRecordState extends State<AddRecord> {
   RecordStatus? _selectedStatus;
   final TextEditingController _commentController = TextEditingController();
 
+  late final String _fallbackPrompt = _pickRandomPrompt();
+
+  String _pickRandomPrompt() {
+    final list = List.of(knittingPrompts)..shuffle();
+    return list.first;
+  }
 
   Future<void> _pickImage(ImageSource source) async {
     if (_images.length >= 5) return;
@@ -170,6 +163,11 @@ class _AddRecordState extends State<AddRecord> {
   Widget build(BuildContext context) {
     final recordFormVM = context.watch<RecordFormViewModel>();
     final isBusy = recordFormVM.isSaving;
+
+    // 프롬프트: 로딩 중/성공/실패(폴백) 분기
+    final promptText = recordFormVM.isPromptLoading
+        ? '질문을 불러오는 중입니다...'
+        : (recordFormVM.prompt ?? _fallbackPrompt);
 
     return Stack(
       children: [
@@ -369,7 +367,7 @@ class _AddRecordState extends State<AddRecord> {
                       children: [
                         const Text("뜨개 기록을 남겨주세요", style: TextStyle(fontSize: 20)),
                         Text(
-                          _randomPrompt,
+                          promptText,
                           style: const TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                         const SizedBox(height: 16),
