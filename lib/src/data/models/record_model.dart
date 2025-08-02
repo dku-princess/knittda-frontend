@@ -14,6 +14,7 @@ class RecordModel {
   //null 가능한 값
   final List<String>? tags;
   final String? comment;
+  final String? question;
 
   //서버 응답에는 없는 값
   final List<XFile>? files;
@@ -28,6 +29,7 @@ class RecordModel {
     this.recordStatus,
     this.tags,
     this.comment,
+    this.question,
     this.files,
     this.id,
     this.createdAt,
@@ -41,6 +43,7 @@ class RecordModel {
 
       tags: (json['tags'] as List?)?.map((e) => e.toString()).toList(),
       comment: json['comment'],
+      question: json['question'],
 
       files: null,
 
@@ -60,6 +63,7 @@ class RecordModel {
     String? recordStatus,
     List<String>? tags,
     String? comment,
+    String? question,
     List<XFile>? files,
 
     int? id
@@ -69,6 +73,7 @@ class RecordModel {
       recordStatus: recordStatus,
       tags: tags,
       comment: comment,
+      question: question,
       files: files,
 
       // 서버 응답 필드 → null로 초기화
@@ -83,6 +88,7 @@ class RecordModel {
     String? recordStatus,
     List<String>? tags,
     String? comment,
+    String? question,
     List<XFile>? files,
     int? id,
     WorkModel? projectDto,
@@ -94,6 +100,7 @@ class RecordModel {
       recordStatus: recordStatus ?? this.recordStatus,
       tags: tags ?? this.tags,
       comment: comment ?? this.comment,
+      question: question ?? this.question,
       files: files ?? this.files,
       id: id ?? this.id,
       createdAt: createdAt ?? this.createdAt,
@@ -113,6 +120,7 @@ extension RecordModelMultipart on RecordModel {
         'recordStatus': recordStatus,
         'tags'        : tags,
         'comment'     : comment,
+        'question'    : question
       }),
     ));
 
