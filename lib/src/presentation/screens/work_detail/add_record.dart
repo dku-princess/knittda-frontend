@@ -9,31 +9,6 @@ import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-final List<String> knittingPrompts = [
-  "뜨개질하면서 어떤 생각을 하셨나요?",
-  "실의 촉감은 어땠나요?",
-  "이번 패턴은 어려웠나요, 쉬웠나요?",
-  "하루 중 언제 뜨개를 하셨나요?",
-  "누구를 떠올리며 만들었나요?",
-  "이전 기록과 비교해서 어떤가요?",
-  "오늘은 몇 줄이나 떴나요?",
-  "실수는 없었나요?",
-  "멋진 뜨개 여정, 뜨다와 함께 해 주셔서 감사합니다!",
-  "오늘 뜨개 시간이 힐링이 되었나요?",
-  "감정을 색으로 표현한다면?",
-  "이 작품은 누구에게 주실 계획인가요?",
-  "완성까지 얼마나 걸릴 것 같나요?",
-  "오늘의 뜨개 제목을 붙여보자면?",
-  "오늘도 한 페이지를 써내려가는 당신, 멋진 뜨개인!",
-  "오늘의 실 구매처는?",
-  "어떤 패턴 참고하셨나요?",
-  "기억하고 싶은 특별한 순간이 있었나요?",
-  "오늘 기분은 10점 만 점에 몇 점인가요?",
-  "패턴 수정한 부분이 있나요?",
-  "오늘 뜨개 진도는 얼마나 나갔나요? 사실, 꾸준함이 중요하죠!",
-  "오늘은 어떤 음악을 들으며 뜨개를 했나요?"
-];
-
 //기록 상태
 enum RecordStatus {
   NOT_STARTED,
@@ -53,19 +28,6 @@ class AddRecord extends StatefulWidget {
 }
 
 class _AddRecordState extends State<AddRecord> {
-  late final String _randomPrompt;
-
-  @override
-  void initState() {
-    super.initState();
-    _randomPrompt = _pickRandomPrompt();   // 화면이 열릴 때마다 실행
-  }
-
-  String _pickRandomPrompt() {
-    final list = List.of(knittingPrompts)..shuffle(); // 원본 보호
-    return list.first;
-  }
-
   final List<String> _tags = [
     "푸르시오", "지쳤어요", "실수했어요", "함뜨했어요", "완벽 해요",
     "실이 부족해요", "무한 메리야스 뜨기", "무늬 뜨기", "배색 뜨기",
@@ -78,9 +40,10 @@ class _AddRecordState extends State<AddRecord> {
   RecordStatus? _selectedStatus;
   final TextEditingController _commentController = TextEditingController();
 
+  static const int _maxImages = 5;
 
   Future<void> _pickImage(ImageSource source) async {
-    if (_images.length >= 5) return;
+    if (_images.length >= _maxImages) return;
 
     final XFile? picked = await _picker.pickImage(
       source: source,
@@ -146,6 +109,7 @@ class _AddRecordState extends State<AddRecord> {
         recordStatus: _selectedStatus!.name,
         tags: _selectedTags.toList(),
         comment: _commentController.text.trim(),
+        question: recordFormVM.prompt,
         files: _images,
       ),
     );
@@ -170,6 +134,11 @@ class _AddRecordState extends State<AddRecord> {
   Widget build(BuildContext context) {
     final recordFormVM = context.watch<RecordFormViewModel>();
     final isBusy = recordFormVM.isSaving;
+
+    // 프롬프트: 로딩 중/성공/실패(폴백) 분기
+    final promptText = recordFormVM.isPromptLoading
+        ? '질문을 불러오는 중입니다...'
+        : (recordFormVM.prompt ?? '');
 
     return Stack(
       children: [
@@ -339,7 +308,7 @@ class _AddRecordState extends State<AddRecord> {
                               }),
 
                               // + 버튼
-                              if (_images.length < 5)
+                              if (_images.length < _maxImages)
                                 GestureDetector(
                                   onTap: _showImageSourceActionSheet,
                                   child: Container(
@@ -369,7 +338,7 @@ class _AddRecordState extends State<AddRecord> {
                       children: [
                         const Text("뜨개 기록을 남겨주세요", style: TextStyle(fontSize: 20)),
                         Text(
-                          _randomPrompt,
+                          promptText,
                           style: const TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                         const SizedBox(height: 16),
@@ -390,11 +359,8 @@ class _AddRecordState extends State<AddRecord> {
                     ),
                   ),
 
-                  const SizedBox(height: 40),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  ),
                   const SizedBox(height: 50),
+
                 ],
               ),
             ),

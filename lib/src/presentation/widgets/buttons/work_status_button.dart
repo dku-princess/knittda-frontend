@@ -7,10 +7,12 @@ import 'package:provider/provider.dart';
 
 class WorkStatusButton extends StatefulWidget {
   final WorkModel work;
+  final bool isOwner;
 
   const WorkStatusButton({
     super.key,
     required this.work,
+    required this.isOwner,
   });
 
   @override
@@ -28,7 +30,7 @@ class _WorkStatusButtonState extends State<WorkStatusButton> {
   }
 
   Future<void> _toggle() async {
-    if (_busy) return;
+    if (_busy || !widget.isOwner) return;
 
     final newStatus = _status == 'IN_PROGRESS' ? 'DONE' : 'IN_PROGRESS';
 
@@ -64,7 +66,7 @@ class _WorkStatusButtonState extends State<WorkStatusButton> {
     final label = _status == 'IN_PROGRESS' ? '뜨고 있어요' : '다 떴어요';
 
     return TextButton(
-      onPressed: _busy ? null : _toggle,
+      onPressed: (!_busy && widget.isOwner) ? _toggle : null,
       style: TextButton.styleFrom(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20), // 둥근 정도 설정

@@ -118,9 +118,10 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
               builder: (_) => ChangeNotifierProvider(
                 create: (_) => RecordFormViewModel(
                   useCases: context.read<RecordUseCases>(),
+                  projectId: work.id!,
                   listViewModel: context.read<RecordListViewModel>(),
                   detailViewModel: null,
-                ),
+                )..init(),
                 child: AddRecord(work: work),
               ),
             ),
@@ -235,7 +236,10 @@ class _ShowWorkState extends State<ShowWork> with SingleTickerProviderStateMixin
                             ),
                             SizedBox(height: 10),
 
-                            if (isOwner) WorkStatusButton(work: work),
+                            WorkStatusButton(
+                              work: work,
+                              isOwner: isOwner,
+                            ),
                           ],
                         ),
                       )
