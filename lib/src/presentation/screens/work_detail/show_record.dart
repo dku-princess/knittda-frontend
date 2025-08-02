@@ -85,6 +85,7 @@ class _ShowRecordState extends State<ShowRecord> {
                       builder: (_) => ChangeNotifierProvider(
                         create: (_) => RecordFormViewModel(
                           useCases: context.read<RecordUseCases>(),
+                          projectId: record.projectId,
                           listViewModel: context.read<RecordListViewModel>(),
                           detailViewModel: context.read<RecordDetailViewModel>(),
                         ),

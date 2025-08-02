@@ -12,6 +12,7 @@ import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/feed_service.dart';
+import 'package:knittda/src/domain/use_case/get_question_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_report_use_case.dart';
@@ -88,6 +89,7 @@ Future<List<SingleChildWidget>> getProviders() async {
         getRecord:    GetRecordUseCase(repo),
         getRecords:   GetRecordsUseCase(repo),
         updateRecord: UpdateRecordUseCase(repo),
+        getQuestion: GetQuestionUseCase(repo),
       ),
     ),
 
