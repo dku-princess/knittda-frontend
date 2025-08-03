@@ -57,4 +57,16 @@ class KaKaoLogin implements SocialLogin {
     }
   }
 
+  // 웹 로그인 전용 메서드 (iPhone mini 등에서 사용)
+  Future<String?> loginWithWebOnly() async {
+    try {
+      OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+      //debugPrint('웹 로그인 성공 ${token.accessToken}');
+      return token.accessToken;
+    } catch (error) {
+      //debugPrint('웹 로그인 실패 $error');
+      return null;
+    }
+  }
+
 }
