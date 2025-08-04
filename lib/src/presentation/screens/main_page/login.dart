@@ -60,9 +60,6 @@ class _LoginState extends State<Login> {
                     });
 
                     try {
-                      // 웹 로그인 창이 안정적으로 표시되도록 짧은 지연 추가
-                      await Future.delayed(const Duration(milliseconds: 300));
-                      
                       final success = await authVM.loginWithKakaoWeb();
 
                       if (!context.mounted) return;

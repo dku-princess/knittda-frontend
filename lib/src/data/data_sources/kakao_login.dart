@@ -60,14 +60,7 @@ class KaKaoLogin implements SocialLogin {
   // 웹 로그인 전용 메서드 (iPhone mini 등에서 사용)
   Future<String?> loginWithWebOnly() async {
     try {
-      // 웹 로그인 창이 충분히 표시되도록 짧은 지연 추가
-      await Future.delayed(const Duration(milliseconds: 500));
-      
-      // 웹 로그인은 항상 카카오계정으로 로그인 시도
-      // 카카오톡이 설치되어 있어도 웹 로그인을 강제로 사용
-      OAuthToken token = await UserApi.instance.loginWithKakaoAccount(
-        prompts: [Prompt.login], // 계정 선택 강제 옵션
-      );
+      OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
       //debugPrint('웹 로그인 성공 ${token.accessToken}');
       return token.accessToken;
     } catch (error) {
