@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/storage/report_local_data_source.dart';
 
 import 'package:knittda/src/data/data_sources/social_login.dart';
+import 'package:knittda/src/data/data_sources/kakao_login.dart';
 import 'package:knittda/src/core/storage/token_storage.dart';
 
 import 'package:knittda/src/data/models/user_model.dart';
@@ -74,6 +75,48 @@ class AuthViewModel extends ChangeNotifier {
       _status = AuthStatus.unauthenticated;
       notifyListeners();
       //debugPrint('카카오 로그인 실패: $e');
+      return false;
+    }
+  }
+
+  // 웹 로그인 전용 메서드 (iPhone mini 등에서 사용)
+  Future<bool> loginWithKakaoWeb() async {
+    _status = AuthStatus.loading;
+    notifyListeners();
+
+    try {
+      // KaKaoLogin의 웹 로그인 전용 메서드 사용
+      final token = await (_socialLogin as KaKaoLogin).loginWithWebOnly();
+
+      if (token == null) {
+        _status = AuthStatus.unauthenticated;
+        notifyListeners();
+        return false;
+      }
+
+      final result = await _authRepo.loginWithKakao(token);
+
+      final prevUserId = await _storage.readUserId();
+      final newUserId  = result.user.id.toString();
+
+      if (prevUserId != null && prevUserId != newUserId) {
+        await ReportLocalDataSource().clear();
+      }
+
+      _jwt   = result.jwt;
+      _user  = result.user;
+      _status = AuthStatus.authenticated;
+
+      await _storage.save(_jwt!);
+      await _storage.saveUserId(newUserId);
+
+      notifyListeners();
+      //debugPrint('카카오 웹 로그인 성공');
+      return true;
+    } catch (e) {
+      _status = AuthStatus.unauthenticated;
+      notifyListeners();
+      //debugPrint('카카오 웹 로그인 실패: $e');
       return false;
     }
   }

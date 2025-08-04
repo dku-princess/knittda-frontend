@@ -29,7 +29,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>$(kakaoNativeAppKey)</string>
+				<string>kakao$(kakaoNativeAppKey)</string>
 			</array>
 		</dict>
 	</array>
@@ -43,7 +43,6 @@
 	<array>
 		<string>kakaokompassauth</string>
 		<string>kakaolink</string>
-		<string>kakaoplus</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
@@ -76,6 +75,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-
 </dict>
 </plist>
