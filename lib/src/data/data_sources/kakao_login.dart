@@ -65,7 +65,9 @@ class KaKaoLogin implements SocialLogin {
       
       // 웹 로그인은 항상 카카오계정으로 로그인 시도
       // 카카오톡이 설치되어 있어도 웹 로그인을 강제로 사용
-      OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+      OAuthToken token = await UserApi.instance.loginWithKakaoAccount(
+        prompts: [Prompt.login], // 계정 선택 강제 옵션
+      );
       //debugPrint('웹 로그인 성공 ${token.accessToken}');
       return token.accessToken;
     } catch (error) {
