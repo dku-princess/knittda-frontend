@@ -87,7 +87,7 @@ class KaKaoLogin implements SocialLogin {
       }
 
       // 카카오 서버에서 OAuth 토큰을 받아옴
-      OAuthToken token = await AuthApi.instance.issueAccessToken(code: code);
+      OAuthToken token = await AuthApi.instance.issueAccessToken(authorizationCode: code);
 
       // 토큰 저장
       await TokenManagerProvider.instance.manager.setToken(token);
