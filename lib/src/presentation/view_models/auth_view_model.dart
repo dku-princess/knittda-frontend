@@ -118,10 +118,8 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // 타임아웃 설정 (30초)
-      final token = await (_socialLogin as KaKaoLogin)
-          .loginWithWebOnly()
-          .timeout(const Duration(seconds: 30));
+      // KaKaoLogin의 웹 로그인 전용 메서드 사용
+      final token = await (_socialLogin as KaKaoLogin).loginWithWebOnly();
 
       if (token == null) {
         _status = AuthStatus.unauthenticated;
