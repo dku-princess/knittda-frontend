@@ -72,6 +72,39 @@ class AuthViewModel extends ChangeNotifier {
       //debugPrint('카카오 로그인 성공');
       return true;
     } catch (e) {
+      // 카카오톡 로그인 실패 시 웹 로그인 시도
+      try {
+        if (_socialLogin is KaKaoLogin) {
+          final kakaoLogin = _socialLogin as KaKaoLogin;
+          final webToken = await kakaoLogin.loginWithWebOnly();
+          
+          if (webToken != null) {
+            final result = await _authRepo.loginWithKakao(webToken);
+
+            final prevUserId = await _storage.readUserId();
+            final newUserId  = result.user.id.toString();
+
+            if (prevUserId != null && prevUserId != newUserId) {
+              await ReportLocalDataSource().clear();
+            }
+
+            _jwt   = result.jwt;
+            _user  = result.user;
+            _status = AuthStatus.authenticated;
+
+            await _storage.save(_jwt!);
+            await _storage.saveUserId(newUserId);
+
+            notifyListeners();
+            //debugPrint('카카오 웹 로그인 성공 (자동 전환)');
+            return true;
+          }
+        }
+      } catch (webError) {
+        // 웹 로그인도 실패한 경우
+        //debugPrint('웹 로그인도 실패: $webError');
+      }
+      
       _status = AuthStatus.unauthenticated;
       notifyListeners();
       //debugPrint('카카오 로그인 실패: $e');
@@ -85,8 +118,10 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // KaKaoLogin의 웹 로그인 전용 메서드 사용
-      final token = await (_socialLogin as KaKaoLogin).loginWithWebOnly();
+      // 타임아웃 설정 (30초)
+      final token = await (_socialLogin as KaKaoLogin)
+          .loginWithWebOnly()
+          .timeout(const Duration(seconds: 30));
 
       if (token == null) {
         _status = AuthStatus.unauthenticated;
