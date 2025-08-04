@@ -31,7 +31,11 @@ class Report extends StatelessWidget {
     final recordListVM = context.watch<RecordListViewModel>();
     final records = recordListVM.records;
 
-    final latestRecord = records.isNotEmpty ? records.last : null;
+    // 시간 순으로 정렬하여 가장 최근 record 가져오기
+    final recordsWithDate = records.where((record) => record.createdAt != null).toList();
+    final latestRecord = recordsWithDate.isNotEmpty 
+        ? recordsWithDate.reduce((a, b) => a.createdAt!.isAfter(b.createdAt!) ? a : b)
+        : null;
     final percent = statusToPercent(latestRecord?.recordStatus);
     final fillFraction = percent / 100.0;
 
