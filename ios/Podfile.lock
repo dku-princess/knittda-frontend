@@ -7,7 +7,7 @@ PODS:
     - FlutterMacOS
   - image_picker_ios (0.0.1):
     - Flutter
-  - kakao_flutter_sdk_common (1.9.6):
+  - kakao_flutter_sdk_common (1.9.7-3):
     - Flutter
   - package_info_plus (0.4.5):
     - Flutter
@@ -74,7 +74,7 @@ SPEC CHECKSUMS:
   flutter_secure_storage: 23fc622d89d073675f2eaa109381aefbcf5a49be
   gal: 6a522c75909f1244732d4596d11d6a2f86ff37a5
   image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
-  kakao_flutter_sdk_common: 4f10f98226da5d0f7cbdeeaed5cc21f144515209
+  kakao_flutter_sdk_common: 3dc8492c202af7853585d151490b1c5c6b7576cb
   package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   Sentry: da60d980b197a46db0b35ea12cb8f39af48d8854
@@ -85,4 +85,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 9db5e8ab117fb6cb23d3166ea436fa67e824f37d
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
