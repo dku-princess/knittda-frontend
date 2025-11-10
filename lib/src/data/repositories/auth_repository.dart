@@ -125,5 +125,42 @@ class AuthRepository {
     }
   }
 
+  Future<({String jwt, UserModel user})> admin() async {
+    try {
+      final res = await _dio.get<Map<String, dynamic>>(
+        '/api/v1/auth/admin',
+      );
+
+      if (res.statusCode != 200) {
+        throw Exception('서버 오류: ${res.statusCode}');
+      }
+
+      final body = res.data;
+      if (body == null || body['success'] != true) {
+        throw Exception(body?['message'] ?? '알 수 없는 오류');
+      }
+
+      final payload = body['data'] as Map<String, dynamic>?;
+      final jwt  = payload?['jwt']  as String?;
+      final user = payload?['user'] as Map<String, dynamic>?;
+
+      if (jwt == null || user == null) {
+        throw Exception('잘못된 응답 형식');
+      }
+
+      return (jwt: jwt, user: UserModel.fromJson(user));
+
+    } on DioException catch (e) {
+      final code = e.response?.statusCode;
+      switch (code) {
+        case 400: throw Exception('잘못된 요청입니다. (400)');
+        case 401: throw Exception('인증 실패입니다. (401)');
+        default : throw Exception('네트워크 오류: ${e.message}');
+      }
+    } catch (e) {
+      throw Exception('로그인 처리 중 오류: $e');
+    }
+  }
+
 }
 

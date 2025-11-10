@@ -36,9 +36,8 @@ class _RecordListItemState extends State<RecordListItem> {
   @override
   Widget build(BuildContext context) {
     final record = widget.record;
-    final corrected = record.createdAt!.add(const Duration(hours: 9));
-    final dateStr = DateUtilsHelper.toDotFormat(corrected);
-    final timeStr = DateUtilsHelper.toHourMinuteFormat(corrected);
+    final dateStr = DateUtilsHelper.toDotFormat(record.createdAt!);
+    final timeStr = DateUtilsHelper.toHourMinuteFormat(record.createdAt!);
 
     return InkWell(
       onTap: widget.onTap,

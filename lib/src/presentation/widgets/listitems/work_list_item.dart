@@ -113,7 +113,7 @@ class WorkListItem extends StatelessWidget {
 
     // 서버에서 받은 UTC를 KST로 변환
     DateTime toKST(DateTime dt) {
-      return dt.add(const Duration(hours: 9));
+      return dt.add(const Duration(hours: 0));
     }
 
     final kstServerTime = toKST(serverUtc);

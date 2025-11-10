@@ -38,9 +38,8 @@ class _FeedListItemState extends State<FeedListItem> {
   @override
   Widget build(BuildContext context) {
     final feed = widget.feed;
-    final corrected = feed.record.createdAt!.add(const Duration(hours: 9));
-    final dateStr = DateUtilsHelper.toDotFormat(corrected);
-    final timeStr = DateUtilsHelper.toHourMinuteFormat(corrected);
+    final dateStr = DateUtilsHelper.toDotFormat(feed.record.createdAt!);
+    final timeStr = DateUtilsHelper.toHourMinuteFormat(feed.record.createdAt!);
 
     return InkWell(
       onTap: widget.onTap,

@@ -42,8 +42,10 @@ class _EditRecordState extends State<EditRecord> {
   final List<ImageModel> _serverImages = [];
   final List<int> _deleteImageIds = [];
 
+  static const int _maxImages = 5;
+
   Future<void> _pickImage(ImageSource source) async {
-    if (_images.length >= 5) return;
+    if (_serverImages.length + _images.length >= _maxImages) return;
 
     final XFile? picked = await _picker.pickImage(
       source: source,
@@ -333,7 +335,7 @@ class _EditRecordState extends State<EditRecord> {
                               }),
 
                               // 이미지 추가 버튼 (최대 5장 제한)
-                              if (_serverImages.length + _images.length < 5)
+                              if (_serverImages.length + _images.length < _maxImages)
                                 GestureDetector(
                                   onTap: _showImageSourceActionSheet,
                                   child: Container(
@@ -380,11 +382,8 @@ class _EditRecordState extends State<EditRecord> {
                     ),
                   ),
 
-                  const SizedBox(height: 40),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  ),
                   const SizedBox(height: 50),
+
                 ],
               ),
             ),

@@ -368,30 +368,78 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.9.0"
+  kakao_flutter_sdk:
+    dependency: "direct main"
+    description:
+      name: kakao_flutter_sdk
+      sha256: "63ef8b145593d2e0180c507958856e63e4e78e6be545b8428cf411b273ff2683"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.9.7+3"
   kakao_flutter_sdk_auth:
     dependency: transitive
     description:
       name: kakao_flutter_sdk_auth
-      sha256: "686996c63c7e006ccf9a0bdfee5307465d7ae134d2f1ae2b4a06c597604689bc"
+      sha256: "028d8803b7545cc5f41d20cda43b813683700e45c6c13aa4ca56f4b9c673305c"
       url: "https://pub.dev"
     source: hosted
-    version: "1.9.6"
+    version: "1.9.7+3"
   kakao_flutter_sdk_common:
     dependency: transitive
     description:
       name: kakao_flutter_sdk_common
-      sha256: "698d5f63d15438ad47af3baf0815fd30dfcacfa76640e96e5a18fc8504f25bde"
+      sha256: "1c4944cc50c363d4626e9006ab39ee496c8f5ca602b96154272b90d40544aaca"
       url: "https://pub.dev"
     source: hosted
-    version: "1.9.6"
+    version: "1.9.7+3"
+  kakao_flutter_sdk_friend:
+    dependency: transitive
+    description:
+      name: kakao_flutter_sdk_friend
+      sha256: "822866e9c9987f766dec09d103f2e5d4de9d919781f6c38c309d1a1a7bab7d60"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.9.7+3"
+  kakao_flutter_sdk_navi:
+    dependency: transitive
+    description:
+      name: kakao_flutter_sdk_navi
+      sha256: c865cf94c7c0a1287844dc4b3def56360f227352ade99bdbb08b1bdeff5f7657
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.9.7+3"
+  kakao_flutter_sdk_share:
+    dependency: transitive
+    description:
+      name: kakao_flutter_sdk_share
+      sha256: "04e1fcd44c47d98782dfb7d13f93ed6a4e4da700b580da37c30bb9f24058ed63"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.9.7+3"
+  kakao_flutter_sdk_talk:
+    dependency: transitive
+    description:
+      name: kakao_flutter_sdk_talk
+      sha256: "5c61373beb9a3d5a8d7425cb0af13ba443c5077f7bbca09376c799a63c83e4c3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.9.7+3"
+  kakao_flutter_sdk_template:
+    dependency: transitive
+    description:
+      name: kakao_flutter_sdk_template
+      sha256: ee330ad9a4ebed85ec214a7f58dd25eca0d0e5680168db5a04426a217973ac9f
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.9.7+3"
   kakao_flutter_sdk_user:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: kakao_flutter_sdk_user
-      sha256: f3692feefad530bcfcdd1b8cf685b0c2c3da4a6d28a7df7f57529e57b7040f1b
+      sha256: "5157feeafe58d677d314baa5ccdcb435fd9680c485c3b23e9ad7d97a0c93694f"
       url: "https://pub.dev"
     source: hosted
-    version: "1.9.6"
+    version: "1.9.7+3"
   leak_tracker:
     dependency: transitive
     description:
@@ -789,6 +837,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  webview_flutter:
+    dependency: transitive
+    description:
+      name: webview_flutter
+      sha256: ec81f57aa1611f8ebecf1d2259da4ef052281cb5ad624131c93546c79ccc7736
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.9.0"
+  webview_flutter_android:
+    dependency: transitive
+    description:
+      name: webview_flutter_android
+      sha256: "47a8da40d02befda5b151a26dba71f47df471cddd91dfdb7802d0a87c5442558"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.16.9"
+  webview_flutter_platform_interface:
+    dependency: transitive
+    description:
+      name: webview_flutter_platform_interface
+      sha256: "63d26ee3aca7256a83ccb576a50272edd7cfc80573a4305caa98985feb493ee0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.14.0"
+  webview_flutter_wkwebview:
+    dependency: transitive
+    description:
+      name: webview_flutter_wkwebview
+      sha256: "71523b9048cf510cfa1fd4e0a3fa5e476a66e0884d5df51d59d5023dba237107"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.22.1"
   win32:
     dependency: transitive
     description:
