@@ -26,7 +26,7 @@ class RecordListViewModel extends ChangeNotifier {
       final fetched = await useCases.getRecords(projectId);
       _records
         ..clear()
-        ..addAll(fetched.reversed);
+        ..addAll(fetched);
     } catch (e) {
       _error = "기록 목록을 불러오는데 실패했습니다.";
 
