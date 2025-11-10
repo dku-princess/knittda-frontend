@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/presentation/screens/main_page/login.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -7,16 +6,7 @@ class Mypage extends StatelessWidget {
   const Mypage({super.key});
 
   void onLogout(BuildContext context) async {
-    final auth = context.read<AuthViewModel>();
-    await auth.logout();
-
-    if (!context.mounted) return;
-
-    // 네비게이션 스택 초기화
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const Login()),
-          (route) => false,
-    );
+    await context.read<AuthViewModel>().logout();
   }
 
   void onSignout(BuildContext context) async {
@@ -24,12 +14,7 @@ class Mypage extends StatelessWidget {
 
     if (!context.mounted) return;
 
-    if (ok) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const Login()),
-            (_) => false,
-      );
-    } else {
+    if (!ok) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('탈퇴에 실패했어요. 잠시 후 다시 시도해 주세요.')),
       );

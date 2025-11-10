@@ -9,20 +9,20 @@ import 'package:knittda/src/presentation/screens/feed/feed.dart';
 // 바텀네비게이션 리스트
 final List<BottomNavigationBarItem> myTabs = <BottomNavigationBarItem>[
   BottomNavigationBarItem(
-    icon: Icon(Icons.edit_note), // 텍스트 제거
-    label: '',
+    icon: Icon(Icons.home_filled),
+    label: '홈',
   ),
   BottomNavigationBarItem(
-    icon: Icon(Icons.manage_search_outlined), // 텍스트 제거
-    label: '',
+    icon: Icon(Icons.search_outlined),
+    label: '작품',
   ),
   BottomNavigationBarItem(
-    icon: Icon(Icons.watch_later_outlined), // 텍스트 제거
-    label: '',
+    icon: Icon(Icons.watch_later_outlined),
+    label: '피드',
   ),
   BottomNavigationBarItem(
-    icon: Icon(Icons.person), // 텍스트 제거
-    label: '',
+    icon: Icon(Icons.person),
+    label: '마이페이지',
   ),
 ];
 
