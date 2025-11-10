@@ -142,4 +142,36 @@ class AuthViewModel extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> admin() async {
+    _status = AuthStatus.loading;
+    notifyListeners();
+
+    try {
+      final result = await _authRepo.admin();
+
+      final prevUserId = await _storage.readUserId();
+      final newUserId  = result.user.id.toString();
+
+      if (prevUserId != null && prevUserId != newUserId) {
+        await ReportLocalDataSource().clear();
+      }
+
+      _jwt   = result.jwt;
+      _user  = result.user;
+      _status = AuthStatus.authenticated;
+
+      await _storage.save(_jwt!);
+      await _storage.saveUserId(newUserId);
+
+      notifyListeners();
+
+      return true;
+    } catch (e) {
+      _status = AuthStatus.unauthenticated;
+      notifyListeners();
+
+      return false;
+    }
+  }
 }
