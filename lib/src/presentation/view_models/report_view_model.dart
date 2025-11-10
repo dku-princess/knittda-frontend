@@ -12,14 +12,24 @@ class ReportViewModel extends ChangeNotifier {
   ReportModel? _report;
   ReportModel? get report => _report;
 
-  bool _isLoading = true;
+  bool _isLoading = false;
   bool get isLoading => _isLoading;
 
   String? _error;
   String? get error => _error;
 
+  void reset() {
+    _report = null;
+    _error = null;
+    _isLoading = false;
+    notifyListeners();
+  }
+
   Future<bool> fetchReport() async {
     if (_report != null) return true;
+
+    if (_isLoading) return false;
+
     _isLoading = true;
     _error = null;
     notifyListeners();

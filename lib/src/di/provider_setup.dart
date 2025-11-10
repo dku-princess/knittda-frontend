@@ -12,6 +12,7 @@ import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/feed_service.dart';
+import 'package:knittda/src/domain/use_case/get_question_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_report_use_case.dart';
@@ -40,7 +41,7 @@ Future<List<SingleChildWidget>> getProviders() async {
 
     Provider<Dio>(
       create: (_) {
-        final dio = Dio(BaseOptions(baseUrl: baseUrl));
+        final dio = Dio(BaseOptions(baseUrl: Env.apiBaseUrl));
         dio.interceptors.add(AuthInterceptor(tokenStorage));
         return dio;
       },
@@ -88,6 +89,7 @@ Future<List<SingleChildWidget>> getProviders() async {
         getRecord:    GetRecordUseCase(repo),
         getRecords:   GetRecordsUseCase(repo),
         updateRecord: UpdateRecordUseCase(repo),
+        getQuestion: GetQuestionUseCase(repo),
       ),
     ),
 
@@ -97,8 +99,17 @@ Future<List<SingleChildWidget>> getProviders() async {
     ProxyProvider<ReportRepository, GetReportUseCase>(
       update: (_, repo, __) => GetReportUseCase(repo),
     ),
-    ChangeNotifierProvider<ReportViewModel>(
+    ChangeNotifierProxyProvider<AuthViewModel, ReportViewModel>(
       create: (context) => ReportViewModel(context.read<GetReportUseCase>()),
+      update: (context, auth, vm) {
+        vm ??= ReportViewModel(context.read<GetReportUseCase>());
+
+        // 탈퇴/로그아웃 등으로 인증 해제되면 화면 메모리 캐시도 즉시 정리
+        if (auth.status == AuthStatus.unauthenticated) {
+          vm.reset();
+        }
+        return vm;
+      },
     ),
 
     ProxyProvider<Dio, FeedRepository>(

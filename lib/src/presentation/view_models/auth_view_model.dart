@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/core/storage/report_local_data_source.dart';
 
 import 'package:knittda/src/data/data_sources/social_login.dart';
 import 'package:knittda/src/core/storage/token_storage.dart';
@@ -6,8 +7,6 @@ import 'package:knittda/src/core/storage/token_storage.dart';
 import 'package:knittda/src/data/models/user_model.dart';
 
 import 'package:knittda/src/data/repositories/auth_repository.dart';
-
-//import 'package:flutter/foundation.dart';
 
 enum AuthStatus { loading, authenticated, unauthenticated }
 
@@ -52,19 +51,27 @@ class AuthViewModel extends ChangeNotifier {
 
       final result = await _authRepo.loginWithKakao(token);
 
+      final prevUserId = await _storage.readUserId();
+      final newUserId  = result.user.id.toString();
+
+      if (prevUserId != null && prevUserId != newUserId) {
+        await ReportLocalDataSource().clear();
+      }
+
       _jwt   = result.jwt;
       _user  = result.user;
       _status = AuthStatus.authenticated;
 
       await _storage.save(_jwt!);
+      await _storage.saveUserId(newUserId);
 
       notifyListeners();
-      //debugPrint('카카오 로그인 성공');
+
       return true;
     } catch (e) {
       _status = AuthStatus.unauthenticated;
       notifyListeners();
-      //debugPrint('카카오 로그인 실패: $e');
+
       return false;
     }
   }
@@ -78,13 +85,12 @@ class AuthViewModel extends ChangeNotifier {
       _user   = result.user;
       _status = AuthStatus.authenticated;
 
-      //debugPrint('자동 로그인 성공');
     } catch (_) {
       _jwt    = null;
       _user   = null;
       _status = AuthStatus.unauthenticated;
 
-      //debugPrint('자동 로그인 실패');
+      await _storage.delete();
     }
     notifyListeners();
   }
@@ -113,7 +119,10 @@ class AuthViewModel extends ChangeNotifier {
       if (!backendOk || !kakaoOk) throw Exception('탈퇴 처리 실패');
 
       // 3) 로컬 정리
+      await ReportLocalDataSource().clear();
       await _storage.delete();
+      await _storage.deleteUserId();
+
       _jwt  = null;
       _user = null;
       _status = AuthStatus.unauthenticated;
@@ -122,11 +131,46 @@ class AuthViewModel extends ChangeNotifier {
 
     } catch (e) {
       //실패하면 로그아웃 상태로 간다
+      await ReportLocalDataSource().clear();
       await _storage.delete();
+      await _storage.deleteUserId();
+
       _jwt = null;
       _user = null;
       _status = AuthStatus.unauthenticated;
       notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> admin() async {
+    _status = AuthStatus.loading;
+    notifyListeners();
+
+    try {
+      final result = await _authRepo.admin();
+
+      final prevUserId = await _storage.readUserId();
+      final newUserId  = result.user.id.toString();
+
+      if (prevUserId != null && prevUserId != newUserId) {
+        await ReportLocalDataSource().clear();
+      }
+
+      _jwt   = result.jwt;
+      _user  = result.user;
+      _status = AuthStatus.authenticated;
+
+      await _storage.save(_jwt!);
+      await _storage.saveUserId(newUserId);
+
+      notifyListeners();
+
+      return true;
+    } catch (e) {
+      _status = AuthStatus.unauthenticated;
+      notifyListeners();
+
       return false;
     }
   }

@@ -128,9 +128,10 @@ class _WorkListState extends State<WorkList> {
                               builder: (_) => ChangeNotifierProvider(
                                 create: (_) => RecordFormViewModel(
                                   useCases: context.read<RecordUseCases>(),
+                                  projectId: work.id!,
                                   listViewModel: null,
                                   detailViewModel: null,
-                                ),
+                                )..init(),
                                 child: AddRecord(work: work),
                               ),
                             ),
@@ -144,7 +145,7 @@ class _WorkListState extends State<WorkList> {
             ),
           ),
 
-          //if (DateTime.now().weekday == DateTime.sunday)
+          if (DateTime.now().weekday == DateTime.monday)
             Positioned(
               bottom: 16,
               left: 16,
