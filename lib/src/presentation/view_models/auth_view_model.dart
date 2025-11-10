@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/storage/report_local_data_source.dart';
 
 import 'package:knittda/src/data/data_sources/social_login.dart';
-import 'package:knittda/src/data/data_sources/kakao_login.dart';
 import 'package:knittda/src/core/storage/token_storage.dart';
 
 import 'package:knittda/src/data/models/user_model.dart';
 
 import 'package:knittda/src/data/repositories/auth_repository.dart';
-
-//import 'package:flutter/foundation.dart';
 
 enum AuthStatus { loading, authenticated, unauthenticated }
 
@@ -69,87 +66,12 @@ class AuthViewModel extends ChangeNotifier {
       await _storage.saveUserId(newUserId);
 
       notifyListeners();
-      //debugPrint('카카오 로그인 성공');
-      return true;
-    } catch (e) {
-      // 카카오톡 로그인 실패 시 웹 로그인 시도
-      try {
-        if (_socialLogin is KaKaoLogin) {
-          final kakaoLogin = _socialLogin as KaKaoLogin;
-          final webToken = await kakaoLogin.loginWithWebOnly();
-          
-          if (webToken != null) {
-            final result = await _authRepo.loginWithKakao(webToken);
 
-            final prevUserId = await _storage.readUserId();
-            final newUserId  = result.user.id.toString();
-
-            if (prevUserId != null && prevUserId != newUserId) {
-              await ReportLocalDataSource().clear();
-            }
-
-            _jwt   = result.jwt;
-            _user  = result.user;
-            _status = AuthStatus.authenticated;
-
-            await _storage.save(_jwt!);
-            await _storage.saveUserId(newUserId);
-
-            notifyListeners();
-            //debugPrint('카카오 웹 로그인 성공 (자동 전환)');
-            return true;
-          }
-        }
-      } catch (webError) {
-        // 웹 로그인도 실패한 경우
-        //debugPrint('웹 로그인도 실패: $webError');
-      }
-      
-      _status = AuthStatus.unauthenticated;
-      notifyListeners();
-      //debugPrint('카카오 로그인 실패: $e');
-      return false;
-    }
-  }
-
-  // 웹 로그인 전용 메서드 (iPhone mini 등에서 사용)
-  Future<bool> loginWithKakaoWeb() async {
-    _status = AuthStatus.loading;
-    notifyListeners();
-
-    try {
-      // KaKaoLogin의 웹 로그인 전용 메서드 사용
-      final token = await (_socialLogin as KaKaoLogin).loginWithWebOnly();
-
-      if (token == null) {
-        _status = AuthStatus.unauthenticated;
-        notifyListeners();
-        return false;
-      }
-
-      final result = await _authRepo.loginWithKakao(token);
-
-      final prevUserId = await _storage.readUserId();
-      final newUserId  = result.user.id.toString();
-
-      if (prevUserId != null && prevUserId != newUserId) {
-        await ReportLocalDataSource().clear();
-      }
-
-      _jwt   = result.jwt;
-      _user  = result.user;
-      _status = AuthStatus.authenticated;
-
-      await _storage.save(_jwt!);
-      await _storage.saveUserId(newUserId);
-
-      notifyListeners();
-      //debugPrint('카카오 웹 로그인 성공');
       return true;
     } catch (e) {
       _status = AuthStatus.unauthenticated;
       notifyListeners();
-      //debugPrint('카카오 웹 로그인 실패: $e');
+
       return false;
     }
   }
@@ -163,7 +85,6 @@ class AuthViewModel extends ChangeNotifier {
       _user   = result.user;
       _status = AuthStatus.authenticated;
 
-      //debugPrint('자동 로그인 성공');
     } catch (_) {
       _jwt    = null;
       _user   = null;
@@ -218,6 +139,38 @@ class AuthViewModel extends ChangeNotifier {
       _user = null;
       _status = AuthStatus.unauthenticated;
       notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> admin() async {
+    _status = AuthStatus.loading;
+    notifyListeners();
+
+    try {
+      final result = await _authRepo.admin();
+
+      final prevUserId = await _storage.readUserId();
+      final newUserId  = result.user.id.toString();
+
+      if (prevUserId != null && prevUserId != newUserId) {
+        await ReportLocalDataSource().clear();
+      }
+
+      _jwt   = result.jwt;
+      _user  = result.user;
+      _status = AuthStatus.authenticated;
+
+      await _storage.save(_jwt!);
+      await _storage.saveUserId(newUserId);
+
+      notifyListeners();
+
+      return true;
+    } catch (e) {
+      _status = AuthStatus.unauthenticated;
+      notifyListeners();
+
       return false;
     }
   }
