@@ -1,5 +1,4 @@
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-import 'package:flutter/foundation.dart';
 import 'package:knittda/src/data/data_sources/social_login.dart';
 
 class KaKaoLogin implements SocialLogin {
@@ -49,15 +48,4 @@ class KaKaoLogin implements SocialLogin {
     }
   }
 
-  // 웹 로그인 전용 메서드 (iOS 17+ 충돌 문제 해결)
-  Future<String?> loginWithWebOnly() async {
-    try {
-      OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
-      debugPrint('카카오계정으로 로그인 성공 ${token.accessToken}');
-      return token.accessToken;
-    } catch (error) {
-      debugPrint('카카오계정으로 로그인 실패 $error');
-      return null;
-    }
-  }
 }
