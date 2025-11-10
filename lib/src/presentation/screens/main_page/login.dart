@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
-import 'package:knittda/src/presentation/screens/home.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -15,31 +14,43 @@ class Login extends StatelessWidget {
         children: [
           Expanded(
             child: Center(
-                child: Image.asset(
-                  'assets/image/logo.png',
-                  width: 150,
-                  height: 150,
-                )
+              child: Image.asset(
+                'assets/image/logo.png',
+                width: 150,
+                height: 150,
+              ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(bottom: 150),
-            child: GestureDetector(
-              onTap: () async {
-                final success = await authVM.loginWithKakao();
+            padding: const EdgeInsets.only(bottom: 100),
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: () async {
+                    await authVM.loginWithKakao();
+                  },
+                  child: Image.asset(
+                    "assets/image/kakao_login_large_wide.png",
+                    width: 300,
+                  ),
+                ),
 
-                if (!context.mounted) return;
-                if (success) {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (_) => const Home()),
-                        (_) => false,
-                  );
-                }
-              },
-              child: Image.asset(
-                "assets/image/kakao_login_large_wide.png",
-                width: 300,
-              ),
+                const SizedBox(height: 10),
+
+                TextButton(
+                  onPressed: () async{
+                   await authVM.admin();
+                  },
+                  child: Text(
+                    'Admin Login',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  )
+                ),
+              ],
             ),
           ),
         ],
