@@ -23,6 +23,7 @@ dependencies:
   gal: ^2.3.2
   share_plus: ^11.0.0
   kakao_flutter_sdk: ^1.9.7+3
+  url_launcher: ^6.3.2
 
 
 dev_dependencies:
