@@ -19,6 +19,13 @@ class MyApp extends StatelessWidget {
         splashColor: Colors.transparent, //클릭시 퍼지는 효과 제거
         //highlightColor: Colors.transparent, //클릭시 원형 효과 제거
         scaffoldBackgroundColor: Colors.white, //바탕화면을 하얗게 설정
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.white, //상단바 배경을 하얗게 설정
+          elevation: 0, //그림자 제거
+        ),
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          backgroundColor: Colors.white, //하단 네비게이션 바 배경을 하얗게 설정
+        ),
 
         colorScheme: ColorScheme.fromSeed(
           seedColor: Color(0xFFF2F2F7),
