@@ -18,12 +18,12 @@ class DateUtilsHelper {
     //현재 날짜와 시간을 가져온다
     final now = DateTime.now();
 
-    // 이번 주 수요일 날짜 계산
-    final wednesday = now.subtract( //현재 날짜에서 duration 만큼 뺀다
-      Duration(days: now.weekday - DateTime.wednesday), //두 시간 사이의 간격을 나타냄
+    // 이번 주 월요일 날짜 계산
+    final monday = now.subtract( //현재 날짜에서 duration 만큼 뺀다
+      Duration(days: now.weekday - DateTime.monday), //두 시간 사이의 간격을 나타냄
     );
 
     //문자열 생성
-    return toHyphenFormat(wednesday);
+    return toHyphenFormat(monday);
   }
 }
