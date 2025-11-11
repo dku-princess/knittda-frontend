@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Pretendard',
         splashColor: Colors.transparent, //클릭시 퍼지는 효과 제거
         //highlightColor: Colors.transparent, //클릭시 원형 효과 제거
+        scaffoldBackgroundColor: Colors.white, //바탕화면을 하얗게 설정
 
         colorScheme: ColorScheme.fromSeed(
           seedColor: Color(0xFFF2F2F7),
