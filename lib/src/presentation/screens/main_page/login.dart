@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
@@ -34,6 +35,19 @@ class Login extends StatelessWidget {
                     width: 300,
                   ),
                 ),
+
+                if (Platform.isIOS) ...[
+                  const SizedBox(height: 10),
+                  GestureDetector(
+                    onTap: () async {
+                      await authVM.loginWithApple();
+                    },
+                    child: Image.asset(
+                      "assets/image/apple_login.png",
+                      width: 300,
+                    ),
+                  ),
+                ],
 
                 const SizedBox(height: 10),
 

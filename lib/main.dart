@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'env.dart';
 
 // 앱 실행
@@ -40,6 +41,9 @@ Future<void> main() async {
         options.sendDefaultPii = false;
       });
     }
+
+    // Firebase 초기화
+    await Firebase.initializeApp();
 
     // Kakao SDK 초기화 (필수 키 입력!)
     KakaoSdk.init(nativeAppKey: Env.kakaoNativeAppKey);

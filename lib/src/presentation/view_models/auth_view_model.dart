@@ -12,6 +12,7 @@ enum AuthStatus { loading, authenticated, unauthenticated }
 
 class AuthViewModel extends ChangeNotifier {
   final SocialLogin _socialLogin;
+  final SocialLogin? _appleLogin;
   final AuthRepository _authRepo;
   final TokenStorage _storage;
 
@@ -23,6 +24,7 @@ class AuthViewModel extends ChangeNotifier {
       this._socialLogin,
       this._authRepo,
       this._storage,
+      [this._appleLogin,]
       ) {
     _init(); // 생성 시 자동 로그인 시도
   }
@@ -50,6 +52,53 @@ class AuthViewModel extends ChangeNotifier {
       }
 
       final result = await _authRepo.loginWithKakao(token);
+
+      final prevUserId = await _storage.readUserId();
+      final newUserId  = result.user.id.toString();
+
+      if (prevUserId != null && prevUserId != newUserId) {
+        await ReportLocalDataSource().clear();
+      }
+
+      _jwt   = result.jwt;
+      _user  = result.user;
+      _status = AuthStatus.authenticated;
+
+      await _storage.save(_jwt!);
+      await _storage.saveUserId(newUserId);
+
+      notifyListeners();
+
+      return true;
+    } catch (e) {
+      _status = AuthStatus.unauthenticated;
+      notifyListeners();
+
+      return false;
+    }
+  }
+
+  Future<bool> loginWithApple() async {
+    if (_appleLogin == null) {
+      _status = AuthStatus.unauthenticated;
+      notifyListeners();
+      return false;
+    }
+
+    _status = AuthStatus.loading;
+    notifyListeners();
+
+    try {
+      final token = await _appleLogin.login();
+
+      //토큰이 없으면 즉시 상태 복구
+      if (token == null) {
+        _status = AuthStatus.unauthenticated;
+        notifyListeners();
+        return false;
+      }
+
+      final result = await _authRepo.loginWithApple(token);
 
       final prevUserId = await _storage.readUserId();
       final newUserId  = result.user.id.toString();
@@ -113,10 +162,15 @@ class AuthViewModel extends ChangeNotifier {
       // 1) 서버 계정 삭제
       final backendOk = await _authRepo.signout();
 
-      // 2) 카카오 연결 해제
-      final kakaoOk = await _socialLogin.unlink();
+      // 2) 소셜 로그인 연결 해제
+      bool socialOk = false;
+      if (_appleLogin != null) {
+        socialOk = await _appleLogin!.unlink();
+      } else {
+        socialOk = await _socialLogin.unlink();
+      }
 
-      if (!backendOk || !kakaoOk) throw Exception('탈퇴 처리 실패');
+      if (!backendOk || !socialOk) throw Exception('탈퇴 처리 실패');
 
       // 3) 로컬 정리
       await ReportLocalDataSource().clear();

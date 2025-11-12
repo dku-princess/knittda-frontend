@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:knittda/env.dart';
 import 'package:knittda/src/core/storage/token_storage.dart';
 import 'package:knittda/src/data/data_sources/kakao_login.dart';
+import 'package:knittda/src/data/data_sources/social_login_apple.dart';
 import 'package:knittda/src/data/repositories/auth_repository.dart';
 import 'package:knittda/src/data/repositories/feed_repository.dart';
 import 'package:knittda/src/data/repositories/record_repository.dart';
@@ -55,6 +57,7 @@ Future<List<SingleChildWidget>> getProviders() async {
         KaKaoLogin(),
         context.read<AuthRepository>(),
         tokenStorage,
+        Platform.isIOS ? SocialLoginApple() : null,
       ),
     ),
 
