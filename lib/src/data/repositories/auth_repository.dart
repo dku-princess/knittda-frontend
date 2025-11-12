@@ -125,10 +125,12 @@ class AuthRepository {
     }
   }
 
-  Future<({String jwt, UserModel user})> loginWithApple(String token) async {
+  Future<({String jwt, UserModel user})> loginWithApple(String token, {String? name}) async {
     try {
+      // name은 항상 query parameter로 전송 (없으면 빈 문자열)
       final res = await _dio.get<Map<String, dynamic>>(
         '/api/v1/auth/apple',
+        queryParameters: {'name': name ?? ''},
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',

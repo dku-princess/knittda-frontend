@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/storage/report_local_data_source.dart';
 
 import 'package:knittda/src/data/data_sources/social_login.dart';
+import 'package:knittda/src/data/data_sources/social_login_apple.dart';
 import 'package:knittda/src/core/storage/token_storage.dart';
 
 import 'package:knittda/src/data/models/user_model.dart';
@@ -89,16 +90,22 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final token = await _appleLogin.login();
+      // Apple 로그인 결과 가져오기 (토큰 + 이름)
+      final appleLogin = _appleLogin as SocialLoginApple;
+      final loginResult = await appleLogin.loginWithName();
 
       //토큰이 없으면 즉시 상태 복구
-      if (token == null) {
+      if (loginResult == null) {
         _status = AuthStatus.unauthenticated;
         notifyListeners();
         return false;
       }
 
-      final result = await _authRepo.loginWithApple(token);
+      // 이름과 함께 백엔드로 전송
+      final result = await _authRepo.loginWithApple(
+        loginResult.token,
+        name: loginResult.name,
+      );
 
       final prevUserId = await _storage.readUserId();
       final newUserId  = result.user.id.toString();
