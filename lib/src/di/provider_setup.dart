@@ -3,17 +3,21 @@ import 'package:dio/dio.dart';
 import 'package:knittda/env.dart';
 import 'package:knittda/src/core/storage/token_storage.dart';
 import 'package:knittda/src/data/data_sources/kakao_login.dart';
+import 'package:knittda/src/data/data_sources/project_api.dart';
 import 'package:knittda/src/data/data_sources/social_login_apple.dart';
 import 'package:knittda/src/data/repositories/auth_repository.dart';
 import 'package:knittda/src/data/repositories/feed_repository.dart';
+import 'package:knittda/src/data/repositories/project_api_repository_impl.dart';
 import 'package:knittda/src/data/repositories/record_repository.dart';
 import 'package:knittda/src/data/repositories/report_repository.dart';
 import 'package:knittda/src/data/repositories/work_repository.dart';
+import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/feed_service.dart';
+import 'package:knittda/src/domain/use_case/get_project_previews_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_question_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
@@ -25,6 +29,7 @@ import 'package:knittda/src/domain/use_case/record_use_cases.dart';
 import 'package:knittda/src/domain/use_case/update_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/work_use_cases.dart';
+import 'package:knittda/src/presentation/project_previews/project_previews_view_model.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 import 'package:knittda/src/presentation/view_models/feed_view_model.dart';
 import 'package:knittda/src/presentation/view_models/report_view_model.dart';
@@ -123,6 +128,19 @@ Future<List<SingleChildWidget>> getProviders() async {
     ),
     ChangeNotifierProvider<FeedViewModel>(
       create: (context) => FeedViewModel(context.read<FeedService>()),
+    ),
+
+    ProxyProvider<Dio, ProjectApi>(
+      update: (context, dio, _) => ProjectApi(dio),
+    ),
+    ProxyProvider<ProjectApi, ProjectApiRepository>(
+      update: (context, api, _) => ProjectApiRepositoryImpl(api),
+    ),
+    ProxyProvider<ProjectApiRepository, GetProjectPreviewsUseCase>(
+      update: (context, repository, _) => GetProjectPreviewsUseCase(repository),
+    ),
+    ChangeNotifierProvider<ProjectPreviewsViewModel>(
+      create: (context) => ProjectPreviewsViewModel(context.read<GetProjectPreviewsUseCase>()),
     ),
   ];
 }
