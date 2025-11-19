@@ -7,7 +7,7 @@ import 'package:knittda/src/data/data_sources/project_api.dart';
 import 'package:knittda/src/data/data_sources/social_login_apple.dart';
 import 'package:knittda/src/data/repositories/auth_repository.dart';
 import 'package:knittda/src/data/repositories/feed_repository.dart';
-import 'package:knittda/src/data/repositories/project_api_repository_impl.dart';
+import 'package:knittda/src/data/repository/project_api_repository_impl.dart';
 import 'package:knittda/src/data/repositories/record_repository.dart';
 import 'package:knittda/src/data/repositories/report_repository.dart';
 import 'package:knittda/src/data/repositories/work_repository.dart';

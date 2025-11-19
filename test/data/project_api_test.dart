@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:knittda/src/data/data_sources/project_api.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
-import 'package:knittda/src/data/repositories/project_api_repository_impl.dart';
+import 'package:knittda/src/data/repository/project_api_repository_impl.dart';
 import 'package:knittda/src/domain/model/project_previews.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
