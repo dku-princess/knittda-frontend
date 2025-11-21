@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/di/provider_setup.dart';
@@ -43,7 +45,9 @@ Future<void> main() async {
     }
 
     // Firebase 초기화
-    await Firebase.initializeApp();
+    if (Platform.isIOS){
+      await Firebase.initializeApp();
+    }
 
     // Kakao SDK 초기화 (필수 키 입력!)
     KakaoSdk.init(nativeAppKey: Env.kakaoNativeAppKey);
