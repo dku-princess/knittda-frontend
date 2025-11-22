@@ -9,7 +9,7 @@ part 'feed.g.dart';
 abstract class Feed with _$Feed {
   factory Feed({
     required String userName,
-    required String profileImageUrl,
+    String? profileImageUrl,
     required String projectName,
     String? designTitle,
     String? designer,

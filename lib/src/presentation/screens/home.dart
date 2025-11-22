@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/presentation/feed/feed_screen.dart';
 import 'package:knittda/src/presentation/project_previews/project_previews_screen.dart';
 
 import 'package:knittda/src/presentation/screens/main_page/mypage.dart';
 import 'package:knittda/src/presentation/screens/main_page/work_list.dart';
-import 'package:knittda/src/presentation/screens/feed/feed.dart';
 
 // 바텀네비게이션 리스트
 final List<BottomNavigationBarItem> myTabs = <BottomNavigationBarItem>[
@@ -30,7 +30,7 @@ final List<BottomNavigationBarItem> myTabs = <BottomNavigationBarItem>[
 final List<Widget> _widgetOptions = <Widget>[
   const WorkList(),
   const ProjectPreviewsScreen(),
-  const Feed(),
+  const FeedScreen(),
   const Mypage(),
 ];
 

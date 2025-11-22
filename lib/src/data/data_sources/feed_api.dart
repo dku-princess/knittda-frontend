@@ -6,7 +6,7 @@ class FeedApi {
 
   FeedApi(this._dio);
 
-  Future<Result<Iterable>> getFeed(
+  Future<Result<Map<String,dynamic>>> getFeed(
     int page,
     int size,
     List<String>? sort,
@@ -23,7 +23,7 @@ class FeedApi {
 
       if (response.statusCode == 200) {
         final data = response.data;
-        final Iterable hits = data['data']['content'];
+        final Map<String, dynamic> hits = data['data'];
         return Result.success(hits);
       } else {
         return Result.error('서버 오류: ${response.statusCode}');

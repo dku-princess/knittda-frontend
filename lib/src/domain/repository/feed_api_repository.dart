@@ -1,6 +1,6 @@
 import 'package:knittda/src/data/data_sources/result.dart';
-import 'package:knittda/src/domain/model/feed.dart';
+import 'package:knittda/src/domain/model/feed_pagination.dart';
 
 abstract class FeedApiRepository {
-  Future<Result<List<Feed>>> getFeed(int page, int size, List<String>? sort);
+  Future<Result<FeedPagination>> getFeed(int page, int size, List<String>? sort);
 }

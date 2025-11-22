@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:knittda/src/data/data_sources/feed_api.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/data/repository/feed_api_repository_impl.dart';
-import 'package:knittda/src/domain/model/feed.dart';
+import 'package:knittda/src/domain/model/feed_pagination.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'feed_api_test.mocks.dart';
@@ -25,9 +25,9 @@ void main() {
       ),
     );
 
-    final Result<List<Feed>> result = await api.getFeed(0, 10, null);
+    final Result<FeedPagination> result = await api.getFeed(0, 20, null);
 
-    expect((result as Success<List<Feed>>).data.first.userName, '');
+    expect((result as Success<FeedPagination>).data.content.first.userName, '' );
 
     verify(dio.get("/api/v1/feed/", queryParameters: {'page': 0, 'size': 10}));
   });
