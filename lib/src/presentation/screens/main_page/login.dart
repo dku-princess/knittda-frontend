@@ -64,9 +64,6 @@ class Login extends StatelessWidget {
                     ),
                   )
                 ),
-
-                const SizedBox(height: 20),
-                Text('1.0.0+19', style: TextStyle(fontSize: 12, color: Colors.grey))
               ],
             ),
           ),
