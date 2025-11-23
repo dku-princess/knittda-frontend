@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/domain/repository/feed_api_repository.dart';
+import 'package:knittda/src/domain/use_case/get_search_feed_use_case.dart';
 import 'package:knittda/src/presentation/feed/components/feed_item.dart';
 import 'package:knittda/src/presentation/feed/feed_event.dart';
 import 'package:knittda/src/presentation/feed/feed_view_model.dart';
+import 'package:knittda/src/presentation/feed_search/feed_search_screen.dart';
+import 'package:knittda/src/presentation/feed_search/feed_search_view_model.dart';
 import 'package:provider/provider.dart';
 
 class FeedScreen extends StatefulWidget {
@@ -45,6 +49,26 @@ class _FeedScreenState extends State<FeedScreen> {
           '피드',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChangeNotifierProvider(
+                    create: (_) => FeedSearchViewModel(
+                      GetSearchFeedUseCase(
+                        context.read<FeedApiRepository>(),
+                      ),
+                    ),
+                    child: const FeedSearchScreen(),
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.search),
+          ),
+        ],
       ),
 
       body: Consumer<FeedViewModel>(

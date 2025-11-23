@@ -43,7 +43,7 @@ class FeedApi {
   ) async {
     try {
       final response = await _dio.get(
-        'url',
+        '/api/v1/feed/search',
         queryParameters: {
           'keyword': keyword,
           'page': page,
