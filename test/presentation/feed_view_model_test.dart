@@ -25,6 +25,13 @@ class FakeFeedApiRepository extends FeedApiRepository {
 
     return Result.success(FeedPagination.fromJson(fakeJson));
   }
+
+  @override
+  Future<Result<FeedPagination>> getSearchFeed(String keyword, int page, int size, List<String>? sort) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    return Result.success(FeedPagination.fromJson(fakeJson));
+  }
 }
 
 Map<String, dynamic> fakeJson = {

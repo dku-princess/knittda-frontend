@@ -13,12 +13,34 @@ class FeedApiRepositoryImpl implements FeedApiRepository {
     int size,
     List<String>? sort,
   ) async {
-    final Result<Map<String,dynamic>> result = await _api.getFeed(page, size, sort);
+    final Result<Map<String, dynamic>> result = await _api.getFeed(
+      page,
+      size,
+      sort,
+    );
 
     return switch (result) {
-      Success(:final data) => Result.success(
-        FeedPagination.fromJson(data),
-      ),
+      Success(:final data) => Result.success(FeedPagination.fromJson(data)),
+      Error(:final e) => Result.error(e),
+    };
+  }
+
+  @override
+  Future<Result<FeedPagination>> getSearchFeed(
+    String keyword,
+    int page,
+    int size,
+    List<String>? sort,
+  ) async {
+    final Result<Map<String, dynamic>> result = await _api.getSearchFeed(
+      keyword,
+      page,
+      size,
+      sort,
+    );
+
+    return switch (result) {
+      Success(:final data) => Result.success(FeedPagination.fromJson(data)),
       Error(:final e) => Result.error(e),
     };
   }
