@@ -172,7 +172,7 @@ class AuthViewModel extends ChangeNotifier {
       // 2) 소셜 로그인 연결 해제
       bool socialOk = false;
       if (_appleLogin != null) {
-        socialOk = await _appleLogin!.unlink();
+        socialOk = await _appleLogin.unlink();
       } else {
         socialOk = await _socialLogin.unlink();
       }

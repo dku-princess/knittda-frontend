@@ -1,4 +1,5 @@
 import java.util.Properties
+import java.io.FileInputStream
 
 plugins {
     id("com.android.application")
@@ -7,10 +8,16 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace = "com.tteuda.app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -21,29 +28,13 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
-    val kakaoKey: String by lazy {
-        val propsFile = rootDir.resolve("local.properties")
-        val props = Properties()
-        if (propsFile.exists()) props.load(propsFile.inputStream())
-
-        props.getProperty("KAKAO_NATIVE_APP_KEY")?.trim()
-            ?: error("KAKAO_NATIVE_APP_KEY not found in local.properties")
-    }
-
-    val keystorePropertiesFile = rootProject.file("key.properties")
-    val keystoreProperties = Properties().apply {
-        if (keystorePropertiesFile.exists()) {
-            load(keystorePropertiesFile.inputStream())
-        }
-    }
-
     signingConfigs {
         if (keystorePropertiesFile.exists()) {
             create("release") {
-                keyAlias      = keystoreProperties["keyAlias"]?.toString()
-                keyPassword   = keystoreProperties["keyPassword"]?.toString()
-                storeFile     = file(keystoreProperties["storeFile"]?.toString())
-                storePassword = keystoreProperties["storePassword"]?.toString()
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = keystoreProperties["storeFile"]?.let { file(it) }
+                storePassword = keystoreProperties["storePassword"] as String
             }
         }
     }
@@ -51,11 +42,17 @@ android {
     defaultConfig {
         applicationId = "com.tteuda.app"
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 23
         targetSdk = flutter.targetSdkVersion
-        versionCode = 7
-        versionName = "1.0.0"
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
 
+        val localProperties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if(localPropertiesFile.exists()){
+            localProperties.load(FileInputStream(localPropertiesFile))
+        }
+        val kakaoKey = localProperties.getProperty("KAKAO_NATIVE_APP_KEY") ?: ""
         manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = kakaoKey
     }
 
