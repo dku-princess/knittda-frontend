@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/di/provider_setup.dart';
@@ -44,7 +45,7 @@ Future<void> main() async {
     }
 
     // Firebase 초기화
-    if(Platform.isIOS){
+    if (Platform.isIOS){
       await Firebase.initializeApp();
     }
 

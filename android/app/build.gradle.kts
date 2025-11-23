@@ -1,10 +1,17 @@
 import java.util.Properties
+import java.io.FileInputStream
 
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
 android {
@@ -21,20 +28,13 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
-    val keystorePropertiesFile = rootProject.file("key.properties")
-    val keystoreProperties = Properties().apply {
-        if (keystorePropertiesFile.exists()) {
-            load(keystorePropertiesFile.inputStream())
-        }
-    }
-
     signingConfigs {
         if (keystorePropertiesFile.exists()) {
             create("release") {
-                keyAlias      = keystoreProperties["keyAlias"]?.toString()
-                keyPassword   = keystoreProperties["keyPassword"]?.toString()
-                storeFile     = file(keystoreProperties["storeFile"]?.toString())
-                storePassword = keystoreProperties["storePassword"]?.toString()
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = keystoreProperties["storeFile"]?.let { file(it) }
+                storePassword = keystoreProperties["storePassword"] as String
             }
         }
     }
@@ -44,13 +44,13 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 23
         targetSdk = flutter.targetSdkVersion
-        versionCode = 7
-        versionName = "1.0.0"
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
 
         val localProperties = Properties()
         val localPropertiesFile = rootProject.file("local.properties")
         if(localPropertiesFile.exists()){
-            localProperties.load(localPropertiesFile.inputStream())
+            localProperties.load(FileInputStream(localPropertiesFile))
         }
         val kakaoKey = localProperties.getProperty("KAKAO_NATIVE_APP_KEY") ?: ""
         manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = kakaoKey
