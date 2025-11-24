@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/projects/components/projects_item.dart';
+import 'package:knittda/src/presentation/projects/components/order_section.dart';
+import 'package:knittda/src/presentation/projects/projects_event.dart';
 import 'package:knittda/src/presentation/projects/projects_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -10,10 +12,14 @@ class ProjectsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 90,
         centerTitle: false,
-        title: const Text(
-          '나의 뜨개 작품',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+        title: const Padding(
+          padding: EdgeInsets.only(left: 8),
+          child: Text(
+            '나의\n뜨개 작품',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+          ),
         ),
       ),
 
@@ -37,8 +43,18 @@ class ProjectsScreen extends StatelessWidget {
           }
 
           return Column(
-
             children: [
+              const SizedBox(height: 20),
+
+              OrderSection(
+                projectOrder: viewModel.state.projectOrder,
+                onOrderChanged: (projectOrder) {
+                  viewModel.onEvent(ProjectsEvent.changeOrder(projectOrder));
+                },
+              ),
+
+              const SizedBox(height: 20),
+
               Expanded(
                 child: ListView.separated(
                   padding: const EdgeInsets.only(

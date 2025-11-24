@@ -39,7 +39,7 @@ class ProjectsItem extends StatelessWidget {
                 ),
         ),
 
-        SizedBox(width: 10),
+        SizedBox(width: 14),
 
         Expanded(
           child: Column(
@@ -47,12 +47,12 @@ class ProjectsItem extends StatelessWidget {
             children: [
               Text(
                 project.nickname!,
-                style: TextStyle(fontSize: 14),
+                style: TextStyle(fontSize: 16),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
 
-              SizedBox(height: 14),
+              SizedBox(height: 16),
 
               Row(
                 children: [
