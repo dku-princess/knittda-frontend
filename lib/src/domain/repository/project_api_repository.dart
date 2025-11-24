@@ -4,8 +4,8 @@ import 'package:knittda/src/domain/model/project_previews.dart';
 
 abstract class ProjectApiRepository {
   Future<Result<List<Project>>> getProjects();
-  // Future<void> putProject();
-  // Future<void> postProject();
+  Future<Result<Project>> putProject();
+  Future<Result<Project>> postProject();
   // Future<Result<Project>> getProject();
   // Future<void> deleteProject();
   Future<Result<List<ProjectPreviews>>> getProjectPreviews();

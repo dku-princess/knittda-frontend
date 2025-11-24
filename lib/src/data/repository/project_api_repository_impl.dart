@@ -22,6 +22,26 @@ class ProjectApiRepositoryImpl implements ProjectApiRepository {
   }
 
   @override
+  Future<Result<Project>> postProject() async {
+    final Result<Map<String, dynamic>> result = await _api.postProject();
+
+    return switch (result) {
+      Success(:final data) => Result.success(Project.fromJson(data)),
+      Error(:final e) => Result.error(e),
+    };
+  }
+
+  @override
+  Future<Result<Project>> putProject() async {
+    final Result<Map<String, dynamic>> result = await _api.putProject();
+
+    return switch (result) {
+      Success(:final data) => Result.success(Project.fromJson(data)),
+      Error(:final e) => Result.error(e),
+    };
+  }
+
+  @override
   Future<Result<List<ProjectPreviews>>> getProjectPreviews() async {
     final Result<Iterable> result = await _api.getProjectPreviews();
 
