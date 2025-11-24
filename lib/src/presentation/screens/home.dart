@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/presentation/feed/feed_screen.dart';
 import 'package:knittda/src/presentation/project_previews/project_previews_screen.dart';
-
+import 'package:knittda/src/presentation/projects/projects_screen.dart';
 import 'package:knittda/src/presentation/screens/main_page/mypage.dart';
-import 'package:knittda/src/presentation/screens/main_page/work_list.dart';
 
 // 바텀네비게이션 리스트
 final List<BottomNavigationBarItem> myTabs = <BottomNavigationBarItem>[
@@ -28,7 +27,7 @@ final List<BottomNavigationBarItem> myTabs = <BottomNavigationBarItem>[
 
 //바텀네비게이션 클릭 시 이동할 페이지 목록
 final List<Widget> _widgetOptions = <Widget>[
-  const WorkList(),
+  const ProjectsScreen(),
   const ProjectPreviewsScreen(),
   const FeedScreen(),
   const Mypage(),

@@ -26,4 +26,32 @@ class DateUtilsHelper {
     //문자열 생성
     return toHyphenFormat(monday);
   }
+
+  static String getRelativeDate(DateTime? serverUtc) {
+    if (serverUtc == null) return "-";
+
+    // 서버에서 받은 UTC를 KST로 변환
+    DateTime toKST(DateTime dt) {
+      return dt.add(const Duration(hours: 0));
+    }
+
+    final kstServerTime = toKST(serverUtc);
+    final kstNow = DateTime.now(); // 현재 로컬 시간대 (KST 환경이라면 OK)
+
+    // 날짜 부분만 비교 (시·분·초 제거)
+    final kstServerDate = DateTime(kstServerTime.year, kstServerTime.month, kstServerTime.day);
+    final kstToday = DateTime(kstNow.year, kstNow.month, kstNow.day);
+
+    final diffDays = kstServerDate.difference(kstToday).inDays;
+
+    if (diffDays == 0) {
+      return '오늘';
+    } else if (diffDays == -1) {
+      return '어제';
+    } else if (diffDays < 0 && diffDays >= -6) {
+      return '${-diffDays}일 전';
+    } else {
+      return toDotFormat(kstServerDate); // 예: 2025.07.10
+    }
+  }
 }

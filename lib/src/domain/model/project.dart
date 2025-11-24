@@ -14,7 +14,7 @@ abstract class Project with _$Project {
     required String? nickname,
     String? status,
     String? thumbnailUrl,
-    String? lastRecordAt,
+    DateTime? lastRecordAt,
     DateTime? createdAt,
     required DateTime? startDate,
     DateTime? endDate,

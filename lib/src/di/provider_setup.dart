@@ -22,6 +22,7 @@ import 'package:knittda/src/domain/use_case/delete_work_use_case.dart';
 //import 'package:knittda/src/domain/use_case/feed_service.dart';
 import 'package:knittda/src/domain/use_case/get_feed_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_project_previews_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_projects_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_question_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_use_case.dart';
@@ -35,6 +36,7 @@ import 'package:knittda/src/domain/use_case/update_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/work_use_cases.dart';
 import 'package:knittda/src/presentation/feed/feed_view_model.dart';
 import 'package:knittda/src/presentation/project_previews/project_previews_view_model.dart';
+import 'package:knittda/src/presentation/projects/projects_view_model.dart';
 import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
 
 import 'package:knittda/src/presentation/view_models/report_view_model.dart';
@@ -141,8 +143,14 @@ Future<List<SingleChildWidget>> getProviders() async {
     ProxyProvider<ProjectApi, ProjectApiRepository>(
       update: (context, api, _) => ProjectApiRepositoryImpl(api),
     ),
+    ProxyProvider<ProjectApiRepository, GetProjectsUseCase>(
+      update: (context, repository, _) => GetProjectsUseCase(repository),
+    ),
     ProxyProvider<ProjectApiRepository, GetProjectPreviewsUseCase>(
       update: (context, repository, _) => GetProjectPreviewsUseCase(repository),
+    ),
+    ChangeNotifierProvider<ProjectsViewModel>(
+      create: (context) => ProjectsViewModel(context.read<GetProjectsUseCase>()),
     ),
     ChangeNotifierProvider<ProjectPreviewsViewModel>(
       create: (context) => ProjectPreviewsViewModel(context.read<GetProjectPreviewsUseCase>()),
