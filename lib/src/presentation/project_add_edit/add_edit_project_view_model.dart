@@ -6,9 +6,9 @@ import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/project.dart';
 import 'package:knittda/src/domain/use_case/add_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
-import 'package:knittda/src/presentation/add_edit_project/add_edit_project_event.dart';
-import 'package:knittda/src/presentation/add_edit_project/add_edit_project_state.dart';
-import 'package:knittda/src/presentation/add_edit_project/add_edit_project_ui_event.dart';
+import 'package:knittda/src/presentation/project_add_edit/add_edit_project_event.dart';
+import 'package:knittda/src/presentation/project_add_edit/add_edit_project_state.dart';
+import 'package:knittda/src/presentation/project_add_edit/add_edit_project_ui_event.dart';
 
 class AddEditProjectViewModel extends ChangeNotifier {
   final AddProjectUseCase _addProjectUseCase;

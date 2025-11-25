@@ -5,9 +5,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/domain/model/project.dart';
-import 'package:knittda/src/presentation/add_edit_project/add_edit_project_event.dart';
-import 'package:knittda/src/presentation/add_edit_project/add_edit_project_ui_event.dart';
-import 'package:knittda/src/presentation/add_edit_project/add_edit_project_view_model.dart';
+import 'package:knittda/src/presentation/project_add_edit/add_edit_project_event.dart';
+import 'package:knittda/src/presentation/project_add_edit/add_edit_project_ui_event.dart';
+import 'package:knittda/src/presentation/project_add_edit/add_edit_project_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
 

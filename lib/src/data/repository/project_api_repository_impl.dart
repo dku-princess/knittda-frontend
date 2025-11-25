@@ -55,6 +55,28 @@ class ProjectApiRepositoryImpl implements ProjectApiRepository {
   }
 
   @override
+  Future<Result<Project>> getProject({required int projectId}) async {
+    final Result<Map<String, dynamic>> result = await _api.getProject(
+      projectId: projectId,
+    );
+
+    return switch (result) {
+      Success(:final data) => Result.success(Project.fromJson(data)),
+      Error(:final e) => Result.error(e),
+    };
+  }
+
+  @override
+  Future<Result<void>> deleteProject({required int projectId}) async {
+    final Result<void> result = await _api.deleteProject(projectId: projectId);
+
+    return switch (result) {
+      Success() => Result.success(null),
+      Error(:final e) => Result.error(e),
+    };
+  }
+
+  @override
   Future<Result<List<ProjectPreviews>>> getProjectPreviews() async {
     final Result<Iterable> result = await _api.getProjectPreviews();
 
@@ -62,6 +84,18 @@ class ProjectApiRepositoryImpl implements ProjectApiRepository {
       Success(:final data) => Result.success(
         data.map((e) => ProjectPreviews.fromJson(e)).toList(),
       ),
+      Error(:final e) => Result.error(e),
+    };
+  }
+
+  @override
+  Future<Result<Project>> getMyProject({required int projectId}) async {
+    final Result<Map<String, dynamic>> result = await _api.getMyProject(
+      projectId: projectId,
+    );
+
+    return switch (result) {
+      Success(:final data) => Result.success(Project.fromJson(data)),
       Error(:final e) => Result.error(e),
     };
   }
