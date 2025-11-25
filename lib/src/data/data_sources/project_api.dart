@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
+import 'package:knittda/src/domain/model/project.dart';
 
 class ProjectApi {
   final Dio _dio;
@@ -24,9 +29,18 @@ class ProjectApi {
     }
   }
 
-  Future<Result<Map<String, dynamic>>> putProject() async {
+  Future<Result<Map<String, dynamic>>> putProject({
+    required Project project,
+    required XFile? file,
+  }) async {
     try {
-      final response = await _dio.get('/api/v1/projects/');
+      final formData = FormData.fromMap({
+        'project': jsonEncode(project.toJson()),
+        if (file != null)
+          'file': await MultipartFile.fromFile(file.path, filename: file.name),
+      });
+
+      final response = await _dio.put('/api/v1/projects/', data: formData);
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -42,9 +56,18 @@ class ProjectApi {
     }
   }
 
-  Future<Result<Map<String, dynamic>>> postProject() async {
+  Future<Result<Map<String, dynamic>>> postProject({
+    required Project project,
+    required XFile? file,
+  }) async {
     try {
-      final response = await _dio.get('/api/v1/projects/');
+      final formData = FormData.fromMap({
+        'project': jsonEncode(project.toJson()),
+        if (file != null)
+          'file': await MultipartFile.fromFile(file.path, filename: file.name,contentType: MediaType('image', 'jpeg'),),
+      });
+
+      final response = await _dio.post('/api/v1/projects/', data: formData);
 
       if (response.statusCode == 200) {
         final data = response.data;

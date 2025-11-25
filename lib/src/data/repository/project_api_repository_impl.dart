@@ -1,3 +1,4 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/data/data_sources/project_api.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/project.dart';
@@ -22,8 +23,14 @@ class ProjectApiRepositoryImpl implements ProjectApiRepository {
   }
 
   @override
-  Future<Result<Project>> postProject() async {
-    final Result<Map<String, dynamic>> result = await _api.postProject();
+  Future<Result<Project>> postProject({
+    required Project project,
+    required XFile? file,
+  }) async {
+    final Result<Map<String, dynamic>> result = await _api.postProject(
+      project: project,
+      file: file,
+    );
 
     return switch (result) {
       Success(:final data) => Result.success(Project.fromJson(data)),
@@ -32,8 +39,14 @@ class ProjectApiRepositoryImpl implements ProjectApiRepository {
   }
 
   @override
-  Future<Result<Project>> putProject() async {
-    final Result<Map<String, dynamic>> result = await _api.putProject();
+  Future<Result<Project>> putProject({
+    required Project project,
+    required XFile? file,
+  }) async {
+    final Result<Map<String, dynamic>> result = await _api.putProject(
+      project: project,
+      file: file,
+    );
 
     return switch (result) {
       Success(:final data) => Result.success(Project.fromJson(data)),

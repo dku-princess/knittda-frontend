@@ -81,6 +81,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         title: TextField(
           controller: _controller,
           textInputAction: TextInputAction.search,

@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/domain/repository/project_api_repository.dart';
+import 'package:knittda/src/domain/use_case/add_project_use_case.dart';
+import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
+import 'package:knittda/src/presentation/add_edit_project/add_edit_project_screen.dart';
+import 'package:knittda/src/presentation/add_edit_project/add_edit_project_view_model.dart';
 import 'package:knittda/src/presentation/projects/components/projects_item.dart';
 import 'package:knittda/src/presentation/projects/components/order_section.dart';
 import 'package:knittda/src/presentation/projects/projects_event.dart';
@@ -10,10 +16,14 @@ class ProjectsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<ProjectsViewModel>();
+    final state = viewModel.state;
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 90,
         centerTitle: false,
+        scrolledUnderElevation: 0,
         title: const Padding(
           padding: EdgeInsets.only(left: 8),
           child: Text(
@@ -23,10 +33,31 @@ class ProjectsScreen extends StatelessWidget {
         ),
       ),
 
-      body: Consumer<ProjectsViewModel>(
-        builder: (context, viewModel, _) {
-          if (viewModel.state.isLoading) {
-            return Center(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: PRIMARY_COLOR,
+        onPressed: () async {
+          bool? isSaved = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ChangeNotifierProvider(
+                create: (_) => AddEditProjectViewModel(
+                  AddProjectUseCase(context.read<ProjectApiRepository>()),
+                  UpdateProjectUseCase(context.read<ProjectApiRepository>()),
+                ),
+                child: const AddEditProjectScreen(),
+              ),
+            ),
+          );
+
+          if (isSaved != null && isSaved) {
+            viewModel.onEvent(const ProjectsEvent.loadProjects());
+          }
+        },
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+
+      body: state.isLoading
+          ? const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -35,51 +66,43 @@ class ProjectsScreen extends StatelessWidget {
                   CircularProgressIndicator(),
                 ],
               ),
-            );
-          }
+            )
+          : state.errorMessage != null
+          ? Center(child: Text(state.errorMessage!))
+          : Column(
+              children: [
+                const SizedBox(height: 20),
 
-          if (viewModel.state.errorMessage != null) {
-            return Center(child: Text(viewModel.state.errorMessage!));
-          }
-
-          return Column(
-            children: [
-              const SizedBox(height: 20),
-
-              OrderSection(
-                projectOrder: viewModel.state.projectOrder,
-                onOrderChanged: (projectOrder) {
-                  viewModel.onEvent(ProjectsEvent.changeOrder(projectOrder));
-                },
-              ),
-
-              const SizedBox(height: 20),
-
-              Expanded(
-                child: ListView.separated(
-                  padding: const EdgeInsets.only(
-                    top: 4,
-                    bottom: 20,
-                    left: 20,
-                    right: 20,
-                  ),
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 10, bottom: 10),
-                      child: ProjectsItem(
-                        project: viewModel.state.projects[index],
-                      ),
-                    );
+                OrderSection(
+                  projectOrder: state.projectOrder,
+                  onOrderChanged: (projectOrder) {
+                    viewModel.onEvent(ProjectsEvent.changeOrder(projectOrder));
                   },
-                  separatorBuilder: (context, index) =>
-                      Divider(color: Colors.grey[300]),
-                  itemCount: viewModel.state.projects.length,
                 ),
-              ),
-            ],
-          );
-        },
-      ),
+
+                const SizedBox(height: 20),
+
+                Expanded(
+                  child: ListView.separated(
+                    padding: const EdgeInsets.only(
+                      top: 4,
+                      bottom: 80,
+                      left: 20,
+                      right: 20,
+                    ),
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 10, bottom: 10),
+                        child: ProjectsItem(project: state.projects[index]),
+                      );
+                    },
+                    separatorBuilder: (context, index) =>
+                        Divider(color: Colors.grey[300]),
+                    itemCount: state.projects.length,
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }

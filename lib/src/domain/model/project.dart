@@ -9,16 +9,22 @@ part 'project.g.dart';
 abstract class Project with _$Project {
   factory Project({
     int? id,
-    required Design? design,
+    Design? design,
     int? userId,
-    required String? nickname,
+    required String nickname,
     String? status,
     String? thumbnailUrl,
     DateTime? lastRecordAt,
     DateTime? createdAt,
-    required DateTime? startDate,
+    required String startDate,
     DateTime? endDate,
-    required DateTime? goalDate,
+    required String goalDate,
+
+    String? customYarnInfo,
+    String? customNeedleInfo,
+    String? designTitle,
+    String? designer,
+    bool? visible,
 }) = _Project;
 
   factory Project.fromJson(Map<String, dynamic> json) => _$ProjectFromJson(json);
