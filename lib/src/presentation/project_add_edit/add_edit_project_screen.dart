@@ -22,10 +22,10 @@ class AddEditProjectScreen extends StatefulWidget {
 
 class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
   final _nicknameController = TextEditingController();
-  final _designController = TextEditingController();
+  final _designTitleController = TextEditingController();
   final _designerController = TextEditingController();
-  final _needleController = TextEditingController();
-  final _yarnController = TextEditingController();
+  final _needleInfoController = TextEditingController();
+  final _yarnInfoController = TextEditingController();
 
   final ImagePicker picker = ImagePicker();
   XFile? _image;
@@ -43,10 +43,10 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
 
       final design = widget.project!.design;
       if (design != null) {
-        _designController.text = design.title ?? '';
+        _designTitleController.text = design.title ?? '';
         _designerController.text = design.designer ?? '';
-        _yarnController.text = design.yarnInfo ?? '';
-        _needleController.text = design.needleInfo ?? '';
+        _yarnInfoController.text = design.yarnInfo ?? '';
+        _needleInfoController.text = design.needleInfo ?? '';
       }
 
       if (widget.project!.thumbnailUrl != null &&
@@ -64,8 +64,8 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
         _subscription = viewModel.eventStream.listen((event) {
           if (mounted) {
             switch (event) {
-              case SavedProject():
-                Navigator.pop(context, true);
+              case SavedProject(:final project):
+                Navigator.pop(context, project);
               case ShowSnackBar(:final message):
                 final snackBar = SnackBar(content: Text(message));
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -79,10 +79,10 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
   @override
   void dispose() {
     _nicknameController.dispose();
-    _designController.dispose();
+    _designTitleController.dispose();
     _designerController.dispose();
-    _yarnController.dispose();
-    _needleController.dispose();
+    _yarnInfoController.dispose();
+    _needleInfoController.dispose();
     _subscription?.cancel();
     super.dispose();
   }
@@ -127,9 +127,9 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
     final viewModel = context.read<AddEditProjectViewModel>();
 
     final nickname = _nicknameController.text.trim();
-    final customYarnInfo = _yarnController.text.trim();
-    final customNeedleInfo = _needleController.text.trim();
-    final designTitle = _designController.text.trim();
+    final customYarnInfo = _yarnInfoController.text.trim();
+    final customNeedleInfo = _needleInfoController.text.trim();
+    final designTitle = _designTitleController.text.trim();
     final designer = _designerController.text.trim();
 
     final hasImage = _image != null || (_thumbnailUrl?.isNotEmpty ?? false);
@@ -148,8 +148,8 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
             nickname: nickname,
             startDate: DateUtilsHelper.toHyphenFormat(DateTime.now()),
             goalDate: DateUtilsHelper.toHyphenFormat(_goalDate!),
-            customNeedleInfo: customNeedleInfo,
-            customYarnInfo: customYarnInfo,
+            needleInfo: customNeedleInfo,
+            yarnInfo: customYarnInfo,
             designTitle: designTitle,
             designer: designer,
             visible: false,
@@ -161,10 +161,11 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
       viewModel.onEvent(
         AddEditProjectEvent.saveProject(
           project: widget.project!.copyWith(
+            projectId: widget.project!.id,
             nickname: nickname,
             goalDate: DateUtilsHelper.toHyphenFormat(_goalDate!),
-            customNeedleInfo: customNeedleInfo,
-            customYarnInfo: customYarnInfo,
+            needleInfo: customNeedleInfo,
+            yarnInfo: customYarnInfo,
             designTitle: designTitle,
             designer: designer,
           ),
@@ -238,8 +239,8 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                         ? ImageBox(
                             localImageUrl: _image?.path,
                             networkImageUrl: _thumbnailUrl,
-                            width: 110,
-                            height: 110,
+                            width: 115,
+                            height: 115,
                             onRemove: () {
                               setState(() {
                                 _image = null;
@@ -338,7 +339,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
               ),
               SizedBox(height: 10),
               TextField(
-                controller: _designController,
+                controller: _designTitleController,
                 maxLines: 1,
                 maxLength: 15,
                 decoration: InputDecoration(
@@ -393,7 +394,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
               ),
               SizedBox(height: 10),
               TextField(
-                controller: _yarnController,
+                controller: _yarnInfoController,
                 maxLines: 1,
                 maxLength: 15,
                 decoration: InputDecoration(
@@ -420,7 +421,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
               ),
               SizedBox(height: 10),
               TextField(
-                controller: _needleController,
+                controller: _needleInfoController,
                 maxLines: 1,
                 maxLength: 15,
                 decoration: InputDecoration(

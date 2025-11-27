@@ -38,7 +38,6 @@ class AddEditProjectViewModel extends ChangeNotifier {
     if (state.isLoading) {
       return;
     }
-
     _state = state.copyWith(isLoading: true);
     notifyListeners();
 
@@ -51,8 +50,8 @@ class AddEditProjectViewModel extends ChangeNotifier {
     }
 
     switch (result) {
-      case Success():
-        _eventController.add(AddEditProjectUiEvent.savedProject());
+      case Success(:final data):
+        _eventController.add(AddEditProjectUiEvent.savedProject(data));
       case Error(:final e):
         _eventController.add(AddEditProjectUiEvent.showSnackBar(e));
     }

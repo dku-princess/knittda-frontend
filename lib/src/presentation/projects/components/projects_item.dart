@@ -46,7 +46,7 @@ class ProjectsItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                project.nickname!,
+                project.nickname,
                 style: TextStyle(fontSize: 16),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

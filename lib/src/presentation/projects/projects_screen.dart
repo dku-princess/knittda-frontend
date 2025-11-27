@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/domain/model/project.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/use_case/add_project_use_case.dart';
+import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_my_project_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_screen.dart';
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_view_model.dart';
+import 'package:knittda/src/presentation/project_details/project_details_screen.dart';
+import 'package:knittda/src/presentation/project_details/project_details_view_model.dart';
 import 'package:knittda/src/presentation/projects/components/projects_item.dart';
 import 'package:knittda/src/presentation/projects/components/order_section.dart';
 import 'package:knittda/src/presentation/projects/projects_event.dart';
@@ -36,7 +42,7 @@ class ProjectsScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         backgroundColor: PRIMARY_COLOR,
         onPressed: () async {
-          bool? isSaved = await Navigator.push(
+          final addProject = await Navigator.push<Project>(
             context,
             MaterialPageRoute(
               builder: (_) => ChangeNotifierProvider(
@@ -49,7 +55,7 @@ class ProjectsScreen extends StatelessWidget {
             ),
           );
 
-          if (isSaved != null && isSaved) {
+          if (addProject != null) {
             viewModel.onEvent(const ProjectsEvent.loadProjects());
           }
         },
@@ -93,7 +99,31 @@ class ProjectsScreen extends StatelessWidget {
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.only(top: 10, bottom: 10),
-                        child: ProjectsItem(project: state.projects[index]),
+                        child: InkWell(
+                          onTap: () async {
+                            bool? isDelete = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ChangeNotifierProvider(
+                                  create: (_) => ProjectDetailsViewModel(
+                                    GetProjectUseCase(context.read<ProjectApiRepository>()),
+                                    GetMyProjectUseCase(context.read<ProjectApiRepository>()),
+                                    DeleteProjectUseCase(context.read<ProjectApiRepository>()),
+                                    UpdateProjectUseCase(context.read<ProjectApiRepository>()),
+                                    projectId: state.projects[index].id!,
+                                    project: state.projects[index],
+                                  ),
+                                  child: const ProjectDetailsScreen(),
+                                ),
+                              ),
+                            );
+
+                            if (isDelete != null && isDelete) {
+                              viewModel.onEvent(const ProjectsEvent.loadProjects());
+                            }
+                          },
+                          child: ProjectsItem(project: state.projects[index]),
+                        ),
                       );
                     },
                     separatorBuilder: (context, index) =>

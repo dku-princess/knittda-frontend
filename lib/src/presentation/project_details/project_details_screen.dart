@@ -1,0 +1,345 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:knittda/src/domain/model/project.dart';
+import 'package:knittda/src/domain/repository/project_api_repository.dart';
+import 'package:knittda/src/domain/use_case/add_project_use_case.dart';
+import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
+import 'package:knittda/src/presentation/project_add_edit/add_edit_project_screen.dart';
+import 'package:knittda/src/presentation/project_add_edit/add_edit_project_view_model.dart';
+import 'package:knittda/src/presentation/project_details/components/popup_menu_section.dart';
+import 'package:knittda/src/presentation/project_details/project_details_event.dart';
+import 'package:knittda/src/presentation/project_details/project_details_ui_event.dart';
+import 'package:knittda/src/presentation/project_details/project_details_view_model.dart';
+import 'package:provider/provider.dart';
+
+class ProjectDetailsScreen extends StatefulWidget {
+  const ProjectDetailsScreen({super.key});
+
+  @override
+  State<ProjectDetailsScreen> createState() => _ProjectDetailsScreenState();
+}
+
+class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
+  StreamSubscription? _subscription;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      if (mounted) {
+        final viewModel = context.read<ProjectDetailsViewModel>();
+
+        _subscription = viewModel.eventStream.listen((event) {
+          if (mounted) {
+            switch (event) {
+              case DeletedProject():
+                Navigator.pop(context, true);
+              case ShowSnackBar(:final message):
+                final snackBar = SnackBar(content: Text(message));
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
+          }
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final viewModel = context.watch<ProjectDetailsViewModel>();
+    final state = viewModel.state;
+
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          scrolledUnderElevation: 0,
+          actions: [
+            if (!state.isLoading && state.project != null)
+              PopupMenuSection(
+                onEdit: () async {
+                  final editedProject = await Navigator.push<Project>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ChangeNotifierProvider(
+                        create: (_) => AddEditProjectViewModel(
+                          AddProjectUseCase(
+                            context.read<ProjectApiRepository>(),
+                          ),
+                          UpdateProjectUseCase(
+                            context.read<ProjectApiRepository>(),
+                          ),
+                        ),
+                        child: AddEditProjectScreen(
+                          project: state.project!,
+                        ),
+                      ),
+                    ),
+                  );
+
+                  if (editedProject != null) {
+                    viewModel.onEvent(
+                      ProjectDetailsEvent.loadProject(
+                        projectId: state.project!.id!,
+                        project: editedProject,
+                      ),
+                    );
+                  }
+                },
+                onDelete: () async {
+                  viewModel.onEvent(
+                    ProjectDetailsEvent.deleteProject(
+                      projectId: state.project!.id!,
+                    ),
+                  );
+                },
+              ),
+          ],
+        ),
+
+        body: state.isLoading
+            ? const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("작품 불러오는 중..."),
+                    SizedBox(height: 24),
+                    CircularProgressIndicator(),
+                  ],
+                ),
+              )
+            : state.project == null
+            ? const Center(child: Text("작품 정보를 불러오지 못했어요."))
+            : NestedScrollView(
+                headerSliverBuilder: (context, innerBoxIsScrolled) {
+                  return [
+                    SliverToBoxAdapter(
+                      child: _ProjectHeader(project: state.project!),
+                    ),
+
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _TabBarDelegate(
+                        tabBar: const TabBar(
+                          tabs: [
+                            Tab(text: '정보'),
+                            Tab(text: '다이어리'),
+                            Tab(text: '리포트'),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+                body: TabBarView(
+                  children: [
+                    _InfoTap(project: state.project!),
+                    _DiaryTap(),
+                    _ReportTap(),
+                  ],
+                ),
+              ),
+      ),
+    );
+  }
+}
+
+class _TabBarDelegate extends SliverPersistentHeaderDelegate {
+  final TabBar tabBar;
+  const _TabBarDelegate({required this.tabBar});
+
+  @override
+  double get maxExtent => tabBar.preferredSize.height;
+
+  @override
+  double get minExtent => tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant _TabBarDelegate oldDelegate) {
+    return oldDelegate.tabBar != tabBar;
+  }
+}
+
+class _ProjectHeader extends StatelessWidget {
+  final Project project;
+
+  const _ProjectHeader({required this.project});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, right: 20, left: 20, bottom: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 작품 대표 사진
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child:
+                (project.thumbnailUrl != null &&
+                    project.thumbnailUrl!.isNotEmpty)
+                ? Image.network(
+                    project.thumbnailUrl!,
+                    width: 115,
+                    height: 115,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: 115,
+                        height: 115,
+                        color: Colors.grey[300],
+                        child: Icon(Icons.broken_image, color: Colors.grey),
+                      );
+                    },
+                  )
+                : Container(
+                    width: 115,
+                    height: 115,
+                    color: Colors.grey[300],
+                    child: Icon(Icons.image_outlined, color: Colors.grey),
+                  ),
+          ),
+
+          SizedBox(width: 26),
+
+          //작품 이름, 작품 상태 버튼
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(project.nickname, style: TextStyle(fontSize: 20)),
+
+                SizedBox(height: 10),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoTap extends StatelessWidget {
+  final Project project;
+
+  const _InfoTap({required this.project});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: EdgeInsets.only(top: 26, right: 40, left: 40),
+
+      children: [
+        Row(
+          children: [
+            SizedBox(
+              width: 100,
+              child: Text("도안", style: TextStyle(fontSize: 16)),
+            ),
+            Expanded(
+              child: Text(
+                (project.design?.title?.isNotEmpty ?? false)
+                    ? project.design!.title!
+                    : '정보를 추가해 주세요',
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+
+        Row(
+          children: [
+            SizedBox(
+              width: 100,
+              child: Text("작가", style: TextStyle(fontSize: 16)),
+            ),
+            Expanded(
+              child: Text(
+                (project.design?.designer?.isNotEmpty ?? false)
+                    ? project.design!.title!
+                    : '정보를 추가해 주세요',
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+
+        Row(
+          children: [
+            SizedBox(
+              width: 100,
+              child: Text("실", style: TextStyle(fontSize: 16)),
+            ),
+            Expanded(
+              child: Text(
+                (project.design?.yarnInfo?.isNotEmpty ?? false)
+                    ? project.design!.title!
+                    : '정보를 추가해 주세요',
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+
+        Row(
+          children: [
+            SizedBox(
+              width: 100,
+              child: Text("바늘", style: TextStyle(fontSize: 16)),
+            ),
+            Expanded(
+              child: Text(
+                (project.design?.needleInfo?.isNotEmpty ?? false)
+                    ? project.design!.title!
+                    : '정보를 추가해 주세요',
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+      ],
+    );
+  }
+}
+
+class _DiaryTap extends StatelessWidget {
+  const _DiaryTap();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(child: Text('다이어리'));
+  }
+}
+
+class _ReportTap extends StatelessWidget {
+  const _ReportTap();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(child: Text('리포트'));
+  }
+}

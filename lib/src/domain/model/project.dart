@@ -20,8 +20,9 @@ abstract class Project with _$Project {
     DateTime? endDate,
     required String goalDate,
 
-    String? customYarnInfo,
-    String? customNeedleInfo,
+    int? projectId,
+    String? yarnInfo,
+    String? needleInfo,
     String? designTitle,
     String? designer,
     bool? visible,

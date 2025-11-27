@@ -29,6 +29,7 @@ class ProjectApi {
     }
   }
 
+  // 프로젝트 수정
   Future<Result<Map<String, dynamic>>> putProject({
     required Project project,
     required XFile? file,
@@ -56,6 +57,7 @@ class ProjectApi {
     }
   }
 
+  //프로젝트 생성
   Future<Result<Map<String, dynamic>>> postProject({
     required Project project,
     required XFile? file,
@@ -91,10 +93,7 @@ class ProjectApi {
     required int projectId,
   }) async {
     try {
-      final response = await _dio.get(
-        '/api/v1/projects/',
-        queryParameters: {'projectId': projectId},
-      );
+      final response = await _dio.get('/api/v1/projects/$projectId');
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -112,10 +111,7 @@ class ProjectApi {
 
   Future<Result<void>> deleteProject({required int projectId}) async {
     try {
-      final response = await _dio.delete(
-        '/api/v1/projects/',
-        queryParameters: {'projectId': projectId},
-      );
+      final response = await _dio.delete('/api/v1/projects/$projectId');
 
       if (response.statusCode == 200) {
         return Result.success(null);
@@ -151,10 +147,7 @@ class ProjectApi {
     required int projectId,
   }) async {
     try {
-      final response = await _dio.get(
-        '/api/v1/projects/my/',
-        queryParameters: {'projectId': projectId},
-      );
+      final response = await _dio.get('/api/v1/projects/my/$projectId');
 
       if (response.statusCode == 200) {
         final data = response.data;
