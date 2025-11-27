@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/project.dart';
 import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
@@ -45,6 +46,8 @@ class ProjectDetailsViewModel extends ChangeNotifier {
         await _loadProject(projectId: projectId, project: project);
       case DeleteProject(:final projectId):
         await _deleteProject(projectId: projectId);
+      case ChangeProgress():
+        await _changeProgress();
     }
   }
 
@@ -102,6 +105,43 @@ class ProjectDetailsViewModel extends ChangeNotifier {
     }
 
     _state = state.copyWith(isLoading: false);
+    notifyListeners();
+  }
+
+  Future<void> _changeProgress() async {
+    final project = state.project;
+    if (project == null || project.id == null) return;
+
+    final newStatus = switch (project.status) {
+      "IN_PROGRESS" => "DONE",
+      "DONE" => "IN_PROGRESS",
+      _ => project.status,
+    };
+
+    final updatedProject = project.copyWith(
+      projectId: project.id,
+      status: newStatus,
+      endDate: newStatus == 'DONE' ? DateUtilsHelper.toHyphenFormat(DateTime.now()) : null,
+    );
+
+    final prevProject = project;
+
+    _state = state.copyWith(project: updatedProject);
+    notifyListeners();
+
+    final result = await _updateProjectUseCase(
+      project: updatedProject,
+      file: null,
+    );
+
+    switch (result) {
+      case Success(:final data):
+        _state = state.copyWith(project: data);
+      case Error(:final e):
+        _state = state.copyWith(project: prevProject);
+        _eventController.add(ProjectDetailsUiEvent.showSnackBar(e));
+    }
+
     notifyListeners();
   }
 

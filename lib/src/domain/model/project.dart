@@ -17,7 +17,7 @@ abstract class Project with _$Project {
     DateTime? lastRecordAt,
     DateTime? createdAt,
     required String startDate,
-    DateTime? endDate,
+    String? endDate,
     required String goalDate,
 
     int? projectId,

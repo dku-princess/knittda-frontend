@@ -8,6 +8,7 @@ import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_screen.dart';
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_view_model.dart';
 import 'package:knittda/src/presentation/project_details/components/popup_menu_section.dart';
+import 'package:knittda/src/presentation/project_details/components/progress_section.dart';
 import 'package:knittda/src/presentation/project_details/project_details_event.dart';
 import 'package:knittda/src/presentation/project_details/project_details_ui_event.dart';
 import 'package:knittda/src/presentation/project_details/project_details_view_model.dart';
@@ -78,9 +79,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                             context.read<ProjectApiRepository>(),
                           ),
                         ),
-                        child: AddEditProjectScreen(
-                          project: state.project!,
-                        ),
+                        child: AddEditProjectScreen(project: state.project!),
                       ),
                     ),
                   );
@@ -122,7 +121,14 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                 headerSliverBuilder: (context, innerBoxIsScrolled) {
                   return [
                     SliverToBoxAdapter(
-                      child: _ProjectHeader(project: state.project!),
+                      child: _ProjectHeader(
+                        project: state.project!,
+                        onProgressPressed: () {
+                          viewModel.onEvent(
+                            ProjectDetailsEvent.changeProgress(),
+                          );
+                        },
+                      ),
                     ),
 
                     SliverPersistentHeader(
@@ -182,8 +188,12 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
 
 class _ProjectHeader extends StatelessWidget {
   final Project project;
+  final VoidCallback onProgressPressed;
 
-  const _ProjectHeader({required this.project});
+  const _ProjectHeader({
+    required this.project,
+    required this.onProgressPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -229,7 +239,12 @@ class _ProjectHeader extends StatelessWidget {
               children: [
                 Text(project.nickname, style: TextStyle(fontSize: 20)),
 
-                SizedBox(height: 10),
+                SizedBox(height: 16),
+
+                ProgressSection(
+                  status: project.status!,
+                  onPressed: onProgressPressed,
+                ),
               ],
             ),
           ),
