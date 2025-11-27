@@ -9,4 +9,5 @@ sealed class ProjectDetailsEvent with _$ProjectDetailsEvent {
   const factory ProjectDetailsEvent.deleteProject({required int projectId}) =
       DeleteProject;
   const factory ProjectDetailsEvent.changeProgress() = ChangeProgress;
+  const factory ProjectDetailsEvent.loadRecords({required int projectId}) = LoadRecords;
 }

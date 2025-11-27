@@ -1,4 +1,4 @@
-import 'package:cross_file/src/types/interface.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/data/data_sources/record_api.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/records.dart';

@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/project.dart';
+import 'package:knittda/src/domain/model/records.dart';
 import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_my_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
+import 'package:knittda/src/domain/use_case_record/get_records_projects_use_case.dart';
+import 'package:knittda/src/presentation/project_details/diary_tap_state.dart';
 import 'package:knittda/src/presentation/project_details/project_details_event.dart';
 import 'package:knittda/src/presentation/project_details/project_details_state.dart';
 import 'package:knittda/src/presentation/project_details/project_details_ui_event.dart';
@@ -17,10 +20,16 @@ class ProjectDetailsViewModel extends ChangeNotifier {
   final GetMyProjectUseCase _getMyProjectUseCase;
   final DeleteProjectUseCase _deleteProjectUseCase;
   final UpdateProjectUseCase _updateProjectUseCase;
+  final GetRecordsProjectsUseCase _getRecordsProjectsUseCase;
 
   ProjectDetailsState _state = ProjectDetailsState(
     project: null,
     isLoading: false,
+    diaryTapState: DiaryTapState(
+      records: [],
+      isLoading: false,
+      errorMessage: null,
+    ),
   );
 
   ProjectDetailsState get state => _state;
@@ -33,11 +42,13 @@ class ProjectDetailsViewModel extends ChangeNotifier {
     this._getProjectUseCase,
     this._getMyProjectUseCase,
     this._deleteProjectUseCase,
-    this._updateProjectUseCase, {
+    this._updateProjectUseCase,
+    this._getRecordsProjectsUseCase, {
     required int projectId,
     Project? project,
   }) {
     _loadProject(projectId: projectId, project: project);
+    _loadRecords(projectId: projectId);
   }
 
   Future<void> onEvent(ProjectDetailsEvent event) async {
@@ -48,6 +59,8 @@ class ProjectDetailsViewModel extends ChangeNotifier {
         await _deleteProject(projectId: projectId);
       case ChangeProgress():
         await _changeProgress();
+      case LoadRecords(:final projectId):
+        await _loadRecords(projectId: projectId);
     }
   }
 
@@ -121,7 +134,9 @@ class ProjectDetailsViewModel extends ChangeNotifier {
     final updatedProject = project.copyWith(
       projectId: project.id,
       status: newStatus,
-      endDate: newStatus == 'DONE' ? DateUtilsHelper.toHyphenFormat(DateTime.now()) : null,
+      endDate: newStatus == 'DONE'
+          ? DateUtilsHelper.toHyphenFormat(DateTime.now())
+          : null,
     );
 
     final prevProject = project;
@@ -142,6 +157,37 @@ class ProjectDetailsViewModel extends ChangeNotifier {
         _eventController.add(ProjectDetailsUiEvent.showSnackBar(e));
     }
 
+    notifyListeners();
+  }
+
+  Future<void> _loadRecords({required int projectId}) async {
+    _state = state.copyWith(
+      diaryTapState: state.diaryTapState.copyWith(
+        isLoading: true,
+        errorMessage: null,
+      ),
+    );
+    notifyListeners();
+
+    final Result<List<Records>> result = await _getRecordsProjectsUseCase(
+      projectId: projectId,
+    );
+
+    switch (result) {
+      case Success(:final data):
+        _state = state.copyWith(
+          diaryTapState: state.diaryTapState.copyWith(records: data),
+        );
+      case Error(:final e):
+        _state = state.copyWith(
+          diaryTapState: state.diaryTapState.copyWith(errorMessage: e),
+        );
+        _eventController.add(ProjectDetailsUiEvent.showSnackBar(e));
+    }
+
+    _state = state.copyWith(
+      diaryTapState: state.diaryTapState.copyWith(isLoading: false),
+    );
     notifyListeners();
   }
 

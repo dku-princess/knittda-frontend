@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/domain/model/project.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
+import 'package:knittda/src/domain/repository/record_api_repository.dart';
 import 'package:knittda/src/domain/use_case/add_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_my_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
+import 'package:knittda/src/domain/use_case_record/get_records_projects_use_case.dart';
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_screen.dart';
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_view_model.dart';
 import 'package:knittda/src/presentation/project_details/project_details_screen.dart';
@@ -110,6 +112,7 @@ class ProjectsScreen extends StatelessWidget {
                                     GetMyProjectUseCase(context.read<ProjectApiRepository>()),
                                     DeleteProjectUseCase(context.read<ProjectApiRepository>()),
                                     UpdateProjectUseCase(context.read<ProjectApiRepository>()),
+                                    GetRecordsProjectsUseCase(context.read<RecordApiRepository>()),
                                     projectId: state.projects[index].id!,
                                     project: state.projects[index],
                                   ),

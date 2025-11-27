@@ -5,6 +5,7 @@ import 'package:knittda/src/core/storage/token_storage.dart';
 import 'package:knittda/src/data/data_sources/feed_api.dart';
 import 'package:knittda/src/data/data_sources/kakao_login.dart';
 import 'package:knittda/src/data/data_sources/project_api.dart';
+import 'package:knittda/src/data/data_sources/record_api.dart';
 import 'package:knittda/src/data/data_sources/social_login_apple.dart';
 import 'package:knittda/src/data/repositories/auth_repository.dart';
 //import 'package:knittda/src/data/repositories/feed_repository.dart';
@@ -13,8 +14,10 @@ import 'package:knittda/src/data/repository/project_api_repository_impl.dart';
 import 'package:knittda/src/data/repositories/record_repository.dart';
 import 'package:knittda/src/data/repositories/report_repository.dart';
 import 'package:knittda/src/data/repositories/work_repository.dart';
+import 'package:knittda/src/data/repository/record_api_repository_impl.dart';
 import 'package:knittda/src/domain/repository/feed_api_repository.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
+import 'package:knittda/src/domain/repository/record_api_repository.dart';
 import 'package:knittda/src/domain/use_case/create_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/create_work_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
@@ -167,6 +170,13 @@ Future<List<SingleChildWidget>> getProviders() async {
     ),
     ChangeNotifierProvider<FeedViewModel>(
       create: (context) => FeedViewModel(context.read<GetFeedUseCase>()),
+    ),
+
+    ProxyProvider<Dio, RecordApi>(
+      update: (context, dio, _) => RecordApi(dio),
+    ),
+    ProxyProvider<RecordApi, RecordApiRepository>(
+      update: (context, api, _) => RecordApiRepositoryImpl(api),
     ),
   ];
 }

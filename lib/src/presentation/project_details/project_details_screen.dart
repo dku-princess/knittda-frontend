@@ -9,6 +9,8 @@ import 'package:knittda/src/presentation/project_add_edit/add_edit_project_scree
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_view_model.dart';
 import 'package:knittda/src/presentation/project_details/components/popup_menu_section.dart';
 import 'package:knittda/src/presentation/project_details/components/progress_section.dart';
+import 'package:knittda/src/presentation/project_details/components/record_item.dart';
+import 'package:knittda/src/presentation/project_details/diary_tap_state.dart';
 import 'package:knittda/src/presentation/project_details/project_details_event.dart';
 import 'package:knittda/src/presentation/project_details/project_details_ui_event.dart';
 import 'package:knittda/src/presentation/project_details/project_details_view_model.dart';
@@ -148,7 +150,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                 body: TabBarView(
                   children: [
                     _InfoTap(project: state.project!),
-                    _DiaryTap(),
+                    _DiaryTap(state: state.diaryTapState),
                     _ReportTap(),
                   ],
                 ),
@@ -342,11 +344,31 @@ class _InfoTap extends StatelessWidget {
 }
 
 class _DiaryTap extends StatelessWidget {
-  const _DiaryTap();
+  final DiaryTapState state;
+
+  const _DiaryTap({required this.state});
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('다이어리'));
+    if (state.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (state.records.isEmpty) {
+      return const Center(child: Text('기록을 작성해 주세요.'));
+    }
+
+    if (state.errorMessage != null) {
+      return Center(child: Text(state.errorMessage!));
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 20),
+      itemCount: state.records.length,
+      itemBuilder: (context, index) {
+        return RecordItem(record: state.records[index], onTap: () {});
+      },
+    );
   }
 }
 
