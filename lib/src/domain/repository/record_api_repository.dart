@@ -16,4 +16,5 @@ abstract class RecordApiRepository {
   Future<Result<Records>> getRecord({required int recordId});
   Future<Result<void>> deleteRecord({required int recordId});
   Future<Result<List<Records>>> getRecordsProjects({required int projectId});
+  Future<Result<String>> getQuestion({required int projectId});
 }

@@ -92,4 +92,14 @@ class RecordApiRepositoryImpl implements RecordApiRepository {
       Error(:final e) => Result.error(e),
     };
   }
+
+  @override
+  Future<Result<String>> getQuestion({required int projectId}) async {
+    final Result<String> result = await _api.getQuestion(projectId: projectId);
+
+    return switch (result) {
+      Success(:final data) => Result.success(data),
+      Error(:final e) => Result.error(e),
+    };
+  }
 }

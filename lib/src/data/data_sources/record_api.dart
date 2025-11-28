@@ -164,4 +164,22 @@ class RecordApi {
       return Result.error('알 수 없는 에러');
     }
   }
+
+  Future<Result<String>> getQuestion({required int projectId}) async {
+    try {
+      final response = await _dio.get('/api/v1/questions/generate/$projectId');
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        final String hits = data['data'];
+        return Result.success(hits);
+      } else {
+        return Result.error('서버 오류: ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      return Result.error('네트워크 에러: ${e.message}');
+    } catch (e) {
+      return Result.error('알 수 없는 에러');
+    }
+  }
 }

@@ -1,10 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/domain/model/project.dart';
+import 'package:knittda/src/domain/model/records.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
+import 'package:knittda/src/domain/repository/record_api_repository.dart';
 import 'package:knittda/src/domain/use_case/add_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
+import 'package:knittda/src/domain/use_case_record/add_record_use_case.dart';
+import 'package:knittda/src/domain/use_case_record/get_question_use_case.dart';
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_screen.dart';
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_view_model.dart';
 import 'package:knittda/src/presentation/project_details/components/popup_menu_section.dart';
@@ -14,7 +19,11 @@ import 'package:knittda/src/presentation/project_details/diary_tap_state.dart';
 import 'package:knittda/src/presentation/project_details/project_details_event.dart';
 import 'package:knittda/src/presentation/project_details/project_details_ui_event.dart';
 import 'package:knittda/src/presentation/project_details/project_details_view_model.dart';
+import 'package:knittda/src/presentation/record_add_edit/add_edit_record_screen.dart';
+import 'package:knittda/src/presentation/record_add_edit/add_edit_record_view_model.dart';
 import 'package:provider/provider.dart';
+
+import '../../domain/use_case_record/update_record_use_case.dart';
 
 class ProjectDetailsScreen extends StatefulWidget {
   const ProjectDetailsScreen({super.key});
@@ -62,99 +71,151 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
 
     return DefaultTabController(
       length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          scrolledUnderElevation: 0,
-          actions: [
-            if (!state.isLoading && state.project != null)
-              PopupMenuSection(
-                onEdit: () async {
-                  final editedProject = await Navigator.push<Project>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ChangeNotifierProvider(
-                        create: (_) => AddEditProjectViewModel(
-                          AddProjectUseCase(
-                            context.read<ProjectApiRepository>(),
-                          ),
-                          UpdateProjectUseCase(
-                            context.read<ProjectApiRepository>(),
+      initialIndex: 1,
+      child: Builder(
+        builder: (context) {
+          final tabController = DefaultTabController.of(context);
+
+          return Scaffold(
+            appBar: AppBar(
+              scrolledUnderElevation: 0,
+              actions: [
+                if (!state.isLoading && state.project != null)
+                  PopupMenuSection(
+                    onEdit: () async {
+                      final editedProject = await Navigator.push<Project>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ChangeNotifierProvider(
+                            create: (_) => AddEditProjectViewModel(
+                              AddProjectUseCase(
+                                context.read<ProjectApiRepository>(),
+                              ),
+                              UpdateProjectUseCase(
+                                context.read<ProjectApiRepository>(),
+                              ),
+                            ),
+                            child: AddEditProjectScreen(
+                              project: state.project!,
+                            ),
                           ),
                         ),
-                        child: AddEditProjectScreen(project: state.project!),
-                      ),
-                    ),
-                  );
+                      );
 
-                  if (editedProject != null) {
-                    viewModel.onEvent(
-                      ProjectDetailsEvent.loadProject(
-                        projectId: state.project!.id!,
-                        project: editedProject,
-                      ),
-                    );
-                  }
-                },
-                onDelete: () async {
-                  viewModel.onEvent(
-                    ProjectDetailsEvent.deleteProject(
-                      projectId: state.project!.id!,
-                    ),
-                  );
-                },
-              ),
-          ],
-        ),
+                      if (editedProject != null) {
+                        viewModel.onEvent(
+                          ProjectDetailsEvent.loadProject(
+                            projectId: state.project!.id!,
+                            project: editedProject,
+                          ),
+                        );
+                      }
+                    },
+                    onDelete: () async {
+                      viewModel.onEvent(
+                        ProjectDetailsEvent.deleteProject(
+                          projectId: state.project!.id!,
+                        ),
+                      );
+                    },
+                  ),
+              ],
+            ),
 
-        body: state.isLoading
-            ? const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("작품 불러오는 중..."),
-                    SizedBox(height: 24),
-                    CircularProgressIndicator(),
-                  ],
-                ),
-              )
-            : state.project == null
-            ? const Center(child: Text("작품 정보를 불러오지 못했어요."))
-            : NestedScrollView(
-                headerSliverBuilder: (context, innerBoxIsScrolled) {
-                  return [
-                    SliverToBoxAdapter(
-                      child: _ProjectHeader(
-                        project: state.project!,
-                        onProgressPressed: () {
-                          viewModel.onEvent(
-                            ProjectDetailsEvent.changeProgress(),
+            floatingActionButton: AnimatedBuilder(
+              animation: tabController,
+              builder: (context, _) {
+                return (state.project != null && tabController.index == 1)
+                    ? FloatingActionButton(
+                        onPressed: () async {
+                          final addRecord = await Navigator.push<Records>(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChangeNotifierProvider(
+                                create: (_) => AddEditRecordViewModel(
+                                  AddRecordUseCase(
+                                    context.read<RecordApiRepository>(),
+                                  ),
+                                  UpdateRecordUseCase(
+                                    context.read<RecordApiRepository>(),
+                                  ),
+                                  GetQuestionUseCase(
+                                    context.read<RecordApiRepository>(),
+                                  ),
+                                  projectId: state.project!.id!,
+                                ),
+                                child: AddEditRecordScreen(projectId: state.project!.id!),
+                              ),
+                            ),
                           );
-                        },
-                      ),
-                    ),
 
-                    SliverPersistentHeader(
-                      pinned: true,
-                      delegate: _TabBarDelegate(
-                        tabBar: const TabBar(
-                          tabs: [
-                            Tab(text: '정보'),
-                            Tab(text: '다이어리'),
-                            Tab(text: '리포트'),
-                          ],
-                        ),
-                      ),
+                          if (addRecord != null) {
+                            viewModel.onEvent(
+                              ProjectDetailsEvent.loadRecords(
+                                projectId: state.project!.id!,
+                              ),
+                            );
+                          }
+                        },
+                        backgroundColor: PRIMARY_COLOR,
+                        child: const Icon(Icons.add, color: Colors.white),
+                      )
+                    : const SizedBox.shrink();
+              },
+            ),
+
+            body: state.isLoading
+                ? const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("작품 불러오는 중..."),
+                        SizedBox(height: 24),
+                        CircularProgressIndicator(),
+                      ],
                     ),
-                  ];
-                },
-                body: TabBarView(
-                  children: [
-                    _InfoTap(project: state.project!),
-                    _DiaryTap(state: state.diaryTapState),
-                    _ReportTap(),
-                  ],
-                ),
-              ),
+                  )
+                : state.project == null
+                ? const Center(child: Text("작품 정보를 불러오지 못했어요."))
+                : NestedScrollView(
+                    headerSliverBuilder: (context, innerBoxIsScrolled) {
+                      return [
+                        SliverToBoxAdapter(
+                          child: _ProjectHeader(
+                            project: state.project!,
+                            onProgressPressed: () {
+                              viewModel.onEvent(
+                                ProjectDetailsEvent.changeProgress(),
+                              );
+                            },
+                          ),
+                        ),
+
+                        SliverPersistentHeader(
+                          pinned: true,
+                          delegate: _TabBarDelegate(
+                            tabBar: const TabBar(
+                              tabs: [
+                                Tab(text: '정보'),
+                                Tab(text: '다이어리'),
+                                Tab(text: '리포트'),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ];
+                    },
+                    body: TabBarView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [
+                        _InfoTap(project: state.project!),
+                        _DiaryTap(state: state.diaryTapState),
+                        _ReportTap(),
+                      ],
+                    ),
+                  ),
+          );
+        },
       ),
     );
   }
