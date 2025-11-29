@@ -132,33 +132,22 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
             );
           }
 
-          return ListView.separated(
-              padding: const EdgeInsets.only(
-                top: 4,
-                bottom: 20,
-                left: 20,
-                right: 20,
-              ),
-              controller: _scrollController,
-              itemBuilder: (context, index) {
-                if (viewModel.state.isLoadingMore &&
-                    index == viewModel.state.feeds.length) {
-                  return const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                }
-                return Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: FeedItem(feed: viewModel.state.feeds[index]),
+          return ListView.builder(
+            controller: _scrollController,
+            itemBuilder: (context, index) {
+              if (viewModel.state.isLoadingMore &&
+                  index == viewModel.state.feeds.length) {
+                return const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Center(child: CircularProgressIndicator()),
                 );
-              },
-              separatorBuilder: (context, index) =>
-                  Divider(color: Colors.grey[300]),
-              itemCount:
-                  viewModel.state.feeds.length +
-                  (viewModel.state.isLoadingMore ? 1 : 0),
-            );
+              }
+              return FeedItem(feed: viewModel.state.feeds[index], onTap: () {});
+            },
+            itemCount:
+                viewModel.state.feeds.length +
+                (viewModel.state.isLoadingMore ? 1 : 0),
+          );
         },
       ),
     );

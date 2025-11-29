@@ -61,9 +61,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 MaterialPageRoute(
                   builder: (_) => ChangeNotifierProvider(
                     create: (_) => FeedSearchViewModel(
-                      GetSearchFeedUseCase(
-                        context.read<FeedApiRepository>(),
-                      ),
+                      GetSearchFeedUseCase(context.read<FeedApiRepository>()),
                     ),
                     child: const FeedSearchScreen(),
                   ),
@@ -107,13 +105,7 @@ class _FeedScreenState extends State<FeedScreen> {
             onRefresh: () async {
               await viewModel.onEvent(FeedEvent.refresh(20, null));
             },
-            child: ListView.separated(
-              padding: const EdgeInsets.only(
-                top: 4,
-                bottom: 20,
-                left: 20,
-                right: 20,
-              ),
+            child: ListView.builder(
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               itemBuilder: (context, index) {
@@ -124,13 +116,11 @@ class _FeedScreenState extends State<FeedScreen> {
                     child: Center(child: CircularProgressIndicator()),
                   );
                 }
-                return Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: FeedItem(feed: viewModel.state.feeds[index]),
+                return FeedItem(
+                  feed: viewModel.state.feeds[index],
+                  onTap: () {},
                 );
               },
-              separatorBuilder: (context, index) =>
-                  Divider(color: Colors.grey[300]),
               itemCount:
                   viewModel.state.feeds.length +
                   (viewModel.state.isLoadingMore ? 1 : 0),

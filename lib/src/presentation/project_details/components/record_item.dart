@@ -17,7 +17,7 @@ class RecordItem extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding:  const EdgeInsets.only(top: 20, bottom: 16, right: 24, left: 24),
+        padding:  const EdgeInsets.only(top: 20, bottom: 20, right: 24, left: 24),
 
         decoration: BoxDecoration(
           border: Border(
@@ -57,7 +57,7 @@ class RecordItem extends StatelessWidget {
             //태그
             if (record.tags != null && record.tags!.isNotEmpty) ...[
               _RecordTags(tags: record.tags!),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
             ]
           ],
         ),
