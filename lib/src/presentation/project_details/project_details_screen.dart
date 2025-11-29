@@ -39,6 +39,8 @@ class ProjectDetailsScreen extends StatefulWidget {
 class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
   StreamSubscription? _subscription;
 
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -65,7 +67,18 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
   @override
   void dispose() {
     _subscription?.cancel();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollToTop() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
   }
 
   @override
@@ -184,6 +197,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                 : state.project == null
                 ? const Center(child: Text("작품 정보를 불러오지 못했어요."))
                 : NestedScrollView(
+                    controller: _scrollController,
                     headerSliverBuilder: (context, innerBoxIsScrolled) {
                       return [
                         SliverToBoxAdapter(
@@ -200,7 +214,8 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                         SliverPersistentHeader(
                           pinned: true,
                           delegate: _TabBarDelegate(
-                            tabBar: const TabBar(
+                            tabBar: TabBar(
+                              onTap: (_) => _scrollToTop(),
                               tabs: [
                                 Tab(text: '정보'),
                                 Tab(text: '다이어리'),
