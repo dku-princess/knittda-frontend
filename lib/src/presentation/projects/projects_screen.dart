@@ -91,46 +91,48 @@ class ProjectsScreen extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 Expanded(
-                  child: ListView.separated(
-                    padding: const EdgeInsets.only(
-                      top: 4,
-                      bottom: 80,
-                      left: 20,
-                      right: 20,
-                    ),
+                  child: ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 80),
                     itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 10, bottom: 10),
-                        child: InkWell(
-                          onTap: () async {
-                            bool? isDelete = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ChangeNotifierProvider(
-                                  create: (_) => ProjectDetailsViewModel(
-                                    GetProjectUseCase(context.read<ProjectApiRepository>()),
-                                    GetMyProjectUseCase(context.read<ProjectApiRepository>()),
-                                    DeleteProjectUseCase(context.read<ProjectApiRepository>()),
-                                    UpdateProjectUseCase(context.read<ProjectApiRepository>()),
-                                    GetRecordsProjectsUseCase(context.read<RecordApiRepository>()),
-                                    projectId: state.projects[index].id!,
-                                    project: state.projects[index],
+                      return ProjectsItem(
+                        project: state.projects[index],
+                        onTap: () async {
+                          bool? isDelete = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChangeNotifierProvider(
+                                create: (_) => ProjectDetailsViewModel(
+                                  GetProjectUseCase(
+                                    context.read<ProjectApiRepository>(),
                                   ),
-                                  child: const ProjectDetailsScreen(),
+                                  GetMyProjectUseCase(
+                                    context.read<ProjectApiRepository>(),
+                                  ),
+                                  DeleteProjectUseCase(
+                                    context.read<ProjectApiRepository>(),
+                                  ),
+                                  UpdateProjectUseCase(
+                                    context.read<ProjectApiRepository>(),
+                                  ),
+                                  GetRecordsProjectsUseCase(
+                                    context.read<RecordApiRepository>(),
+                                  ),
+                                  projectId: state.projects[index].id!,
+                                  project: state.projects[index],
                                 ),
+                                child: const ProjectDetailsScreen(),
                               ),
-                            );
+                            ),
+                          );
 
-                            if (isDelete != null && isDelete) {
-                              viewModel.onEvent(const ProjectsEvent.loadProjects());
-                            }
-                          },
-                          child: ProjectsItem(project: state.projects[index]),
-                        ),
+                          if (isDelete != null && isDelete) {
+                            viewModel.onEvent(
+                              const ProjectsEvent.loadProjects(),
+                            );
+                          }
+                        },
                       );
                     },
-                    separatorBuilder: (context, index) =>
-                        Divider(color: Colors.grey[300]),
                     itemCount: state.projects.length,
                   ),
                 ),

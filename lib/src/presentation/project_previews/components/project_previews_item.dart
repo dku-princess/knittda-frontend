@@ -16,8 +16,8 @@ class ProjectPreviewsItem extends StatelessWidget {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       color: Colors.white,
-      elevation: 5,
-      shadowColor: Colors.black26,
+      elevation: 7,
+      shadowColor: Colors.black38,
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

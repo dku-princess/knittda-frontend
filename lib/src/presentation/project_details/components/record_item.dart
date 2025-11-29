@@ -16,50 +16,53 @@ class RecordItem extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      child: Container(
-        padding:  const EdgeInsets.only(top: 20, bottom: 20, right: 24, left: 24),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 20),
 
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Colors.grey.shade300),
-          ),
-        ),
-
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            //날짜 시간
-            Text(
-              '$dateStr $timeStr',
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: Colors.grey.shade300),
             ),
-            const SizedBox(height: 10),
+          ),
 
-            //사진
-            if (record.images != null &&
-                record.images!.isNotEmpty) ...[
-              _RecordImages(images: record.images!),
-              const SizedBox(height: 16),
-            ],
-
-            //기록
-            if (record.comment != null &&
-                record.comment!.isNotEmpty) ...[
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              //날짜 시간
               Text(
-                record.comment!,
-                style: const TextStyle(fontSize: 14),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
+                '$dateStr $timeStr',
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
-              const SizedBox(height: 16),
-            ],
-
-            //태그
-            if (record.tags != null && record.tags!.isNotEmpty) ...[
-              _RecordTags(tags: record.tags!),
               const SizedBox(height: 10),
-            ]
-          ],
+
+              //사진
+              if (record.images != null &&
+                  record.images!.isNotEmpty) ...[
+                _RecordImages(images: record.images!),
+                const SizedBox(height: 16),
+              ],
+
+              //기록
+              if (record.comment != null &&
+                  record.comment!.isNotEmpty) ...[
+                Text(
+                  record.comment!,
+                  style: const TextStyle(fontSize: 14),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 16),
+              ],
+
+              //태그
+              if (record.tags != null && record.tags!.isNotEmpty) ...[
+                _RecordTags(tags: record.tags!),
+                const SizedBox(height: 10),
+              ]
+            ],
+          ),
         ),
       ),
     );
