@@ -88,7 +88,12 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
   }
 
   Future<void> _pickImage() async {
-    final picked = await picker.pickImage(source: ImageSource.gallery);
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 512,
+      maxHeight: 512,
+      imageQuality: 70,
+    );
 
     if (!mounted) return;
 

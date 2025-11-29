@@ -137,7 +137,9 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
 
     final XFile? file = await _picker.pickImage(
       source: source,
-      //imageQuality: 85,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      imageQuality: 80,
     );
 
     if (file == null) return;
