@@ -9,7 +9,9 @@ import 'package:knittda/src/domain/repository/record_api_repository.dart';
 import 'package:knittda/src/domain/use_case/add_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
 import 'package:knittda/src/domain/use_case_record/add_record_use_case.dart';
+import 'package:knittda/src/domain/use_case_record/delete_record_use_case.dart';
 import 'package:knittda/src/domain/use_case_record/get_question_use_case.dart';
+import 'package:knittda/src/domain/use_case_record/get_record_use_case.dart';
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_screen.dart';
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_view_model.dart';
 import 'package:knittda/src/presentation/project_details/components/popup_menu_section.dart';
@@ -21,6 +23,8 @@ import 'package:knittda/src/presentation/project_details/project_details_ui_even
 import 'package:knittda/src/presentation/project_details/project_details_view_model.dart';
 import 'package:knittda/src/presentation/record_add_edit/add_edit_record_screen.dart';
 import 'package:knittda/src/presentation/record_add_edit/add_edit_record_view_model.dart';
+import 'package:knittda/src/presentation/record_details/record_details_screen.dart';
+import 'package:knittda/src/presentation/record_details/record_details_view_model.dart';
 import 'package:provider/provider.dart';
 
 import '../../domain/use_case_record/update_record_use_case.dart';
@@ -144,7 +148,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                                   ),
                                   projectId: state.project!.id!,
                                 ),
-                                child: AddEditRecordScreen(projectId: state.project!.id!),
+                                child: AddEditRecordScreen(
+                                  projectId: state.project!.id!,
+                                ),
                               ),
                             ),
                           );
@@ -209,7 +215,37 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                       physics: const NeverScrollableScrollPhysics(),
                       children: [
                         _InfoTap(project: state.project!),
-                        _DiaryTap(state: state.diaryTapState),
+                        _DiaryTap(
+                          state: state.diaryTapState,
+                          onRecordTap: (record) async {
+                            bool? isDelete = await Navigator.push<bool>(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ChangeNotifierProvider(
+                                  create: (_) => RecordDetailsViewModel(
+                                    GetRecordUseCase(
+                                      context.read<RecordApiRepository>(),
+                                    ),
+                                    DeleteRecordUseCase(
+                                      context.read<RecordApiRepository>(),
+                                    ),
+                                    recordId: record.id!,
+                                    record: record,
+                                  ),
+                                  child: const RecordDetailsScreen(),
+                                ),
+                              ),
+                            );
+
+                            if (isDelete != null && isDelete) {
+                              viewModel.onEvent(
+                                ProjectDetailsEvent.loadRecords(
+                                  projectId: state.project!.id!,
+                                ),
+                              );
+                            }
+                          },
+                        ),
                         _ReportTap(),
                       ],
                     ),
@@ -355,7 +391,7 @@ class _InfoTap extends StatelessWidget {
             Expanded(
               child: Text(
                 (project.design?.designer?.isNotEmpty ?? false)
-                    ? project.design!.title!
+                    ? project.design!.designer!
                     : '정보를 추가해 주세요',
                 style: TextStyle(fontSize: 16),
               ),
@@ -373,7 +409,7 @@ class _InfoTap extends StatelessWidget {
             Expanded(
               child: Text(
                 (project.design?.yarnInfo?.isNotEmpty ?? false)
-                    ? project.design!.title!
+                    ? project.design!.yarnInfo!
                     : '정보를 추가해 주세요',
                 style: TextStyle(fontSize: 16),
               ),
@@ -391,7 +427,7 @@ class _InfoTap extends StatelessWidget {
             Expanded(
               child: Text(
                 (project.design?.needleInfo?.isNotEmpty ?? false)
-                    ? project.design!.title!
+                    ? project.design!.needleInfo!
                     : '정보를 추가해 주세요',
                 style: TextStyle(fontSize: 16),
               ),
@@ -406,8 +442,9 @@ class _InfoTap extends StatelessWidget {
 
 class _DiaryTap extends StatelessWidget {
   final DiaryTapState state;
+  final Future<void> Function(Records record) onRecordTap;
 
-  const _DiaryTap({required this.state});
+  const _DiaryTap({required this.state, required this.onRecordTap});
 
   @override
   Widget build(BuildContext context) {
@@ -427,7 +464,12 @@ class _DiaryTap extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 20),
       itemCount: state.records.length,
       itemBuilder: (context, index) {
-        return RecordItem(record: state.records[index], onTap: () {});
+        return RecordItem(
+          record: state.records[index],
+          onTap: () {
+            onRecordTap(state.records[index]);
+          },
+        );
       },
     );
   }
