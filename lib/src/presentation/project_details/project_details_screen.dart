@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/domain/model/project.dart';
 import 'package:knittda/src/domain/model/records.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
@@ -261,7 +262,12 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                             }
                           },
                         ),
-                        _ReportTap(),
+                        _ReportTap(
+                          project: state.project!,
+                          record: state.diaryTapState.records.isNotEmpty
+                              ? state.diaryTapState.records.first
+                              : null,
+                        ),
                       ],
                     ),
                   ),
@@ -491,10 +497,183 @@ class _DiaryTap extends StatelessWidget {
 }
 
 class _ReportTap extends StatelessWidget {
-  const _ReportTap();
+  final Project project;
+  final Records? record;
+
+  const _ReportTap({required this.project, required this.record});
+
+  int _statusPercent(Records? record) {
+    if (record == null) return 0;
+
+    switch (record.recordStatus) {
+      case 'NOT_STARTED':
+        return 0;
+      case 'STARTED':
+        return 25;
+      case 'IN_PROGRESS':
+        return 50;
+      case 'ALMOST_DONE':
+        return 75;
+      case 'COMPLETED':
+        return 100;
+    }
+    return 0;
+  }
+
+  DateTime? _parseDate(String? value) {
+    if (value == null || value.isEmpty) return null;
+    try {
+      return DateTime.parse(value);
+    } catch (_) {
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('리포트'));
+    final percent = _statusPercent(record);
+
+    final now = DateTime.now();
+    final startDate = _parseDate(project.startDate);
+    final goalDate = _parseDate(project.goalDate);
+
+    String dPlusText = 'D + ';
+    String dMinusText = 'D - ';
+
+    if (startDate != null) {
+      final diff = now.difference(startDate).inDays;
+      dPlusText = 'D + $diff';
+    }
+
+    if (goalDate != null) {
+      final diff = goalDate.difference(now).inDays;
+      if (diff == 0) {
+        dMinusText = 'D - day';
+      } else if (diff > 0) {
+        dMinusText = 'D - $diff';
+      } else {
+        dMinusText = 'D + ${diff.abs()}';
+      }
+    }
+
+    final startDateText = startDate != null
+        ? DateUtilsHelper.toDotFormat(startDate)
+        : '시작일 정보 없음';
+
+    final goalDateText = goalDate != null
+        ? DateUtilsHelper.toDotFormat(goalDate)
+        : '목표일 정보 없음';
+
+    return Padding(
+      padding: EdgeInsets.all(26),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "나의 진행도",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+          ),
+
+          SizedBox(height: 26),
+
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 130,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Stack(
+                      children: [
+                        Container(color: Colors.grey[200]),
+
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: FractionallySizedBox(
+                            heightFactor: percent / 100,
+                            widthFactor: 1.0,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.bottomCenter,
+                                  end: Alignment.topCenter,
+                                  colors: [PRIMARY_COLOR, Color(0xFFEEEEEE)],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        
+                        Center(
+                          child: Text(
+                            '$percent%',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: PRIMARY_COLOR,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(width: 26),
+
+              Expanded(
+                child: Container(
+                  height: 130,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        dPlusText,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: PRIMARY_COLOR,
+                        ),
+                      ),
+                      Text(
+                        startDateText,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      Text(
+                        dMinusText,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: PRIMARY_COLOR,
+                        ),
+                      ),
+                      Text(
+                        goalDateText,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
