@@ -35,18 +35,9 @@ class MyApp extends StatelessWidget {
 
       home: ChangeNotifierProvider(
         create: (_) => LoginViewModel(
-          AutoLoginUseCase(
-            context.read<AuthenticationRepository>(),
-            context.read<ReportApiRepository>(),
-          ),
-          SocialLoginUseCase(
-            context.read<AuthenticationRepository>(),
-            context.read<ReportApiRepository>(),
-          ),
-          AdminLoginUseCase(
-            context.read<AuthenticationRepository>(),
-            context.read<ReportApiRepository>(),
-          ),
+          context.read<AutoLoginUseCase>(),
+          context.read<SocialLoginUseCase>(),
+          context.read<AdminLoginUseCase>(),
         ),
         child: const LoginScreen(),
       ),

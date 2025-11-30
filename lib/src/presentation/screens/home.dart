@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/domain/use_case/get_stored_user_use_case.dart';
+import 'package:knittda/src/domain/use_case/logout_use_case.dart';
+import 'package:knittda/src/domain/use_case/signout_use_case.dart';
 import 'package:knittda/src/presentation/feed/feed_screen.dart';
+import 'package:knittda/src/presentation/mypage/mypage_screen.dart';
+import 'package:knittda/src/presentation/mypage/mypage_view_model.dart';
 import 'package:knittda/src/presentation/project_previews/project_previews_screen.dart';
 import 'package:knittda/src/presentation/projects/projects_screen.dart';
-//import 'package:knittda/src/presentation/screens/main_page/mypage.dart';
+import 'package:provider/provider.dart';
 
 // 바텀네비게이션 리스트
 final List<BottomNavigationBarItem> myTabs = <BottomNavigationBarItem>[
@@ -25,14 +30,6 @@ final List<BottomNavigationBarItem> myTabs = <BottomNavigationBarItem>[
   ),
 ];
 
-//바텀네비게이션 클릭 시 이동할 페이지 목록
-final List<Widget> _widgetOptions = <Widget>[
-  const ProjectsScreen(),
-  const ProjectPreviewsScreen(),
-  const FeedScreen(),
-  const Center(child: Text('마이페이지')),
-];
-
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -51,6 +48,20 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    final pages = <Widget>[
+      const ProjectsScreen(),
+      const ProjectPreviewsScreen(),
+      const FeedScreen(),
+      ChangeNotifierProvider<MypageViewModel>(
+        create: (context) => MypageViewModel(
+          context.read<LogoutUseCase>(),
+          context.read<SignoutUseCase>(),
+          context.read<GetStoredUserUseCase>(),
+        ),
+        child: const MypageScreen(),
+      ),
+    ];
+
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: PRIMARY_COLOR,
@@ -62,7 +73,7 @@ class _HomeState extends State<Home> {
       ),
       body: IndexedStack(
         index: _selectedIndex,
-        children: _widgetOptions,
+        children: pages,
       ),
     );
   }

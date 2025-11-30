@@ -29,6 +29,7 @@ import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_feed_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_project_previews_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_projects_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_stored_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/logout_use_case.dart';
 import 'package:knittda/src/domain/use_case/signout_use_case.dart';
 import 'package:knittda/src/domain/use_case/social_login_use_case.dart';
@@ -43,15 +44,16 @@ import '../data/data_sources/auth_interceptor.dart';
 import '../data/data_sources/token_storage.dart';
 
 Future<List<SingleChildWidget>> getProviders() async {
- final secureStorage = SecureStorage();
+  final secureStorage = SecureStorage();
   final tokenStorage = TokenStorage(secureStorage);
   final userStorage = UserStorage(secureStorage);
 
   final sharedPrefs = SharedPreferencesAsync();
   final reportDataSource = ReportDataSource(sharedPrefs);
 
-  final SocialLogin appleLogin =
-      Platform.isIOS ? SocialLoginApple() : SocialLoginAppleDummy();
+  final SocialLogin appleLogin = Platform.isIOS
+      ? SocialLoginApple()
+      : SocialLoginAppleDummy();
 
   return [
     Provider<Dio>(
@@ -64,7 +66,8 @@ Future<List<SingleChildWidget>> getProviders() async {
 
     ProxyProvider<Dio, ReportApi>(update: (context, dio, _) => ReportApi(dio)),
     ProxyProvider<ReportApi, ReportApiRepository>(
-      update: (context, api, _) => ReportApiRepositoryImpl(api, reportDataSource),
+      update: (context, api, _) =>
+          ReportApiRepositoryImpl(api, reportDataSource),
     ),
 
     ProxyProvider<Dio, AuthenticationApi>(
@@ -96,9 +99,9 @@ Future<List<SingleChildWidget>> getProviders() async {
           AutoLoginUseCase(authRepository, reportRepository),
     ),
     ProxyProvider2<
-        AuthenticationRepository,
-        ReportApiRepository,
-        AdminLoginUseCase
+      AuthenticationRepository,
+      ReportApiRepository,
+      AdminLoginUseCase
     >(
       update: (context, authRepository, reportRepository, _) =>
           AdminLoginUseCase(authRepository, reportRepository),
@@ -113,6 +116,10 @@ Future<List<SingleChildWidget>> getProviders() async {
     ),
     ProxyProvider<AuthenticationRepository, LogoutUseCase>(
       update: (context, authRepository, _) => LogoutUseCase(authRepository),
+    ),
+    ProxyProvider<AuthenticationRepository, GetStoredUserUseCase>(
+      update: (context, authRepository, _) =>
+          GetStoredUserUseCase(authRepository),
     ),
 
     ProxyProvider<Dio, ProjectApi>(
