@@ -10,6 +10,7 @@ class ReportApi {
     try {
       final response = await _dio.get(
         '/api/v1/report/',
+        options: Options(headers: {'accessToken': 'true'}),
       );
 
       if (response.statusCode == 200) {

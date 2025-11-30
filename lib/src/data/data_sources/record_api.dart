@@ -13,7 +13,10 @@ class RecordApi {
   //개인 record 조회
   Future<Result<Iterable>> getRecords() async {
     try {
-      final response = await _dio.get('/api/v1/records/');
+      final response = await _dio.get(
+        '/api/v1/records/',
+        options: Options(headers: {'accessToken': 'true'}),
+      );
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -57,7 +60,11 @@ class RecordApi {
         }
       }
 
-      final response = await _dio.put('/api/v1/records/', data: formData);
+      final response = await _dio.put(
+        '/api/v1/records/',
+        data: formData,
+        options: Options(headers: {'accessToken': 'true'}),
+      );
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -94,7 +101,11 @@ class RecordApi {
         }
       }
 
-      final response = await _dio.post('/api/v1/records/', data: formData);
+      final response = await _dio.post(
+        '/api/v1/records/',
+        data: formData,
+        options: Options(headers: {'accessToken': 'true'}),
+      );
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -132,7 +143,10 @@ class RecordApi {
 
   Future<Result<void>> deleteRecord({required int recordId}) async {
     try {
-      final response = await _dio.delete('/api/v1/records/$recordId');
+      final response = await _dio.delete(
+        '/api/v1/records/$recordId',
+        options: Options(headers: {'accessToken': 'true'}),
+      );
 
       if (response.statusCode == 200) {
         return Result.success(null);

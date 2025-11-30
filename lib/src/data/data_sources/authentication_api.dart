@@ -9,7 +9,10 @@ class AuthenticationApi {
   //사용자 정보 조회
   Future<Result<Map<String, dynamic>>> getAuthMe() async {
     try {
-      final response = await _dio.get('/api/v1/auth/me');
+      final response = await _dio.get(
+        '/api/v1/auth/me',
+        options: Options(headers: {'accessToken': 'true'}),
+      );
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -96,7 +99,10 @@ class AuthenticationApi {
   //탈퇴
   Future<Result<void>> deleteAuthSignout() async {
     try {
-      final response = await _dio.delete('/api/v1/auth/signout');
+      final response = await _dio.delete(
+        '/api/v1/auth/signout',
+        options: Options(headers: {'accessToken': 'true'}),
+      );
 
       if (response.statusCode == 200) {
         return Result.success(null);

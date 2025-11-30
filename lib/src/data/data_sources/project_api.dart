@@ -13,7 +13,10 @@ class ProjectApi {
 
   Future<Result<Iterable>> getProjects() async {
     try {
-      final response = await _dio.get('/api/v1/projects/');
+      final response = await _dio.get(
+        '/api/v1/projects/',
+        options: Options(headers: {'accessToken': 'true'}),
+      );
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -41,7 +44,11 @@ class ProjectApi {
           'file': await MultipartFile.fromFile(file.path, filename: file.name),
       });
 
-      final response = await _dio.put('/api/v1/projects/', data: formData);
+      final response = await _dio.put(
+        '/api/v1/projects/',
+        data: formData,
+        options: Options(headers: {'accessToken': 'true'}),
+      );
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -73,7 +80,11 @@ class ProjectApi {
           ),
       });
 
-      final response = await _dio.post('/api/v1/projects/', data: formData);
+      final response = await _dio.post(
+        '/api/v1/projects/',
+        data: formData,
+        options: Options(headers: {'accessToken': 'true'}),
+      );
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -111,7 +122,10 @@ class ProjectApi {
 
   Future<Result<void>> deleteProject({required int projectId}) async {
     try {
-      final response = await _dio.delete('/api/v1/projects/$projectId');
+      final response = await _dio.delete(
+        '/api/v1/projects/$projectId',
+        options: Options(headers: {'accessToken': 'true'}),
+      );
 
       if (response.statusCode == 200) {
         return Result.success(null);
@@ -147,7 +161,10 @@ class ProjectApi {
     required int projectId,
   }) async {
     try {
-      final response = await _dio.get('/api/v1/projects/my/$projectId');
+      final response = await _dio.get(
+        '/api/v1/projects/my/$projectId',
+        options: Options(headers: {'accessToken': 'true'}),
+      );
 
       if (response.statusCode == 200) {
         final data = response.data;
