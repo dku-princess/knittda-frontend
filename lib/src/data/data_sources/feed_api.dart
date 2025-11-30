@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class FeedApi {
   final Dio _dio;
@@ -26,11 +27,15 @@ class FeedApi {
         final Map<String, dynamic> hits = data['data'];
         return Result.success(hits);
       } else {
-        return Result.error('서버 오류: ${response.statusCode}');
+        final error = '서버 오류: ${response.statusCode}';
+        Sentry.captureException(error, stackTrace: StackTrace.current);
+        return Result.error(error);
       }
-    } on DioException catch (e) {
+    } on DioException catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
       return Result.error('네트워크 에러: ${e.message}');
-    } catch (e) {
+    } catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
       return Result.error('알 수 없는 에러');
     }
   }
@@ -57,11 +62,15 @@ class FeedApi {
         final Map<String, dynamic> hits = data['data'];
         return Result.success(hits);
       } else {
-        return Result.error('서버 오류: ${response.statusCode}');
+        final error = '서버 오류: ${response.statusCode}';
+        Sentry.captureException(error, stackTrace: StackTrace.current);
+        return Result.error(error);
       }
-    } on DioException catch (e) {
+    } on DioException catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
       return Result.error('네트워크 에러: ${e.message}');
-    } catch (e) {
+    } catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
       return Result.error('알 수 없는 에러');
     }
   }

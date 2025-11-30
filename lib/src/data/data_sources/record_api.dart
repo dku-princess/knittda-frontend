@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/records.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class RecordApi {
   final Dio _dio;
@@ -23,11 +24,15 @@ class RecordApi {
         final Iterable hits = data['data'];
         return Result.success(hits);
       } else {
-        return Result.error('서버 오류: ${response.statusCode}');
+        final error = '서버 오류: ${response.statusCode}';
+        Sentry.captureException(error, stackTrace: StackTrace.current);
+        return Result.error(error);
       }
-    } on DioException catch (e) {
+    } on DioException catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
       return Result.error('네트워크 에러: ${e.message}');
-    } catch (e) {
+    } catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
       return Result.error('알 수 없는 에러');
     }
   }
@@ -71,11 +76,15 @@ class RecordApi {
         final Map<String, dynamic> hits = data['data'];
         return Result.success(hits);
       } else {
-        return Result.error('서버 오류: ${response.statusCode}');
+        final error = '서버 오류: ${response.statusCode}';
+        Sentry.captureException(error, stackTrace: StackTrace.current);
+        return Result.error(error);
       }
-    } on DioException catch (e) {
+    } on DioException catch (e,stack) {
+      Sentry.captureException(e, stackTrace: stack);
       return Result.error('네트워크 에러: ${e.message}');
-    } catch (e) {
+    } catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
       return Result.error('알 수 없는 에러');
     }
   }
@@ -112,11 +121,15 @@ class RecordApi {
         final Map<String, dynamic> hits = data['data'];
         return Result.success(hits);
       } else {
-        return Result.error('서버 오류: ${response.statusCode}');
+        final error = '서버 오류: ${response.statusCode}';
+        Sentry.captureException(error, stackTrace: StackTrace.current);
+        return Result.error(error);
       }
-    } on DioException catch (e) {
+    } on DioException catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
       return Result.error('네트워크 에러: ${e.message}');
-    } catch (e) {
+    } catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
       return Result.error('알 수 없는 에러');
     }
   }
@@ -132,11 +145,15 @@ class RecordApi {
         final Map<String, dynamic> hits = data['data'];
         return Result.success(hits);
       } else {
-        return Result.error('서버 오류: ${response.statusCode}');
+        final error = '서버 오류: ${response.statusCode}';
+        Sentry.captureException(error, stackTrace: StackTrace.current);
+        return Result.error(error);
       }
-    } on DioException catch (e) {
+    } on DioException catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
       return Result.error('네트워크 에러: ${e.message}');
-    } catch (e) {
+    } catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
       return Result.error('알 수 없는 에러');
     }
   }
@@ -151,11 +168,15 @@ class RecordApi {
       if (response.statusCode == 200) {
         return Result.success(null);
       } else {
-        return Result.error('서버 오류: ${response.statusCode}');
+        final error = '서버 오류: ${response.statusCode}';
+        Sentry.captureException(error, stackTrace: StackTrace.current);
+        return Result.error(error);
       }
-    } on DioException catch (e) {
+    } on DioException catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
       return Result.error('네트워크 에러: ${e.message}');
-    } catch (e) {
+    } catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
       return Result.error('알 수 없는 에러');
     }
   }
@@ -170,11 +191,15 @@ class RecordApi {
         final Iterable hits = data['data'];
         return Result.success(hits);
       } else {
-        return Result.error('서버 오류: ${response.statusCode}');
+        final error = '서버 오류: ${response.statusCode}';
+        Sentry.captureException(error, stackTrace: StackTrace.current);
+        return Result.error(error);
       }
-    } on DioException catch (e) {
+    } on DioException catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
       return Result.error('네트워크 에러: ${e.message}');
-    } catch (e) {
+    } catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
       return Result.error('알 수 없는 에러');
     }
   }
@@ -188,11 +213,15 @@ class RecordApi {
         final String hits = data['data'];
         return Result.success(hits);
       } else {
-        return Result.error('서버 오류: ${response.statusCode}');
+        final error = '서버 오류: ${response.statusCode}';
+        Sentry.captureException(error, stackTrace: StackTrace.current);
+        return Result.error(error);
       }
-    } on DioException catch (e) {
+    } on DioException catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
       return Result.error('네트워크 에러: ${e.message}');
-    } catch (e) {
+    } catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
       return Result.error('알 수 없는 에러');
     }
   }
