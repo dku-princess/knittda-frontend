@@ -26,6 +26,7 @@ import 'package:knittda/src/presentation/record_add_edit/add_edit_record_screen.
 import 'package:knittda/src/presentation/record_add_edit/add_edit_record_view_model.dart';
 import 'package:knittda/src/presentation/record_details/record_details_screen.dart';
 import 'package:knittda/src/presentation/record_details/record_details_view_model.dart';
+import 'package:knittda/src/presentation/widgets/image_viewer.dart';
 import 'package:provider/provider.dart';
 
 import '../../domain/use_case_record/update_record_use_case.dart';
@@ -490,6 +491,14 @@ class _DiaryTap extends StatelessWidget {
           onTap: () {
             onRecordTap(state.records[index]);
           },
+          onImageTap: (imageIndex, images) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) =>
+                    ImageViewer(images: images, initialIndex: imageIndex),
+              ),
+            );
+          },
         );
       },
     );
@@ -603,7 +612,7 @@ class _ReportTap extends StatelessWidget {
                             ),
                           ),
                         ),
-                        
+
                         Center(
                           child: Text(
                             '$percent%',

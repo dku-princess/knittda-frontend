@@ -91,50 +91,76 @@ class ProjectsScreen extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.only(bottom: 80),
-                    itemBuilder: (context, index) {
-                      return ProjectsItem(
-                        project: state.projects[index],
-                        onTap: () async {
-                          bool? isDelete = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ChangeNotifierProvider(
-                                create: (context) => ProjectDetailsViewModel(
-                                  GetProjectUseCase(
-                                    context.read<ProjectApiRepository>(),
+                  child: state.projects.isEmpty
+                      ? const Center(
+                          child: Text(
+                            '작품이 없습니다',
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.only(bottom: 80),
+                          itemBuilder: (context, index) {
+                            return ProjectsItem(
+                              project: state.projects[index],
+                              onTap: () async {
+                                bool? isDelete = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ChangeNotifierProvider(
+                                          create: (context) =>
+                                              ProjectDetailsViewModel(
+                                                GetProjectUseCase(
+                                                  context
+                                                      .read<
+                                                        ProjectApiRepository
+                                                      >(),
+                                                ),
+                                                GetMyProjectUseCase(
+                                                  context
+                                                      .read<
+                                                        ProjectApiRepository
+                                                      >(),
+                                                ),
+                                                DeleteProjectUseCase(
+                                                  context
+                                                      .read<
+                                                        ProjectApiRepository
+                                                      >(),
+                                                ),
+                                                UpdateProjectUseCase(
+                                                  context
+                                                      .read<
+                                                        ProjectApiRepository
+                                                      >(),
+                                                ),
+                                                GetRecordsProjectsUseCase(
+                                                  context
+                                                      .read<
+                                                        RecordApiRepository
+                                                      >(),
+                                                ),
+                                                projectId:
+                                                    state.projects[index].id!,
+                                                project: state.projects[index],
+                                              ),
+                                          child: const ProjectDetailsScreen(),
+                                        ),
                                   ),
-                                  GetMyProjectUseCase(
-                                    context.read<ProjectApiRepository>(),
-                                  ),
-                                  DeleteProjectUseCase(
-                                    context.read<ProjectApiRepository>(),
-                                  ),
-                                  UpdateProjectUseCase(
-                                    context.read<ProjectApiRepository>(),
-                                  ),
-                                  GetRecordsProjectsUseCase(
-                                    context.read<RecordApiRepository>(),
-                                  ),
-                                  projectId: state.projects[index].id!,
-                                  project: state.projects[index],
-                                ),
-                                child: const ProjectDetailsScreen(),
-                              ),
-                            ),
-                          );
+                                );
 
-                          if (isDelete != null && isDelete) {
-                            viewModel.onEvent(
-                              const ProjectsEvent.loadProjects(),
+                                if (isDelete != null && isDelete) {
+                                  viewModel.onEvent(
+                                    const ProjectsEvent.loadProjects(),
+                                  );
+                                }
+                              },
                             );
-                          }
-                        },
-                      );
-                    },
-                    itemCount: state.projects.length,
-                  ),
+                          },
+                          itemCount: state.projects.length,
+                        ),
                 ),
               ],
             ),

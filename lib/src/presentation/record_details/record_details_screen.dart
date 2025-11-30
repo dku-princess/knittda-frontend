@@ -14,6 +14,7 @@ import 'package:knittda/src/presentation/record_add_edit/add_edit_record_view_mo
 import 'package:knittda/src/presentation/record_details/record_details_event.dart';
 import 'package:knittda/src/presentation/record_details/record_details_ui_event.dart';
 import 'package:knittda/src/presentation/record_details/record_details_view_model.dart';
+import 'package:knittda/src/presentation/widgets/image_viewer.dart';
 import 'package:provider/provider.dart';
 
 import '../../domain/use_case_record/update_record_use_case.dart';
@@ -126,11 +127,26 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
               children: [
                 //이미지
                 if (record.images != null && record.images!.isNotEmpty) ...[
-                  _RecordImages(images: record.images!),
+                  _RecordImages(
+                    images: record.images!,
+                    onImageTap: (imageIndex, images) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ImageViewer(
+                            images: images,
+                            initialIndex: imageIndex,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ],
 
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 20,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -170,54 +186,23 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
 
 class _RecordImages extends StatelessWidget {
   final List<Images> images;
+  final void Function(int index, List<Images> images)? onImageTap;
 
-  const _RecordImages({required this.images});
+  const _RecordImages({required this.images, this.onImageTap});
 
   @override
   Widget build(BuildContext context) {
     if (images.length == 1) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(6),
-        child: AspectRatio(
-          aspectRatio: 4 / 3,
-          child: Image.network(
-            images.first.imageUrl,
-            fit: BoxFit.cover,
-
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return const Center(
-                child: CircularProgressIndicator(strokeWidth: 2),
-              );
-            },
-
-            errorBuilder: (context, exception, stackTrace) {
-              return Container(
-                color: Colors.grey.shade300,
-                alignment: Alignment.center,
-                child: const Icon(
-                  Icons.broken_image,
-                  color: Colors.grey,
-                  size: 40,
-                ),
-              );
-            },
-          ),
-        ),
-      );
-    }
-
-    // 여러 장일 경우
-    return AspectRatio(
-      aspectRatio: 4 / 3,
-      child: PageView.builder(
-        controller: PageController(viewportFraction: 1),
-        itemCount: images.length,
-        itemBuilder: (context, index) {
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+      return GestureDetector(
+        onTap: () {
+          onImageTap?.call(0, images);
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: AspectRatio(
+            aspectRatio: 4 / 3,
             child: Image.network(
-              images[index].imageUrl,
+              images.first.imageUrl,
               fit: BoxFit.cover,
 
               loadingBuilder: (context, child, loadingProgress) {
@@ -238,6 +223,48 @@ class _RecordImages extends StatelessWidget {
                   ),
                 );
               },
+            ),
+          ),
+        ),
+      );
+    }
+
+    // 여러 장일 경우
+    return AspectRatio(
+      aspectRatio: 4 / 3,
+      child: PageView.builder(
+        controller: PageController(viewportFraction: 1),
+        itemCount: images.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () {
+              onImageTap?.call(index, images);
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                images[index].imageUrl,
+                fit: BoxFit.cover,
+
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  );
+                },
+
+                errorBuilder: (context, exception, stackTrace) {
+                  return Container(
+                    color: Colors.grey.shade300,
+                    alignment: Alignment.center,
+                    child: const Icon(
+                      Icons.broken_image,
+                      color: Colors.grey,
+                      size: 40,
+                    ),
+                  );
+                },
+              ),
             ),
           );
         },

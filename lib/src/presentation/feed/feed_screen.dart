@@ -6,6 +6,7 @@ import 'package:knittda/src/presentation/feed/feed_event.dart';
 import 'package:knittda/src/presentation/feed/feed_view_model.dart';
 import 'package:knittda/src/presentation/feed_search/feed_search_screen.dart';
 import 'package:knittda/src/presentation/feed_search/feed_search_view_model.dart';
+import 'package:knittda/src/presentation/widgets/image_viewer.dart';
 import 'package:provider/provider.dart';
 
 class FeedScreen extends StatefulWidget {
@@ -119,6 +120,16 @@ class _FeedScreenState extends State<FeedScreen> {
                 return FeedItem(
                   feed: viewModel.state.feeds[index],
                   onTap: () {},
+                  onImageTap: (imageIndex, images) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ImageViewer(
+                          images: images,
+                          initialIndex: imageIndex,
+                        ),
+                      ),
+                    );
+                  },
                 );
               },
               itemCount:

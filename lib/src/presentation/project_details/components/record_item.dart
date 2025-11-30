@@ -7,7 +7,13 @@ import 'package:knittda/src/domain/model/records.dart';
 class RecordItem extends StatelessWidget {
   final Records record;
   final VoidCallback onTap;
-  const RecordItem({super.key, required this.record, required this.onTap});
+  final void Function(int index, List<Images> images)? onImageTap;
+  const RecordItem({
+    super.key,
+    required this.record,
+    required this.onTap,
+    this.onImageTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +28,7 @@ class RecordItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 20),
 
           decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Colors.grey.shade300),
-            ),
+            border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
           ),
 
           child: Column(
@@ -38,15 +42,20 @@ class RecordItem extends StatelessWidget {
               const SizedBox(height: 10),
 
               //사진
-              if (record.images != null &&
-                  record.images!.isNotEmpty) ...[
-                _RecordImages(images: record.images!),
+              if (record.images != null && record.images!.isNotEmpty) ...[
+                _RecordImages(
+                  images: record.images!,
+                  onImageTap: (index) {
+                    if (onImageTap != null) {
+                      onImageTap!(index, record.images!);
+                    }
+                  },
+                ),
                 const SizedBox(height: 16),
               ],
 
               //기록
-              if (record.comment != null &&
-                  record.comment!.isNotEmpty) ...[
+              if (record.comment != null && record.comment!.isNotEmpty) ...[
                 Text(
                   record.comment!,
                   style: const TextStyle(fontSize: 14),
@@ -60,7 +69,7 @@ class RecordItem extends StatelessWidget {
               if (record.tags != null && record.tags!.isNotEmpty) ...[
                 _RecordTags(tags: record.tags!),
                 const SizedBox(height: 10),
-              ]
+              ],
             ],
           ),
         ),
@@ -71,38 +80,44 @@ class RecordItem extends StatelessWidget {
 
 class _RecordImages extends StatelessWidget {
   final List<Images> images;
+  final void Function(int index)? onImageTap;
 
-  const _RecordImages({required this.images});
+  const _RecordImages({required this.images, this.onImageTap});
 
   @override
   Widget build(BuildContext context) {
     if (images.length == 1) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: AspectRatio(
-          aspectRatio: 4 / 3,
-          child: Image.network(
-            images.first.imageUrl,
-            fit: BoxFit.cover,
+      return GestureDetector(
+        onTap: () {
+          onImageTap?.call(0);
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: AspectRatio(
+            aspectRatio: 4 / 3,
+            child: Image.network(
+              images.first.imageUrl,
+              fit: BoxFit.cover,
 
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return const Center(
-                child: CircularProgressIndicator(strokeWidth: 2),
-              );
-            },
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return const Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                );
+              },
 
-            errorBuilder: (context, exception, stackTrace) {
-              return Container(
-                color: Colors.grey.shade300,
-                alignment: Alignment.center,
-                child: const Icon(
-                  Icons.broken_image,
-                  color: Colors.grey,
-                  size: 40,
-                ),
-              );
-            },
+              errorBuilder: (context, exception, stackTrace) {
+                return Container(
+                  color: Colors.grey.shade300,
+                  alignment: Alignment.center,
+                  child: const Icon(
+                    Icons.broken_image,
+                    color: Colors.grey,
+                    size: 40,
+                  ),
+                );
+              },
+            ),
           ),
         ),
       );
@@ -112,37 +127,40 @@ class _RecordImages extends StatelessWidget {
     return AspectRatio(
       aspectRatio: 4 / 3,
       child: PageView.builder(
-        controller: PageController(
-          viewportFraction: 0.9,
-        ),
+        controller: PageController(viewportFraction: 0.9),
         itemCount: images.length,
         itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                images[index].imageUrl,
-                fit: BoxFit.cover,
+          return GestureDetector(
+            onTap: () {
+              onImageTap?.call(index);
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  images[index].imageUrl,
+                  fit: BoxFit.cover,
 
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  );
-                },
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    );
+                  },
 
-                errorBuilder: (context, exception, stackTrace) {
-                  return Container(
-                    color: Colors.grey.shade300,
-                    alignment: Alignment.center,
-                    child: const Icon(
-                      Icons.broken_image,
-                      color: Colors.grey,
-                      size: 40,
-                    ),
-                  );
-                },
+                  errorBuilder: (context, exception, stackTrace) {
+                    return Container(
+                      color: Colors.grey.shade300,
+                      alignment: Alignment.center,
+                      child: const Icon(
+                        Icons.broken_image,
+                        color: Colors.grey,
+                        size: 40,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           );
@@ -159,27 +177,18 @@ class _RecordTags extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      spacing: 8,      // 태그 사이 가로 간격
-      runSpacing: 10,   // 줄 바뀔 때 세로 간격
+      spacing: 8, // 태그 사이 가로 간격
+      runSpacing: 10, // 줄 바뀔 때 세로 간격
       children: tags.map((tag) {
         return Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 6,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20), // 완전 둥근 테두리
-            border: Border.all(
-              color: PRIMARY_COLOR,
-              width: 1,
-            ),
+            border: Border.all(color: PRIMARY_COLOR, width: 1),
           ),
           child: Text(
             tag,
-            style: const TextStyle(
-              fontSize: 12,
-              color: PRIMARY_COLOR,
-            ),
+            style: const TextStyle(fontSize: 12, color: PRIMARY_COLOR),
           ),
         );
       }).toList(),

@@ -7,7 +7,14 @@ import 'package:knittda/src/domain/model/images.dart';
 class FeedItem extends StatelessWidget {
   final Feed feed;
   final VoidCallback onTap;
-  const FeedItem({super.key, required this.feed, required this.onTap});
+  final void Function(int index, List<Images> images)? onImageTap;
+
+  const FeedItem({
+    super.key,
+    required this.feed,
+    required this.onTap,
+    this.onImageTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +87,14 @@ class FeedItem extends StatelessWidget {
                     //사진
                     if (feed.record.images != null &&
                         feed.record.images!.isNotEmpty) ...[
-                      _FeedImages(images: feed.record.images!),
+                      _FeedImages(
+                        images: feed.record.images!,
+                        onImageTap: (index) {
+                          if (onImageTap != null) {
+                            onImageTap!(index, feed.record.images!);
+                          }
+                        },
+                      ),
                       const SizedBox(height: 16),
                     ],
 
@@ -114,38 +128,44 @@ class FeedItem extends StatelessWidget {
 
 class _FeedImages extends StatelessWidget {
   final List<Images> images;
+  final void Function(int index)? onImageTap;
 
-  const _FeedImages({required this.images});
+  const _FeedImages({required this.images, this.onImageTap});
 
   @override
   Widget build(BuildContext context) {
     if (images.length == 1) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: AspectRatio(
-          aspectRatio: 4 / 3,
-          child: Image.network(
-            images.first.imageUrl,
-            fit: BoxFit.cover,
+      return GestureDetector(
+        onTap: () {
+          onImageTap?.call(0);
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: AspectRatio(
+            aspectRatio: 4 / 3,
+            child: Image.network(
+              images.first.imageUrl,
+              fit: BoxFit.cover,
 
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return const Center(
-                child: CircularProgressIndicator(strokeWidth: 2),
-              );
-            },
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return const Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                );
+              },
 
-            errorBuilder: (context, exception, stackTrace) {
-              return Container(
-                color: Colors.grey.shade300,
-                alignment: Alignment.center,
-                child: const Icon(
-                  Icons.broken_image,
-                  color: Colors.grey,
-                  size: 40,
-                ),
-              );
-            },
+              errorBuilder: (context, exception, stackTrace) {
+                return Container(
+                  color: Colors.grey.shade300,
+                  alignment: Alignment.center,
+                  child: const Icon(
+                    Icons.broken_image,
+                    color: Colors.grey,
+                    size: 40,
+                  ),
+                );
+              },
+            ),
           ),
         ),
       );
@@ -158,32 +178,37 @@ class _FeedImages extends StatelessWidget {
         controller: PageController(viewportFraction: 0.9),
         itemCount: images.length,
         itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                images[index].imageUrl,
-                fit: BoxFit.cover,
+          return GestureDetector(
+            onTap: () {
+              onImageTap?.call(index);
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  images[index].imageUrl,
+                  fit: BoxFit.cover,
 
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  );
-                },
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    );
+                  },
 
-                errorBuilder: (context, exception, stackTrace) {
-                  return Container(
-                    color: Colors.grey.shade300,
-                    alignment: Alignment.center,
-                    child: const Icon(
-                      Icons.broken_image,
-                      color: Colors.grey,
-                      size: 40,
-                    ),
-                  );
-                },
+                  errorBuilder: (context, exception, stackTrace) {
+                    return Container(
+                      color: Colors.grey.shade300,
+                      alignment: Alignment.center,
+                      child: const Icon(
+                        Icons.broken_image,
+                        color: Colors.grey,
+                        size: 40,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           );
