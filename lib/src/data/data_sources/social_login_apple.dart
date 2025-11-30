@@ -5,7 +5,7 @@ import 'package:knittda/src/data/data_sources/social_login_result.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class SocialLoginApple implements SocialLogin {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseAuth get _auth => FirebaseAuth.instance;
 
   // Apple 로그인 결과 (토큰 + 이름) 반환
   @override

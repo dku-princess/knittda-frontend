@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:knittda/env.dart';
 import 'package:knittda/src/data/data_sources/authentication_api.dart';
@@ -7,7 +9,9 @@ import 'package:knittda/src/data/data_sources/record_api.dart';
 import 'package:knittda/src/data/data_sources/report_api.dart';
 import 'package:knittda/src/data/data_sources/report_data_source.dart';
 import 'package:knittda/src/data/data_sources/secure_storage.dart';
+import 'package:knittda/src/data/data_sources/social_login.dart';
 import 'package:knittda/src/data/data_sources/social_login_apple.dart';
+import 'package:knittda/src/data/data_sources/social_login_apple_dummy.dart';
 import 'package:knittda/src/data/data_sources/social_login_kakao.dart';
 import 'package:knittda/src/data/data_sources/user_storage.dart';
 import 'package:knittda/src/data/repository/authentication_repository_impl.dart';
@@ -46,6 +50,9 @@ Future<List<SingleChildWidget>> getProviders() async {
   final sharedPrefs = SharedPreferencesAsync();
   final reportDataSource = ReportDataSource(sharedPrefs);
 
+  final SocialLogin appleLogin =
+      Platform.isIOS ? SocialLoginApple() : SocialLoginAppleDummy();
+
   return [
     Provider<Dio>(
       create: (_) {
@@ -67,7 +74,7 @@ Future<List<SingleChildWidget>> getProviders() async {
       update: (context, api, _) => AuthenticationRepositoryImpl(
         api,
         SocialLoginKakao(),
-        SocialLoginApple(),
+        appleLogin,
         tokenStorage,
         userStorage,
       ),

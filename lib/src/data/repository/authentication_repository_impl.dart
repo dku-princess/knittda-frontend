@@ -1,7 +1,6 @@
 import 'package:knittda/src/data/data_sources/authentication_api.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
-import 'package:knittda/src/data/data_sources/social_login_apple.dart';
-import 'package:knittda/src/data/data_sources/social_login_kakao.dart';
+import 'package:knittda/src/data/data_sources/social_login.dart';
 import 'package:knittda/src/data/data_sources/social_login_result.dart';
 import 'package:knittda/src/data/data_sources/user_storage.dart';
 import 'package:knittda/src/domain/model/user.dart';
@@ -12,8 +11,8 @@ import '../data_sources/token_storage.dart';
 
 class AuthenticationRepositoryImpl implements AuthenticationRepository {
   final AuthenticationApi _api;
-  final SocialLoginKakao _kakao;
-  final SocialLoginApple _apple;
+  final SocialLogin _kakao;
+  final SocialLogin _apple;
   final TokenStorage _tokenStorage;
   final UserStorage _userStorage;
 

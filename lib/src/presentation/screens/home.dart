@@ -3,7 +3,7 @@ import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/presentation/feed/feed_screen.dart';
 import 'package:knittda/src/presentation/project_previews/project_previews_screen.dart';
 import 'package:knittda/src/presentation/projects/projects_screen.dart';
-import 'package:knittda/src/presentation/screens/main_page/mypage.dart';
+//import 'package:knittda/src/presentation/screens/main_page/mypage.dart';
 
 // 바텀네비게이션 리스트
 final List<BottomNavigationBarItem> myTabs = <BottomNavigationBarItem>[
@@ -30,7 +30,7 @@ final List<Widget> _widgetOptions = <Widget>[
   const ProjectsScreen(),
   const ProjectPreviewsScreen(),
   const FeedScreen(),
-  const Mypage(),
+  const Center(child: Text('마이페이지')),
 ];
 
 class Home extends StatefulWidget {
