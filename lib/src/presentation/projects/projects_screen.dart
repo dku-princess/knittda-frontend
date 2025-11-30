@@ -47,8 +47,8 @@ class ProjectsScreen extends StatelessWidget {
           final addProject = await Navigator.push<Project>(
             context,
             MaterialPageRoute(
-              builder: (_) => ChangeNotifierProvider(
-                create: (_) => AddEditProjectViewModel(
+              builder: (context) => ChangeNotifierProvider(
+                create: (context) => AddEditProjectViewModel(
                   AddProjectUseCase(context.read<ProjectApiRepository>()),
                   UpdateProjectUseCase(context.read<ProjectApiRepository>()),
                 ),
@@ -100,8 +100,8 @@ class ProjectsScreen extends StatelessWidget {
                           bool? isDelete = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => ChangeNotifierProvider(
-                                create: (_) => ProjectDetailsViewModel(
+                              builder: (context) => ChangeNotifierProvider(
+                                create: (context) => ProjectDetailsViewModel(
                                   GetProjectUseCase(
                                     context.read<ProjectApiRepository>(),
                                   ),

@@ -33,9 +33,6 @@ import 'package:knittda/src/domain/use_case/get_stored_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/logout_use_case.dart';
 import 'package:knittda/src/domain/use_case/signout_use_case.dart';
 import 'package:knittda/src/domain/use_case/social_login_use_case.dart';
-import 'package:knittda/src/presentation/feed/feed_view_model.dart';
-import 'package:knittda/src/presentation/project_previews/project_previews_view_model.dart';
-import 'package:knittda/src/presentation/projects/projects_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -134,14 +131,6 @@ Future<List<SingleChildWidget>> getProviders() async {
     ProxyProvider<ProjectApiRepository, GetProjectPreviewsUseCase>(
       update: (context, repository, _) => GetProjectPreviewsUseCase(repository),
     ),
-    ChangeNotifierProvider<ProjectsViewModel>(
-      create: (context) =>
-          ProjectsViewModel(context.read<GetProjectsUseCase>()),
-    ),
-    ChangeNotifierProvider<ProjectPreviewsViewModel>(
-      create: (context) =>
-          ProjectPreviewsViewModel(context.read<GetProjectPreviewsUseCase>()),
-    ),
 
     ProxyProvider<Dio, FeedApi>(update: (context, dio, _) => FeedApi(dio)),
     ProxyProvider<FeedApi, FeedApiRepository>(
@@ -149,9 +138,6 @@ Future<List<SingleChildWidget>> getProviders() async {
     ),
     ProxyProvider<FeedApiRepository, GetFeedUseCase>(
       update: (context, repository, _) => GetFeedUseCase(repository),
-    ),
-    ChangeNotifierProvider<FeedViewModel>(
-      create: (context) => FeedViewModel(context.read<GetFeedUseCase>()),
     ),
 
     ProxyProvider<Dio, RecordApi>(update: (context, dio, _) => RecordApi(dio)),

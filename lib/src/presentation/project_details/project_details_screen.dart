@@ -104,8 +104,8 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                       final editedProject = await Navigator.push<Project>(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => ChangeNotifierProvider(
-                            create: (_) => AddEditProjectViewModel(
+                          builder: (context) => ChangeNotifierProvider(
+                            create: (context) => AddEditProjectViewModel(
                               AddProjectUseCase(
                                 context.read<ProjectApiRepository>(),
                               ),
@@ -149,8 +149,8 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                           final addRecord = await Navigator.push<Records>(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => ChangeNotifierProvider(
-                                create: (_) => AddEditRecordViewModel(
+                              builder: (context) => ChangeNotifierProvider(
+                                create: (context) => AddEditRecordViewModel(
                                   AddRecordUseCase(
                                     context.read<RecordApiRepository>(),
                                   ),
@@ -237,8 +237,8 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                             bool? isDelete = await Navigator.push<bool>(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => ChangeNotifierProvider(
-                                  create: (_) => RecordDetailsViewModel(
+                                builder: (context) => ChangeNotifierProvider(
+                                  create: (context) => RecordDetailsViewModel(
                                     GetRecordUseCase(
                                       context.read<RecordApiRepository>(),
                                     ),

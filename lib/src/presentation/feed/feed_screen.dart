@@ -59,8 +59,8 @@ class _FeedScreenState extends State<FeedScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => ChangeNotifierProvider(
-                    create: (_) => FeedSearchViewModel(
+                  builder: (context) => ChangeNotifierProvider(
+                    create: (context) => FeedSearchViewModel(
                       GetSearchFeedUseCase(context.read<FeedApiRepository>()),
                     ),
                     child: const FeedSearchScreen(),

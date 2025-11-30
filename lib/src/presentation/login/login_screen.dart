@@ -32,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
             switch (event) {
               case Login():
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const Home()),
+                  MaterialPageRoute(builder: (context) => const Home()),
                 );
               case ShowSnackBar(:final message):
                 final snackBar = SnackBar(content: Text(message));

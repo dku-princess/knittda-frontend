@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/domain/use_case/get_feed_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_project_previews_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_projects_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_stored_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/logout_use_case.dart';
 import 'package:knittda/src/domain/use_case/signout_use_case.dart';
 import 'package:knittda/src/presentation/feed/feed_screen.dart';
+import 'package:knittda/src/presentation/feed/feed_view_model.dart';
 import 'package:knittda/src/presentation/mypage/mypage_screen.dart';
 import 'package:knittda/src/presentation/mypage/mypage_view_model.dart';
 import 'package:knittda/src/presentation/project_previews/project_previews_screen.dart';
+import 'package:knittda/src/presentation/project_previews/project_previews_view_model.dart';
 import 'package:knittda/src/presentation/projects/projects_screen.dart';
+import 'package:knittda/src/presentation/projects/projects_view_model.dart';
 import 'package:provider/provider.dart';
 
 // 바텀네비게이션 리스트
@@ -49,9 +55,27 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final pages = <Widget>[
-      const ProjectsScreen(),
-      const ProjectPreviewsScreen(),
-      const FeedScreen(),
+      ChangeNotifierProvider<ProjectsViewModel>(
+        create: (context) => ProjectsViewModel(
+          context.read<GetProjectsUseCase>(),
+        ),
+        child: const ProjectsScreen(),
+      ),
+
+      ChangeNotifierProvider<ProjectPreviewsViewModel>(
+        create: (context) => ProjectPreviewsViewModel(
+          context.read<GetProjectPreviewsUseCase>(),
+        ),
+        child: const ProjectPreviewsScreen(),
+      ),
+
+      ChangeNotifierProvider<FeedViewModel>(
+        create: (context) => FeedViewModel(
+          context.read<GetFeedUseCase>(),
+        ),
+        child: const FeedScreen(),
+      ),
+
       ChangeNotifierProvider<MypageViewModel>(
         create: (context) => MypageViewModel(
           context.read<LogoutUseCase>(),
