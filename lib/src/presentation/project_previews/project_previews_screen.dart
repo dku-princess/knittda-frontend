@@ -86,7 +86,7 @@ class ProjectPreviewsScreen extends StatelessWidget {
                 return ProjectPreviewsItem(
                   projectPreviews: projectPreviews,
                   onTap: () async {
-                    Navigator.push(
+                    final deleted = await Navigator.push<bool>(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ChangeNotifierProvider(
@@ -113,6 +113,12 @@ class ProjectPreviewsScreen extends StatelessWidget {
                         ),
                       ),
                     );
+
+                    if (deleted != null && deleted) {
+                      viewModel.onEvent(
+                        ProjectPreviewsEvent.loadProjectPreviews(),
+                      );
+                    }
                   },
                 );
               },

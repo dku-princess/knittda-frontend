@@ -155,7 +155,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
               return FeedItem(
                 feed: viewModel.state.feeds[index],
                 onTap: () async {
-                  Navigator.push(
+                  final deleted = await Navigator.push<bool>(
                     context,
                     MaterialPageRoute(
                       builder: (context) => ChangeNotifierProvider(
@@ -182,6 +182,10 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
                       ),
                     ),
                   );
+
+                  if (deleted != null && deleted) {
+                    _onSearch();
+                  }
                 },
               );
             },

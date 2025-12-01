@@ -130,7 +130,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 return FeedItem(
                   feed: viewModel.state.feeds[index],
                   onTap: () async {
-                    Navigator.push(
+                    final deleted = await Navigator.push<bool>(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ChangeNotifierProvider(
@@ -157,6 +157,12 @@ class _FeedScreenState extends State<FeedScreen> {
                         ),
                       ),
                     );
+
+                    if (deleted != null && deleted) {
+                      viewModel.onEvent(
+                        FeedEvent.refresh(20, null),
+                      );
+                    }
                   },
                   onImageTap: (imageIndex, images) {
                     Navigator.of(context).push(
