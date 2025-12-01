@@ -30,6 +30,7 @@ class AutoLoginUseCase {
       return Result.success(null);
     } else {
       await _authenticationRepository.clearLocalAuth();
+      await _reportApiRepository.clearReport();
       return Result.error('token_invalid');
     }
   }

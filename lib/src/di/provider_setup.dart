@@ -79,13 +79,9 @@ Future<List<SingleChildWidget>> getProviders() async {
         userStorage,
       ),
     ),
-    ProxyProvider2<
-      AuthenticationRepository,
-      ReportApiRepository,
-      SocialLoginUseCase
-    >(
-      update: (context, authRepository, reportRepository, _) =>
-          SocialLoginUseCase(authRepository, reportRepository),
+    ProxyProvider<AuthenticationRepository, SocialLoginUseCase>(
+      update: (context, authRepository, _) =>
+          SocialLoginUseCase(authRepository),
     ),
     ProxyProvider2<
       AuthenticationRepository,
@@ -95,13 +91,8 @@ Future<List<SingleChildWidget>> getProviders() async {
       update: (context, authRepository, reportRepository, _) =>
           AutoLoginUseCase(authRepository, reportRepository),
     ),
-    ProxyProvider2<
-      AuthenticationRepository,
-      ReportApiRepository,
-      AdminLoginUseCase
-    >(
-      update: (context, authRepository, reportRepository, _) =>
-          AdminLoginUseCase(authRepository, reportRepository),
+    ProxyProvider<AuthenticationRepository, AdminLoginUseCase>(
+      update: (context, authRepository, _) => AdminLoginUseCase(authRepository),
     ),
     ProxyProvider2<
       AuthenticationRepository,
@@ -111,8 +102,13 @@ Future<List<SingleChildWidget>> getProviders() async {
       update: (context, authRepository, reportRepository, _) =>
           SignoutUseCase(authRepository, reportRepository),
     ),
-    ProxyProvider<AuthenticationRepository, LogoutUseCase>(
-      update: (context, authRepository, _) => LogoutUseCase(authRepository),
+    ProxyProvider2<
+      AuthenticationRepository,
+      ReportApiRepository,
+      LogoutUseCase
+    >(
+      update: (context, authRepository, reportRepository, _) =>
+          LogoutUseCase(authRepository, reportRepository),
     ),
     ProxyProvider<AuthenticationRepository, GetStoredUserUseCase>(
       update: (context, authRepository, _) =>

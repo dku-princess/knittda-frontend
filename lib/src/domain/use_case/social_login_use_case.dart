@@ -7,13 +7,10 @@ import 'package:knittda/src/domain/util/social_login_type.dart';
 
 class SocialLoginUseCase {
   final AuthenticationRepository _authenticationRepository;
-  final ReportApiRepository _reportApiRepository;
 
-  SocialLoginUseCase(this._authenticationRepository, this._reportApiRepository);
+  SocialLoginUseCase(this._authenticationRepository);
 
   Future<Result<void>> call(SocialLoginType type) async {
-    final storedUser = await _authenticationRepository.getStoredUser();
-
     final Result<SocialLoginResult> loginResult =
         await _authenticationRepository.socialLogin(type: type);
 
@@ -34,12 +31,6 @@ class SocialLoginUseCase {
 
     if (authResult is Error<User>) {
       return Result.error(authResult.e);
-    }
-
-    final newUser = (authResult as Success<User>).data;
-
-    if (storedUser != null && storedUser.id != newUser.id) {
-      await _reportApiRepository.clearReport();
     }
 
     return Result.success(null);

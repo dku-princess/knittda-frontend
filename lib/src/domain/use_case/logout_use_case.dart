@@ -1,12 +1,14 @@
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/user.dart';
 import 'package:knittda/src/domain/repository/authentication_repository.dart';
+import 'package:knittda/src/domain/repository/report_api_repository.dart';
 import 'package:knittda/src/domain/util/social_login_type.dart';
 
 class LogoutUseCase {
   final AuthenticationRepository _authenticationRepository;
+  final ReportApiRepository _reportApiRepository;
 
-  LogoutUseCase(this._authenticationRepository);
+  LogoutUseCase(this._authenticationRepository, this._reportApiRepository);
 
   Future<Result<void>> call(User user) async {
     SocialLoginType? type;
@@ -24,6 +26,8 @@ class LogoutUseCase {
     }
 
     await _authenticationRepository.clearLocalAuth();
+
+    await _reportApiRepository.clearReport();
 
     if (socialResult is Error<bool>) {
       return Result.error(socialResult.e);
