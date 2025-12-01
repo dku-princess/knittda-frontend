@@ -9,6 +9,7 @@ import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_my_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_report_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_stored_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
 import 'package:knittda/src/domain/use_case_record/get_records_projects_use_case.dart';
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_screen.dart';
@@ -153,6 +154,10 @@ class ProjectsScreen extends StatelessWidget {
                                                             RecordApiRepository
                                                           >(),
                                                     ),
+                                                    context
+                                                        .read<
+                                                          GetStoredUserUseCase
+                                                        >(),
                                                     projectId: state
                                                         .projects[index]
                                                         .id!,

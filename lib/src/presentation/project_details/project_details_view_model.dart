@@ -5,9 +5,11 @@ import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/project.dart';
 import 'package:knittda/src/domain/model/records.dart';
+import 'package:knittda/src/domain/model/user.dart';
 import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_my_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_project_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_stored_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
 import 'package:knittda/src/domain/use_case_record/get_records_projects_use_case.dart';
 import 'package:knittda/src/presentation/project_details/diary_tap_state.dart';
@@ -21,10 +23,13 @@ class ProjectDetailsViewModel extends ChangeNotifier {
   final DeleteProjectUseCase _deleteProjectUseCase;
   final UpdateProjectUseCase _updateProjectUseCase;
   final GetRecordsProjectsUseCase _getRecordsProjectsUseCase;
+  final GetStoredUserUseCase _getStoredUserUseCase;
 
   ProjectDetailsState _state = ProjectDetailsState(
     project: null,
     isLoading: false,
+    isOwner: false,
+    user: null,
     diaryTapState: DiaryTapState(
       records: [],
       isLoading: false,
@@ -43,10 +48,12 @@ class ProjectDetailsViewModel extends ChangeNotifier {
     this._getMyProjectUseCase,
     this._deleteProjectUseCase,
     this._updateProjectUseCase,
-    this._getRecordsProjectsUseCase, {
+    this._getRecordsProjectsUseCase,
+    this._getStoredUserUseCase, {
     required int projectId,
     Project? project,
   }) {
+    _loadUser();
     _loadProject(projectId: projectId, project: project);
     _loadRecords(projectId: projectId);
   }
@@ -64,10 +71,35 @@ class ProjectDetailsViewModel extends ChangeNotifier {
     }
   }
 
+  void _updateIsOwner() {
+    final user = state.user;
+    final project = state.project;
+
+    final isOwner =
+        user != null && project != null && user.id == project.userId;
+
+    _state = state.copyWith(isOwner: isOwner);
+  }
+
+  Future<void> _loadUser() async {
+    final Result<User?> result = await _getStoredUserUseCase();
+
+    switch (result) {
+      case Success(:final data):
+        _state = state.copyWith(user: data);
+      case Error():
+        _state = state.copyWith(user: null);
+    }
+
+    _updateIsOwner();
+    notifyListeners();
+  }
+
   Future<void> _loadProject({required int projectId, Project? project}) async {
     //project가 있으면 그걸 먼저 보여주고, 서버에 있는 정보 가져오기,
     if (project != null) {
       _state = state.copyWith(project: project);
+      _updateIsOwner();
       notifyListeners();
 
       final Result<Project> result = await _getMyProjectUseCase(
@@ -81,6 +113,7 @@ class ProjectDetailsViewModel extends ChangeNotifier {
           _eventController.add(ProjectDetailsUiEvent.showSnackBar(e));
       }
 
+      _updateIsOwner();
       notifyListeners();
     } else {
       _state = state.copyWith(isLoading: true);
@@ -97,12 +130,15 @@ class ProjectDetailsViewModel extends ChangeNotifier {
           _eventController.add(ProjectDetailsUiEvent.showSnackBar(e));
       }
 
+      _updateIsOwner();
       _state = state.copyWith(isLoading: false);
       notifyListeners();
     }
   }
 
   Future<void> _deleteProject({required int projectId}) async {
+    if (!state.isOwner) return;
+
     _state = state.copyWith(isLoading: true);
     notifyListeners();
 
@@ -122,6 +158,8 @@ class ProjectDetailsViewModel extends ChangeNotifier {
   }
 
   Future<void> _changeProgress() async {
+    if (!state.isOwner) return;
+
     final project = state.project;
     if (project == null || project.id == null) return;
 

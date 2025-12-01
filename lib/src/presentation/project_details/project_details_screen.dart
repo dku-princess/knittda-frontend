@@ -99,7 +99,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
             appBar: AppBar(
               scrolledUnderElevation: 0,
               actions: [
-                if (!state.isLoading && state.project != null)
+                if (!state.isLoading && state.project != null && state.isOwner)
                   PopupMenuSection(
                     onEdit: () async {
                       final editedProject = await Navigator.push<Project>(
@@ -205,6 +205,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                         SliverToBoxAdapter(
                           child: _ProjectHeader(
                             project: state.project!,
+                            isOwner: state.isOwner,
                             onProgressPressed: () {
                               viewModel.onEvent(
                                 ProjectDetailsEvent.changeProgress(),
@@ -310,10 +311,12 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
 class _ProjectHeader extends StatelessWidget {
   final Project project;
   final VoidCallback onProgressPressed;
+  final bool isOwner;
 
   const _ProjectHeader({
     required this.project,
     required this.onProgressPressed,
+    required this.isOwner,
   });
 
   @override
@@ -362,10 +365,11 @@ class _ProjectHeader extends StatelessWidget {
 
                 SizedBox(height: 16),
 
-                ProgressSection(
-                  status: project.status!,
-                  onPressed: onProgressPressed,
-                ),
+                if (isOwner)
+                  ProgressSection(
+                    status: project.status!,
+                    onPressed: onProgressPressed,
+                  ),
               ],
             ),
           ),
