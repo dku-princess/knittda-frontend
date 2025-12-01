@@ -215,7 +215,7 @@ class ProjectsScreen extends StatelessWidget {
                   ],
                 ),
 
-                if (DateTime.now().weekday == DateTime.monday)
+                if (DateTime.now().weekday == DateTime.tuesday)
                   Positioned(
                     bottom: 16,
                     left: 16,

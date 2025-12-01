@@ -19,12 +19,12 @@ class DateUtilsHelper {
     final now = DateTime.now();
 
     // 이번 주 월요일 날짜 계산
-    final monday = now.subtract( //현재 날짜에서 duration 만큼 뺀다
-      Duration(days: now.weekday - DateTime.monday), //두 시간 사이의 간격을 나타냄
+    final tuesday = now.subtract( //현재 날짜에서 duration 만큼 뺀다
+      Duration(days: now.weekday - DateTime.tuesday), //두 시간 사이의 간격을 나타냄
     );
 
     //문자열 생성
-    return toHyphenFormat(monday);
+    return toHyphenFormat(tuesday);
   }
 
   static String getRelativeDate(DateTime? serverUtc) {
