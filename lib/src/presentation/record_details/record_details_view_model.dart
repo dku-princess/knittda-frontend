@@ -17,6 +17,7 @@ class RecordDetailsViewModel extends ChangeNotifier {
     record: null,
     isLoading: false,
     isOwner: false,
+    isChanged: false,
   );
 
   RecordDetailsState get state => _state;
@@ -42,7 +43,14 @@ class RecordDetailsViewModel extends ChangeNotifier {
         await _loadRecord(recordId: recordId, record: record);
       case DeleteRecord(:final recordId):
         await _deleteRecord(recordId: recordId);
+      case MarkChanged():
+        _markChanged();
     }
+  }
+
+  void _markChanged() {
+    _state = state.copyWith(isChanged: true);
+    notifyListeners();
   }
 
   Future<void> _loadRecord({

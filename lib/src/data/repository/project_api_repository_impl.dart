@@ -88,10 +88,24 @@ class ProjectApiRepositoryImpl implements ProjectApiRepository {
       projectId: projectId,
     );
 
-    return switch (result) {
-      Success(:final data) => Result.success(Project.fromJson(data)),
-      Error(:final e) => Result.error(e),
-    };
+    switch (result) {
+      case Success(:final data):
+        final project = Project.fromJson(data);
+
+        final exists = _projects.any((p) => p.id == project.id);
+        if (exists) {
+          _projects = _projects
+              .map((p) => p.id == project.id ? project : p)
+              .toList();
+        } else {
+          _projects = [..._projects, project];
+        }
+
+        _projectsController.add(List.unmodifiable(_projects));
+        return Result.success(project);
+      case Error(:final e):
+        return Result.error(e);
+    }
   }
 
   @override
@@ -101,8 +115,8 @@ class ProjectApiRepositoryImpl implements ProjectApiRepository {
     switch (result) {
       case Success():
         _projects = _projects.where((p) => p.id != projectId).toList();
-          _projectsController.add(List.unmodifiable(_projects));
-          return Result.success(null);
+        _projectsController.add(List.unmodifiable(_projects));
+        return Result.success(null);
 
       case Error(:final e):
         return Result.error(e);
@@ -127,9 +141,23 @@ class ProjectApiRepositoryImpl implements ProjectApiRepository {
       projectId: projectId,
     );
 
-    return switch (result) {
-      Success(:final data) => Result.success(Project.fromJson(data)),
-      Error(:final e) => Result.error(e),
-    };
+    switch (result) {
+      case Success(:final data):
+        final project = Project.fromJson(data);
+
+        final exists = _projects.any((p) => p.id == project.id);
+        if (exists) {
+          _projects = _projects
+              .map((p) => p.id == project.id ? project : p)
+              .toList();
+        } else {
+          _projects = [..._projects, project];
+        }
+
+        _projectsController.add(List.unmodifiable(_projects));
+        return Result.success(project);
+      case Error(:final e):
+        return Result.error(e);
+    }
   }
 }

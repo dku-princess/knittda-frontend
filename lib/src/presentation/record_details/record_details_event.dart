@@ -12,4 +12,6 @@ sealed class RecordDetailsEvent with _$RecordDetailsEvent {
 
   const factory RecordDetailsEvent.deleteRecord({required int recordId}) =
       DeleteRecord;
+
+  const factory RecordDetailsEvent.markChanged() = MarkChanged;
 }

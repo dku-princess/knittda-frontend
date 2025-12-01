@@ -144,7 +144,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
             floatingActionButton: AnimatedBuilder(
               animation: tabController,
               builder: (context, _) {
-                return (state.project != null && tabController.index == 1 && state.isOwner)
+                return (state.project != null &&
+                        tabController.index == 1 &&
+                        state.isOwner)
                     ? FloatingActionButton(
                         onPressed: () async {
                           final addRecord = await Navigator.push<Records>(
@@ -236,7 +238,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                         _DiaryTap(
                           state: state.diaryTapState,
                           onRecordTap: (record) async {
-                            bool? isDelete = await Navigator.push<bool>(
+                            bool? isChanged = await Navigator.push<bool>(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ChangeNotifierProvider(
@@ -256,10 +258,17 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                               ),
                             );
 
-                            if (isDelete != null && isDelete) {
+                            if (isChanged == true) {
                               viewModel.onEvent(
                                 ProjectDetailsEvent.loadRecords(
                                   projectId: state.project!.id!,
+                                ),
+                              );
+
+                              viewModel.onEvent(
+                                ProjectDetailsEvent.loadProject(
+                                  projectId: state.project!.id!,
+                                  project: state.project,
                                 ),
                               );
                             }

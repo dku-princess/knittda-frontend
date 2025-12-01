@@ -67,119 +67,133 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
     final dateStr = DateUtilsHelper.toDotFormat(record.createdAt!);
     final timeStr = DateUtilsHelper.toHourMinuteFormat(record.createdAt!);
 
-    return Scaffold(
-      appBar: AppBar(
-        scrolledUnderElevation: 0,
-        actions: [
-          if (!state.isLoading && state.isOwner)
-            PopupMenuSection(
-              onEdit: () async {
-                final editedRecord = await Navigator.push<Records>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ChangeNotifierProvider(
-                      create: (context) => AddEditRecordViewModel(
-                        AddRecordUseCase(context.read<RecordApiRepository>()),
-                        UpdateRecordUseCase(
-                          context.read<RecordApiRepository>(),
-                        ),
-                        GetQuestionUseCase(context.read<RecordApiRepository>()),
-                        projectId: record.projectId,
-                      ),
-                      child: AddEditRecordScreen(
-                        projectId: record.projectId,
-                        record: record,
-                      ),
-                    ),
-                  ),
-                );
+    return PopScope<bool>(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
 
-                if (editedRecord != null) {
-                  viewModel.onEvent(
-                    RecordDetailsEvent.loadRecord(
-                      recordId: record.id!,
-                      record: editedRecord,
+        Navigator.pop(context, viewModel.state.isChanged);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          scrolledUnderElevation: 0,
+          actions: [
+            if (!state.isLoading && state.isOwner)
+              PopupMenuSection(
+                onEdit: () async {
+                  final editedRecord = await Navigator.push<Records>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChangeNotifierProvider(
+                        create: (context) => AddEditRecordViewModel(
+                          AddRecordUseCase(context.read<RecordApiRepository>()),
+                          UpdateRecordUseCase(
+                            context.read<RecordApiRepository>(),
+                          ),
+                          GetQuestionUseCase(
+                            context.read<RecordApiRepository>(),
+                          ),
+                          projectId: record.projectId,
+                        ),
+                        child: AddEditRecordScreen(
+                          projectId: record.projectId,
+                          record: record,
+                        ),
+                      ),
                     ),
                   );
-                }
-              },
-              onDelete: () async {
-                viewModel.onEvent(
-                  RecordDetailsEvent.deleteRecord(recordId: state.record!.id!),
-                );
-              },
-            ),
-        ],
-      ),
 
-      body: state.isLoading
-          ? const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("기록 불러오는 중..."),
-                  SizedBox(height: 24),
-                  CircularProgressIndicator(),
-                ],
+                  if (editedRecord != null) {
+                    viewModel.onEvent(
+                      RecordDetailsEvent.loadRecord(
+                        recordId: record.id!,
+                        record: editedRecord,
+                      ),
+                    );
+
+                    viewModel.onEvent(RecordDetailsEvent.markChanged());
+                  }
+                },
+                onDelete: () async {
+                  viewModel.onEvent(
+                    RecordDetailsEvent.deleteRecord(
+                      recordId: state.record!.id!,
+                    ),
+                  );
+                },
               ),
-            )
-          : ListView(
-              children: [
-                //이미지
-                if (record.images != null && record.images!.isNotEmpty) ...[
-                  _RecordImages(
-                    images: record.images!,
-                    onImageTap: (imageIndex, images) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ImageViewer(
-                            images: images,
-                            initialIndex: imageIndex,
+          ],
+        ),
+
+        body: state.isLoading
+            ? const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("기록 불러오는 중..."),
+                    SizedBox(height: 24),
+                    CircularProgressIndicator(),
+                  ],
+                ),
+              )
+            : ListView(
+                children: [
+                  //이미지
+                  if (record.images != null && record.images!.isNotEmpty) ...[
+                    _RecordImages(
+                      images: record.images!,
+                      onImageTap: (imageIndex, images) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ImageViewer(
+                              images: images,
+                              initialIndex: imageIndex,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 20,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        //날짜 시간
+                        Text(
+                          '$dateStr $timeStr',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
                           ),
                         ),
-                      );
-                    },
+                        const SizedBox(height: 20),
+
+                        //기록
+                        if (record.comment != null &&
+                            record.comment!.isNotEmpty) ...[
+                          Text(
+                            record.comment!,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(height: 40),
+                        ],
+
+                        //태그
+                        if (record.tags != null && record.tags!.isNotEmpty) ...[
+                          _RecordTags(tags: record.tags!),
+                          const SizedBox(height: 16),
+                        ],
+                      ],
+                    ),
                   ),
                 ],
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 20,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      //날짜 시간
-                      Text(
-                        '$dateStr $timeStr',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      //기록
-                      if (record.comment != null &&
-                          record.comment!.isNotEmpty) ...[
-                        Text(
-                          record.comment!,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        const SizedBox(height: 40),
-                      ],
-
-                      //태그
-                      if (record.tags != null && record.tags!.isNotEmpty) ...[
-                        _RecordTags(tags: record.tags!),
-                        const SizedBox(height: 16),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              ),
+      ),
     );
   }
 }

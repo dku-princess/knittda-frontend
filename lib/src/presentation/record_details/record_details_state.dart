@@ -9,5 +9,6 @@ abstract class RecordDetailsState with _$RecordDetailsState {
     required Records? record,
     required bool isLoading,
     required bool isOwner,
+    required bool isChanged,
   }) = _RecordDetailsState;
 }
