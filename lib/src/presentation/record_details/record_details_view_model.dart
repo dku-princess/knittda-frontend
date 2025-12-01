@@ -67,7 +67,6 @@ class RecordDetailsViewModel extends ChangeNotifier {
         _state = state.copyWith(record: data);
       case Error(:final e):
         _eventController.add(RecordDetailsUiEvent.showSnackBar(e));
-        _eventController.add(RecordDetailsUiEvent.deletedRecord());
     }
 
     notifyListeners();

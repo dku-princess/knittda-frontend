@@ -90,19 +90,7 @@ class ProjectApiRepositoryImpl implements ProjectApiRepository {
 
     switch (result) {
       case Success(:final data):
-        final project = Project.fromJson(data);
-
-        final exists = _projects.any((p) => p.id == project.id);
-        if (exists) {
-          _projects = _projects
-              .map((p) => p.id == project.id ? project : p)
-              .toList();
-        } else {
-          _projects = [..._projects, project];
-        }
-
-        _projectsController.add(List.unmodifiable(_projects));
-        return Result.success(project);
+        return Result.success(Project.fromJson(data));
       case Error(:final e):
         return Result.error(e);
     }
@@ -150,8 +138,6 @@ class ProjectApiRepositoryImpl implements ProjectApiRepository {
           _projects = _projects
               .map((p) => p.id == project.id ? project : p)
               .toList();
-        } else {
-          _projects = [..._projects, project];
         }
 
         _projectsController.add(List.unmodifiable(_projects));

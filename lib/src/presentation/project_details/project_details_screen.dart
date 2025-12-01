@@ -178,6 +178,12 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                                 projectId: state.project!.id!,
                               ),
                             );
+                            viewModel.onEvent(
+                              ProjectDetailsEvent.loadProject(
+                                projectId: state.project!.id!,
+                                project: state.project,
+                              ),
+                            );
                           }
                         },
                         backgroundColor: PRIMARY_COLOR,
@@ -268,6 +274,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                               viewModel.onEvent(
                                 ProjectDetailsEvent.loadProject(
                                   projectId: state.project!.id!,
+                                  project: state.project,
                                 ),
                               );
                             }
