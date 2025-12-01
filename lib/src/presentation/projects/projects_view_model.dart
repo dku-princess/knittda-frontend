@@ -1,17 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/project.dart';
+import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/use_case/get_projects_use_case.dart';
 import 'package:knittda/src/domain/util/project_order.dart';
 import 'package:knittda/src/presentation/projects/projects_event.dart';
 import 'package:knittda/src/presentation/projects/projects_state.dart';
 
 class ProjectsViewModel extends ChangeNotifier {
+  final ProjectApiRepository _repository;
   final GetProjectsUseCase _getProjectsUseCase;
 
-  ProjectsViewModel(this._getProjectsUseCase) {
-    _loadProjects();
-  }
+  StreamSubscription<List<Project>>? _subscription;
 
   ProjectsState _state = ProjectsState(
     [],
@@ -22,21 +24,49 @@ class ProjectsViewModel extends ChangeNotifier {
 
   ProjectsState get state => _state;
 
+  ProjectsViewModel(this._repository, this._getProjectsUseCase) {
+    _subscription = _repository.projectsStream.listen(
+      (_) {
+        _orderProjects();
+      },
+      onError: (e) {
+        _state = state.copyWith(errorMessage: e.toString());
+        notifyListeners();
+      },
+    );
+    _fetchProjects();
+  }
+
   Future<void> onEvent(ProjectsEvent event) async {
     switch (event) {
       case LoadProjects():
-        await _loadProjects();
+        await _fetchProjects();
       case ChangeOrder(:final projectOrder):
         _state = state.copyWith(projectOrder: projectOrder);
-        _loadProjects();
+        _orderProjects();
     }
   }
 
-  Future<void> _loadProjects() async {
+  Future<void> _fetchProjects() async {
     _state = state.copyWith(isLoading: true, errorMessage: null);
     notifyListeners();
 
-    final Result<List<Project>> result = await _getProjectsUseCase(
+    final Result<void> result = await _repository.fetchProjects();
+
+    switch (result) {
+      case Success():
+        _state = state.copyWith(isLoading: false);
+      case Error(:final e):
+        _state = state.copyWith(isLoading: false, errorMessage: e);
+    }
+
+    notifyListeners();
+  }
+
+  void _orderProjects() {
+    _state = state.copyWith(errorMessage: null);
+
+    final Result<List<Project>> result = _getProjectsUseCase(
       state.projectOrder,
     );
 
@@ -46,7 +76,13 @@ class ProjectsViewModel extends ChangeNotifier {
       case Error(:final e):
         _state = state.copyWith(errorMessage: e);
     }
-    _state = state.copyWith(isLoading: false);
+
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
   }
 }

@@ -8,30 +8,16 @@ class GetProjectsUseCase {
 
   GetProjectsUseCase(this._repository);
 
-  Future<Result<List<Project>>> call(ProjectOrder projectOrder) async {
-    final result = await _repository.getProjects();
+  Result<List<Project>> call(ProjectOrder projectOrder) {
+    final projects = _repository.currentProjects;
 
-    return switch (result) {
-      Success(:final data) => _filterProjects(data, projectOrder),
-      Error(:final e) => Result.error(e),
-      //Success<List<Project>>() => Result.success(result.data),
-      //Error<List<Project>>() => Result.error(result.e),
-    };
-  }
-
-  Result<List<Project>> _filterProjects(
-    List<Project> projects,
-    ProjectOrder order,
-  ) {
-    return switch (order) {
+    return switch (projectOrder) {
       InProgress() => Result.success(
         projects.where((p) => p.status == "IN_PROGRESS").toList(),
       ),
-
       Done() => Result.success(
         projects.where((p) => p.status == "DONE").toList(),
       ),
     };
   }
-
 }

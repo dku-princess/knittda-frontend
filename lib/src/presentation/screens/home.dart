@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/use_case/get_feed_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_project_previews_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_projects_use_case.dart';
@@ -57,6 +58,7 @@ class _HomeState extends State<Home> {
     final pages = <Widget>[
       ChangeNotifierProvider<ProjectsViewModel>(
         create: (context) => ProjectsViewModel(
+          context.read<ProjectApiRepository>(),
           context.read<GetProjectsUseCase>(),
         ),
         child: const ProjectsScreen(),

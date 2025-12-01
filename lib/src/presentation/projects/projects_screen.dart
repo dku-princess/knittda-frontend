@@ -49,7 +49,7 @@ class ProjectsScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         backgroundColor: PRIMARY_COLOR,
         onPressed: () async {
-          final addProject = await Navigator.push<Project>(
+          await Navigator.push<Project>(
             context,
             MaterialPageRoute(
               builder: (context) => ChangeNotifierProvider(
@@ -61,10 +61,6 @@ class ProjectsScreen extends StatelessWidget {
               ),
             ),
           );
-
-          if (addProject != null) {
-            viewModel.onEvent(const ProjectsEvent.loadProjects());
-          }
         },
         child: const Icon(Icons.add, color: Colors.white),
       ),
@@ -117,7 +113,7 @@ class ProjectsScreen extends StatelessWidget {
                                 return ProjectsItem(
                                   project: state.projects[index],
                                   onTap: () async {
-                                    bool? isDelete = await Navigator.push(
+                                    await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
@@ -169,12 +165,6 @@ class ProjectsScreen extends StatelessWidget {
                                             ),
                                       ),
                                     );
-
-                                    if (isDelete != null && isDelete) {
-                                      viewModel.onEvent(
-                                        const ProjectsEvent.loadProjects(),
-                                      );
-                                    }
                                   },
                                 );
                               },
