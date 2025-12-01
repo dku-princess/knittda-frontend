@@ -6,8 +6,8 @@ import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/domain/model/images.dart';
 import 'package:knittda/src/domain/model/records.dart';
 import 'package:knittda/src/domain/repository/record_api_repository.dart';
-import 'package:knittda/src/domain/use_case_record/add_record_use_case.dart';
-import 'package:knittda/src/domain/use_case_record/get_question_use_case.dart';
+import 'package:knittda/src/domain/use_case/add_record_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_question_use_case.dart';
 import 'package:knittda/src/presentation/project_details/components/popup_menu_section.dart';
 import 'package:knittda/src/presentation/record_add_edit/add_edit_record_screen.dart';
 import 'package:knittda/src/presentation/record_add_edit/add_edit_record_view_model.dart';
@@ -17,7 +17,7 @@ import 'package:knittda/src/presentation/record_details/record_details_view_mode
 import 'package:knittda/src/presentation/widgets/image_viewer.dart';
 import 'package:provider/provider.dart';
 
-import '../../domain/use_case_record/update_record_use_case.dart';
+import '../../domain/use_case/update_record_use_case.dart';
 
 class RecordDetailsScreen extends StatefulWidget {
   const RecordDetailsScreen({super.key});

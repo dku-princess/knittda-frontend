@@ -8,7 +8,7 @@ import 'package:knittda/src/domain/use_case/get_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_search_feed_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_stored_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
-import 'package:knittda/src/domain/use_case_record/get_records_projects_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_records_projects_use_case.dart';
 import 'package:knittda/src/presentation/feed/components/feed_item.dart';
 import 'package:knittda/src/presentation/feed/feed_event.dart';
 import 'package:knittda/src/presentation/feed/feed_view_model.dart';

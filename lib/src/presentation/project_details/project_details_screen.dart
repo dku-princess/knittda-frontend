@@ -9,10 +9,10 @@ import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/repository/record_api_repository.dart';
 import 'package:knittda/src/domain/use_case/add_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
-import 'package:knittda/src/domain/use_case_record/add_record_use_case.dart';
-import 'package:knittda/src/domain/use_case_record/delete_record_use_case.dart';
-import 'package:knittda/src/domain/use_case_record/get_question_use_case.dart';
-import 'package:knittda/src/domain/use_case_record/get_record_use_case.dart';
+import 'package:knittda/src/domain/use_case/add_record_use_case.dart';
+import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_question_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_record_use_case.dart';
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_screen.dart';
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_view_model.dart';
 import 'package:knittda/src/presentation/project_details/components/popup_menu_section.dart';
@@ -29,7 +29,7 @@ import 'package:knittda/src/presentation/record_details/record_details_view_mode
 import 'package:knittda/src/presentation/widgets/image_viewer.dart';
 import 'package:provider/provider.dart';
 
-import '../../domain/use_case_record/update_record_use_case.dart';
+import '../../domain/use_case/update_record_use_case.dart';
 
 class ProjectDetailsScreen extends StatefulWidget {
   const ProjectDetailsScreen({super.key});
