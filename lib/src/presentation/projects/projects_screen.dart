@@ -3,10 +3,12 @@ import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/domain/model/project.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/repository/record_api_repository.dart';
+import 'package:knittda/src/domain/repository/report_api_repository.dart';
 import 'package:knittda/src/domain/use_case/add_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_my_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_project_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_report_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
 import 'package:knittda/src/domain/use_case_record/get_records_projects_use_case.dart';
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_screen.dart';
@@ -17,6 +19,8 @@ import 'package:knittda/src/presentation/projects/components/projects_item.dart'
 import 'package:knittda/src/presentation/projects/components/order_section.dart';
 import 'package:knittda/src/presentation/projects/projects_event.dart';
 import 'package:knittda/src/presentation/projects/projects_view_model.dart';
+import 'package:knittda/src/presentation/report/report_screen.dart';
+import 'package:knittda/src/presentation/report/report_view_model.dart';
 import 'package:provider/provider.dart';
 
 class ProjectsScreen extends StatelessWidget {
@@ -77,91 +81,133 @@ class ProjectsScreen extends StatelessWidget {
             )
           : state.errorMessage != null
           ? Center(child: Text(state.errorMessage!))
-          : Column(
+          : Stack(
               children: [
-                const SizedBox(height: 20),
+                Column(
+                  children: [
+                    const SizedBox(height: 20),
 
-                OrderSection(
-                  projectOrder: state.projectOrder,
-                  onOrderChanged: (projectOrder) {
-                    viewModel.onEvent(ProjectsEvent.changeOrder(projectOrder));
-                  },
-                ),
+                    OrderSection(
+                      projectOrder: state.projectOrder,
+                      onOrderChanged: (projectOrder) {
+                        viewModel.onEvent(
+                          ProjectsEvent.changeOrder(projectOrder),
+                        );
+                      },
+                    ),
 
-                const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                Expanded(
-                  child: state.projects.isEmpty
-                      ? const Center(
-                          child: Text(
-                            '작품이 없습니다',
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
-                            textAlign: TextAlign.center,
-                          ),
-                        )
-                      : ListView.builder(
-                          padding: const EdgeInsets.only(bottom: 80),
-                          itemBuilder: (context, index) {
-                            return ProjectsItem(
-                              project: state.projects[index],
-                              onTap: () async {
-                                bool? isDelete = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        ChangeNotifierProvider(
-                                          create: (context) =>
-                                              ProjectDetailsViewModel(
-                                                GetProjectUseCase(
-                                                  context
-                                                      .read<
-                                                        ProjectApiRepository
-                                                      >(),
-                                                ),
-                                                GetMyProjectUseCase(
-                                                  context
-                                                      .read<
-                                                        ProjectApiRepository
-                                                      >(),
-                                                ),
-                                                DeleteProjectUseCase(
-                                                  context
-                                                      .read<
-                                                        ProjectApiRepository
-                                                      >(),
-                                                ),
-                                                UpdateProjectUseCase(
-                                                  context
-                                                      .read<
-                                                        ProjectApiRepository
-                                                      >(),
-                                                ),
-                                                GetRecordsProjectsUseCase(
-                                                  context
-                                                      .read<
-                                                        RecordApiRepository
-                                                      >(),
-                                                ),
-                                                projectId:
-                                                    state.projects[index].id!,
-                                                project: state.projects[index],
-                                              ),
-                                          child: const ProjectDetailsScreen(),
-                                        ),
-                                  ),
+                    Expanded(
+                      child: state.projects.isEmpty
+                          ? const Center(
+                              child: Text(
+                                '작품이 없습니다',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            )
+                          : ListView.builder(
+                              padding: const EdgeInsets.only(bottom: 80),
+                              itemBuilder: (context, index) {
+                                return ProjectsItem(
+                                  project: state.projects[index],
+                                  onTap: () async {
+                                    bool? isDelete = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ChangeNotifierProvider(
+                                              create: (context) =>
+                                                  ProjectDetailsViewModel(
+                                                    GetProjectUseCase(
+                                                      context
+                                                          .read<
+                                                            ProjectApiRepository
+                                                          >(),
+                                                    ),
+                                                    GetMyProjectUseCase(
+                                                      context
+                                                          .read<
+                                                            ProjectApiRepository
+                                                          >(),
+                                                    ),
+                                                    DeleteProjectUseCase(
+                                                      context
+                                                          .read<
+                                                            ProjectApiRepository
+                                                          >(),
+                                                    ),
+                                                    UpdateProjectUseCase(
+                                                      context
+                                                          .read<
+                                                            ProjectApiRepository
+                                                          >(),
+                                                    ),
+                                                    GetRecordsProjectsUseCase(
+                                                      context
+                                                          .read<
+                                                            RecordApiRepository
+                                                          >(),
+                                                    ),
+                                                    projectId: state
+                                                        .projects[index]
+                                                        .id!,
+                                                    project:
+                                                        state.projects[index],
+                                                  ),
+                                              child:
+                                                  const ProjectDetailsScreen(),
+                                            ),
+                                      ),
+                                    );
+
+                                    if (isDelete != null && isDelete) {
+                                      viewModel.onEvent(
+                                        const ProjectsEvent.loadProjects(),
+                                      );
+                                    }
+                                  },
                                 );
-
-                                if (isDelete != null && isDelete) {
-                                  viewModel.onEvent(
-                                    const ProjectsEvent.loadProjects(),
-                                  );
-                                }
                               },
-                            );
-                          },
-                          itemCount: state.projects.length,
-                        ),
+                              itemCount: state.projects.length,
+                            ),
+                    ),
+                  ],
                 ),
+
+                if (DateTime.now().weekday == DateTime.monday)
+                  Positioned(
+                    bottom: 16,
+                    left: 16,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChangeNotifierProvider(
+                              create: (context) => ReportViewModel(
+                                GetReportUseCase(
+                                  context.read<ReportApiRepository>(),
+                                ),
+                              ),
+                              child: ReportScreen(),
+                            ),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        side: BorderSide(color: PRIMARY_COLOR),
+                      ),
+                      child: Text(
+                        '주간 리포트 확인',
+                        style: TextStyle(color: PRIMARY_COLOR),
+                      ),
+                    ),
+                  ),
               ],
             ),
     );

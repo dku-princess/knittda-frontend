@@ -9,7 +9,7 @@ class ReportApi {
 
   Future<Result<Map<String, dynamic>>> getReport() async {
     try {
-      final response = await _dio.get(
+      final response = await _dio.post(
         '/api/v1/report/',
         options: Options(headers: {'accessToken': 'true'}),
       );

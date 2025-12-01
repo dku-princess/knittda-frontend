@@ -1,21 +1,18 @@
-import 'package:knittda/src/data/models/report_model.dart';
-import 'package:knittda/src/data/repositories/report_repository.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:knittda/src/data/data_sources/result.dart';
+import 'package:knittda/src/domain/model/report.dart';
+import 'package:knittda/src/domain/repository/report_api_repository.dart';
 
 class GetReportUseCase {
-  final ReportRepository _repository;
+  final ReportApiRepository _reportApiRepository;
 
-  GetReportUseCase(
-    this._repository,
-  );
+  GetReportUseCase(this._reportApiRepository);
 
-  Future<ReportModel> call () async {
-    try {
-      final report = await _repository.getReport();
-      return report;
-    } catch (e, stack) {
-      await Sentry.captureException(e, stackTrace: stack);
-      rethrow; // 호출 측에서 catch 가능하게 재던짐
-    }
+  Future<Result<Report>> call() async {
+    final Result<Report> result = await _reportApiRepository.getReport();
+
+    return switch (result) {
+      Success<Report>() => Result.success(result.data),
+      Error<Report>() => Result.error(result.e),
+    };
   }
 }
