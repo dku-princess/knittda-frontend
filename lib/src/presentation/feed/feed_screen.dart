@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/domain/repository/feed_api_repository.dart';
+import 'package:knittda/src/domain/repository/project_api_repository.dart';
+import 'package:knittda/src/domain/repository/record_api_repository.dart';
+import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_my_project_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_search_feed_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_stored_user_use_case.dart';
+import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
+import 'package:knittda/src/domain/use_case_record/get_records_projects_use_case.dart';
 import 'package:knittda/src/presentation/feed/components/feed_item.dart';
 import 'package:knittda/src/presentation/feed/feed_event.dart';
 import 'package:knittda/src/presentation/feed/feed_view_model.dart';
 import 'package:knittda/src/presentation/feed_search/feed_search_screen.dart';
 import 'package:knittda/src/presentation/feed_search/feed_search_view_model.dart';
+import 'package:knittda/src/presentation/project_details/project_details_screen.dart';
+import 'package:knittda/src/presentation/project_details/project_details_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_viewer.dart';
 import 'package:provider/provider.dart';
 
@@ -119,7 +129,35 @@ class _FeedScreenState extends State<FeedScreen> {
                 }
                 return FeedItem(
                   feed: viewModel.state.feeds[index],
-                  onTap: () {},
+                  onTap: () async {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider(
+                          create: (context) => ProjectDetailsViewModel(
+                            GetProjectUseCase(
+                              context.read<ProjectApiRepository>(),
+                            ),
+                            GetMyProjectUseCase(
+                              context.read<ProjectApiRepository>(),
+                            ),
+                            DeleteProjectUseCase(
+                              context.read<ProjectApiRepository>(),
+                            ),
+                            UpdateProjectUseCase(
+                              context.read<ProjectApiRepository>(),
+                            ),
+                            GetRecordsProjectsUseCase(
+                              context.read<RecordApiRepository>(),
+                            ),
+                            context.read<GetStoredUserUseCase>(),
+                            projectId: viewModel.state.feeds[index].projectId,
+                          ),
+                          child: const ProjectDetailsScreen(),
+                        ),
+                      ),
+                    );
+                  },
                   onImageTap: (imageIndex, images) {
                     Navigator.of(context).push(
                       MaterialPageRoute(

@@ -144,7 +144,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
             floatingActionButton: AnimatedBuilder(
               animation: tabController,
               builder: (context, _) {
-                return (state.project != null && tabController.index == 1)
+                return (state.project != null && tabController.index == 1 && state.isOwner)
                     ? FloatingActionButton(
                         onPressed: () async {
                           final addRecord = await Navigator.push<Records>(
