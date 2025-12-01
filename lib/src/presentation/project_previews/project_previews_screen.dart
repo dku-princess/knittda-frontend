@@ -1,4 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/domain/repository/project_api_repository.dart';
+import 'package:knittda/src/domain/repository/record_api_repository.dart';
+import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_my_project_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_project_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_stored_user_use_case.dart';
+import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
+import 'package:knittda/src/domain/use_case_record/get_records_projects_use_case.dart';
+import 'package:knittda/src/presentation/project_details/project_details_screen.dart';
+import 'package:knittda/src/presentation/project_details/project_details_view_model.dart';
 import 'package:knittda/src/presentation/project_previews/components/project_previews_item.dart';
 import 'package:knittda/src/presentation/project_previews/project_previews_event.dart';
 import 'package:knittda/src/presentation/project_previews/project_previews_view_model.dart';
@@ -73,11 +83,37 @@ class ProjectPreviewsScreen extends StatelessWidget {
               ),
               itemBuilder: (context, index) {
                 final projectPreviews = viewModel.state.projectPreviews[index];
-                return GestureDetector(
-                  onTap: () {
-
+                return ProjectPreviewsItem(
+                  projectPreviews: projectPreviews,
+                  onTap: () async {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider(
+                          create: (context) => ProjectDetailsViewModel(
+                            GetProjectUseCase(
+                              context.read<ProjectApiRepository>(),
+                            ),
+                            GetMyProjectUseCase(
+                              context.read<ProjectApiRepository>(),
+                            ),
+                            DeleteProjectUseCase(
+                              context.read<ProjectApiRepository>(),
+                            ),
+                            UpdateProjectUseCase(
+                              context.read<ProjectApiRepository>(),
+                            ),
+                            GetRecordsProjectsUseCase(
+                              context.read<RecordApiRepository>(),
+                            ),
+                            context.read<GetStoredUserUseCase>(),
+                            projectId: projectPreviews.projectId,
+                          ),
+                          child: const ProjectDetailsScreen(),
+                        ),
+                      ),
+                    );
                   },
-                  child: ProjectPreviewsItem(projectPreviews: projectPreviews),
                 );
               },
             ),
