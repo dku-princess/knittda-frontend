@@ -5,7 +5,8 @@ import 'package:knittda/src/core/utils/date_utils.dart';
 class ProjectsItem extends StatelessWidget {
   final Project project;
   final VoidCallback onTap;
-  const ProjectsItem({super.key, required this.project, required this.onTap});
+  final VoidCallback onPressed;
+  const ProjectsItem({super.key, required this.project, required this.onTap, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +94,7 @@ class ProjectsItem extends StatelessWidget {
               ),
 
               TextButton(
-                onPressed: () {},
+                onPressed: onPressed,
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.grey[300],
                   minimumSize: const Size(0, 0),

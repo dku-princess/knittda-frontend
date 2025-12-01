@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/domain/model/project.dart';
+import 'package:knittda/src/domain/model/records.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/repository/record_api_repository.dart';
 import 'package:knittda/src/domain/repository/report_api_repository.dart';
@@ -11,7 +12,10 @@ import 'package:knittda/src/domain/use_case/get_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_report_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_stored_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
+import 'package:knittda/src/domain/use_case_record/add_record_use_case.dart';
+import 'package:knittda/src/domain/use_case_record/get_question_use_case.dart';
 import 'package:knittda/src/domain/use_case_record/get_records_projects_use_case.dart';
+import 'package:knittda/src/domain/use_case_record/update_record_use_case.dart';
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_screen.dart';
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_view_model.dart';
 import 'package:knittda/src/presentation/project_details/project_details_screen.dart';
@@ -20,6 +24,8 @@ import 'package:knittda/src/presentation/projects/components/projects_item.dart'
 import 'package:knittda/src/presentation/projects/components/order_section.dart';
 import 'package:knittda/src/presentation/projects/projects_event.dart';
 import 'package:knittda/src/presentation/projects/projects_view_model.dart';
+import 'package:knittda/src/presentation/record_add_edit/add_edit_record_screen.dart';
+import 'package:knittda/src/presentation/record_add_edit/add_edit_record_view_model.dart';
 import 'package:knittda/src/presentation/report/report_screen.dart';
 import 'package:knittda/src/presentation/report/report_view_model.dart';
 import 'package:provider/provider.dart';
@@ -165,6 +171,41 @@ class ProjectsScreen extends StatelessWidget {
                                             ),
                                       ),
                                     );
+                                  },
+
+                                  onPressed: () async {
+                                    final addRecord = await Navigator.push<Records>(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ChangeNotifierProvider(
+                                          create: (context) => AddEditRecordViewModel(
+                                            AddRecordUseCase(
+                                              context.read<RecordApiRepository>(),
+                                            ),
+                                            UpdateRecordUseCase(
+                                              context.read<RecordApiRepository>(),
+                                            ),
+                                            GetQuestionUseCase(
+                                              context.read<RecordApiRepository>(),
+                                            ),
+                                            projectId: state
+                                                .projects[index]
+                                                .id!,
+                                          ),
+                                          child: AddEditRecordScreen(
+                                            projectId: state
+                                                .projects[index]
+                                                .id!,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+
+                                    if (addRecord != null) {
+                                      viewModel.onEvent(
+                                        ProjectsEvent.loadProjects(),
+                                      );
+                                    }
                                   },
                                 );
                               },
