@@ -2,7 +2,6 @@ import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/data/data_sources/social_login_result.dart';
 import 'package:knittda/src/domain/model/user.dart';
 import 'package:knittda/src/domain/repository/authentication_repository.dart';
-import 'package:knittda/src/domain/repository/report_api_repository.dart';
 import 'package:knittda/src/domain/util/social_login_type.dart';
 
 class SocialLoginUseCase {
