@@ -8,5 +8,6 @@ abstract class RecordDetailsState with _$RecordDetailsState {
   factory RecordDetailsState({
     required Records? record,
     required bool isLoading,
+    required bool isOwner,
   }) = _RecordDetailsState;
 }

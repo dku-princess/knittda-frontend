@@ -16,6 +16,7 @@ class RecordDetailsViewModel extends ChangeNotifier {
   RecordDetailsState _state = RecordDetailsState(
     record: null,
     isLoading: false,
+    isOwner: false,
   );
 
   RecordDetailsState get state => _state;
@@ -29,7 +30,9 @@ class RecordDetailsViewModel extends ChangeNotifier {
     this._deleteRecordUseCase, {
     required int recordId,
     required Records record,
+    required bool isOwner,
   }) {
+    _state = state.copyWith(isOwner: isOwner);
     _loadRecord(recordId: recordId, record: record);
   }
 
@@ -62,6 +65,8 @@ class RecordDetailsViewModel extends ChangeNotifier {
   }
 
   Future<void> _deleteRecord({required int recordId}) async {
+    if (!state.isOwner) return;
+
     _state = state.copyWith(isLoading: true);
     notifyListeners();
 

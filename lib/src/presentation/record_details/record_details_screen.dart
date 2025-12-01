@@ -71,7 +71,7 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
       appBar: AppBar(
         scrolledUnderElevation: 0,
         actions: [
-          if (!state.isLoading)
+          if (!state.isLoading && state.isOwner)
             PopupMenuSection(
               onEdit: () async {
                 final editedRecord = await Navigator.push<Records>(

@@ -249,6 +249,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                                     ),
                                     recordId: record.id!,
                                     record: record,
+                                    isOwner: state.isOwner,
                                   ),
                                   child: const RecordDetailsScreen(),
                                 ),
