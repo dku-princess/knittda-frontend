@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/domain/repository/authentication_repository.dart';
-import 'package:knittda/src/domain/repository/report_api_repository.dart';
 import 'package:knittda/src/domain/use_case/admin_login_use_case.dart';
 import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
 import 'package:knittda/src/domain/use_case/social_login_use_case.dart';
