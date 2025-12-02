@@ -1,5 +1,7 @@
+import 'package:knittda/src/data/data_sources/social_login_result.dart';
+
 abstract class SocialLogin {
-  Future<String?> login();
+  Future<SocialLoginResult?> login();
 
   Future<bool> logout();
 

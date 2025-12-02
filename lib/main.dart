@@ -28,15 +28,6 @@ Future<void> main() async {
     final providers = await getProviders();
 
     if (!kDebugMode) {
-      FlutterError.onError = (FlutterErrorDetails details) async {
-        FlutterError.presentError(details);
-        await Sentry.captureException(
-          details.exception,
-          stackTrace: details.stack,
-        );
-      };
-
-      // Sentry 초기화
       await SentryFlutter.init((options) {
         options.dsn = Env.SentryFlutterDns;
         options.attachStacktrace = true;

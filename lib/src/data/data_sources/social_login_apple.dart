@@ -1,23 +1,15 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:knittda/src/data/data_sources/social_login.dart';
+import 'package:knittda/src/data/data_sources/social_login_result.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
-class AppleLoginResult {
-  final String token;
-  final String? name;
-
-  AppleLoginResult({
-    required this.token,
-    this.name,
-  });
-}
-
 class SocialLoginApple implements SocialLogin {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseAuth get _auth => FirebaseAuth.instance;
 
   // Apple 로그인 결과 (토큰 + 이름) 반환
-  Future<AppleLoginResult?> loginWithName() async {
+  @override
+  Future<SocialLoginResult?> login() async {
     // iOS에서만 동작
     if (!Platform.isIOS) {
       return null;
@@ -34,7 +26,8 @@ class SocialLoginApple implements SocialLogin {
 
       // 이름 정보 추출 (첫 로그인 시에만 제공됨)
       String? fullName;
-      if (appleCredential.givenName != null || appleCredential.familyName != null) {
+      if (appleCredential.givenName != null ||
+          appleCredential.familyName != null) {
         final parts = <String>[];
         if (appleCredential.givenName != null) {
           parts.add(appleCredential.givenName!);
@@ -57,25 +50,16 @@ class SocialLoginApple implements SocialLogin {
 
       // idToken 가져오기 (서버로 전송할 Firebase idToken)
       final idToken = await firebaseUser?.getIdToken();
-      
+
       if (idToken == null) {
         return null;
       }
-      
-      return AppleLoginResult(
-        token: idToken,
-        name: fullName,
-      );
+
+      return SocialLoginResult(token: idToken, name: fullName);
     } catch (e) {
       print('Apple login error: $e');
       return null;
     }
-  }
-
-  @override
-  Future<String?> login() async {
-    final result = await loginWithName();
-    return result?.token;
   }
 
   @override
@@ -106,4 +90,3 @@ class SocialLoginApple implements SocialLogin {
     }
   }
 }
-

@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:knittda/src/core/storage/token_storage.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:knittda/src/data/data_sources/token_storage.dart';
 
 class AuthInterceptor extends Interceptor {
   final TokenStorage _storage;
@@ -9,16 +8,17 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onRequest(
-      RequestOptions options, RequestInterceptorHandler handler) async {
-    try {
-      final jwt = await _storage.read();
-      final hasToken = jwt?.isNotEmpty == true;
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
+    if(options.headers['accessToken'] == 'true') {
+      options.headers.remove('accessToken');
 
-      if (hasToken) {
-        options.headers['Authorization'] = 'Bearer $jwt';
+      final token = await _storage.readToken();
+
+      if (token != null && token.isNotEmpty) {
+        options.headers['Authorization'] = 'Bearer $token';
       }
-    } catch (e, s) {
-      await Sentry.captureException(e, stackTrace: s);
     }
 
     handler.next(options);

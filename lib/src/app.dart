@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/presentation/screens/home.dart';
-import 'package:knittda/src/presentation/screens/main_page/login.dart';
-import 'package:knittda/src/presentation/view_models/auth_view_model.dart';
+import 'package:knittda/src/domain/use_case/admin_login_use_case.dart';
+import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
+import 'package:knittda/src/domain/use_case/social_login_use_case.dart';
+import 'package:knittda/src/presentation/login/login_screen.dart';
+import 'package:knittda/src/presentation/login/login_view_model.dart';
 import 'package:provider/provider.dart';
-//import 'package:knittda/src/presentation/screens/work_detail/report_ui.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -27,36 +28,17 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.white, //하단 네비게이션 바 배경을 하얗게 설정
         ),
 
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Color(0xFFF2F2F7),
+        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFF2F2F7)),
+      ),
+
+      home: ChangeNotifierProvider(
+        create: (_) => LoginViewModel(
+          context.read<AutoLoginUseCase>(),
+          context.read<SocialLoginUseCase>(),
+          context.read<AdminLoginUseCase>(),
         ),
+        child: const LoginScreen(),
       ),
-
-      home: Consumer<AuthViewModel>(
-        builder: (_, auth, __) {
-          switch (auth.status) {
-            case AuthStatus.loading:
-              return const SplashScreen();
-            case AuthStatus.authenticated:
-              return Home();
-            case AuthStatus.unauthenticated:
-              return const Login();
-          }
-        },
-      ),
-
-      //home: ReportUi(),
     );
   }
 }
-
-class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: CircularProgressIndicator()),
-    );
-  }
-}
-

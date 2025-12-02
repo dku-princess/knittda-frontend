@@ -1,21 +1,23 @@
-import 'package:knittda/src/data/models/record_model.dart';
-import 'package:knittda/src/data/repositories/record_repository.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:knittda/src/data/data_sources/result.dart';
+import 'package:knittda/src/domain/model/records.dart';
+import 'package:knittda/src/domain/repository/record_api_repository.dart';
 
 class GetRecordUseCase {
-  final RecordRepository _repository;
+  final RecordApiRepository _repository;
 
-  GetRecordUseCase(
-      this._repository,
-  );
+  GetRecordUseCase(this._repository);
 
-  Future<RecordModel> call(int recordId) async {
-    try {
-      final record = await _repository.getRecord(recordId);
-      return record;
-    } catch (e, stack) {
-      await Sentry.captureException(e, stackTrace: stack);
-      rethrow; // 호출 측에서 catch 가능하게 재던짐
-    }
+  Future<Result<Records>> call({
+    required int recordId
+  }) async {
+    final result = await _repository.getRecord(recordId: recordId);
+
+    return switch (result) {
+    // Success(:final data) => Result.success(data),
+    // Error(:final e) => Result.error(e),
+      Success<Records>() => Result.success(result.data),
+      Error<Records>() => Result.error(result.e),
+    };
   }
+
 }

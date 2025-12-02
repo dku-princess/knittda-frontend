@@ -1,19 +1,19 @@
-import 'package:knittda/src/data/repositories/record_repository.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:knittda/src/data/data_sources/result.dart';
+import 'package:knittda/src/domain/repository/record_api_repository.dart';
 
 class DeleteRecordUseCase {
-  final RecordRepository _repository;
+  final RecordApiRepository _repository;
 
-  DeleteRecordUseCase(
-    this._repository,
-  );
+  DeleteRecordUseCase(this._repository);
 
-  Future<void> call(int recordId) async {
-    try {
-      await _repository.deleteRecord(recordId);
-    } catch (e, stack) {
-      await Sentry.captureException(e, stackTrace: stack);
-      rethrow; // 호출 측에서 catch 가능하게 재던짐
-    }
+  Future<Result<void>> call({required int recordId}) async {
+    final result = await _repository.deleteRecord(recordId: recordId);
+
+    return switch (result) {
+    // Success(:final data) => Result.success(data),
+    // Error(:final e) => Result.error(e),
+      Success<void>() => Result.success(null),
+      Error<void>() => Result.error(result.e),
+    };
   }
 }

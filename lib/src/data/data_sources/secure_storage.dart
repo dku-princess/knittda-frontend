@@ -1,0 +1,35 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+class SecureStorage {
+  final _storage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
+
+  Future<void> write(String key, String value) async {
+    await _storage.write(key: key, value: value);
+  }
+
+  Future<String?> read(String key) async {
+    try{
+      return await _storage.read(key: key);
+    } on PlatformException catch (_) {
+      debugPrint('storage read error');
+      try{
+        await _storage.deleteAll();
+      } catch (_) {
+        debugPrint('storage deleteAll error');
+      }
+      return null;
+    }
+  }
+
+  Future<void> delete(String key) async {
+    await _storage.delete(key: key);
+  }
+
+  Future<void> deleteAll() async {
+    await _storage.deleteAll();
+  }
+}

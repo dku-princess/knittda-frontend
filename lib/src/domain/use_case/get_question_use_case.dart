@@ -1,20 +1,19 @@
-import 'package:knittda/src/data/repositories/record_repository.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:knittda/src/data/data_sources/result.dart';
+import 'package:knittda/src/domain/repository/record_api_repository.dart';
 
 class GetQuestionUseCase {
-  final RecordRepository _repository;
+  final RecordApiRepository _repository;
 
-  GetQuestionUseCase(
-      this._repository,
-      );
+  GetQuestionUseCase(this._repository);
 
-  Future<String> call(int projectId) async {
-    try {
-      final question = await _repository.getQuestion(projectId);
-      return question;
-    } catch (e, stack) {
-      await Sentry.captureException(e, stackTrace: stack);
-      rethrow;
-    }
+  Future<Result<String>> call({required int projectId}) async {
+    final result = await _repository.getQuestion(projectId: projectId);
+
+    return switch (result) {
+      // Success(:final data) => Result.success(data),
+      // Error(:final e) => Result.error(e),
+      Success<String>() => Result.success(result.data),
+      Error<String>() => Result.error(result.e),
+    };
   }
 }

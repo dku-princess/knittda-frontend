@@ -1,21 +1,29 @@
-import 'package:knittda/src/data/models/record_model.dart';
-import 'package:knittda/src/data/repositories/record_repository.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:knittda/src/data/data_sources/result.dart';
+import 'package:knittda/src/domain/model/records.dart';
+import 'package:knittda/src/domain/repository/record_api_repository.dart';
 
 class UpdateRecordUseCase {
-  final RecordRepository _repository;
+  final RecordApiRepository _repository;
 
-  UpdateRecordUseCase(
-    this._repository,
-  );
+  UpdateRecordUseCase(this._repository);
 
-  Future<RecordModel> call(RecordModel record, List<int>? deleteImageIds) async {
-    try {
-      final updated = await _repository.updateRecord(record, deleteImageIds);
-      return updated;
-    } catch (e, stack) {
-      await Sentry.captureException(e, stackTrace: stack);
-      rethrow;
-    }
+  Future<Result<Records>> call({
+    required Records record,
+    required List<int>? deleteImageIds,
+    required List<XFile>? files,
+  }) async {
+    final result = await _repository.putRecord(
+      record: record,
+      deleteImageIds: deleteImageIds,
+      files: files,
+    );
+
+    return switch (result) {
+      // Success(:final data) => Result.success(data),
+      // Error(:final e) => Result.error(e),
+      Success<Records>() => Result.success(result.data),
+      Error<Records>() => Result.error(result.e),
+    };
   }
 }
