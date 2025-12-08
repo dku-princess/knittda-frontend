@@ -63,15 +63,6 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   }
 
   @override
-  Future<Result<User>> getAuthAdmin() async {
-    final Result<Map<String, dynamic>> result = await _api.getAuthAdmin();
-    return switch (result) {
-      Success(:final data) => _saveAuth(data),
-      Error(:final e) => Result.error(e),
-    };
-  }
-
-  @override
   Future<Result<void>> deleteAuthSignout() async {
     final Result<void> result = await _api.deleteAuthSignout();
 
