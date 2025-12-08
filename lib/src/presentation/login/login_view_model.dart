@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
-import 'package:knittda/src/domain/use_case/admin_login_use_case.dart';
 import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
 import 'package:knittda/src/domain/use_case/social_login_use_case.dart';
 import 'package:knittda/src/domain/util/social_login_type.dart';
@@ -13,7 +12,6 @@ import 'package:knittda/src/presentation/login/login_ui_event.dart';
 class LoginViewModel extends ChangeNotifier {
   final AutoLoginUseCase _autoLoginUseCase;
   final SocialLoginUseCase _socialLoginUseCase;
-  final AdminLoginUseCase _adminLoginUseCase;
 
   LoginState _state = LoginState(isLoading: false);
 
@@ -23,11 +21,7 @@ class LoginViewModel extends ChangeNotifier {
 
   Stream<LoginUiEvent> get eventStream => _eventController.stream;
 
-  LoginViewModel(
-    this._autoLoginUseCase,
-    this._socialLoginUseCase,
-    this._adminLoginUseCase,
-  ) {
+  LoginViewModel(this._autoLoginUseCase, this._socialLoginUseCase) {
     _autoLogin();
   }
 
@@ -35,8 +29,6 @@ class LoginViewModel extends ChangeNotifier {
     switch (event) {
       case SocialLogin(:final type):
         await _socialLogin(type: type);
-      case AdminLogin():
-        await _adminLogin();
     }
   }
 
@@ -64,25 +56,6 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
 
     final Result<void> result = await _socialLoginUseCase(type);
-
-    switch (result) {
-      case Success():
-        _eventController.add(LoginUiEvent.login());
-      case Error():
-        _eventController.add(
-          LoginUiEvent.showSnackBar('로그인에 실패했습니다. 다시 시도해주세요'),
-        );
-    }
-
-    _state = state.copyWith(isLoading: false);
-    notifyListeners();
-  }
-
-  Future<void> _adminLogin() async {
-    _state = state.copyWith(isLoading: true);
-    notifyListeners();
-
-    final Result<void> result = await _adminLoginUseCase();
 
     switch (result) {
       case Success():

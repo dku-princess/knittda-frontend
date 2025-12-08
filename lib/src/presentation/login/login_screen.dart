@@ -102,22 +102,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ],
-
-                    const SizedBox(height: 10),
-
-                    TextButton(
-                      onPressed: () async {
-                        await viewModel.onEvent(LoginEvent.adminLogin());
-                      },
-                      child: Text(
-                        'Admin Login',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),

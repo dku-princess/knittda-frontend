@@ -5,6 +5,6 @@ part 'login_event.freezed.dart';
 
 @freezed
 sealed class LoginEvent with _$LoginEvent {
-  const factory LoginEvent.socialLogin({required SocialLoginType type}) = SocialLogin;
-  const factory LoginEvent.adminLogin() = AdminLogin;
+  const factory LoginEvent.socialLogin({required SocialLoginType type}) =
+      SocialLogin;
 }
