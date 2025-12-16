@@ -109,8 +109,8 @@ class ProjectDetailsViewModel extends ChangeNotifier {
       switch (result) {
         case Success(:final data):
           _state = state.copyWith(project: data);
-        case Error(:final e):
-          _eventController.add(ProjectDetailsUiEvent.showSnackBar(e));
+        case Error():
+          _eventController.add(ProjectDetailsUiEvent.showSnackBar("작품을 불러오지 못했어요. 다시 시도해 주세요."));
       }
 
       _updateIsOwner();
@@ -126,8 +126,8 @@ class ProjectDetailsViewModel extends ChangeNotifier {
       switch (result) {
         case Success(:final data):
           _state = state.copyWith(project: data);
-        case Error(:final e):
-          _eventController.add(ProjectDetailsUiEvent.showSnackBar(e));
+        case Error():
+          _eventController.add(ProjectDetailsUiEvent.showSnackBar("작품을 불러오지 못했어요."));
       }
 
       _updateIsOwner();
@@ -149,8 +149,8 @@ class ProjectDetailsViewModel extends ChangeNotifier {
     switch (result) {
       case Success():
         _eventController.add(ProjectDetailsUiEvent.deletedProject());
-      case Error(:final e):
-        _eventController.add(ProjectDetailsUiEvent.showSnackBar(e));
+      case Error():
+        _eventController.add(ProjectDetailsUiEvent.showSnackBar("작품을 삭제하지 못했어요. 다시 시도해 주세요."));
     }
 
     _state = state.copyWith(isLoading: false);
@@ -190,9 +190,9 @@ class ProjectDetailsViewModel extends ChangeNotifier {
     switch (result) {
       case Success(:final data):
         _state = state.copyWith(project: data);
-      case Error(:final e):
+      case Error():
         _state = state.copyWith(project: prevProject);
-        _eventController.add(ProjectDetailsUiEvent.showSnackBar(e));
+        _eventController.add(ProjectDetailsUiEvent.showSnackBar("작품의 상태를 변경하지 못했어요. 다시 시도해 주세요."));
     }
 
     notifyListeners();
@@ -216,11 +216,11 @@ class ProjectDetailsViewModel extends ChangeNotifier {
         _state = state.copyWith(
           diaryTapState: state.diaryTapState.copyWith(records: data),
         );
-      case Error(:final e):
+      case Error():
         _state = state.copyWith(
-          diaryTapState: state.diaryTapState.copyWith(errorMessage: e),
+          diaryTapState: state.diaryTapState.copyWith(errorMessage: "기록을 불러오지 못했어요."),
         );
-        _eventController.add(ProjectDetailsUiEvent.showSnackBar(e));
+        _eventController.add(ProjectDetailsUiEvent.showSnackBar("기록을 불러오지 못했어요."));
     }
 
     _state = state.copyWith(

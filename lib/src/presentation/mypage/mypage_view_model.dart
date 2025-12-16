@@ -78,7 +78,7 @@ class MypageViewModel extends ChangeNotifier {
       case Success():
         _eventController.add(MypageUiEvent.completed());
       case Error():
-        _eventController.add(MypageUiEvent.showSnackBar('로그아웃 중 오류가 발생했습니다.'));
+        _eventController.add(MypageUiEvent.showSnackBar('로그아웃에 실패했어요. 다시 시도해 주세요.'));
         _eventController.add(MypageUiEvent.completed());
     }
   }
@@ -104,7 +104,7 @@ class MypageViewModel extends ChangeNotifier {
       case Success():
         _eventController.add(MypageUiEvent.completed());
       case Error():
-        _eventController.add(MypageUiEvent.showSnackBar('회원탈퇴 중 오류가 발생했습니다.'));
+        _eventController.add(MypageUiEvent.showSnackBar('회원탈퇴에 실패했어요. 다시 시도해 주세요.'));
         _eventController.add(MypageUiEvent.completed());
     }
   }

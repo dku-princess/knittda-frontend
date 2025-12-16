@@ -65,8 +65,8 @@ class RecordDetailsViewModel extends ChangeNotifier {
     switch (result) {
       case Success(:final data):
         _state = state.copyWith(record: data);
-      case Error(:final e):
-        _eventController.add(RecordDetailsUiEvent.showSnackBar(e));
+      case Error():
+        _eventController.add(RecordDetailsUiEvent.showSnackBar("기록을 불러오지 못했어요."));
     }
 
     notifyListeners();
@@ -83,8 +83,8 @@ class RecordDetailsViewModel extends ChangeNotifier {
     switch (result) {
       case Success():
         _eventController.add(RecordDetailsUiEvent.deletedRecord());
-      case Error(:final e):
-        _eventController.add(RecordDetailsUiEvent.showSnackBar(e));
+      case Error():
+        _eventController.add(RecordDetailsUiEvent.showSnackBar("기록을 삭제하지 못했어요. 다시 시도해 주세요."));
     }
 
     _state = state.copyWith(isLoading: false);

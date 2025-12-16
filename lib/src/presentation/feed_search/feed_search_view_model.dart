@@ -89,8 +89,8 @@ class FeedSearchViewModel extends ChangeNotifier {
           hasMore: !data.last,
         );
 
-      case Error(:final e):
-        _eventController.add(FeedSearchUiEvent.showSnackBar(e));
+      case Error():
+        _eventController.add(FeedSearchUiEvent.showSnackBar("피드를 불러오지 못했어요. 다시 시도해 주세요."));
     }
 
     if (isFirstPage) {

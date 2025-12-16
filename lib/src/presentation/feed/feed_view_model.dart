@@ -66,8 +66,8 @@ class FeedViewModel extends ChangeNotifier {
           errorMessage: null,
         );
 
-      case Error(:final e):
-        _state = state.copyWith(errorMessage: e);
+      case Error():
+        _state = state.copyWith(errorMessage: "피드를 불러오지 못했어요. 다시 시도해 주세요.");
     }
 
     if (isFirstPage) {
