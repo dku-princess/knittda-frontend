@@ -24,7 +24,6 @@ import 'package:knittda/src/domain/repository/feed_api_repository.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/repository/record_api_repository.dart';
 import 'package:knittda/src/domain/repository/report_api_repository.dart';
-import 'package:knittda/src/domain/use_case/admin_login_use_case.dart';
 import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_feed_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_project_previews_use_case.dart';
@@ -90,9 +89,6 @@ Future<List<SingleChildWidget>> getProviders() async {
     >(
       update: (context, authRepository, reportRepository, _) =>
           AutoLoginUseCase(authRepository, reportRepository),
-    ),
-    ProxyProvider<AuthenticationRepository, AdminLoginUseCase>(
-      update: (context, authRepository, _) => AdminLoginUseCase(authRepository),
     ),
     ProxyProvider2<
       AuthenticationRepository,

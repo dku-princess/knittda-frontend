@@ -79,8 +79,8 @@ class AddEditRecordViewModel extends ChangeNotifier {
     switch (result) {
       case Success(:final data):
         _eventController.add(AddEditRecordUiEvent.savedRecord(data));
-      case Error(:final e):
-        _eventController.add(AddEditRecordUiEvent.showSnackBar(e));
+      case Error():
+        _eventController.add(AddEditRecordUiEvent.showSnackBar("기록을 저장하지 못했어요. 다시 시도해 주세요."));
     }
 
     _state = state.copyWith(isLoading: false);
@@ -105,11 +105,11 @@ class AddEditRecordViewModel extends ChangeNotifier {
         _state = state.copyWith(
           questionState: state.questionState.copyWith(question: data),
         );
-      case Error(:final e):
+      case Error():
         _state = state.copyWith(
-          questionState: state.questionState.copyWith(errorMessage: e),
+          questionState: state.questionState.copyWith(errorMessage: "질문을 불러오지 못했어요."),
         );
-        _eventController.add(AddEditRecordUiEvent.showSnackBar(e));
+        _eventController.add(AddEditRecordUiEvent.showSnackBar("질문을 불러오지 못했어요."));
     }
 
     _state = state.copyWith(

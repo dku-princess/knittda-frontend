@@ -26,8 +26,8 @@ class ReportViewModel extends ChangeNotifier {
     switch (result) {
       case Success(:final data):
         _state = state.copyWith(report: data);
-      case Error(:final e):
-        _state = state.copyWith(errorMessage: e);
+      case Error():
+        _state = state.copyWith(errorMessage: "리포트를 불러오지 못했어요. 다시 시도해 주세요.");
     }
 
     _state = state.copyWith(isLoading: false);

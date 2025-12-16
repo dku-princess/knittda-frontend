@@ -30,7 +30,7 @@ class ProjectsViewModel extends ChangeNotifier {
         _orderProjects();
       },
       onError: (e) {
-        _state = state.copyWith(errorMessage: e.toString());
+        _state = state.copyWith(errorMessage: "작품 목록을 불러오지 못했어요.");
         notifyListeners();
       },
     );
@@ -56,8 +56,8 @@ class ProjectsViewModel extends ChangeNotifier {
     switch (result) {
       case Success():
         _state = state.copyWith(isLoading: false);
-      case Error(:final e):
-        _state = state.copyWith(isLoading: false, errorMessage: e);
+      case Error():
+        _state = state.copyWith(isLoading: false, errorMessage: "작품 목록을 불러오지 못했어요.");
     }
 
     notifyListeners();
@@ -73,8 +73,8 @@ class ProjectsViewModel extends ChangeNotifier {
     switch (result) {
       case Success(:final data):
         _state = state.copyWith(projects: data);
-      case Error(:final e):
-        _state = state.copyWith(errorMessage: e);
+      case Error():
+        _state = state.copyWith(errorMessage: "작품 목록을 불러오지 못했어요.");
     }
 
     notifyListeners();
