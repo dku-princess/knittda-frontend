@@ -152,9 +152,33 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
                   child: Center(child: CircularProgressIndicator()),
                 );
               }
+              final feed = viewModel.state.feeds[index];
+              final rank = viewModel.calculateRank(index);
+              final recordId = feed.record.id ?? feed.record.recordId ?? 0;
+
+              // 디버깅: recordId 추출 확인
+              if (recordId == 0 || recordId == 430) {
+                print('[FeedSearchScreen] RecordId extraction:');
+                print('  - feed.record.id: ${feed.record.id}');
+                print('  - feed.record.recordId: ${feed.record.recordId}');
+                print('  - final recordId: $recordId');
+                print('  - index: $index');
+                print('  - rank: $rank');
+              }
+
               return FeedItem(
-                feed: viewModel.state.feeds[index],
+                feed: feed,
                 onTap: () async {
+                  // 클릭 로그 전송 (fire-and-forget)
+                  if (recordId > 0) {
+                    viewModel.sendClickLog(
+                      recordId: recordId,
+                      rank: rank,
+                    );
+                  } else {
+                    print('[FeedSearchScreen] Skipping click log - invalid recordId: $recordId');
+                  }
+
                   final deleted = await Navigator.push<bool>(
                     context,
                     MaterialPageRoute(
@@ -176,7 +200,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
                             context.read<RecordApiRepository>(),
                           ),
                           context.read<GetStoredUserUseCase>(),
-                          projectId: viewModel.state.feeds[index].projectId,
+                          projectId: feed.projectId,
                         ),
                         child: const ProjectDetailsScreen(),
                       ),

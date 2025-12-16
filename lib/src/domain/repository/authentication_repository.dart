@@ -7,6 +7,7 @@ abstract class AuthenticationRepository {
   Future<Result<User>> getAuthMe();
   Future<Result<User>> getAuthKakao({required String token});
   Future<Result<User>> getAuthApple({required String token, required String name});
+  Future<Result<User>> getAuthAdmin();
   Future<Result<void>> deleteAuthSignout();
 
   Future<Result<SocialLoginResult>> socialLogin({required SocialLoginType type});

@@ -4,5 +4,8 @@ part 'login_state.freezed.dart';
 
 @freezed
 abstract class LoginState with _$LoginState {
-  factory LoginState({required bool isLoading}) = _LoginState;
+  factory LoginState({
+    required bool isLoading,
+    @Default(false) bool showAdminButton,
+  }) = _LoginState;
 }

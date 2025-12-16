@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:knittda/src/domain/use_case/admin_login_use_case.dart';
 import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
 import 'package:knittda/src/domain/use_case/social_login_use_case.dart';
 import 'package:knittda/src/presentation/login/login_screen.dart';
@@ -46,6 +47,7 @@ class _MypageScreenState extends State<MypageScreen> {
                           create: (context) => LoginViewModel(
                             context.read<AutoLoginUseCase>(),
                             context.read<SocialLoginUseCase>(),
+                            context.read<AdminLoginUseCase>(),
                           ),
                           child: const LoginScreen(),
                         ),
