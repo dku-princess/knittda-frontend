@@ -203,14 +203,14 @@ class _MypageScreenState extends State<MypageScreen> {
             ),
           ),
 
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Text(
-              '1.0.0',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ),
+          // const SizedBox(height: 20),
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 24),
+          //   child: Text(
+          //     '1.0.0',
+          //     style: TextStyle(fontSize: 12, color: Colors.grey),
+          //   ),
+          // ),
         ],
       ),
     );
