@@ -13,10 +13,7 @@ class FeedSearchViewModel extends ChangeNotifier {
   final GetSearchFeedUseCase _getSearchFeedUseCase;
   final FeedApiRepository _feedApiRepository;
 
-  FeedSearchViewModel(
-    this._getSearchFeedUseCase,
-    this._feedApiRepository,
-  );
+  FeedSearchViewModel(this._getSearchFeedUseCase, this._feedApiRepository);
 
   FeedSearchState _state = FeedSearchState(
     feeds: [],
@@ -85,25 +82,15 @@ class FeedSearchViewModel extends ChangeNotifier {
 
     switch (result) {
       case Success(:final data):
-        // 디버깅: 파싱된 데이터 확인
-        print('[FeedSearchViewModel] Search result:');
-        print('  - content length: ${data.content.length}');
-        print('  - searchId: ${data.searchId}');
-        print('  - searchVersion: ${data.searchVersion}');
-        print('  - last: ${data.last}');
-        print('  - empty: ${data.empty}');
-        
         final updatedFeeds = isFirstPage
             ? data.content
             : [...state.feeds, ...data.content];
 
         // 새로운 검색어로 검색하는 경우 searchId 초기화
         final newSearchId = isFirstPage ? data.searchId : state.searchId;
-        final newSearchVersion = isFirstPage ? data.searchVersion : state.searchVersion;
-
-        print('[FeedSearchViewModel] Updated state:');
-        print('  - feeds count: ${updatedFeeds.length}');
-        print('  - searchId: $newSearchId');
+        final newSearchVersion = isFirstPage
+            ? data.searchVersion
+            : state.searchVersion;
 
         _state = state.copyWith(
           feeds: updatedFeeds,
@@ -115,7 +102,9 @@ class FeedSearchViewModel extends ChangeNotifier {
         );
 
       case Error():
-        _eventController.add(FeedSearchUiEvent.showSnackBar("피드를 불러오지 못했어요. 다시 시도해 주세요."));
+        _eventController.add(
+          FeedSearchUiEvent.showSnackBar("피드를 불러오지 못했어요. 다시 시도해 주세요."),
+        );
     }
 
     if (isFirstPage) {
@@ -149,22 +138,11 @@ class FeedSearchViewModel extends ChangeNotifier {
   }
 
   // 검색 결과 클릭 로그 전송 (fire-and-forget)
-  Future<void> sendClickLog({
-    required int recordId,
-    required int rank,
-  }) async {
+  Future<void> sendClickLog({required int recordId, required int rank}) async {
     // searchId가 없으면 로그 전송하지 않음
     if (state.searchId == null || state.keyword.isEmpty) {
-      print('[FeedSearchViewModel] Click log skipped - searchId: ${state.searchId}, keyword: ${state.keyword}');
       return;
     }
-
-    print('[FeedSearchViewModel] Sending click log:');
-    print('  - searchId: ${state.searchId}');
-    print('  - keyword: ${state.keyword}');
-    print('  - recordId: $recordId');
-    print('  - rank: $rank');
-    print('  - page: ${state.page}');
 
     // 비동기로 전송 (UX에 영향 없음)
     _feedApiRepository.postSearchClickLog(
@@ -173,14 +151,7 @@ class FeedSearchViewModel extends ChangeNotifier {
       recordId: recordId,
       rank: rank,
       page: state.page,
-    ).then((result) {
-      print('[FeedSearchViewModel] Click log result: $result');
-      // 성공/실패 모두 조용히 처리 (fire-and-forget)
-      // 사용자에게 오류를 노출하지 않음
-    }).catchError((error) {
-      print('[FeedSearchViewModel] Click log error: $error');
-      // 에러도 조용히 처리
-    });
+    );
   }
 
   @override
