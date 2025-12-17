@@ -59,8 +59,8 @@ class _LoginScreenState extends State<LoginScreen> {
     
     _lastTapTime = now;
 
-    // 10번 탭하면 Admin 버튼 표시/숨김 토글
-    if (_tapCount >= 10) {
+    // 20번 탭하면 Admin 버튼 표시/숨김 토글
+    if (_tapCount >= 20) {
       final viewModel = context.read<LoginViewModel>();
       viewModel.toggleAdminButton();
       _tapCount = 0; // 리셋
