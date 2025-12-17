@@ -42,41 +42,10 @@ class FeedApiRepositoryImpl implements FeedApiRepository {
     switch (result) {
       case Success(:final data):
         try {
-          print('[FeedApiRepository] Parsing search response:');
-          print('  - data keys: ${data.keys}');
-          print('  - content: ${data['content']?.length ?? 0} items');
-          print('  - searchId: ${data['searchId']}');
-          print('  - searchVersion: ${data['searchVersion']}');
-          
-          // 첫 번째 content 항목의 구조 확인
-          if (data['content'] != null && (data['content'] as List).isNotEmpty) {
-            final firstItem = (data['content'] as List).first;
-            print('  - First content item keys: ${(firstItem as Map).keys}');
-            if (firstItem['record'] != null) {
-              print('  - First record keys: ${(firstItem['record'] as Map).keys}');
-              print('  - First record.id: ${firstItem['record']['id']}');
-              print('  - First record.recordId: ${firstItem['record']['recordId']}');
-            }
-          }
-          
           final pagination = FeedPagination.fromJson(data);
-          print('[FeedApiRepository] Parsed successfully:');
-          print('  - content length: ${pagination.content.length}');
-          print('  - searchId: ${pagination.searchId}');
-          print('  - searchVersion: ${pagination.searchVersion}');
-          
-          // 파싱된 첫 번째 feed의 record 정보
-          if (pagination.content.isNotEmpty) {
-            final firstFeed = pagination.content.first;
-            print('  - First feed record.id: ${firstFeed.record.id}');
-            print('  - First feed record.recordId: ${firstFeed.record.recordId}');
-          }
-          
+
           return Result.success(pagination);
-        } catch (e, stack) {
-          print('[FeedApiRepository] JSON parsing error: $e');
-          print('  - Stack: $stack');
-          print('  - Data: $data');
+        } catch (e) {
           return Result.error('응답 파싱 오류: $e');
         }
       case Error(:final e):

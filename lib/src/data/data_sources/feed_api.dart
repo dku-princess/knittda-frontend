@@ -92,12 +92,6 @@ class FeedApi {
         'page': page,
       };
       
-      print('[FeedApi] Sending click log request:');
-      print('  - URL: /api/v1/feed/search/log/click');
-      print('  - Data: $requestData');
-      print('  - clickRank type: ${rank.runtimeType}, value: $rank');
-      print('  - page type: ${page.runtimeType}, value: $page');
-      
       final response = await _dio.post(
         '/api/v1/feed/search/log/click',
         data: requestData,
@@ -109,10 +103,10 @@ class FeedApi {
         // 로그 전송 실패는 사용자에게 노출하지 않음 (fire-and-forget)
         return Result.error('로그 전송 실패');
       }
-    } on DioException catch (e, stack) {
+    } on DioException catch (e) {
       // 네트워크 에러도 조용히 처리 (fire-and-forget)
       return Result.error('네트워크 에러: ${e.message}');
-    } catch (e, stack) {
+    } catch (e) {
       return Result.error('알 수 없는 에러');
     }
   }
