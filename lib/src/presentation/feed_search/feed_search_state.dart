@@ -13,5 +13,7 @@ abstract class FeedSearchState with _$FeedSearchState {
     required int page,
     required bool hasMore,
     required bool isLoadingMore,
+    String? searchId,
+    String? searchVersion,
   }) = _FeedSearchState;
 }

@@ -71,9 +71,13 @@ class _FeedScreenState extends State<FeedScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => ChangeNotifierProvider(
-                    create: (context) => FeedSearchViewModel(
-                      GetSearchFeedUseCase(context.read<FeedApiRepository>()),
-                    ),
+                    create: (context) {
+                      final repository = context.read<FeedApiRepository>();
+                      return FeedSearchViewModel(
+                        GetSearchFeedUseCase(repository),
+                        repository,
+                      );
+                    },
                     child: const FeedSearchScreen(),
                   ),
                 ),

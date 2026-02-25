@@ -105,7 +105,6 @@ class _ReportScreenState extends State<ReportScreen> {
       }
       return granted;
     } catch (e) {
-      debugPrint('Permission error: $e');
       if (!mounted) return false;
       ScaffoldMessenger.of(
         context,
@@ -160,7 +159,6 @@ class _ReportScreenState extends State<ReportScreen> {
         context,
       ).showSnackBar(const SnackBar(content: Text('갤러리에 저장되었습니다!')));
     } catch (e) {
-      debugPrint('Save error: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
@@ -196,7 +194,6 @@ class _ReportScreenState extends State<ReportScreen> {
         ),
       );
     } catch (e) {
-      debugPrint('Share error: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,

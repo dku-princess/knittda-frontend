@@ -14,9 +14,11 @@ abstract class FeedPagination with _$FeedPagination {
     required int size,
     required List<Feed> content,
     required int number,
-    required bool first,
-    required bool last,
-    required bool empty,
+    @Default(false) bool first,
+    @Default(false) bool last,
+    @Default(false) bool empty,
+    String? searchId,
+    String? searchVersion,
 }) = _FeedPagination;
 
   factory FeedPagination.fromJson(Map<String, dynamic> json) => _$FeedPaginationFromJson(json);

@@ -62,7 +62,7 @@ class LoginViewModel extends ChangeNotifier {
         _eventController.add(LoginUiEvent.login());
       case Error():
         _eventController.add(
-          LoginUiEvent.showSnackBar('로그인에 실패했어요. 다시 시도해주세요'),
+          LoginUiEvent.showSnackBar('로그인에 실패했습니다. 다시 시도해주세요'),
         );
     }
 

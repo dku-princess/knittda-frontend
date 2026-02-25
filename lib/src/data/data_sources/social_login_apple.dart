@@ -57,7 +57,6 @@ class SocialLoginApple implements SocialLogin {
 
       return SocialLoginResult(token: idToken, name: fullName);
     } catch (e) {
-      print('Apple login error: $e');
       return null;
     }
   }
@@ -68,7 +67,6 @@ class SocialLoginApple implements SocialLogin {
       await _auth.signOut();
       return true;
     } catch (e) {
-      print('Apple logout error: $e');
       return false;
     }
   }
@@ -85,7 +83,6 @@ class SocialLoginApple implements SocialLogin {
       }
       return false;
     } catch (e) {
-      print('Apple unlink error: $e');
       return false;
     }
   }

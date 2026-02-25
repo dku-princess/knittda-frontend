@@ -152,9 +152,18 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
                   child: Center(child: CircularProgressIndicator()),
                 );
               }
+              final feed = viewModel.state.feeds[index];
+              final rank = viewModel.calculateRank(index);
+              final recordId = feed.record.id ?? feed.record.recordId ?? 0;
+
               return FeedItem(
-                feed: viewModel.state.feeds[index],
+                feed: feed,
                 onTap: () async {
+                  // 클릭 로그 전송 (fire-and-forget)
+                  if (recordId > 0) {
+                    viewModel.sendClickLog(recordId: recordId, rank: rank);
+                  }
+
                   final deleted = await Navigator.push<bool>(
                     context,
                     MaterialPageRoute(
@@ -176,7 +185,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
                             context.read<RecordApiRepository>(),
                           ),
                           context.read<GetStoredUserUseCase>(),
-                          projectId: viewModel.state.feeds[index].projectId,
+                          projectId: feed.projectId,
                         ),
                         child: const ProjectDetailsScreen(),
                       ),

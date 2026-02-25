@@ -39,8 +39,38 @@ class FeedApiRepositoryImpl implements FeedApiRepository {
       sort,
     );
 
+    switch (result) {
+      case Success(:final data):
+        try {
+          final pagination = FeedPagination.fromJson(data);
+
+          return Result.success(pagination);
+        } catch (e) {
+          return Result.error('응답 파싱 오류: $e');
+        }
+      case Error(:final e):
+        return Result.error(e);
+    }
+  }
+
+  @override
+  Future<Result<void>> postSearchClickLog({
+    required String searchId,
+    required String keyword,
+    required int recordId,
+    required int rank,
+    required int page,
+  }) async {
+    final result = await _api.postSearchClickLog(
+      searchId: searchId,
+      keyword: keyword,
+      recordId: recordId,
+      rank: rank,
+      page: page,
+    );
+
     return switch (result) {
-      Success(:final data) => Result.success(FeedPagination.fromJson(data)),
+      Success() => Result.success(null),
       Error(:final e) => Result.error(e),
     };
   }
