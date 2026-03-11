@@ -31,6 +31,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
   XFile? _image;
   String? _thumbnailUrl;
   DateTime? _goalDate;
+  DateTime? _startDate;
 
   StreamSubscription? _subscription;
 
@@ -54,7 +55,13 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
         _thumbnailUrl = widget.project!.thumbnailUrl;
       }
 
-      _goalDate = DateTime.tryParse(widget.project!.goalDate);
+      _goalDate = widget.project?.goalDate != null
+          ? DateTime.tryParse(widget.project!.goalDate)
+          : null;
+
+      _startDate = widget.project?.startDate != null
+          ? DateTime.tryParse(widget.project!.startDate)
+          : null;
     }
 
     Future.microtask(() {
@@ -105,16 +112,10 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
   }
 
   Future<void> _pickGoalDate(BuildContext context) async {
-    final String? startDateStr = widget.project?.startDate;
-
-    final DateTime startDate =
-        (startDateStr != null ? DateTime.tryParse(startDateStr) : null) ??
-        DateTime.now();
-
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _goalDate ?? startDate,
-      firstDate: startDate,
+      initialDate: _goalDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
       lastDate: DateTime(2100),
       helpText: '목표 날짜 선택',
     );
@@ -124,6 +125,24 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
     if (picked != null) {
       setState(() {
         _goalDate = picked;
+      });
+    }
+  }
+
+  Future<void> _pickStartDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _startDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+      helpText: '시작 날짜 선택',
+    );
+
+    if (!mounted) return;
+
+    if (picked != null) {
+      setState(() {
+        _startDate = picked;
       });
     }
   }
@@ -139,10 +158,17 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
 
     final hasImage = _image != null || (_thumbnailUrl?.isNotEmpty ?? false);
 
-    if (nickname.isEmpty || _goalDate == null || !hasImage) {
+    if (nickname.isEmpty || _goalDate == null || _startDate == null || !hasImage) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('기본정보를 입력해주세요.')));
+      ).showSnackBar(const SnackBar(content: Text('기본 정보를 모두 입력해주세요.')));
+      return;
+    }
+
+    if (_goalDate!.isBefore(_startDate!)) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('목표일이 시작일보다 앞설 수 없습니다.')));
       return;
     }
 
@@ -151,7 +177,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
         AddEditProjectEvent.saveProject(
           project: Project(
             nickname: nickname,
-            startDate: DateUtilsHelper.toHyphenFormat(DateTime.now()),
+            startDate: DateUtilsHelper.toHyphenFormat(_startDate!),
             goalDate: DateUtilsHelper.toHyphenFormat(_goalDate!),
             needleInfo: customNeedleInfo,
             yarnInfo: customYarnInfo,
@@ -168,6 +194,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
           project: widget.project!.copyWith(
             projectId: widget.project!.id,
             nickname: nickname,
+            startDate: DateUtilsHelper.toHyphenFormat(_startDate!),
             goalDate: DateUtilsHelper.toHyphenFormat(_goalDate!),
             needleInfo: customNeedleInfo,
             yarnInfo: customYarnInfo,
@@ -297,6 +324,25 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
 
                         TextButton(
                           onPressed: () {
+                            _pickStartDate(context);
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: PRIMARY_COLOR,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              side: BorderSide(color: PRIMARY_COLOR),
+                            ),
+                          ),
+                          child: Text(
+                            _startDate != null
+                                ? DateUtilsHelper.toDotFormat(_startDate!)
+                                : "시작일",
+                          ),
+                        ),
+
+                        TextButton(
+                          onPressed: () {
                             _pickGoalDate(context);
                           },
                           style: TextButton.styleFrom(
@@ -310,7 +356,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                           child: Text(
                             _goalDate != null
                                 ? DateUtilsHelper.toDotFormat(_goalDate!)
-                                : "목표 날짜",
+                                : "목표일",
                           ),
                         ),
                       ],
