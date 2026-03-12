@@ -11,7 +11,7 @@ import 'package:flutter/widgets.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'env.dart';
+import 'app_config.dart';
 
 // 앱 실행
 Future<void> main() async {
@@ -29,7 +29,7 @@ Future<void> main() async {
 
     if (!kDebugMode) {
       await SentryFlutter.init((options) {
-        options.dsn = Env.SentryFlutterDns;
+        options.dsn = AppConfig.SentryFlutterDns;
         options.attachStacktrace = true;
         options.sendDefaultPii = false;
       });
@@ -41,7 +41,7 @@ Future<void> main() async {
     }
 
     // Kakao SDK 초기화 (필수 키 입력!)
-    KakaoSdk.init(nativeAppKey: Env.kakaoNativeAppKey);
+    KakaoSdk.init(nativeAppKey: AppConfig.kakaoNativeAppKey);
 
     // 앱 실행
     runApp(

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:knittda/env.dart';
+import 'package:knittda/app_config.dart';
 import 'package:knittda/src/data/data_sources/authentication_api.dart';
 import 'package:knittda/src/data/data_sources/feed_api.dart';
 import 'package:knittda/src/data/data_sources/project_api.dart';
@@ -54,7 +54,7 @@ Future<List<SingleChildWidget>> getProviders() async {
   return [
     Provider<Dio>(
       create: (_) {
-        final dio = Dio(BaseOptions(baseUrl: Env.apiBaseUrl));
+        final dio = Dio(BaseOptions(baseUrl: AppConfig.apiBaseUrl));
         dio.interceptors.add(AuthInterceptor(tokenStorage));
         return dio;
       },
