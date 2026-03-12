@@ -72,3 +72,6 @@ app.*.map.json
 *.g.dart
 *.mocks.dart
 *.freezed.dart
+
+config/*.json
+!config/example.json
