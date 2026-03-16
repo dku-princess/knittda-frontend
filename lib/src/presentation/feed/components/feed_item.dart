@@ -70,7 +70,7 @@ class FeedItem extends StatelessWidget {
                   children: [
                     //이름, 프로젝트 이름
                     Text(
-                      '${feed.userName}  |  ${feed.projectName}',
+                      '${feed.userName ?? '알 수 없음'}  |  ${feed.projectName}',
                       style: const TextStyle(fontSize: 14),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
