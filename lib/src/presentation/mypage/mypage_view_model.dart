@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/user.dart';
 import 'package:knittda/src/domain/use_case/get_stored_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/logout_use_case.dart';
+import 'package:knittda/src/domain/use_case/setting_profile_image_use_case.dart';
 import 'package:knittda/src/domain/use_case/signout_use_case.dart';
 import 'package:knittda/src/presentation/mypage/mypage_event.dart';
 import 'package:knittda/src/presentation/mypage/mypage_state.dart';
@@ -14,6 +16,7 @@ class MypageViewModel extends ChangeNotifier {
   final LogoutUseCase _logoutUseCase;
   final SignoutUseCase _signoutUseCase;
   final GetStoredUserUseCase _getStoredUserUseCase;
+  final SettingProfileImageUseCase _settingProfileImageUseCase;
 
   MypageState _state = MypageState(isLoading: false, user: null);
 
@@ -27,6 +30,7 @@ class MypageViewModel extends ChangeNotifier {
     this._logoutUseCase,
     this._signoutUseCase,
     this._getStoredUserUseCase,
+    this._settingProfileImageUseCase,
   ) {
     _loadUser();
   }
@@ -37,7 +41,34 @@ class MypageViewModel extends ChangeNotifier {
         await _logout();
       case Signout():
         await _signout();
+      case SettingProfileImage(:final file):
+        await _settingProfileImage(file);
     }
+  }
+
+  Future<void> _settingProfileImage(XFile file) async {
+    if (state.isLoading) {
+      _eventController.add(MypageUiEvent.showSnackBar('프로필 이미지 변경 중 입니다.'));
+      return;
+    }
+
+    _state = state.copyWith(isLoading: true, previewImage: file);
+    notifyListeners();
+
+    final Result<User?> result = await _settingProfileImageUseCase(file);
+
+    switch (result) {
+      case Success():
+        _state = state.copyWith(isLoading: false, previewImage: null);
+        _loadUser();
+      case Error():
+        _state = state.copyWith(isLoading: false, previewImage: null);
+        _eventController.add(
+          MypageUiEvent.showSnackBar('프로필 이미지 변경에 실패했어요. 다시 시도해주세요.'),
+        );
+    }
+
+    notifyListeners();
   }
 
   Future<void> _loadUser() async {
@@ -78,7 +109,9 @@ class MypageViewModel extends ChangeNotifier {
       case Success():
         _eventController.add(MypageUiEvent.completed());
       case Error():
-        _eventController.add(MypageUiEvent.showSnackBar('로그아웃에 실패했어요. 다시 시도해 주세요.'));
+        _eventController.add(
+          MypageUiEvent.showSnackBar('로그아웃에 실패했어요. 다시 시도해 주세요.'),
+        );
         _eventController.add(MypageUiEvent.completed());
     }
   }
@@ -104,7 +137,9 @@ class MypageViewModel extends ChangeNotifier {
       case Success():
         _eventController.add(MypageUiEvent.completed());
       case Error():
-        _eventController.add(MypageUiEvent.showSnackBar('회원탈퇴에 실패했어요. 다시 시도해 주세요.'));
+        _eventController.add(
+          MypageUiEvent.showSnackBar('회원탈퇴에 실패했어요. 다시 시도해 주세요.'),
+        );
         _eventController.add(MypageUiEvent.completed());
     }
   }

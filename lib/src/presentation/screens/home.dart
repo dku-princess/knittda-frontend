@@ -6,6 +6,7 @@ import 'package:knittda/src/domain/use_case/get_project_previews_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_projects_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_stored_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/logout_use_case.dart';
+import 'package:knittda/src/domain/use_case/setting_profile_image_use_case.dart';
 import 'package:knittda/src/domain/use_case/signout_use_case.dart';
 import 'package:knittda/src/presentation/feed/feed_screen.dart';
 import 'package:knittda/src/presentation/feed/feed_view_model.dart';
@@ -83,6 +84,7 @@ class _HomeState extends State<Home> {
           context.read<LogoutUseCase>(),
           context.read<SignoutUseCase>(),
           context.read<GetStoredUserUseCase>(),
+          context.read<SettingProfileImageUseCase>()
         ),
         child: const MypageScreen(),
       ),
