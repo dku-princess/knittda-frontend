@@ -111,6 +111,11 @@ class _MypageScreenState extends State<MypageScreen> {
                   user?.nickname ?? '알 수 없는 사용자',
                   style: const TextStyle(fontSize: 16),
                 ),
+                Spacer(),
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.edit, color: Colors.black54),
+                ),
               ],
             ),
           ),

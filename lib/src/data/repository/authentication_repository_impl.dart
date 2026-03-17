@@ -1,3 +1,4 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/data/data_sources/authentication_api.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/data/data_sources/social_login.dart';
@@ -23,6 +24,26 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
     this._tokenStorage,
     this._userStorage,
   );
+
+  @override
+  Future<Result<User>> putNickName(User user) async {
+    final Result<Map<String, dynamic>> result = await _api.putNickName(user);
+
+    return switch (result) {
+      Success(:final data) => _saveAuth(data),
+      Error(:final e) => Result.error(e),
+    };
+  }
+
+  @override
+  Future<Result<User>> postProfileImage(XFile file) async {
+    final Result<Map<String, dynamic>> result = await _api.postProfileImage(file);
+
+    return switch (result) {
+      Success(:final data) => _saveAuth(data),
+      Error(:final e) => Result.error(e),
+    };
+  }
 
   @override
   Future<Result<User>> getAuthMe() async {
@@ -154,4 +175,5 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
     await _tokenStorage.deleteToken();
     await _userStorage.deleteUser();
   }
+
 }
