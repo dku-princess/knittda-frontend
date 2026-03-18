@@ -8,4 +8,5 @@ sealed class MypageEvent with _$MypageEvent {
   const factory MypageEvent.logout() = Logout;
   const factory MypageEvent.signout() = Signout;
   const factory MypageEvent.settingProfileImage(XFile file) = SettingProfileImage;
+  const factory MypageEvent.loadUser() = LoadUser;
 }

@@ -43,12 +43,14 @@ class MypageViewModel extends ChangeNotifier {
         await _signout();
       case SettingProfileImage(:final file):
         await _settingProfileImage(file);
+      case LoadUser():
+        await _loadUser();
     }
   }
 
   Future<void> _settingProfileImage(XFile file) async {
     if (state.isLoading) {
-      _eventController.add(MypageUiEvent.showSnackBar('프로필 이미지 변경 중 입니다.'));
+      _eventController.add(MypageUiEvent.showSnackBar('이미지 업로드 중이에요. 잠시 후 다시 시도해주세요.'));
       return;
     }
 

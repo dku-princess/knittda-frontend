@@ -3,13 +3,17 @@ import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:knittda/src/domain/repository/authentication_repository.dart';
 import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
+import 'package:knittda/src/domain/use_case/setting_nick_name_use_case.dart';
 import 'package:knittda/src/domain/use_case/social_login_use_case.dart';
 import 'package:knittda/src/presentation/login/login_screen.dart';
 import 'package:knittda/src/presentation/login/login_view_model.dart';
 import 'package:knittda/src/presentation/mypage/mypage_event.dart';
 import 'package:knittda/src/presentation/mypage/mypage_ui_event.dart';
 import 'package:knittda/src/presentation/mypage/mypage_view_model.dart';
+import 'package:knittda/src/presentation/mypage_setting_nick_name/mypage_setting_nick_name_screen.dart';
+import 'package:knittda/src/presentation/mypage_setting_nick_name/mypage_setting_nick_name_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:image_picker/image_picker.dart';
@@ -87,27 +91,59 @@ class _MypageScreenState extends State<MypageScreen> {
     }
   }
 
-  Future<void> _showSettingProfileSheet(BuildContext context) async {
-    showModalBottomSheet(
+  Future<void> _showSettingProfileSheet() async {
+    final action = await showModalBottomSheet<String>(
       context: context,
-      builder: (BuildContext context) {
+      builder: (sheetContext) {
         return SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ListTile(title: const Text('닉네임 설정'), onTap: () {}),
+              ListTile(
+                title: const Text('닉네임 설정'),
+                onTap: () => Navigator.pop(sheetContext, 'nickname'),
+              ),
               ListTile(
                 title: const Text('프로필 이미지 설정'),
-                onTap: () async {
-                  Navigator.pop(context);
-                  await _pickImage();
-                },
+                onTap: () => Navigator.pop(sheetContext, 'image'),
               ),
             ],
           ),
         );
       },
     );
+
+    // sheet가 닫힌 후 여기서 처리
+    if (!mounted || action == null) return;
+
+    switch (action) {
+      case 'nickname':
+        await _nicknameSetting();
+      case 'image':
+        await _pickImage();
+    }
+  }
+
+  // 닉네임 설정 화면 이동을 별도 메서드로 분리
+  Future<void> _nicknameSetting() async {
+    final viewModel = context.read<MypageViewModel>();
+
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChangeNotifierProvider(
+          create: (context) => MypageSettingNickNameViewModel(
+            SettingNickNameUseCase(context.read<AuthenticationRepository>()),
+            user: viewModel.state.user!,
+          ),
+          child: const MypageSettingNickNameScreen(),
+        ),
+      ),
+    );
+
+    if (result == true && mounted) {
+      viewModel.onEvent(LoadUser());
+    }
   }
 
   @override
@@ -142,11 +178,11 @@ class _MypageScreenState extends State<MypageScreen> {
               children: [
                 CircleAvatar(
                   backgroundImage: state.previewImage != null
-                    ? FileImage(File(state.previewImage!.path)) // 미리보기 우선
-                    : (user?.profileImageUrl != null &&
+                      ? FileImage(File(state.previewImage!.path)) // 미리보기 우선
+                      : (user?.profileImageUrl != null &&
                             user!.profileImageUrl!.isNotEmpty)
-                        ? NetworkImage(user.profileImageUrl!)
-                        : null,
+                      ? NetworkImage(user.profileImageUrl!)
+                      : null,
                   backgroundColor: Colors.grey,
                 ),
                 const SizedBox(width: 12),
@@ -156,7 +192,7 @@ class _MypageScreenState extends State<MypageScreen> {
                 ),
                 Spacer(),
                 IconButton(
-                  onPressed: () => _showSettingProfileSheet(context),
+                  onPressed: _showSettingProfileSheet,
                   icon: Icon(Icons.edit, color: Colors.black54),
                 ),
               ],
