@@ -4,7 +4,7 @@ import 'package:knittda/src/domain/repository/record_api_repository.dart';
 import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_my_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_project_use_case.dart';
-import 'package:knittda/src/domain/use_case/get_stored_user_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_projects_use_case.dart';
 import 'package:knittda/src/presentation/project_details/project_details_screen.dart';
@@ -106,7 +106,7 @@ class ProjectPreviewsScreen extends StatelessWidget {
                             GetRecordsProjectsUseCase(
                               context.read<RecordApiRepository>(),
                             ),
-                            context.read<GetStoredUserUseCase>(),
+                            context.read<GetUserUseCase>(),
                             projectId: projectPreviews.projectId,
                           ),
                           child: const ProjectDetailsScreen(),
