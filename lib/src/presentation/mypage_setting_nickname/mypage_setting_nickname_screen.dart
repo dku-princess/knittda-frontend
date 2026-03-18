@@ -33,7 +33,7 @@ class _MypageSettingNicknameScreenState
           if (mounted) {
             switch (event) {
               case SetNickname():
-                Navigator.pop(context, true);
+                Navigator.pop(context);
               case ShowSnackBar(:final message):
                 final snackBar = SnackBar(content: Text(message));
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);

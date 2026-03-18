@@ -29,6 +29,7 @@ import 'package:knittda/src/domain/use_case/get_feed_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_project_previews_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_projects_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_stored_user_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/logout_use_case.dart';
 import 'package:knittda/src/domain/use_case/setting_profile_image_use_case.dart';
 import 'package:knittda/src/domain/use_case/signout_use_case.dart';
@@ -114,6 +115,10 @@ Future<List<SingleChildWidget>> getProviders() async {
     ProxyProvider<AuthenticationRepository, SettingProfileImageUseCase>(
       update: (context, authRepository, _) =>
           SettingProfileImageUseCase(authRepository),
+    ),
+    ProxyProvider<AuthenticationRepository, GetUserUseCase>(
+      update: (context, authRepository, _) =>
+          GetUserUseCase(authRepository),
     ),
 
     ProxyProvider<Dio, ProjectApi>(

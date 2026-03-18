@@ -19,4 +19,6 @@ abstract class AuthenticationRepository {
   Future<String?> getStoredToken();
   Future<User?> getStoredUser();
   Future<void> clearLocalAuth();
+
+  Stream<User> userStream();
 }

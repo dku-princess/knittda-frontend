@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/user.dart';
-import 'package:knittda/src/domain/use_case/get_stored_user_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/logout_use_case.dart';
 import 'package:knittda/src/domain/use_case/setting_profile_image_use_case.dart';
 import 'package:knittda/src/domain/use_case/signout_use_case.dart';
@@ -15,8 +15,9 @@ import 'package:knittda/src/presentation/mypage/mypage_ui_event.dart';
 class MypageViewModel extends ChangeNotifier {
   final LogoutUseCase _logoutUseCase;
   final SignoutUseCase _signoutUseCase;
-  final GetStoredUserUseCase _getStoredUserUseCase;
   final SettingProfileImageUseCase _settingProfileImageUseCase;
+  final GetUserUseCase _getUserUseCase;
+  StreamSubscription? _streamSubscription;
 
   MypageState _state = MypageState(isLoading: false, user: null);
 
@@ -29,10 +30,13 @@ class MypageViewModel extends ChangeNotifier {
   MypageViewModel(
     this._logoutUseCase,
     this._signoutUseCase,
-    this._getStoredUserUseCase,
     this._settingProfileImageUseCase,
+    this._getUserUseCase,
   ) {
-    _loadUser();
+    _streamSubscription = _getUserUseCase.execute().listen((user) {
+      _state = state.copyWith(user: user);
+      notifyListeners();
+    });
   }
 
   Future<void> onEvent(MypageEvent event) async {
@@ -43,14 +47,14 @@ class MypageViewModel extends ChangeNotifier {
         await _signout();
       case SettingProfileImage(:final file):
         await _settingProfileImage(file);
-      case LoadUser():
-        await _loadUser();
     }
   }
 
   Future<void> _settingProfileImage(XFile file) async {
     if (state.isLoading) {
-      _eventController.add(MypageUiEvent.showSnackBar('이미지 업로드 중이에요. 잠시 후 다시 시도해주세요.'));
+      _eventController.add(
+        MypageUiEvent.showSnackBar('이미지 업로드 중이에요. 잠시 후 다시 시도해주세요.'),
+      );
       return;
     }
 
@@ -62,7 +66,6 @@ class MypageViewModel extends ChangeNotifier {
     switch (result) {
       case Success():
         _state = state.copyWith(isLoading: false, previewImage: null);
-        _loadUser();
       case Error():
         _state = state.copyWith(isLoading: false, previewImage: null);
         _eventController.add(
@@ -70,23 +73,6 @@ class MypageViewModel extends ChangeNotifier {
         );
     }
 
-    notifyListeners();
-  }
-
-  Future<void> _loadUser() async {
-    _state = state.copyWith(isLoading: true);
-    notifyListeners();
-
-    final Result<User?> result = await _getStoredUserUseCase();
-
-    switch (result) {
-      case Success(:final data):
-        _state = state.copyWith(user: data);
-      case Error():
-        _state = state.copyWith(user: null);
-    }
-
-    _state = state.copyWith(isLoading: false);
     notifyListeners();
   }
 
@@ -148,6 +134,7 @@ class MypageViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _streamSubscription?.cancel();
     _eventController.close();
     super.dispose();
   }

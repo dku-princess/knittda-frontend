@@ -7,6 +7,7 @@ import 'package:knittda/src/data/data_sources/user_storage.dart';
 import 'package:knittda/src/domain/model/user.dart';
 import 'package:knittda/src/domain/repository/authentication_repository.dart';
 import 'package:knittda/src/domain/util/social_login_type.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../data_sources/token_storage.dart';
 
@@ -16,6 +17,8 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   final SocialLogin _apple;
   final TokenStorage _tokenStorage;
   final UserStorage _userStorage;
+
+  final _controller = BehaviorSubject<User>();
 
   AuthenticationRepositoryImpl(
     this._api,
@@ -43,6 +46,28 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
       Success(:final data) => _saveAuth(data),
       Error(:final e) => Result.error(e),
     };
+  }
+
+  Future<Result<User>> _saveAuth(Map<String, dynamic> data) async {
+    final token = data['jwt'];
+
+    if (token == null) {
+      final user = User.fromJson(data);
+      await _userStorage.saveUser(user);
+      _controller.add(user);
+      return Result.success(user);
+    } else {
+      final user = User.fromJson(data['user']);
+      await _userStorage.saveUser(user);
+      await _tokenStorage.saveToken(token);
+      _controller.add(user);
+      return Result.success(user);
+    }
+  }
+
+  @override
+  Stream<User> userStream() {
+    return _controller.stream;
   }
 
   @override
@@ -142,21 +167,6 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
       return Result.success(result);
     } else {
       return Result.error('socialUnlink_fail');
-    }
-  }
-
-  Future<Result<User>> _saveAuth(Map<String, dynamic> data) async {
-    final token = data['jwt'];
-
-    if (token == null) {
-      final user = User.fromJson(data);
-      await _userStorage.saveUser(user);
-      return Result.success(user);
-    } else {
-      final user = User.fromJson(data['user']);
-      await _userStorage.saveUser(user);
-      await _tokenStorage.saveToken(token);
-      return Result.success(user);
     }
   }
 

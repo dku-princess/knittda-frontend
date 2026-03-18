@@ -127,23 +127,21 @@ class _MypageScreenState extends State<MypageScreen> {
   // 닉네임 설정 화면 이동을 별도 메서드로 분리
   Future<void> _nicknameSetting() async {
     final viewModel = context.read<MypageViewModel>();
+    final user = viewModel.state.user;
+    if (user == null) return;
 
-    final result = await Navigator.push<bool>(
+    await Navigator.push<bool>(
       context,
       MaterialPageRoute(
         builder: (context) => ChangeNotifierProvider(
           create: (context) => MypageSettingNicknameViewModel(
             SettingNicknameUseCase(context.read<AuthenticationRepository>()),
-            user: viewModel.state.user!,
+            user: user,
           ),
           child: const MypageSettingNicknameScreen(),
         ),
       ),
     );
-
-    if (result == true && mounted) {
-      viewModel.onEvent(LoadUser());
-    }
   }
 
   @override
@@ -192,7 +190,11 @@ class _MypageScreenState extends State<MypageScreen> {
                 ),
                 Spacer(),
                 IconButton(
-                  onPressed: _showSettingProfileSheet,
+                  onPressed: () {
+                    final user = context.read<MypageViewModel>().state.user;
+                    if (user == null) return;
+                    _showSettingProfileSheet();
+                  },
                   icon: Icon(Icons.edit, color: Colors.black54),
                 ),
               ],
