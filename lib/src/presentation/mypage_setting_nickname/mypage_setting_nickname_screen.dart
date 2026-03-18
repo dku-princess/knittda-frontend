@@ -53,69 +53,78 @@ class _MypageSettingNicknameScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        scrolledUnderElevation: 0,
-        title: Text(
-          '닉네임 설정',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-        ),
-        centerTitle: true,
-        actions: [
-          //저장버튼
-          TextButton(
-            onPressed: () {
-              final nickname = _nicknameController.text.trim();
-              if (nickname.isEmpty) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(const SnackBar(content: Text('닉네임을 입력해주세요.')));
-                return;
-              }
-              context.read<MypageSettingNicknameViewModel>().onEvent(
-                SettingNickname(nickname),
-              );
-            },
-            style: TextButton.styleFrom(
-              backgroundColor: PRIMARY_COLOR,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: const Text('저장', style: TextStyle(fontSize: 16)),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
+    final viewModel = context.watch<MypageSettingNicknameViewModel>();
+    final isLoading = viewModel.state.isLoading;
 
-      body: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "닉네임",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            SizedBox(height: 12),
-            TextField(
-              maxLines: 1,
-              maxLength: 8,
-              controller: _nicknameController,
-              decoration: InputDecoration(
-                isDense: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+    return PopScope(
+      canPop: !isLoading,
+      child: Scaffold(
+        appBar: AppBar(
+          scrolledUnderElevation: 0,
+          title: Text(
+            '닉네임 설정',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+          ),
+          centerTitle: true,
+          actions: [
+            //저장버튼
+            TextButton(
+              onPressed: isLoading
+                  ? null
+                  : () {
+                      final nickname = _nicknameController.text.trim();
+                      if (nickname.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('닉네임을 입력해주세요.')),
+                        );
+                        return;
+                      }
+                      context.read<MypageSettingNicknameViewModel>().onEvent(
+                        SettingNickname(nickname),
+                      );
+                    },
+              style: TextButton.styleFrom(
+                backgroundColor: PRIMARY_COLOR,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              style: const TextStyle(fontSize: 14),
+              child: const Text('저장', style: TextStyle(fontSize: 16)),
             ),
+            const SizedBox(width: 8),
           ],
+        ),
+
+        body: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "닉네임",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(height: 12),
+              TextField(
+                maxLines: 1,
+                maxLength: 8,
+                controller: _nicknameController,
+                enabled: !isLoading,
+                decoration: InputDecoration(
+                  isDense: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                style: const TextStyle(fontSize: 14),
+              ),
+            ],
+          ),
         ),
       ),
     );
