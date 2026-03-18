@@ -8,7 +8,7 @@ class AuthenticationApi {
 
   AuthenticationApi(this._dio);
 
-  Future<Result<Map<String, dynamic>>> putNickName(User user) async {
+  Future<Result<Map<String, dynamic>>> putNickname(User user) async {
     try {
       final response = await _dio.put(
         '/api/v1/auth/me/nickname',

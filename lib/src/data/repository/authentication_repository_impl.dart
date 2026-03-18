@@ -26,8 +26,8 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   );
 
   @override
-  Future<Result<User>> putNickName(User user) async {
-    final Result<Map<String, dynamic>> result = await _api.putNickName(user);
+  Future<Result<User>> putNickname(User user) async {
+    final Result<Map<String, dynamic>> result = await _api.putNickname(user);
 
     return switch (result) {
       Success(:final data) => _saveAuth(data),

@@ -5,15 +5,15 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/domain/repository/authentication_repository.dart';
 import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
-import 'package:knittda/src/domain/use_case/setting_nick_name_use_case.dart';
+import 'package:knittda/src/domain/use_case/setting_nickname_use_case.dart';
 import 'package:knittda/src/domain/use_case/social_login_use_case.dart';
 import 'package:knittda/src/presentation/login/login_screen.dart';
 import 'package:knittda/src/presentation/login/login_view_model.dart';
 import 'package:knittda/src/presentation/mypage/mypage_event.dart';
 import 'package:knittda/src/presentation/mypage/mypage_ui_event.dart';
 import 'package:knittda/src/presentation/mypage/mypage_view_model.dart';
-import 'package:knittda/src/presentation/mypage_setting_nick_name/mypage_setting_nick_name_screen.dart';
-import 'package:knittda/src/presentation/mypage_setting_nick_name/mypage_setting_nick_name_view_model.dart';
+import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_screen.dart';
+import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:image_picker/image_picker.dart';
@@ -132,11 +132,11 @@ class _MypageScreenState extends State<MypageScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => ChangeNotifierProvider(
-          create: (context) => MypageSettingNickNameViewModel(
-            SettingNickNameUseCase(context.read<AuthenticationRepository>()),
+          create: (context) => MypageSettingNicknameViewModel(
+            SettingNicknameUseCase(context.read<AuthenticationRepository>()),
             user: viewModel.state.user!,
           ),
-          child: const MypageSettingNickNameScreen(),
+          child: const MypageSettingNicknameScreen(),
         ),
       ),
     );

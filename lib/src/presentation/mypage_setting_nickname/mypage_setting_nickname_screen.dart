@@ -2,21 +2,21 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
-import 'package:knittda/src/presentation/mypage_setting_nick_name/mypage_setting_nick_name_event.dart';
-import 'package:knittda/src/presentation/mypage_setting_nick_name/mypage_setting_nick_name_view_model.dart';
+import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_event.dart';
+import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_view_model.dart';
 import 'package:provider/provider.dart';
-import 'package:knittda/src/presentation/mypage_setting_nick_name/mypage_setting_nick_name_ui_event.dart';
+import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_ui_event.dart';
 
-class MypageSettingNickNameScreen extends StatefulWidget {
-  const MypageSettingNickNameScreen({super.key});
+class MypageSettingNicknameScreen extends StatefulWidget {
+  const MypageSettingNicknameScreen({super.key});
 
   @override
-  State<MypageSettingNickNameScreen> createState() =>
-      _MypageSettingNickNameScreenState();
+  State<MypageSettingNicknameScreen> createState() =>
+      _MypageSettingNicknameScreenState();
 }
 
-class _MypageSettingNickNameScreenState
-    extends State<MypageSettingNickNameScreen> {
+class _MypageSettingNicknameScreenState
+    extends State<MypageSettingNicknameScreen> {
   StreamSubscription? _subscription;
 
   final _nicknameController = TextEditingController();
@@ -27,12 +27,12 @@ class _MypageSettingNickNameScreenState
 
     Future.microtask(() {
       if (mounted) {
-        final viewModel = context.read<MypageSettingNickNameViewModel>();
+        final viewModel = context.read<MypageSettingNicknameViewModel>();
 
         _subscription = viewModel.eventStream.listen((event) {
           if (mounted) {
             switch (event) {
-              case SetNickName():
+              case SetNickname():
                 Navigator.pop(context, true);
               case ShowSnackBar(:final message):
                 final snackBar = SnackBar(content: Text(message));
@@ -72,8 +72,8 @@ class _MypageSettingNickNameScreenState
                 ).showSnackBar(const SnackBar(content: Text('닉네임을 입력해주세요.')));
                 return;
               }
-              context.read<MypageSettingNickNameViewModel>().onEvent(
-                SettingNickName(nickname),
+              context.read<MypageSettingNicknameViewModel>().onEvent(
+                SettingNickname(nickname),
               );
             },
             style: TextButton.styleFrom(
