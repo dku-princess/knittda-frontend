@@ -111,38 +111,24 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
     }
   }
 
-  Future<void> _pickGoalDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+  Future<void> _pickDateRange(BuildContext context) async {
+    final DateTimeRange? picked = await showDateRangePicker(
       context: context,
-      initialDate: _goalDate ?? DateTime.now(),
+      initialDateRange: (_startDate != null && _goalDate != null)
+          ? DateTimeRange(start: _startDate!, end: _goalDate!)
+          : null,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
-      helpText: '목표 날짜 선택',
+      helpText: '시작일과 목표일 선택',
+      saveText: '확인',
     );
 
     if (!mounted) return;
 
     if (picked != null) {
       setState(() {
-        _goalDate = picked;
-      });
-    }
-  }
-
-  Future<void> _pickStartDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _startDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-      helpText: '시작 날짜 선택',
-    );
-
-    if (!mounted) return;
-
-    if (picked != null) {
-      setState(() {
-        _startDate = picked;
+        _startDate = picked.start;
+        _goalDate = picked.end;
       });
     }
   }
@@ -158,17 +144,13 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
 
     final hasImage = _image != null || (_thumbnailUrl?.isNotEmpty ?? false);
 
-    if (nickname.isEmpty || _goalDate == null || _startDate == null || !hasImage) {
+    if (nickname.isEmpty ||
+        _goalDate == null ||
+        _startDate == null ||
+        !hasImage) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('기본 정보를 모두 입력해주세요.')));
-      return;
-    }
-
-    if (_goalDate!.isBefore(_startDate!)) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('목표일이 시작일보다 앞설 수 없습니다.')));
       return;
     }
 
@@ -261,110 +243,117 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
               ),
               SizedBox(height: 10),
 
-              Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // 대표 사진
+                  Text(
+                    "대표 사진",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 12),
                   GestureDetector(
                     onTap: _pickImage,
                     child:
-                        (_image != null || (_thumbnailUrl?.isNotEmpty ?? false))
+                    (_image != null ||
+                        (_thumbnailUrl?.isNotEmpty ?? false))
                         ? ImageBox(
-                            localImageUrl: _image?.path,
-                            networkImageUrl: _thumbnailUrl,
-                            width: 115,
-                            height: 115,
-                            onRemove: () {
-                              setState(() {
-                                _image = null;
-                                _thumbnailUrl = null;
-                              });
-                            },
-                          )
+                      localImageUrl: _image?.path,
+                      networkImageUrl: _thumbnailUrl,
+                      width: 115,
+                      height: 115,
+                      onRemove: () {
+                        setState(() {
+                          _image = null;
+                          _thumbnailUrl = null;
+                        });
+                      },
+                    )
                         : Container(
-                            width: 115,
-                            height: 115,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.add,
-                                color: Colors.white,
-                                size: 40,
-                              ),
-                            ),
-                          ),
+                      width: 115,
+                      height: 115,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 40,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 14),
+
+                  Text(
+                    "작품 이름",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  TextField(
+                    controller: _nicknameController,
+                    maxLines: 1,
+                    maxLength: 15,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    style: const TextStyle(fontSize: 14),
                   ),
 
-                  const SizedBox(width: 16),
-
-                  //작품이름, 목표날짜
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextField(
-                          controller: _nicknameController,
-                          maxLines: 1,
-                          maxLength: 15,
-                          decoration: InputDecoration(
-                            isDense: true,
-                            hintText: "작품이름",
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 10,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          style: const TextStyle(fontSize: 14),
-                        ),
-
-                        TextButton(
-                          onPressed: () {
-                            _pickStartDate(context);
-                          },
-                          style: TextButton.styleFrom(
-                            foregroundColor: PRIMARY_COLOR,
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              side: BorderSide(color: PRIMARY_COLOR),
+                  Text(
+                    "시작일 ~ 목표일",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  GestureDetector(
+                    onTap: () => _pickDateRange(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black54),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.calendar_today, size: 20),
+                          const SizedBox(width: 10),
+                          Text(
+                            (_startDate != null && _goalDate != null)
+                                ? '${DateUtilsHelper.toHyphenFormat(_startDate!)} ~ ${DateUtilsHelper.toHyphenFormat(_goalDate!)}'
+                                : 'yyyy-mm-dd ~ yyyy-mm-dd',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: (_startDate != null && _goalDate != null)
+                                  ? Colors.black
+                                  : Colors.grey,
                             ),
                           ),
-                          child: Text(
-                            _startDate != null
-                                ? DateUtilsHelper.toDotFormat(_startDate!)
-                                : "시작일",
-                          ),
-                        ),
-
-                        TextButton(
-                          onPressed: () {
-                            _pickGoalDate(context);
-                          },
-                          style: TextButton.styleFrom(
-                            foregroundColor: PRIMARY_COLOR,
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              side: BorderSide(color: PRIMARY_COLOR),
-                            ),
-                          ),
-                          child: Text(
-                            _goalDate != null
-                                ? DateUtilsHelper.toDotFormat(_goalDate!)
-                                : "목표일",
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
-
               SizedBox(height: 40),
 
               ListTile(
@@ -388,24 +377,20 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 12),
               TextField(
                 controller: _designTitleController,
                 maxLines: 1,
                 maxLength: 15,
                 decoration: InputDecoration(
                   isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 10,
-                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 style: const TextStyle(fontSize: 14),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 14),
 
               Text(
                 "작가",
@@ -415,7 +400,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 12),
               TextField(
                 controller: _designerController,
                 maxLines: 1,
@@ -423,17 +408,13 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                 decoration: InputDecoration(
                   isDense: true,
                   fillColor: Colors.grey[200],
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 10,
-                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 style: const TextStyle(fontSize: 14),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 14),
 
               Text(
                 "실",
@@ -443,24 +424,20 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 12),
               TextField(
                 controller: _yarnInfoController,
                 maxLines: 1,
                 maxLength: 15,
                 decoration: InputDecoration(
                   isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 10,
-                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 style: const TextStyle(fontSize: 14),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 14),
 
               Text(
                 "바늘",
@@ -470,17 +447,13 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 12),
               TextField(
                 controller: _needleInfoController,
                 maxLines: 1,
                 maxLength: 15,
                 decoration: InputDecoration(
                   isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 10,
-                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),

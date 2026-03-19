@@ -1,16 +1,22 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:knittda/src/domain/repository/authentication_repository.dart';
 import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
+import 'package:knittda/src/domain/use_case/setting_nickname_use_case.dart';
 import 'package:knittda/src/domain/use_case/social_login_use_case.dart';
 import 'package:knittda/src/presentation/login/login_screen.dart';
 import 'package:knittda/src/presentation/login/login_view_model.dart';
 import 'package:knittda/src/presentation/mypage/mypage_event.dart';
 import 'package:knittda/src/presentation/mypage/mypage_ui_event.dart';
 import 'package:knittda/src/presentation/mypage/mypage_view_model.dart';
+import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_screen.dart';
+import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:image_picker/image_picker.dart';
 
 class MypageScreen extends StatefulWidget {
   const MypageScreen({super.key});
@@ -26,6 +32,8 @@ class MypageScreen extends StatefulWidget {
 
 class _MypageScreenState extends State<MypageScreen> {
   StreamSubscription? _subscription;
+
+  final ImagePicker picker = ImagePicker();
 
   @override
   void initState() {
@@ -68,6 +76,74 @@ class _MypageScreenState extends State<MypageScreen> {
     super.dispose();
   }
 
+  Future<void> _pickImage() async {
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 512,
+      maxHeight: 512,
+      imageQuality: 70,
+    );
+
+    if (!mounted) return;
+
+    if (picked != null) {
+      context.read<MypageViewModel>().onEvent(SettingProfileImage(picked));
+    }
+  }
+
+  Future<void> _showSettingProfileSheet() async {
+    final action = await showModalBottomSheet<String>(
+      context: context,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: const Text('닉네임 설정'),
+                onTap: () => Navigator.pop(sheetContext, 'nickname'),
+              ),
+              ListTile(
+                title: const Text('프로필 이미지 설정'),
+                onTap: () => Navigator.pop(sheetContext, 'image'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    // sheet가 닫힌 후 여기서 처리
+    if (!mounted || action == null) return;
+
+    switch (action) {
+      case 'nickname':
+        await _nicknameSetting();
+      case 'image':
+        await _pickImage();
+    }
+  }
+
+  // 닉네임 설정 화면 이동을 별도 메서드로 분리
+  Future<void> _nicknameSetting() async {
+    final viewModel = context.read<MypageViewModel>();
+    final user = viewModel.state.user;
+    if (user == null) return;
+
+    await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChangeNotifierProvider(
+          create: (context) => MypageSettingNicknameViewModel(
+            SettingNicknameUseCase(context.read<AuthenticationRepository>()),
+            user: user,
+          ),
+          child: const MypageSettingNicknameScreen(),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<MypageViewModel>();
@@ -99,9 +175,10 @@ class _MypageScreenState extends State<MypageScreen> {
             child: Row(
               children: [
                 CircleAvatar(
-                  backgroundImage:
-                      (user?.profileImageUrl != null &&
-                          user!.profileImageUrl!.isNotEmpty)
+                  backgroundImage: state.previewImage != null
+                      ? FileImage(File(state.previewImage!.path)) // 미리보기 우선
+                      : (user?.profileImageUrl != null &&
+                            user!.profileImageUrl!.isNotEmpty)
                       ? NetworkImage(user.profileImageUrl!)
                       : null,
                   backgroundColor: Colors.grey,
@@ -110,6 +187,15 @@ class _MypageScreenState extends State<MypageScreen> {
                 Text(
                   user?.nickname ?? '알 수 없는 사용자',
                   style: const TextStyle(fontSize: 16),
+                ),
+                Spacer(),
+                IconButton(
+                  onPressed: () {
+                    final user = context.read<MypageViewModel>().state.user;
+                    if (user == null) return;
+                    _showSettingProfileSheet();
+                  },
+                  icon: Icon(Icons.edit, color: Colors.black54),
                 ),
               ],
             ),
@@ -203,14 +289,14 @@ class _MypageScreenState extends State<MypageScreen> {
             ),
           ),
 
-          // const SizedBox(height: 20),
-          // Padding(
-          //   padding: const EdgeInsets.symmetric(horizontal: 24),
-          //   child: Text(
-          //     '1.0.0',
-          //     style: TextStyle(fontSize: 12, color: Colors.grey),
-          //   ),
-          // ),
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Text(
+              '1.0.2+25',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ),
         ],
       ),
     );

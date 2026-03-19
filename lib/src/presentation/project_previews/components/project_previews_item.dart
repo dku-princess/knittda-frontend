@@ -85,7 +85,7 @@ class ProjectPreviewsItem extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      projectPreviews.userName!,
+                      projectPreviews.userName ?? '알 수 없음',
                       style: const TextStyle(fontSize: 12, color: Colors.grey),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

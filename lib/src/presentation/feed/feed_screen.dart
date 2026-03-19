@@ -6,7 +6,7 @@ import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_my_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_search_feed_use_case.dart';
-import 'package:knittda/src/domain/use_case/get_stored_user_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_projects_use_case.dart';
 import 'package:knittda/src/presentation/feed/components/feed_item.dart';
@@ -154,7 +154,7 @@ class _FeedScreenState extends State<FeedScreen> {
                             GetRecordsProjectsUseCase(
                               context.read<RecordApiRepository>(),
                             ),
-                            context.read<GetStoredUserUseCase>(),
+                            context.read<GetUserUseCase>(),
                             projectId: viewModel.state.feeds[index].projectId,
                           ),
                           child: const ProjectDetailsScreen(),

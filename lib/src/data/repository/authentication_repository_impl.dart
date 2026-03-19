@@ -1,3 +1,4 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/data/data_sources/authentication_api.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/data/data_sources/social_login.dart';
@@ -6,6 +7,7 @@ import 'package:knittda/src/data/data_sources/user_storage.dart';
 import 'package:knittda/src/domain/model/user.dart';
 import 'package:knittda/src/domain/repository/authentication_repository.dart';
 import 'package:knittda/src/domain/util/social_login_type.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../data_sources/token_storage.dart';
 
@@ -16,6 +18,8 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   final TokenStorage _tokenStorage;
   final UserStorage _userStorage;
 
+  final _controller = BehaviorSubject<User>();
+
   AuthenticationRepositoryImpl(
     this._api,
     this._kakao,
@@ -23,6 +27,48 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
     this._tokenStorage,
     this._userStorage,
   );
+
+  @override
+  Future<Result<User>> putNickname(User user) async {
+    final Result<Map<String, dynamic>> result = await _api.putNickname(user);
+
+    return switch (result) {
+      Success(:final data) => _saveAuth(data),
+      Error(:final e) => Result.error(e),
+    };
+  }
+
+  @override
+  Future<Result<User>> postProfileImage(XFile file) async {
+    final Result<Map<String, dynamic>> result = await _api.postProfileImage(file);
+
+    return switch (result) {
+      Success(:final data) => _saveAuth(data),
+      Error(:final e) => Result.error(e),
+    };
+  }
+
+  Future<Result<User>> _saveAuth(Map<String, dynamic> data) async {
+    final token = data['jwt'];
+
+    if (token == null) {
+      final user = User.fromJson(data);
+      await _userStorage.saveUser(user);
+      _controller.add(user);
+      return Result.success(user);
+    } else {
+      final user = User.fromJson(data['user']);
+      await _userStorage.saveUser(user);
+      await _tokenStorage.saveToken(token);
+      _controller.add(user);
+      return Result.success(user);
+    }
+  }
+
+  @override
+  Stream<User> userStream() {
+    return _controller.stream;
+  }
 
   @override
   Future<Result<User>> getAuthMe() async {
@@ -124,21 +170,6 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
     }
   }
 
-  Future<Result<User>> _saveAuth(Map<String, dynamic> data) async {
-    final token = data['jwt'];
-
-    if (token == null) {
-      final user = User.fromJson(data);
-      await _userStorage.saveUser(user);
-      return Result.success(user);
-    } else {
-      final user = User.fromJson(data['user']);
-      await _userStorage.saveUser(user);
-      await _tokenStorage.saveToken(token);
-      return Result.success(user);
-    }
-  }
-
   @override
   Future<String?> getStoredToken() async {
     return _tokenStorage.readToken();
@@ -154,4 +185,5 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
     await _tokenStorage.deleteToken();
     await _userStorage.deleteUser();
   }
+
 }

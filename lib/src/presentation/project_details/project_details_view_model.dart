@@ -5,11 +5,10 @@ import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/project.dart';
 import 'package:knittda/src/domain/model/records.dart';
-import 'package:knittda/src/domain/model/user.dart';
 import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_my_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_project_use_case.dart';
-import 'package:knittda/src/domain/use_case/get_stored_user_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_projects_use_case.dart';
 import 'package:knittda/src/presentation/project_details/diary_tap_state.dart';
@@ -23,7 +22,8 @@ class ProjectDetailsViewModel extends ChangeNotifier {
   final DeleteProjectUseCase _deleteProjectUseCase;
   final UpdateProjectUseCase _updateProjectUseCase;
   final GetRecordsProjectsUseCase _getRecordsProjectsUseCase;
-  final GetStoredUserUseCase _getStoredUserUseCase;
+  final GetUserUseCase _getUserUseCase;
+  StreamSubscription? _streamSubscription;
 
   ProjectDetailsState _state = ProjectDetailsState(
     project: null,
@@ -49,7 +49,7 @@ class ProjectDetailsViewModel extends ChangeNotifier {
     this._deleteProjectUseCase,
     this._updateProjectUseCase,
     this._getRecordsProjectsUseCase,
-    this._getStoredUserUseCase, {
+    this._getUserUseCase, {
     required int projectId,
     Project? project,
   }) {
@@ -81,18 +81,12 @@ class ProjectDetailsViewModel extends ChangeNotifier {
     _state = state.copyWith(isOwner: isOwner);
   }
 
-  Future<void> _loadUser() async {
-    final Result<User?> result = await _getStoredUserUseCase();
-
-    switch (result) {
-      case Success(:final data):
-        _state = state.copyWith(user: data);
-      case Error():
-        _state = state.copyWith(user: null);
-    }
-
-    _updateIsOwner();
-    notifyListeners();
+  void _loadUser() {
+    _streamSubscription = _getUserUseCase.execute().listen((user) {
+      _state = state.copyWith(user: user);
+      _updateIsOwner();
+      notifyListeners();
+    });
   }
 
   Future<void> _loadProject({required int projectId, Project? project}) async {
@@ -110,7 +104,9 @@ class ProjectDetailsViewModel extends ChangeNotifier {
         case Success(:final data):
           _state = state.copyWith(project: data);
         case Error():
-          _eventController.add(ProjectDetailsUiEvent.showSnackBar("작품을 불러오지 못했어요. 다시 시도해 주세요."));
+          _eventController.add(
+            ProjectDetailsUiEvent.showSnackBar("작품을 불러오지 못했어요. 다시 시도해 주세요."),
+          );
       }
 
       _updateIsOwner();
@@ -127,7 +123,9 @@ class ProjectDetailsViewModel extends ChangeNotifier {
         case Success(:final data):
           _state = state.copyWith(project: data);
         case Error():
-          _eventController.add(ProjectDetailsUiEvent.showSnackBar("작품을 불러오지 못했어요."));
+          _eventController.add(
+            ProjectDetailsUiEvent.showSnackBar("작품을 불러오지 못했어요."),
+          );
       }
 
       _updateIsOwner();
@@ -150,7 +148,9 @@ class ProjectDetailsViewModel extends ChangeNotifier {
       case Success():
         _eventController.add(ProjectDetailsUiEvent.deletedProject());
       case Error():
-        _eventController.add(ProjectDetailsUiEvent.showSnackBar("작품을 삭제하지 못했어요. 다시 시도해 주세요."));
+        _eventController.add(
+          ProjectDetailsUiEvent.showSnackBar("작품을 삭제하지 못했어요. 다시 시도해 주세요."),
+        );
     }
 
     _state = state.copyWith(isLoading: false);
@@ -192,7 +192,9 @@ class ProjectDetailsViewModel extends ChangeNotifier {
         _state = state.copyWith(project: data);
       case Error():
         _state = state.copyWith(project: prevProject);
-        _eventController.add(ProjectDetailsUiEvent.showSnackBar("작품의 상태를 변경하지 못했어요. 다시 시도해 주세요."));
+        _eventController.add(
+          ProjectDetailsUiEvent.showSnackBar("작품의 상태를 변경하지 못했어요. 다시 시도해 주세요."),
+        );
     }
 
     notifyListeners();
@@ -218,9 +220,13 @@ class ProjectDetailsViewModel extends ChangeNotifier {
         );
       case Error():
         _state = state.copyWith(
-          diaryTapState: state.diaryTapState.copyWith(errorMessage: "기록을 불러오지 못했어요."),
+          diaryTapState: state.diaryTapState.copyWith(
+            errorMessage: "기록을 불러오지 못했어요.",
+          ),
         );
-        _eventController.add(ProjectDetailsUiEvent.showSnackBar("기록을 불러오지 못했어요."));
+        _eventController.add(
+          ProjectDetailsUiEvent.showSnackBar("기록을 불러오지 못했어요."),
+        );
     }
 
     _state = state.copyWith(
@@ -231,6 +237,7 @@ class ProjectDetailsViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _streamSubscription?.cancel();
     _eventController.close();
     super.dispose();
   }

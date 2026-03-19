@@ -8,7 +8,7 @@ part 'feed.g.dart';
 @freezed
 abstract class Feed with _$Feed {
   factory Feed({
-    required String userName,
+    String? userName,
     String? profileImageUrl,
     required String projectName,
     String? designTitle,
