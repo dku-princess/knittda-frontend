@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:knittda/app_config.dart';
 import 'package:knittda/src/data/data_sources/authentication_api.dart';
+import 'package:knittda/src/data/data_sources/directus_dio.dart';
 import 'package:knittda/src/data/data_sources/feed_api.dart';
 import 'package:knittda/src/data/data_sources/project_api.dart';
 import 'package:knittda/src/data/data_sources/record_api.dart';
@@ -60,6 +61,13 @@ Future<List<SingleChildWidget>> getProviders() async {
         return dio;
       },
     ),
+    Provider<DirectusDio>(
+      create: (_) {
+        final dio = Dio(BaseOptions(baseUrl: AppConfig.directusBaseUrl));
+        dio.interceptors.add(AuthInterceptor(tokenStorage));
+        return DirectusDio(dio);
+      },
+    ),
 
     ProxyProvider<Dio, ReportApi>(update: (context, dio, _) => ReportApi(dio)),
     ProxyProvider<ReportApi, ReportApiRepository>(
@@ -112,8 +120,7 @@ Future<List<SingleChildWidget>> getProviders() async {
           SettingProfileImageUseCase(authRepository),
     ),
     ProxyProvider<AuthenticationRepository, GetUserUseCase>(
-      update: (context, authRepository, _) =>
-          GetUserUseCase(authRepository),
+      update: (context, authRepository, _) => GetUserUseCase(authRepository),
     ),
 
     ProxyProvider<Dio, ProjectApi>(
