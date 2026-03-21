@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:knittda/app_config.dart';
+import 'package:knittda/src/data/data_sources/article_api.dart';
 import 'package:knittda/src/data/data_sources/authentication_api.dart';
 import 'package:knittda/src/data/data_sources/directus_dio.dart';
 import 'package:knittda/src/data/data_sources/feed_api.dart';
@@ -15,11 +16,13 @@ import 'package:knittda/src/data/data_sources/social_login_apple.dart';
 import 'package:knittda/src/data/data_sources/social_login_apple_dummy.dart';
 import 'package:knittda/src/data/data_sources/social_login_kakao.dart';
 import 'package:knittda/src/data/data_sources/user_storage.dart';
+import 'package:knittda/src/data/repository/article_repository_impl.dart';
 import 'package:knittda/src/data/repository/authentication_repository_impl.dart';
 import 'package:knittda/src/data/repository/feed_api_repository_impl.dart';
 import 'package:knittda/src/data/repository/project_api_repository_impl.dart';
 import 'package:knittda/src/data/repository/record_api_repository_impl.dart';
 import 'package:knittda/src/data/repository/report_api_repository_impl.dart';
+import 'package:knittda/src/domain/repository/article_repository.dart';
 import 'package:knittda/src/domain/repository/authentication_repository.dart';
 import 'package:knittda/src/domain/repository/feed_api_repository.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
@@ -147,6 +150,14 @@ Future<List<SingleChildWidget>> getProviders() async {
     ProxyProvider<Dio, RecordApi>(update: (context, dio, _) => RecordApi(dio)),
     ProxyProvider<RecordApi, RecordApiRepository>(
       update: (context, api, _) => RecordApiRepositoryImpl(api),
+    ),
+
+    ProxyProvider<DirectusDio, ArticleApi>(
+      update: (context, directusDio, _) =>
+          ArticleApi(directusDio.dio, apiBaseUrl: AppConfig.apiBaseUrl),
+    ),
+    ProxyProvider<ArticleApi, ArticleRepository>(
+      update: (context, api, _) => ArticleRepositoryImpl(api),
     ),
   ];
 }
