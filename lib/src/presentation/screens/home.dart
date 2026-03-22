@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/domain/repository/article_repository.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/use_case/get_feed_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_project_previews_use_case.dart';
@@ -8,6 +9,8 @@ import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/logout_use_case.dart';
 import 'package:knittda/src/domain/use_case/setting_profile_image_use_case.dart';
 import 'package:knittda/src/domain/use_case/signout_use_case.dart';
+import 'package:knittda/src/presentation/article_list/article_list_screen.dart';
+import 'package:knittda/src/presentation/article_list/article_list_view_model.dart';
 import 'package:knittda/src/presentation/feed/feed_screen.dart';
 import 'package:knittda/src/presentation/feed/feed_view_model.dart';
 import 'package:knittda/src/presentation/mypage/mypage_screen.dart';
@@ -20,22 +23,11 @@ import 'package:provider/provider.dart';
 
 // 바텀네비게이션 리스트
 final List<BottomNavigationBarItem> myTabs = <BottomNavigationBarItem>[
-  BottomNavigationBarItem(
-    icon: Icon(Icons.home_filled),
-    label: '홈',
-  ),
-  BottomNavigationBarItem(
-    icon: Icon(Icons.search_outlined),
-    label: '작품',
-  ),
-  BottomNavigationBarItem(
-    icon: Icon(Icons.watch_later_outlined),
-    label: '피드',
-  ),
-  BottomNavigationBarItem(
-    icon: Icon(Icons.person),
-    label: '마이페이지',
-  ),
+  BottomNavigationBarItem(icon: Icon(Icons.article_outlined), label: '아티클'),
+  BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: '홈'),
+  BottomNavigationBarItem(icon: Icon(Icons.search_outlined), label: '작품'),
+  BottomNavigationBarItem(icon: Icon(Icons.watch_later_outlined), label: '피드'),
+  BottomNavigationBarItem(icon: Icon(Icons.person), label: '마이페이지'),
 ];
 
 class Home extends StatefulWidget {
@@ -46,7 +38,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -57,6 +49,11 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final pages = <Widget>[
+      ChangeNotifierProvider(
+        create: (context) =>
+            ArticleListViewModel(context.read<ArticleRepository>()),
+        child: const ArticleListScreen(),
+      ),
       ChangeNotifierProvider<ProjectsViewModel>(
         create: (context) => ProjectsViewModel(
           context.read<ProjectApiRepository>(),
@@ -66,16 +63,13 @@ class _HomeState extends State<Home> {
       ),
 
       ChangeNotifierProvider<ProjectPreviewsViewModel>(
-        create: (context) => ProjectPreviewsViewModel(
-          context.read<GetProjectPreviewsUseCase>(),
-        ),
+        create: (context) =>
+            ProjectPreviewsViewModel(context.read<GetProjectPreviewsUseCase>()),
         child: const ProjectPreviewsScreen(),
       ),
 
       ChangeNotifierProvider<FeedViewModel>(
-        create: (context) => FeedViewModel(
-          context.read<GetFeedUseCase>(),
-        ),
+        create: (context) => FeedViewModel(context.read<GetFeedUseCase>()),
         child: const FeedScreen(),
       ),
 
@@ -99,10 +93,7 @@ class _HomeState extends State<Home> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: pages,
-      ),
+      body: IndexedStack(index: _selectedIndex, children: pages),
     );
   }
 }
