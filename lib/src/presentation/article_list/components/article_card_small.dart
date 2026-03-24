@@ -46,7 +46,7 @@ class ArticleCardSmall extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          // 텍스트 영역
+
           Expanded(
             child: SizedBox(
               height: 130,
@@ -106,7 +106,6 @@ class _CategoryTag extends StatelessWidget {
             category,
             style: const TextStyle(
               fontSize: 12,
-              fontWeight: FontWeight.w600,
               color: Colors.white,
             ),
           ),

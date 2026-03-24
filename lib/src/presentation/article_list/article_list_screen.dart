@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/domain/repository/article_repository.dart';
+import 'package:knittda/src/presentation/article_detail/article_detail_screen.dart';
+import 'package:knittda/src/presentation/article_detail/article_detail_view_model.dart';
 import 'package:knittda/src/presentation/article_list/article_list_event.dart';
 import 'package:knittda/src/presentation/article_list/article_list_view_model.dart';
 import 'package:knittda/src/presentation/article_list/components/article_card_large.dart';
@@ -61,18 +64,50 @@ class ArticleListScreen extends StatelessWidget {
                 final article = state.articles[index];
 
                 if (article.isFeatured) {
-                  return ArticleCardLarge(
-                    article: article,
-                    imageUrl: viewModel.getAssetUrl(
-                      article.thumbnailImageLarge,
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider(
+                            create: (context) => ArticleDetailViewModel(
+                              context.read<ArticleRepository>(),
+                              slugOrId: article.slug,
+                            ),
+                            child: const ArticleDetailScreen(),
+                          ),
+                        ),
+                      );
+                    },
+                    child: ArticleCardLarge(
+                      article: article,
+                      // imageUrl: viewModel.getAssetUrl(
+                      //   article.thumbnailImageLarge,
+                      // ),
                     ),
                   );
                 }
 
-                return ArticleCardSmall(
-                  article: article,
-                  index: index,
-                  imageUrl: viewModel.getAssetUrl(article.thumbnailImageSmall),
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider(
+                          create: (context) => ArticleDetailViewModel(
+                            context.read<ArticleRepository>(),
+                            slugOrId: article.slug,
+                          ),
+                          child: const ArticleDetailScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                  child: ArticleCardSmall(
+                    article: article,
+                    index: index,
+                    //imageUrl: viewModel.getAssetUrl(article.thumbnailImageSmall),
+                  ),
                 );
               },
             ),

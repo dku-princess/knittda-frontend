@@ -4,9 +4,9 @@ import 'package:knittda/src/domain/model/article/article_detail.dart';
 
 class ArticleApi {
   final Dio _dio;
-  final String _apiBaseUrl;
+  final String _directusBaseUrl;
 
-  ArticleApi(this._dio, {required String apiBaseUrl}) : _apiBaseUrl = apiBaseUrl;
+  ArticleApi(this._dio, {required String directusBaseUrl}) : _directusBaseUrl = directusBaseUrl;
 
   Future<List<Article>> fetchArticles() async {
     final response = await _dio.get(
@@ -59,6 +59,6 @@ class ArticleApi {
   }
 
   String getAssetUrl(String assetId) {
-    return '$_apiBaseUrl/api/assets/$assetId';
+    return '$_directusBaseUrl/assets/$assetId';
   }
 }
