@@ -1,13 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/domain/model/article/note_section.dart';
+import 'package:knittda/src/domain/model/article/project_section.dart';
 import 'package:knittda/src/domain/model/article/purchase_link_section.dart';
 import 'package:knittda/src/domain/model/article/qa_section.dart';
 import 'package:knittda/src/domain/repository/article_repository.dart';
+import 'package:knittda/src/domain/repository/project_api_repository.dart';
+import 'package:knittda/src/domain/repository/record_api_repository.dart';
+import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_my_project_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_project_previews_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_project_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_records_projects_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
+import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
 import 'package:knittda/src/presentation/article_detail/article_detail_view_model.dart';
 import 'package:knittda/src/presentation/article_detail/components/note_section_widget.dart';
+import 'package:knittda/src/presentation/article_detail/components/project_section_widget.dart';
 import 'package:knittda/src/presentation/article_detail/components/purchase_link_section_widget.dart';
 import 'package:knittda/src/presentation/article_detail/components/qa_section_widget.dart';
+import 'package:knittda/src/presentation/project_details/project_details_screen.dart';
+import 'package:knittda/src/presentation/project_details/project_details_view_model.dart';
 import 'package:provider/provider.dart';
 
 class ArticleDetailScreen extends StatelessWidget {
@@ -128,9 +141,45 @@ class ArticleDetailScreen extends StatelessWidget {
                           builder: (_) => ChangeNotifierProvider(
                             create: (_) => ArticleDetailViewModel(
                               context.read<ArticleRepository>(),
-                              slugOrId: slugOrId
+                              context.read<GetProjectPreviewsUseCase>(),
+                              slugOrId: slugOrId,
                             ),
                             child: const ArticleDetailScreen(),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                case 'project_section':
+                  final projectSection = ProjectSection.fromJson(section.item!);
+                  return ProjectSectionWidget(
+                    projectSection: projectSection,
+                    getProjectPreview: viewModel.getProjectPreview,
+                    onProjectTap: (projectId) async {
+                      await Navigator.push<bool>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider(
+                            create: (context) => ProjectDetailsViewModel(
+                              GetProjectUseCase(
+                                context.read<ProjectApiRepository>(),
+                              ),
+                              GetMyProjectUseCase(
+                                context.read<ProjectApiRepository>(),
+                              ),
+                              DeleteProjectUseCase(
+                                context.read<ProjectApiRepository>(),
+                              ),
+                              UpdateProjectUseCase(
+                                context.read<ProjectApiRepository>(),
+                              ),
+                              GetRecordsProjectsUseCase(
+                                context.read<RecordApiRepository>(),
+                              ),
+                              context.read<GetUserUseCase>(),
+                              projectId:projectId,
+                            ),
+                            child: const ProjectDetailsScreen(),
                           ),
                         ),
                       );

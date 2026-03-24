@@ -25,7 +25,7 @@ class QaSectionWidget extends StatelessWidget {
           SizedBox(height: 12),
           Text(
             qaSection.description!,
-            style: TextStyle(fontSize: 14, color: Colors.grey),
+            style: TextStyle(fontSize: 14, color: Colors.black54),
           ),
         ],
         SizedBox(height: 20),
