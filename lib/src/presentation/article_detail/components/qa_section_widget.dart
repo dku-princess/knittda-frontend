@@ -86,7 +86,7 @@ class QaSectionWidget extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        
+
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
