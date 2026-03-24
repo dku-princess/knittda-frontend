@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/domain/model/article/note_section.dart';
 import 'package:knittda/src/domain/model/article/purchase_link_section.dart';
 import 'package:knittda/src/domain/model/article/qa_section.dart';
+import 'package:knittda/src/domain/repository/article_repository.dart';
 import 'package:knittda/src/presentation/article_detail/article_detail_view_model.dart';
+import 'package:knittda/src/presentation/article_detail/components/note_section_widget.dart';
 import 'package:knittda/src/presentation/article_detail/components/purchase_link_section_widget.dart';
 import 'package:knittda/src/presentation/article_detail/components/qa_section_widget.dart';
 import 'package:provider/provider.dart';
@@ -113,6 +116,25 @@ class ArticleDetailScreen extends StatelessWidget {
                   );
                   return PurchaseLinkSectionWidget(
                     purchaseLinkSection: purchaseLinkSection,
+                  );
+                case 'note_section':
+                  final noteSection = NoteSection.fromJson(section.item!);
+                  return NoteSectionWidget(
+                    noteSection: noteSection,
+                    onArticleTap: (slugOrId) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ChangeNotifierProvider(
+                            create: (_) => ArticleDetailViewModel(
+                              context.read<ArticleRepository>(),
+                              slugOrId: slugOrId
+                            ),
+                            child: const ArticleDetailScreen(),
+                          ),
+                        ),
+                      );
+                    },
                   );
                 default:
                   return const SizedBox.shrink();
