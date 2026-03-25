@@ -83,9 +83,9 @@ class ArticleListScreen extends StatelessWidget {
                     },
                     child: ArticleCardLarge(
                       article: article,
-                      // imageUrl: viewModel.getAssetUrl(
-                      //   article.thumbnailImageLarge,
-                      // ),
+                      imageUrl: article.thumbnailImageLarge.isNotEmpty
+                          ? viewModel.getAssetUrl(article.thumbnailImageLarge)
+                          : null,
                     ),
                   );
                 }
@@ -109,7 +109,9 @@ class ArticleListScreen extends StatelessWidget {
                   child: ArticleCardSmall(
                     article: article,
                     index: index,
-                    //imageUrl: viewModel.getAssetUrl(article.thumbnailImageSmall),
+                    imageUrl: article.thumbnailImageSmall.isNotEmpty
+                        ? viewModel.getAssetUrl(article.thumbnailImageSmall)
+                        : null,
                   ),
                 );
               },

@@ -25,10 +25,10 @@ class ArticleCardLarge extends StatelessWidget {
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
-                      color: Colors.grey[300],
+                      color: Colors.grey[200],
                       child: const Icon(
                         Icons.image_not_supported,
-                        color: Colors.white,
+                        color: Colors.grey,
                         size: 36,
                       ),
                     );
@@ -36,19 +36,15 @@ class ArticleCardLarge extends StatelessWidget {
                 )
               else
                 Container(
-                  color: Colors.grey[300],
-                  child: const Icon(
-                    Icons.image,
-                    color: Colors.white,
-                    size: 36,
-                  ),
+                  color: Colors.grey[200],
+                  child: const Icon(Icons.image, color: Colors.grey, size: 36),
                 ),
 
               Positioned(
                 left: 0,
                 right: 0,
                 bottom: 0,
-                height: 170,
+                top: 0,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -56,7 +52,7 @@ class ArticleCardLarge extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        PRIMARY_COLOR.withValues(alpha: 0.7),
+                        PRIMARY_COLOR.withValues(alpha: 0.9),
                       ],
                     ),
                   ),
@@ -72,27 +68,31 @@ class ArticleCardLarge extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (article.interviewee.isNotEmpty) ...[
-                      Text(
-                        article.interviewee,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Text(
+                          article.interviewee,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
-                    const SizedBox(height: 6),
-                    Text(
-                      article.title,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+
+                    if (article.title.isNotEmpty)
+                      Text(
+                        article.title,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
                   ],
                 ),
               ),

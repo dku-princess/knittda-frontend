@@ -19,33 +19,38 @@ class ArticleCardSmall extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: SizedBox(
-              width: 110,
-              height: 130,
-              child: imageUrl != null
-                  ? Image.network(
-                      imageUrl!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey[300],
-                          child: const Icon(Icons.image_not_supported, color: Colors.white),
-                        );
-                      },
-                    )
-                  : Container(
-                      alignment: Alignment.center,
-                      color: Colors.grey[300],
-                      child: const Text(
-                        '이미지 준비 중',
-                        style: TextStyle(fontSize: 12),
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: SizedBox(
+                width: 110,
+                height: 130,
+                child: imageUrl != null
+                    ? Image.network(
+                        imageUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.grey[200],
+                            child: const Icon(
+                              Icons.image_not_supported,
+                              color: Colors.grey,
+                            ),
+                          );
+                        },
+                      )
+                    : Container(
+                        alignment: Alignment.center,
+                        color: Colors.grey[200],
+                        child: const Text(
+                          '이미지 준비 중',
+                          style: TextStyle(fontSize: 12),
+                        ),
                       ),
-                    ),
+              ),
             ),
           ),
-          const SizedBox(width: 12),
 
           Expanded(
             child: SizedBox(
@@ -54,18 +59,25 @@ class ArticleCardSmall extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (article.category.isNotEmpty)
-                    _CategoryTag(category: article.category, number: index),
-                  SizedBox(height: 4),
-                  Text(
-                    article.title,
-                    style: const TextStyle(
-                      color: Colors.black87,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: _CategoryTag(
+                        category: article.category,
+                        number: index,
+                      ),
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+
+                  if (article.title.isNotEmpty)
+                    Text(
+                      article.title,
+                      style: const TextStyle(
+                        color: Colors.black87,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   Spacer(),
                   if (article.interviewee.isNotEmpty) ...[
                     Text(
@@ -104,10 +116,7 @@ class _CategoryTag extends StatelessWidget {
         children: [
           Text(
             category,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.white,
-            ),
+            style: const TextStyle(fontSize: 12, color: Colors.white),
           ),
           const SizedBox(width: 4),
           Container(
