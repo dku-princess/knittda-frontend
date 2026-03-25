@@ -19,33 +19,37 @@ class NoteSectionWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (noteSection.noteItemBlock != null) ...[
-          MarkdownBody(
-            data: normalizeMarkdown(noteSection.noteItemBlock!),
-            onTapLink: (text, href, title) async {
-              if (href == null) return;
+        if (noteSection.noteItemBlock != null &&
+            noteSection.noteItemBlock!.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: MarkdownBody(
+              data: normalizeMarkdown(noteSection.noteItemBlock!),
+              onTapLink: (text, href, title) async {
+                if (href == null) return;
 
-              final uri = Uri.parse(href);
-              if (uri.pathSegments.contains('articles') &&
-                  uri.pathSegments.length >= 2) {
-                final slug = uri.pathSegments.last;
-                onArticleTap?.call(slug);
-              } else {
-                await launchUrl(uri, mode: LaunchMode.externalApplication);
-              }
-            },
-            styleSheet: MarkdownStyleSheet(
-              p: const TextStyle(fontSize: 14),
-              a: const TextStyle(
-                fontSize: 14,
-                color: Colors.black,
-                decoration: TextDecoration.underline,
+                final uri = Uri.parse(href);
+                final segments = uri.pathSegments;
+                final articleIndex = segments.indexOf('articles');
+                if (articleIndex != -1 && articleIndex + 1 < segments.length) {
+                  final slug = segments[articleIndex + 1];
+                  onArticleTap?.call(slug);
+                }
+              },
+              styleSheet: MarkdownStyleSheet(
+                p: const TextStyle(fontSize: 14),
+                a: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.black,
+                  decoration: TextDecoration.underline,
+                ),
               ),
             ),
           ),
-          const SizedBox(height: 12),
         ],
-        if (noteSection.copyrightItemBlock != null)
+
+        if (noteSection.copyrightItemBlock != null &&
+            noteSection.copyrightItemBlock!.isNotEmpty)
           MarkdownBody(
             data: normalizeMarkdown(noteSection.copyrightItemBlock!),
             onTapLink: (text, href, title) async {

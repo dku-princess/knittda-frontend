@@ -17,51 +17,65 @@ class PurchaseLinkSectionWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         if (purchaseLinkSection.title.isNotEmpty) ...[
-          Text(
-            purchaseLinkSection.title,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Text(
+              purchaseLinkSection.title,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            ),
           ),
-
-          SizedBox(height: 20),
         ],
 
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: SizedBox(
-            width: double.infinity,
-            child: TextButton(
-              onPressed: () async {
-                final url = Uri.parse(purchaseLinkSection.buttonUrl);
-                if (!await launchUrl(
-                  url,
-                  mode: LaunchMode.externalApplication,
-                )) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('링크를 열 수 없습니다.')),
-                    );
+        if (purchaseLinkSection.description != null &&
+            purchaseLinkSection.description!.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Text(
+              purchaseLinkSection.description!,
+              style: TextStyle(fontSize: 14, color: Colors.black54),
+            ),
+          ),
+        ],
+
+        if (purchaseLinkSection.buttonUrl.isNotEmpty &&
+            purchaseLinkSection.buttonText.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: SizedBox(
+              width: double.infinity,
+              child: TextButton(
+                onPressed: () async {
+                  final url = Uri.parse(purchaseLinkSection.buttonUrl);
+                  if (!await launchUrl(
+                    url,
+                    mode: LaunchMode.externalApplication,
+                  )) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('링크를 열 수 없습니다.')),
+                      );
+                    }
                   }
-                }
-              },
-              style: TextButton.styleFrom(
-                backgroundColor: PRIMARY_COLOR,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: PRIMARY_COLOR,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                 ),
-              ),
-              child: Text(
-                purchaseLinkSection.buttonText,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                child: Text(
+                  purchaseLinkSection.buttonText,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
             ),
           ),
-        ),
       ],
     );
   }
