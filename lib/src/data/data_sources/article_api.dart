@@ -6,7 +6,8 @@ class ArticleApi {
   final Dio _dio;
   final String _directusBaseUrl;
 
-  ArticleApi(this._dio, {required String directusBaseUrl}) : _directusBaseUrl = directusBaseUrl;
+  ArticleApi(this._dio, {required String directusBaseUrl})
+    : _directusBaseUrl = directusBaseUrl;
 
   Future<List<Article>> fetchArticles() async {
     final response = await _dio.get(
@@ -37,7 +38,8 @@ class ArticleApi {
     final response = await _dio.get(
       '/items/articles',
       queryParameters: {
-        'fields': '*,sections.*,sections.item.*.*,sections.item.qa_item_block.gallery.*',
+        'fields':
+            '*,sections.*,sections.item.*.*,sections.item.qa_item_block.gallery.*,sections.item.pattern_item_block.gallery.*,sections.item.pattern_item_block.gallery_second.*',
         filterKey: slugOrId,
       },
     );

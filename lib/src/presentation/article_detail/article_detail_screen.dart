@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/domain/model/article/note_section.dart';
+import 'package:knittda/src/domain/model/article/pattern_section.dart';
 import 'package:knittda/src/domain/model/article/project_section.dart';
 import 'package:knittda/src/domain/model/article/purchase_link_section.dart';
 import 'package:knittda/src/domain/model/article/qa_section.dart';
@@ -16,6 +17,7 @@ import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
 import 'package:knittda/src/presentation/article_detail/article_detail_view_model.dart';
 import 'package:knittda/src/presentation/article_detail/components/note_section_widget.dart';
+import 'package:knittda/src/presentation/article_detail/components/pattern_section_widget.dart';
 import 'package:knittda/src/presentation/article_detail/components/project_section_widget.dart';
 import 'package:knittda/src/presentation/article_detail/components/purchase_link_section_widget.dart';
 import 'package:knittda/src/presentation/article_detail/components/qa_section_widget.dart';
@@ -177,13 +179,19 @@ class ArticleDetailScreen extends StatelessWidget {
                                 context.read<RecordApiRepository>(),
                               ),
                               context.read<GetUserUseCase>(),
-                              projectId:projectId,
+                              projectId: projectId,
                             ),
                             child: const ProjectDetailsScreen(),
                           ),
                         ),
                       );
                     },
+                  );
+                case 'pattern_section':
+                  final patternSection = PatternSection.fromJson(section.item!);
+                  return PatternSectionWidget(
+                    patternSection: patternSection,
+                    getAssetUrl: viewModel.getAssetUrl,
                   );
                 default:
                   return const SizedBox.shrink();

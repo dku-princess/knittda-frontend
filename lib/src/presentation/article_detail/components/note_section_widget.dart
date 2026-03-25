@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:knittda/src/core/utils/markdown_utils.dart';
 import 'package:knittda/src/domain/model/article/note_section.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -13,10 +14,6 @@ class NoteSectionWidget extends StatelessWidget {
     this.onArticleTap,
   });
 
-  String _cleanMarkdown(String raw) {
-    return raw.replaceAll('<br/>', '\n').replaceAll('<br>', '\n');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -24,7 +21,7 @@ class NoteSectionWidget extends StatelessWidget {
       children: [
         if (noteSection.noteItemBlock != null) ...[
           MarkdownBody(
-            data: _cleanMarkdown(noteSection.noteItemBlock!),
+            data: normalizeMarkdown(noteSection.noteItemBlock!),
             onTapLink: (text, href, title) async {
               if (href == null) return;
 
@@ -50,7 +47,7 @@ class NoteSectionWidget extends StatelessWidget {
         ],
         if (noteSection.copyrightItemBlock != null)
           MarkdownBody(
-            data: _cleanMarkdown(noteSection.copyrightItemBlock!),
+            data: normalizeMarkdown(noteSection.copyrightItemBlock!),
             onTapLink: (text, href, title) async {
               if (href == null) return;
               final url = Uri.parse(href);

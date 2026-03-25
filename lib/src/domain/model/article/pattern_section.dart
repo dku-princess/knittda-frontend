@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:knittda/src/domain/model/article/qa_section.dart';
 
 part 'pattern_section.freezed.dart';
 
@@ -25,6 +26,9 @@ abstract class PatternItemBlock with _$PatternItemBlock {
     @Default('') String title,
     @Default('') String description,
     String? image,
+    @JsonKey(name: 'image_ratio') @Default('landscape_4_3') String imageRatio,
+    @Default([]) List<GalleryItem> gallery,
+    @JsonKey(name: 'gallery_second') @Default([]) List<GalleryItem> gallerySecond,
   }) = _PatternItemBlock;
 
   factory PatternItemBlock.fromJson(Map<String, dynamic> json) =>
