@@ -17,44 +17,53 @@ class ProjectSectionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final validBlocks = projectSection.projectItemBlock
+        .where((b) => getProjectPreview(b.projectId) != null)
+        .toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          projectSection.title,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-        ),
-
-        if (projectSection.description.isNotEmpty) ...[
-          SizedBox(height: 16),
-          Text(
-            projectSection.description,
-            style: TextStyle(fontSize: 14, color: Colors.black54),
+        if (projectSection.title.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Text(
+              projectSection.title,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            ),
           ),
         ],
 
-        SizedBox(height: 16),
-
-        SizedBox(
-          height: 200,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: projectSection.projectItemBlock.length,
-            separatorBuilder: (context, index) => const SizedBox(width: 12),
-            itemBuilder: (context, index) {
-              final block = projectSection.projectItemBlock[index];
-              final preview = getProjectPreview(block.projectId);
-              if (preview == null) return const SizedBox.shrink();
-              return SizedBox(
-                width: 180,
-                child: ProjectPreviewsItem(
-                  projectPreviews: preview,
-                  onTap: () => onProjectTap?.call(block.projectId),
-                ),
-              );
-            },
+        if (projectSection.description.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Text(
+              projectSection.description,
+              style: TextStyle(fontSize: 14, color: Colors.black54),
+            ),
           ),
-        ),
+        ],
+
+        if (validBlocks.isNotEmpty)
+          SizedBox(
+            height: 200,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: validBlocks.length,
+              separatorBuilder: (context, index) => const SizedBox(width: 12),
+              itemBuilder: (context, index) {
+                final block = validBlocks[index];
+                final preview = getProjectPreview(block.projectId)!;
+                return SizedBox(
+                  width: 180,
+                  child: ProjectPreviewsItem(
+                    projectPreviews: preview,
+                    onTap: () => onProjectTap?.call(block.projectId),
+                  ),
+                );
+              },
+            ),
+          ),
       ],
     );
   }

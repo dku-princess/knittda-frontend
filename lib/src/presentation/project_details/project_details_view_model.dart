@@ -124,8 +124,9 @@ class ProjectDetailsViewModel extends ChangeNotifier {
           _state = state.copyWith(project: data);
         case Error():
           _eventController.add(
-            ProjectDetailsUiEvent.showSnackBar("작품을 불러오지 못했어요."),
+            ProjectDetailsUiEvent.showSnackBar("삭제되었거나 존재하지 않는 작품이에요."),
           );
+          _eventController.add(ProjectDetailsUiEvent.notFound());
       }
 
       _updateIsOwner();
