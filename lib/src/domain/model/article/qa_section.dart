@@ -25,6 +25,7 @@ abstract class QaItemBlock with _$QaItemBlock {
     @Default('') String answer,
     String? image,
     @JsonKey(name: 'highlight_quote') String? highlightQuote,
+    @JsonKey(name: 'image_ratio') @Default('landscape_4_3') String imageRatio,
     @Default([]) List<GalleryItem> gallery,
   }) = _QaItemBlock;
 
