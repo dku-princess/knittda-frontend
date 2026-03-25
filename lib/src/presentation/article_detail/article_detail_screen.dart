@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/domain/model/article/note_section.dart';
 import 'package:knittda/src/domain/model/article/pattern_section.dart';
 import 'package:knittda/src/domain/model/article/project_section.dart';
@@ -64,60 +65,114 @@ class ArticleDetailScreen extends StatelessWidget {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Color(0xFF7ECDC0).withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        article.category,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: PRIMARY_COLOR,
+                    if (article.coverImage != null &&
+                        article.coverImage!.isNotEmpty) ...[
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: AspectRatio(
+                          aspectRatio: 4 / 3,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              viewModel.getAssetUrl(article.coverImage!),
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade200,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.image_not_supported_outlined,
+                                      color: Colors.grey,
+                                      size: 32,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
 
-                    SizedBox(height: 16),
-
-                    Text(
-                      article.title,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
+                    if (article.category.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Color(0xFF7ECDC0).withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            article.category,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: PRIMARY_COLOR,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
 
-                    SizedBox(height: 16),
-
-                    Text(
-                      article.subtitle,
-                      style: TextStyle(fontSize: 16, color: Colors.black54),
-                    ),
-
-                    SizedBox(height: 16),
-
-                    Row(
-                      children: [
-                        Text(
-                          article.interviewee,
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                    if (article.title.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          article.title,
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                        SizedBox(width: 12),
-                        Text(
-                          article.publishedAt,
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+
+                    if (article.subtitle.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          article.subtitle,
+                          style: TextStyle(fontSize: 16, color: Colors.black54),
                         ),
-                      ],
-                    ),
+                      ),
+
+                    if (article.interviewee.isNotEmpty ||
+                        article.publishedAt.isNotEmpty)
+                      Row(
+                        children: [
+                          if (article.interviewee.isNotEmpty)
+                            Text(
+                              article.interviewee,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          if (article.interviewee.isNotEmpty &&
+                              article.publishedAt.isNotEmpty)
+                            SizedBox(width: 12),
+                          if (article.publishedAt.isNotEmpty)
+                            Text(
+                              DateUtilsHelper.toKoreanFormat(article.publishedAt),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
+                        ],
+                      ),
                   ],
                 );
               }
+
               final section = article.sections[index - 1];
+              if (section.item == null) return const SizedBox.shrink();
+
               switch (section.collection) {
                 case 'qa_section':
                   final qaSection = QaSection.fromJson(section.item!);
