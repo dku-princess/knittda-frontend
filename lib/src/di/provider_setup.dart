@@ -154,7 +154,7 @@ Future<List<SingleChildWidget>> getProviders() async {
 
     ProxyProvider<DirectusDio, ArticleApi>(
       update: (context, directusDio, _) =>
-          ArticleApi(directusDio.dio, directusBaseUrl: AppConfig.directusBaseUrl),
+          ArticleApi(directusDio.dio, articleStatus: AppConfig.articleStatus),
     ),
     ProxyProvider<ArticleApi, ArticleRepository>(
       update: (context, api, _) => ArticleRepositoryImpl(api),

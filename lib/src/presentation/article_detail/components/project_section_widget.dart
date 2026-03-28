@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:knittda/src/core/utils/markdown_utils.dart';
 import 'package:knittda/src/domain/model/article/project_section.dart';
 import 'package:knittda/src/domain/model/project_previews.dart';
 import 'package:knittda/src/presentation/project_previews/components/project_previews_item.dart';
@@ -37,9 +39,17 @@ class ProjectSectionWidget extends StatelessWidget {
         if (projectSection.description.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
-            child: Text(
-              projectSection.description,
-              style: TextStyle(fontSize: 14, color: Colors.black54),
+            child:
+            MarkdownBody(
+              data: normalizeMarkdown(
+                projectSection.description,
+              ),
+              styleSheet: MarkdownStyleSheet(
+                p: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.black54,
+                ),
+              ),
             ),
           ),
         ],

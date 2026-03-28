@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/core/utils/markdown_utils.dart';
 import 'package:knittda/src/domain/model/article/purchase_link_section.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -30,9 +32,17 @@ class PurchaseLinkSectionWidget extends StatelessWidget {
             purchaseLinkSection.description!.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
-            child: Text(
-              purchaseLinkSection.description!,
-              style: TextStyle(fontSize: 14, color: Colors.black54),
+            child:
+            MarkdownBody(
+              data: normalizeMarkdown(
+                  purchaseLinkSection.description!,
+              ),
+              styleSheet: MarkdownStyleSheet(
+                p: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.black54,
+                ),
+              ),
             ),
           ),
         ],

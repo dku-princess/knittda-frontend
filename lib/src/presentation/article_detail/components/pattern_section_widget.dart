@@ -33,9 +33,17 @@ class PatternSectionWidget extends StatelessWidget {
             patternSection.description!.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
-            child: Text(
-              patternSection.description!,
-              style: TextStyle(fontSize: 14, color: Colors.black54),
+            child:
+            MarkdownBody(
+              data: normalizeMarkdown(
+                patternSection.description!,
+              ),
+              styleSheet: MarkdownStyleSheet(
+                p: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.black54,
+                ),
+              ),
             ),
           ),
         ],
@@ -45,7 +53,7 @@ class PatternSectionWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
 
             decoration: BoxDecoration(
-              color: Colors.orangeAccent.withValues(alpha: 0.12),
+              color: Color(0xFFFDF7F2),
               borderRadius: BorderRadius.circular(8),
             ),
 
@@ -60,7 +68,7 @@ class PatternSectionWidget extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFFD4772C),
+                        color: Color(0xFFCC7A3A),
                       ),
                     ),
                   ),
@@ -77,7 +85,10 @@ class PatternSectionWidget extends StatelessWidget {
                         patternSection.patternItemBlock[i].description,
                       ),
                       styleSheet: MarkdownStyleSheet(
-                        p: const TextStyle(fontSize: 14),
+                        p: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF5C4A3D),
+                        ),
                       ),
                     ),
                   ),

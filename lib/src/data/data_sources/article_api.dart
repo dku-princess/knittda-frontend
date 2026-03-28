@@ -4,15 +4,15 @@ import 'package:knittda/src/domain/model/article/article_detail.dart';
 
 class ArticleApi {
   final Dio _dio;
-  final String _directusBaseUrl;
+  final String _articleStatus;
 
-  ArticleApi(this._dio, {required String directusBaseUrl})
-    : _directusBaseUrl = directusBaseUrl;
+  ArticleApi(this._dio, {required String articleStatus})
+    : _articleStatus = articleStatus;
 
   Future<List<Article>> fetchArticles() async {
     final response = await _dio.get(
       '/items/articles',
-      queryParameters: {'fields': '*'},
+      queryParameters: {'fields': '*', 'filter[status][_eq]': _articleStatus},
     );
 
     final data = response.data;
@@ -41,6 +41,7 @@ class ArticleApi {
         'fields':
             '*,sections.*,sections.item.*.*,sections.item.qa_item_block.gallery.*,sections.item.pattern_item_block.gallery.*,sections.item.pattern_item_block.gallery_second.*',
         filterKey: slugOrId,
+        'filter[status][_eq]': _articleStatus,
       },
     );
 
@@ -61,6 +62,6 @@ class ArticleApi {
   }
 
   String getAssetUrl(String assetId) {
-    return '$_directusBaseUrl/assets/$assetId';
+    return '${_dio.options.baseUrl}/assets/$assetId';
   }
 }
