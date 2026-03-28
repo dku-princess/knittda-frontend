@@ -3,6 +3,7 @@ import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/markdown_utils.dart';
 import 'package:knittda/src/domain/model/article/qa_section.dart';
+import 'package:knittda/src/presentation/article_detail/components/gellery_widge.dart';
 
 class QaSectionWidget extends StatelessWidget {
   final QaSection qaSection;
@@ -72,23 +73,20 @@ class QaSectionWidget extends StatelessWidget {
                 //이미지
                 if (qaSection.qaItemBlock[i].image != null &&
                     qaSection.qaItemBlock[i].image!.isNotEmpty) ...[
-                  AspectRatio(
-                    aspectRatio:
-                        qaSection.qaItemBlock[i].imageRatio == 'portrait_3_4'
-                        ? 3 / 4
-                        : 4 / 3,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: AspectRatio(
+                      aspectRatio:
+                          qaSection.qaItemBlock[i].imageRatio == 'portrait_3_4'
+                          ? 3 / 4
+                          : 4 / 3,
                       child: Image.network(
                         getAssetUrl(qaSection.qaItemBlock[i].image!),
                         fit: BoxFit.cover,
                         width: double.infinity,
                         errorBuilder: (context, error, stackTrace) {
                           return Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade200,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                            color: Colors.grey.shade200,
                             child: const Center(
                               child: Icon(
                                 Icons.image_not_supported_outlined,
@@ -105,46 +103,9 @@ class QaSectionWidget extends StatelessWidget {
 
                 // 갤러리
                 if (qaSection.qaItemBlock[i].gallery.isNotEmpty) ...[
-                  Column(
-                    children: [
-                      SizedBox(
-                        height: 200,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: qaSection.qaItemBlock[i].gallery.length,
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(width: 8),
-                          itemBuilder: (context, index) {
-                            final item =
-                                qaSection.qaItemBlock[i].gallery[index];
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                getAssetUrl(item.directusFilesId),
-                                height: 200,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    Container(
-                                      height: 200,
-                                      width: 160,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.shade200,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: const Center(
-                                        child: Icon(
-                                          Icons.image_not_supported_outlined,
-                                          color: Colors.grey,
-                                          size: 24,
-                                        ),
-                                      ),
-                                    ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
+                  GalleryWidget(
+                    items: qaSection.qaItemBlock[i].gallery,
+                    getAssetUrl: getAssetUrl,
                   ),
                 ],
               ],

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:knittda/src/core/utils/markdown_utils.dart';
 import 'package:knittda/src/domain/model/article/pattern_section.dart';
-import 'package:knittda/src/domain/model/article/qa_section.dart';
+import 'package:knittda/src/presentation/article_detail/components/gellery_widge.dart';
 
 class PatternSectionWidget extends StatelessWidget {
   final PatternSection patternSection;
@@ -33,16 +33,10 @@ class PatternSectionWidget extends StatelessWidget {
             patternSection.description!.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
-            child:
-            MarkdownBody(
-              data: normalizeMarkdown(
-                patternSection.description!,
-              ),
+            child: MarkdownBody(
+              data: normalizeMarkdown(patternSection.description!),
               styleSheet: MarkdownStyleSheet(
-                p: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                ),
+                p: const TextStyle(fontSize: 14, color: Colors.black54),
               ),
             ),
           ),
@@ -98,14 +92,14 @@ class PatternSectionWidget extends StatelessWidget {
                     patternSection.patternItemBlock[i].image!.isNotEmpty) ...[
                   Padding(
                     padding: const EdgeInsets.only(bottom: 12),
-                    child: AspectRatio(
-                      aspectRatio:
-                          patternSection.patternItemBlock[i].imageRatio ==
-                              'portrait_3_4'
-                          ? 3 / 4
-                          : 4 / 3,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: AspectRatio(
+                        aspectRatio:
+                            patternSection.patternItemBlock[i].imageRatio ==
+                                'portrait_3_4'
+                            ? 3 / 4
+                            : 4 / 3,
                         child: Image.network(
                           getAssetUrl(
                             patternSection.patternItemBlock[i].image!,
@@ -114,10 +108,7 @@ class PatternSectionWidget extends StatelessWidget {
                           width: double.infinity,
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
+                              color: Colors.grey.shade200,
                               child: const Center(
                                 child: Icon(
                                   Icons.image_not_supported_outlined,
@@ -136,9 +127,9 @@ class PatternSectionWidget extends StatelessWidget {
                 if (patternSection.patternItemBlock[i].gallery.isNotEmpty) ...[
                   Padding(
                     padding: const EdgeInsets.only(bottom: 12),
-                    child: _buildGallery(
-                      patternSection.patternItemBlock[i].gallery,
-                      getAssetUrl,
+                    child: GalleryWidget(
+                      items: patternSection.patternItemBlock[i].gallery,
+                      getAssetUrl: getAssetUrl,
                     ),
                   ),
                 ],
@@ -149,9 +140,9 @@ class PatternSectionWidget extends StatelessWidget {
                     .isNotEmpty) ...[
                   Padding(
                     padding: const EdgeInsets.only(bottom: 12),
-                    child: _buildGallery(
-                      patternSection.patternItemBlock[i].gallerySecond,
-                      getAssetUrl,
+                    child: GalleryWidget(
+                      items: patternSection.patternItemBlock[i].gallerySecond,
+                      getAssetUrl: getAssetUrl,
                     ),
                   ),
                 ],
@@ -165,43 +156,4 @@ class PatternSectionWidget extends StatelessWidget {
       ],
     );
   }
-}
-
-Widget _buildGallery(
-  List<GalleryItem> items,
-  String Function(String) getAssetUrl,
-) {
-  return SizedBox(
-    height: 200,
-    child: ListView.separated(
-      scrollDirection: Axis.horizontal,
-      itemCount: items.length,
-      separatorBuilder: (context, index) => const SizedBox(width: 8),
-      itemBuilder: (context, index) {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.network(
-            getAssetUrl(items[index].directusFilesId),
-            height: 200,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) => Container(
-              height: 200,
-              width: 160,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.image_not_supported_outlined,
-                  color: Colors.grey,
-                  size: 24,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    ),
-  );
 }
