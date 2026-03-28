@@ -24,7 +24,7 @@ class ArticleCardSmall extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: SizedBox(
-                width: 110,
+                width: 117,
                 height: 130,
                 child: imageUrl != null
                     ? Image.network(

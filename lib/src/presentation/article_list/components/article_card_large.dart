@@ -15,7 +15,7 @@ class ArticleCardLarge extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: AspectRatio(
-          aspectRatio: 1,
+          aspectRatio: 8 / 9,
           child: Stack(
             fit: StackFit.expand,
             children: [
