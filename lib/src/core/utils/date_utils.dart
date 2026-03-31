@@ -8,7 +8,11 @@ class DateUtilsHelper {
 
   static DateTime fromDotFormat(String date) {
     final parts = date.split('.');
-    return DateTime(int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
+    return DateTime(
+      int.parse(parts[0]),
+      int.parse(parts[1]),
+      int.parse(parts[2]),
+    );
   }
 
   static String toHourMinuteFormat(DateTime date) =>
@@ -19,7 +23,8 @@ class DateUtilsHelper {
     final now = DateTime.now();
 
     // 이번 주 월요일 날짜 계산
-    final tuesday = now.subtract( //현재 날짜에서 duration 만큼 뺀다
+    final tuesday = now.subtract(
+      //현재 날짜에서 duration 만큼 뺀다
       Duration(days: now.weekday - DateTime.tuesday), //두 시간 사이의 간격을 나타냄
     );
 
@@ -39,7 +44,11 @@ class DateUtilsHelper {
     final kstNow = DateTime.now(); // 현재 로컬 시간대 (KST 환경이라면 OK)
 
     // 날짜 부분만 비교 (시·분·초 제거)
-    final kstServerDate = DateTime(kstServerTime.year, kstServerTime.month, kstServerTime.day);
+    final kstServerDate = DateTime(
+      kstServerTime.year,
+      kstServerTime.month,
+      kstServerTime.day,
+    );
     final kstToday = DateTime(kstNow.year, kstNow.month, kstNow.day);
 
     final diffDays = kstServerDate.difference(kstToday).inDays;
@@ -52,6 +61,15 @@ class DateUtilsHelper {
       return '${-diffDays}일 전';
     } else {
       return toDotFormat(kstServerDate); // 예: 2025.07.10
+    }
+  }
+
+  static String toKoreanFormat(String dateString) {
+    try {
+      final date = DateTime.parse(dateString);
+      return '${date.year}년 ${date.month}월 ${date.day}일';
+    } catch (_) {
+      return dateString;
     }
   }
 }
