@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/domain/repository/article_repository.dart';
-import 'package:knittda/src/domain/use_case/get_project_previews_use_case.dart';
+import 'package:knittda/src/domain/repository/project_api_repository.dart';
+import 'package:knittda/src/domain/use_case/get_article_previews_use_case.dart';
 import 'package:knittda/src/presentation/article_detail/article_detail_screen.dart';
 import 'package:knittda/src/presentation/article_detail/article_detail_view_model.dart';
 import 'package:knittda/src/presentation/article_list/article_list_event.dart';
@@ -73,7 +74,9 @@ class ArticleListScreen extends StatelessWidget {
                           builder: (context) => ChangeNotifierProvider(
                             create: (context) => ArticleDetailViewModel(
                               context.read<ArticleRepository>(),
-                              context.read<GetProjectPreviewsUseCase>(),
+                              GetArticlePreviewsUseCase(
+                                context.read<ProjectApiRepository>(),
+                              ),
                               slugOrId: article.slug,
                             ),
                             child: const ArticleDetailScreen(),
@@ -98,7 +101,9 @@ class ArticleListScreen extends StatelessWidget {
                         builder: (context) => ChangeNotifierProvider(
                           create: (context) => ArticleDetailViewModel(
                             context.read<ArticleRepository>(),
-                            context.read<GetProjectPreviewsUseCase>(),
+                            GetArticlePreviewsUseCase(
+                              context.read<ProjectApiRepository>(),
+                            ),
                             slugOrId: article.slug,
                           ),
                           child: const ArticleDetailScreen(),

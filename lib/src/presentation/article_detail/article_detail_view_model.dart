@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:knittda/src/data/data_sources/result.dart';
-import 'package:knittda/src/domain/model/project_previews.dart';
+import 'package:knittda/src/domain/model/article/article_preview.dart';
+import 'package:knittda/src/domain/model/article/project_section.dart';
 import 'package:knittda/src/domain/repository/article_repository.dart';
-import 'package:knittda/src/domain/use_case/get_project_previews_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_article_previews_use_case.dart';
 import 'package:knittda/src/presentation/article_detail/article_detail_state.dart';
 
 class ArticleDetailViewModel extends ChangeNotifier {
   final ArticleRepository _repository;
-  final GetProjectPreviewsUseCase _getProjectPreviewsUseCase;
+  final GetArticlePreviewsUseCase _getArticlePreviewsUseCase;
 
   ArticleDetailState _state = ArticleDetailState(
     article: null,
     isLoading: false,
-    projectPreviews: [],
+    articlePreviews: [],
   );
 
   ArticleDetailState get state => _state;
 
   ArticleDetailViewModel(
     this._repository,
-    this._getProjectPreviewsUseCase, {
+    this._getArticlePreviewsUseCase, {
     required String slugOrId,
   }) {
     fetchArticle(slugOrId);
@@ -33,14 +33,21 @@ class ArticleDetailViewModel extends ChangeNotifier {
       final article = await _repository.getArticleBySlug(slugOrId);
       _state = state.copyWith(article: article);
 
-      if (article != null &&
-          article.sections.any((s) => s.collection == 'project_section')) {
-        final result = await _getProjectPreviewsUseCase();
-        switch (result) {
-          case Success(:final data):
-            _state = state.copyWith(projectPreviews: data);
-          case Error():
-            _state = state.copyWith(projectPreviews: []);
+      if (article != null) {
+        final ids = article.sections
+            .where((s) => s.collection == 'project_section' && s.item != null)
+            .expand((s) => ProjectSection.fromJson(s.item!).projectItemBlock)
+            .map((b) => b.projectId)
+            .where((id) => id != 0)
+            .toList();
+
+        if (ids.isNotEmpty) {
+          try {
+            final previews = await _getArticlePreviewsUseCase(ids: ids);
+            _state = state.copyWith(articlePreviews: previews);
+          } catch (_) {
+            _state = state.copyWith(articlePreviews: []);
+          }
         }
       }
     } on Exception catch (e) {
@@ -52,9 +59,9 @@ class ArticleDetailViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  ProjectPreviews? getProjectPreview(int projectId) {
+  ArticlePreview? getArticlePreview(int projectId) {
     try {
-      return state.projectPreviews.firstWhere((p) => p.projectId == projectId);
+      return state.articlePreviews.firstWhere((p) => p.projectId == projectId);
     } catch (_) {
       return null;
     }
