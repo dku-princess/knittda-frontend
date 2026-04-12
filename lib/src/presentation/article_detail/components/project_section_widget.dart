@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:knittda/src/core/utils/markdown_utils.dart';
+import 'package:knittda/src/domain/model/article/article_preview.dart';
 import 'package:knittda/src/domain/model/article/project_section.dart';
-import 'package:knittda/src/domain/model/project_previews.dart';
-import 'package:knittda/src/presentation/project_previews/components/project_previews_item.dart';
+import 'package:knittda/src/presentation/article_detail/components/article_preview_item.dart';
 
 class ProjectSectionWidget extends StatelessWidget {
   final ProjectSection projectSection;
-  final ProjectPreviews? Function(int projectId) getProjectPreview;
+  final ArticlePreview? Function(int projectId) getArticlePreview;
   final void Function(int projectId)? onProjectTap;
 
   const ProjectSectionWidget({
     super.key,
     required this.projectSection,
-    required this.getProjectPreview,
+    required this.getArticlePreview,
     this.onProjectTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final validBlocks = projectSection.projectItemBlock
-        .where((b) => getProjectPreview(b.projectId) != null)
+        .where((b) => getArticlePreview(b.projectId) != null)
         .toList();
 
     return Column(
@@ -63,11 +63,11 @@ class ProjectSectionWidget extends StatelessWidget {
               separatorBuilder: (context, index) => const SizedBox(width: 12),
               itemBuilder: (context, index) {
                 final block = validBlocks[index];
-                final preview = getProjectPreview(block.projectId)!;
+                final preview = getArticlePreview(block.projectId)!;
                 return SizedBox(
                   width: 180,
-                  child: ProjectPreviewsItem(
-                    projectPreviews: preview,
+                  child: ArticlePreviewItem(
+                    articlePreview: preview,
                     onTap: () => onProjectTap?.call(block.projectId),
                   ),
                 );

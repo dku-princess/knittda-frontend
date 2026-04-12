@@ -10,8 +10,8 @@ import 'package:knittda/src/domain/repository/article_repository.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/repository/record_api_repository.dart';
 import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_article_previews_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_my_project_use_case.dart';
-import 'package:knittda/src/domain/use_case/get_project_previews_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_projects_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
@@ -198,7 +198,9 @@ class ArticleDetailScreen extends StatelessWidget {
                           builder: (_) => ChangeNotifierProvider(
                             create: (_) => ArticleDetailViewModel(
                               context.read<ArticleRepository>(),
-                              context.read<GetProjectPreviewsUseCase>(),
+                              GetArticlePreviewsUseCase(
+                                context.read<ProjectApiRepository>(),
+                              ),
                               slugOrId: slugOrId,
                             ),
                             child: const ArticleDetailScreen(),
@@ -208,10 +210,11 @@ class ArticleDetailScreen extends StatelessWidget {
                     },
                   );
                 case 'project_section':
+                  if (state.articlePreviews.isEmpty) return const SizedBox.shrink();
                   final projectSection = ProjectSection.fromJson(section.item!);
                   return ProjectSectionWidget(
                     projectSection: projectSection,
-                    getProjectPreview: viewModel.getProjectPreview,
+                    getArticlePreview: viewModel.getArticlePreview,
                     onProjectTap: (projectId) async {
                       await Navigator.push<bool>(
                         context,
