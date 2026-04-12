@@ -31,7 +31,7 @@ import 'package:knittda/src/domain/repository/report_api_repository.dart';
 import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_feed_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_project_previews_use_case.dart';
-import 'package:knittda/src/domain/use_case/get_projects_use_case.dart';
+import 'package:knittda/src/domain/use_case/order_projects_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/logout_use_case.dart';
 import 'package:knittda/src/domain/use_case/setting_profile_image_use_case.dart';
@@ -132,8 +132,8 @@ Future<List<SingleChildWidget>> getProviders() async {
     ProxyProvider<ProjectApi, ProjectApiRepository>(
       update: (context, api, _) => ProjectApiRepositoryImpl(api),
     ),
-    ProxyProvider<ProjectApiRepository, GetProjectsUseCase>(
-      update: (context, repository, _) => GetProjectsUseCase(repository),
+    ProxyProvider<ProjectApiRepository, OrderProjectsUseCase>(
+      update: (context, repository, _) => OrderProjectsUseCase(repository),
     ),
     ProxyProvider<ProjectApiRepository, GetProjectPreviewsUseCase>(
       update: (context, repository, _) => GetProjectPreviewsUseCase(repository),

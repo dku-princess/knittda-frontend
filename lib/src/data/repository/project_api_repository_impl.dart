@@ -25,8 +25,8 @@ class ProjectApiRepositoryImpl implements ProjectApiRepository {
   List<Project> get currentProjects => List.unmodifiable(_projects);
 
   @override
-  Future<Result<void>> fetchProjects() async {
-    final Result<Iterable> result = await _api.getProjects();
+  Future<Result<void>> getMyProjects() async {
+    final Result<Iterable> result = await _api.getMyProjects();
 
     switch (result) {
       case Success(:final data):

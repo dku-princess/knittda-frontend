@@ -7,7 +7,7 @@ import 'package:knittda/src/domain/model/project_previews.dart';
 abstract class ProjectApiRepository {
   Stream<List<Project>> get projectsStream;
   List<Project> get currentProjects;
-  Future<Result<void>> fetchProjects();
+  Future<Result<void>> getMyProjects();
 
   Future<Result<Project>> putProject({
     required Project project,
