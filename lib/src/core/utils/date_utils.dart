@@ -1,4 +1,6 @@
 class DateUtilsHelper {
+  DateUtilsHelper._();
+
   //padLeft: 지정한 길이보다 짧으면, 왼쪽에 문자를 채운다
   static String toHyphenFormat(DateTime date) =>
       "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
