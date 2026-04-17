@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/domain/util/social_login_type.dart';
 import 'package:knittda/src/presentation/login/login_event.dart';
 import 'package:knittda/src/presentation/login/login_view_model.dart';
-import 'package:knittda/src/presentation/screens/home.dart';
+import 'package:knittda/src/presentation/home/home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/presentation/login/login_ui_event.dart';
 
@@ -32,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
             switch (event) {
               case Login():
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const Home()),
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
                 );
               case ShowSnackBar(:final message):
                 final snackBar = SnackBar(content: Text(message));
