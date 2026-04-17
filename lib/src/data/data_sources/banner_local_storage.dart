@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,21 +26,25 @@ class BannerLocalStorage {
 
   /// 오래된 키 정리
   Future<void> cleanUpOldKeys() async {
-    final keys = await _getRegistry();
-    if (keys.isEmpty) return;
+    try {
+      final keys = await _getRegistry();
+      if (keys.isEmpty) return;
 
-    final today = DateUtilsHelper.toHyphenFormat(DateTime.now());
-    final keysToKeep = <String>[];
+      final today = DateUtilsHelper.toHyphenFormat(DateTime.now());
+      final keysToKeep = <String>[];
 
-    for (final key in keys) {
-      if (key.endsWith(today)) {
-        keysToKeep.add(key);
-      } else {
-        await _prefs.remove(key);
+      for (final key in keys) {
+        if (key.endsWith(today)) {
+          keysToKeep.add(key);
+        } else {
+          await _prefs.remove(key);
+        }
       }
-    }
 
-    await _saveRegistry(keysToKeep);
+      await _saveRegistry(keysToKeep);
+    } catch (e) {
+      debugPrint('BannerLocalStorage: cleanUpOldKeys error');
+    }
   }
 
   String _makeKey(int bannerId) {

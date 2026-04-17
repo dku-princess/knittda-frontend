@@ -13,6 +13,8 @@ import 'package:knittda/src/presentation/article_list/article_list_screen.dart';
 import 'package:knittda/src/presentation/article_list/article_list_view_model.dart';
 import 'package:knittda/src/presentation/feed/feed_screen.dart';
 import 'package:knittda/src/presentation/feed/feed_view_model.dart';
+import 'package:knittda/src/presentation/home/components/bottom_banner_overlay.dart';
+import 'package:knittda/src/presentation/home/home_view_model.dart';
 import 'package:knittda/src/presentation/mypage/mypage_screen.dart';
 import 'package:knittda/src/presentation/mypage/mypage_view_model.dart';
 import 'package:knittda/src/presentation/project_previews/project_previews_screen.dart';
@@ -84,16 +86,47 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     ];
 
-    return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: PRIMARY_COLOR,
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
-        items: myTabs,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
-      body: IndexedStack(index: _selectedIndex, children: pages),
+    return Consumer<HomeViewModel>(
+      builder: (context, viewModel, _) {
+        final banner = viewModel.state.currentBanner;
+
+        return Stack(
+          children: [
+            Scaffold(
+              bottomNavigationBar: BottomNavigationBar(
+                selectedItemColor: PRIMARY_COLOR,
+                unselectedItemColor: Colors.grey,
+                type: BottomNavigationBarType.fixed,
+                items: myTabs,
+                currentIndex: _selectedIndex,
+                onTap: _onItemTapped,
+              ),
+              body: IndexedStack(index: _selectedIndex, children: pages),
+            ),
+
+            if (banner != null)
+              BottomBannerOverlay(
+                banner: banner,
+                imageUrl: banner.thumbnailImage != null
+                    ? viewModel.getAssetUrl(banner.thumbnailImage!)
+                    : null,
+                onDismiss: (dismissType) {
+                  viewModel.dismissBanner(dismissType);
+                },
+                onTapBanner: () {
+                  switch (banner.actionType) {
+                    case 'none':
+                      return;
+                    case 'internal_route':
+                    // TODO: targetType, targetId 또는 targetRoute로 네비게이션
+                    case 'external_url':
+                    // TODO: url_launcher로 외부 URL 열기
+                  }
+                },
+              ),
+          ],
+        );
+      },
     );
   }
 }

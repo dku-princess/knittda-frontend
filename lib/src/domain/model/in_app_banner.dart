@@ -19,7 +19,7 @@ abstract class InAppBanner with _$InAppBanner {
 
     @JsonKey(name: 'is_active') required bool isActive,
     required String placement,
-    @JsonKey(name: 'show_once_per_day') required bool showOncePerDay,
+    @JsonKey(name: 'show_once_per_day', defaultValue: false) required bool showOncePerDay,
     @JsonKey(name: 'audience_type') required String audienceType,
     @JsonKey(name: 'min_app_version') String? minAppVersion,
     @JsonKey(name: 'max_app_version') String? maxAppVersion,
