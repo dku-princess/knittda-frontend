@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/domain/repository/article_repository.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
+import 'package:knittda/src/domain/use_case/get_article_previews_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_feed_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_project_previews_use_case.dart';
 import 'package:knittda/src/domain/use_case/order_projects_use_case.dart';
@@ -9,6 +10,8 @@ import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/logout_use_case.dart';
 import 'package:knittda/src/domain/use_case/setting_profile_image_use_case.dart';
 import 'package:knittda/src/domain/use_case/signout_use_case.dart';
+import 'package:knittda/src/presentation/article_detail/article_detail_screen.dart';
+import 'package:knittda/src/presentation/article_detail/article_detail_view_model.dart';
 import 'package:knittda/src/presentation/article_list/article_list_screen.dart';
 import 'package:knittda/src/presentation/article_list/article_list_view_model.dart';
 import 'package:knittda/src/presentation/feed/feed_screen.dart';
@@ -22,6 +25,7 @@ import 'package:knittda/src/presentation/project_previews/project_previews_view_
 import 'package:knittda/src/presentation/projects/projects_screen.dart';
 import 'package:knittda/src/presentation/projects/projects_view_model.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // 바텀네비게이션 리스트
 final List<BottomNavigationBarItem> myTabs = <BottomNavigationBarItem>[
@@ -113,14 +117,45 @@ class _HomeScreenState extends State<HomeScreen> {
                 onDismiss: (dismissType) {
                   viewModel.dismissBanner(dismissType);
                 },
-                onTapBanner: () {
+                onTapBanner: () async {
                   switch (banner.actionType) {
                     case 'none':
                       return;
                     case 'internal_route':
-                    // TODO: targetType, targetId 또는 targetRoute로 네비게이션
+                      if (banner.targetType == 'article' &&
+                          banner.targetId != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChangeNotifierProvider(
+                              create: (context) => ArticleDetailViewModel(
+                                context.read<ArticleRepository>(),
+                                GetArticlePreviewsUseCase(
+                                  context.read<ProjectApiRepository>(),
+                                ),
+                                slugOrId: banner.targetId.toString(),
+                              ),
+                              child: const ArticleDetailScreen(),
+                            ),
+                          ),
+                        );
+                      }
+                    // TODO: notice
                     case 'external_url':
-                    // TODO: url_launcher로 외부 URL 열기
+                      if (banner.externalUrl != null &&
+                          banner.externalUrl!.isNotEmpty) {
+                        try {
+                          final uri = Uri.parse(banner.externalUrl!);
+                          await launchUrl(
+                            uri,
+                            mode: LaunchMode.externalApplication,
+                          );
+                        } catch (e) {
+                          debugPrint(
+                            'Failed to launch URL: ${banner.externalUrl}, error: $e',
+                          );
+                        }
+                      }
                   }
                 },
               ),
