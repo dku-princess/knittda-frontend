@@ -60,12 +60,58 @@ class ArticleListScreen extends StatelessWidget {
             onRefresh: () async {
               await viewModel.onEvent(ArticleListEvent.fetchArticles());
             },
-            child: ListView.builder(
-              itemCount: state.articles.length,
-              itemBuilder: (context, index) {
-                final article = state.articles[index];
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (scroll) {
+                if (scroll.metrics.pixels >=
+                        scroll.metrics.maxScrollExtent - 200 &&
+                    !state.isLoadingMore &&
+                    state.hasMore) {
+                  viewModel.onEvent(ArticleListEvent.fetchMore());
+                }
+                return false;
+              },
+              child: ListView.builder(
+                itemCount:
+                    state.articles.length + (state.isLoadingMore ? 1 : 0),
+                itemBuilder: (context, index) {
+                  // 마지막 아이템이면 로딩 인디케이터
+                  if (index == state.articles.length) {
+                    return const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
 
-                if (article.isFeatured) {
+                  final article = state.articles[index];
+
+                  if (article.isFeatured) {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChangeNotifierProvider(
+                              create: (context) => ArticleDetailViewModel(
+                                context.read<ArticleRepository>(),
+                                GetArticlePreviewsUseCase(
+                                  context.read<ProjectApiRepository>(),
+                                ),
+                                slugOrId: article.slug,
+                              ),
+                              child: const ArticleDetailScreen(),
+                            ),
+                          ),
+                        );
+                      },
+                      child: ArticleCardLarge(
+                        article: article,
+                        imageUrl: article.thumbnailImageLarge.isNotEmpty
+                            ? viewModel.getAssetUrl(article.thumbnailImageLarge)
+                            : null,
+                      ),
+                    );
+                  }
+
                   return GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -84,42 +130,16 @@ class ArticleListScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: ArticleCardLarge(
+                    child: ArticleCardSmall(
                       article: article,
-                      imageUrl: article.thumbnailImageLarge.isNotEmpty
-                          ? viewModel.getAssetUrl(article.thumbnailImageLarge)
+                      index: index,
+                      imageUrl: article.thumbnailImageSmall.isNotEmpty
+                          ? viewModel.getAssetUrl(article.thumbnailImageSmall)
                           : null,
                     ),
                   );
-                }
-
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ChangeNotifierProvider(
-                          create: (context) => ArticleDetailViewModel(
-                            context.read<ArticleRepository>(),
-                            GetArticlePreviewsUseCase(
-                              context.read<ProjectApiRepository>(),
-                            ),
-                            slugOrId: article.slug,
-                          ),
-                          child: const ArticleDetailScreen(),
-                        ),
-                      ),
-                    );
-                  },
-                  child: ArticleCardSmall(
-                    article: article,
-                    index: index,
-                    imageUrl: article.thumbnailImageSmall.isNotEmpty
-                        ? viewModel.getAssetUrl(article.thumbnailImageSmall)
-                        : null,
-                  ),
-                );
-              },
+                },
+              ),
             ),
           );
         },

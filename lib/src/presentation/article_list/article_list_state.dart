@@ -9,5 +9,9 @@ abstract class ArticleListState with _$ArticleListState {
     required List<Article> articles,
     required bool isLoading,
     String? errorMessage,
+
+    required bool isLoadingMore,
+    required bool hasMore,
+    required int currentOffset,
   }) = _ArticleListState;
 }
