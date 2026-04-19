@@ -173,7 +173,10 @@ Future<List<SingleChildWidget>> getProviders() async {
     ),
 
     ProxyProvider<DirectusDio, InAppBannerApi>(
-      update: (context, directusDio, _) => InAppBannerApi(directusDio.dio),
+      update: (context, directusDio, _) => InAppBannerApi(
+        directusDio.dio,
+        directusStatus: AppConfig.directusStatus,
+      ),
     ),
     ProxyProvider<InAppBannerApi, InAppBannerRepository>(
       update: (context, api, _) => InAppBannerRepositoryImpl(api),

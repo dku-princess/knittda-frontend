@@ -3,14 +3,16 @@ import 'package:knittda/src/domain/model/in_app_banner.dart';
 
 class InAppBannerApi {
   final Dio _dio;
+  final String _directusStatus;
 
-  InAppBannerApi(this._dio);
+  InAppBannerApi(this._dio, {required String directusStatus})
+    : _directusStatus = directusStatus;
 
   Future<List<InAppBanner>> fetchBottomBanners() async {
     final response = await _dio.get(
       '/items/in_app_banner',
       queryParameters: {
-        'filter[status][_eq]': 'published',
+        'filter[status][_eq]': _directusStatus,
         'filter[is_active][_eq]': true,
         'filter[placement][_eq]': 'bottom',
         'sort': 'priority',
