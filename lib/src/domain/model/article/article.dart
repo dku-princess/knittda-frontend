@@ -9,6 +9,7 @@ abstract class Article with _$Article {
   factory Article({
     @Default(0) int id,
     @Default('') String title,
+    @Default('') String description,
     @Default('') String subtitle,
     @Default('') String category,
     @Default('') String editor,

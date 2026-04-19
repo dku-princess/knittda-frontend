@@ -158,7 +158,9 @@ class ArticleDetailScreen extends StatelessWidget {
                             SizedBox(width: 12),
                           if (article.publishedAt.isNotEmpty)
                             Text(
-                              DateUtilsHelper.toKoreanFormat(article.publishedAt),
+                              DateUtilsHelper.toKoreanFormat(
+                                article.publishedAt,
+                              ),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey,
@@ -175,82 +177,111 @@ class ArticleDetailScreen extends StatelessWidget {
 
               switch (section.collection) {
                 case 'qa_section':
-                  final qaSection = QaSection.fromJson(section.item!);
-                  return QaSectionWidget(
-                    qaSection: qaSection,
-                    getAssetUrl: viewModel.getAssetUrl,
-                  );
+                  try {
+                    final qaSection = QaSection.fromJson(section.item!);
+                    return QaSectionWidget(
+                      qaSection: qaSection,
+                      getAssetUrl: viewModel.getAssetUrl,
+                    );
+                  } catch (e) {
+                    debugPrint('QaSection 파싱 실패: $e');
+                    return const SizedBox.shrink();
+                  }
                 case 'purchase_link_section':
-                  final purchaseLinkSection = PurchaseLinkSection.fromJson(
-                    section.item!,
-                  );
-                  return PurchaseLinkSectionWidget(
-                    purchaseLinkSection: purchaseLinkSection,
-                  );
+                  try {
+                    final purchaseLinkSection = PurchaseLinkSection.fromJson(
+                      section.item!,
+                    );
+                    return PurchaseLinkSectionWidget(
+                      purchaseLinkSection: purchaseLinkSection,
+                    );
+                  } catch (e) {
+                    debugPrint('PurchaseLinkSection 파싱 실패: $e');
+                    return const SizedBox.shrink();
+                  }
                 case 'note_section':
-                  final noteSection = NoteSection.fromJson(section.item!);
-                  return NoteSectionWidget(
-                    noteSection: noteSection,
-                    onArticleTap: (slugOrId) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ChangeNotifierProvider(
-                            create: (_) => ArticleDetailViewModel(
-                              context.read<ArticleRepository>(),
-                              GetArticlePreviewsUseCase(
-                                context.read<ProjectApiRepository>(),
+                  try {
+                    final noteSection = NoteSection.fromJson(section.item!);
+                    return NoteSectionWidget(
+                      noteSection: noteSection,
+                      onArticleTap: (slugOrId) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ChangeNotifierProvider(
+                              create: (_) => ArticleDetailViewModel(
+                                context.read<ArticleRepository>(),
+                                GetArticlePreviewsUseCase(
+                                  context.read<ProjectApiRepository>(),
+                                ),
+                                slugOrId: slugOrId,
                               ),
-                              slugOrId: slugOrId,
+                              child: const ArticleDetailScreen(),
                             ),
-                            child: const ArticleDetailScreen(),
                           ),
-                        ),
-                      );
-                    },
-                  );
+                        );
+                      },
+                    );
+                  } catch (e) {
+                    debugPrint('NoteSection 파싱 실패: $e');
+                    return const SizedBox.shrink();
+                  }
                 case 'project_section':
                   if (state.articlePreviews.isEmpty) return const SizedBox.shrink();
-                  final projectSection = ProjectSection.fromJson(section.item!);
-                  return ProjectSectionWidget(
-                    projectSection: projectSection,
-                    getArticlePreview: viewModel.getArticlePreview,
-                    onProjectTap: (projectId) async {
-                      await Navigator.push<bool>(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ChangeNotifierProvider(
-                            create: (context) => ProjectDetailsViewModel(
-                              GetProjectUseCase(
-                                context.read<ProjectApiRepository>(),
+                  try {
+                    final projectSection = ProjectSection.fromJson(
+                      section.item!,
+                    );
+                    return ProjectSectionWidget(
+                      projectSection: projectSection,
+                      getArticlePreview: viewModel.getArticlePreview,
+                      onProjectTap: (projectId) async {
+                        await Navigator.push<bool>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChangeNotifierProvider(
+                              create: (context) => ProjectDetailsViewModel(
+                                GetProjectUseCase(
+                                  context.read<ProjectApiRepository>(),
+                                ),
+                                GetMyProjectUseCase(
+                                  context.read<ProjectApiRepository>(),
+                                ),
+                                DeleteProjectUseCase(
+                                  context.read<ProjectApiRepository>(),
+                                ),
+                                UpdateProjectUseCase(
+                                  context.read<ProjectApiRepository>(),
+                                ),
+                                GetRecordsProjectsUseCase(
+                                  context.read<RecordApiRepository>(),
+                                ),
+                                context.read<GetUserUseCase>(),
+                                projectId: projectId,
                               ),
-                              GetMyProjectUseCase(
-                                context.read<ProjectApiRepository>(),
-                              ),
-                              DeleteProjectUseCase(
-                                context.read<ProjectApiRepository>(),
-                              ),
-                              UpdateProjectUseCase(
-                                context.read<ProjectApiRepository>(),
-                              ),
-                              GetRecordsProjectsUseCase(
-                                context.read<RecordApiRepository>(),
-                              ),
-                              context.read<GetUserUseCase>(),
-                              projectId: projectId,
+                              child: const ProjectDetailsScreen(),
                             ),
-                            child: const ProjectDetailsScreen(),
                           ),
-                        ),
-                      );
-                    },
-                  );
+                        );
+                      },
+                    );
+                  } catch (e) {
+                    debugPrint('ProjectSection 파싱 실패: $e');
+                    return const SizedBox.shrink();
+                  }
                 case 'pattern_section':
-                  final patternSection = PatternSection.fromJson(section.item!);
-                  return PatternSectionWidget(
-                    patternSection: patternSection,
-                    getAssetUrl: viewModel.getAssetUrl,
-                  );
+                  try {
+                    final patternSection = PatternSection.fromJson(
+                      section.item!,
+                    );
+                    return PatternSectionWidget(
+                      patternSection: patternSection,
+                      getAssetUrl: viewModel.getAssetUrl,
+                    );
+                  } catch (e) {
+                    debugPrint('PatternSection 파싱 실패: $e');
+                    return const SizedBox.shrink();
+                  }
                 default:
                   return const SizedBox.shrink();
               }
