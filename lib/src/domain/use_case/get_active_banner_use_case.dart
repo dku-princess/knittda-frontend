@@ -38,7 +38,8 @@ class GetActiveBannerUseCase {
       return cmp != 0 ? cmp : a.id.compareTo(b.id);
     });
 
-    return result;
+    // 필터링 통과한 배너 중 우선순위가 가장 높은 1개만 노출
+    return result.take(1).toList();
   }
 
   //ActionData 유효성 검증
