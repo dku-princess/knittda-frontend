@@ -248,11 +248,23 @@ class _MypageScreenState extends State<MypageScreen> {
             title: const Text('문의·신고'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () async {
-              if (!await launchUrl(
-                MypageScreen._url1,
-                mode: LaunchMode.externalApplication,
-              )) {
-                throw Exception('Could not launch ${MypageScreen._url1}');
+              try {
+                if (!await launchUrl(
+                  MypageScreen._url1,
+                  mode: LaunchMode.externalApplication,
+                )) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('링크를 열 수 없습니다.')),
+                    );
+                  }
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('링크를 열 수 없습니다.')),
+                  );
+                }
               }
             },
           ),
@@ -274,13 +286,26 @@ class _MypageScreenState extends State<MypageScreen> {
                     ),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () async {
-                        if (!await launchUrl(
-                          MypageScreen._url2,
-                          mode: LaunchMode.externalApplication,
-                        )) {
-                          throw Exception(
-                            'Could not launch ${MypageScreen._url2}',
+                        try {
+                          if (!await launchUrl(
+                            MypageScreen._url2,
+                            mode: LaunchMode.externalApplication,
+                          )) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('링크를 열 수 없습니다.')),
+                              );
+                            }
+                          }
+                        } catch (e) {
+                          debugPrint(
+                            'Failed to launch URL: ${MypageScreen._url2}, error: $e',
                           );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('링크를 열 수 없습니다.')),
+                            );
+                          }
                         }
                       },
                   ),

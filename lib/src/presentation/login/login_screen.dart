@@ -2,10 +2,14 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/domain/repository/in_app_banner_repository.dart';
+import 'package:knittda/src/domain/use_case/dismiss_banner_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_active_banner_use_case.dart';
 import 'package:knittda/src/domain/util/social_login_type.dart';
+import 'package:knittda/src/presentation/home/home_view_model.dart';
 import 'package:knittda/src/presentation/login/login_event.dart';
 import 'package:knittda/src/presentation/login/login_view_model.dart';
-import 'package:knittda/src/presentation/screens/home.dart';
+import 'package:knittda/src/presentation/home/home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/presentation/login/login_ui_event.dart';
 
@@ -32,7 +36,19 @@ class _LoginScreenState extends State<LoginScreen> {
             switch (event) {
               case Login():
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const Home()),
+                  MaterialPageRoute(
+                    builder: (context) => ChangeNotifierProvider(
+                      create: (context) => HomeViewModel(
+                        inAppBannerRepository: context
+                            .read<InAppBannerRepository>(),
+                        getActiveBannerUseCase: context
+                            .read<GetActiveBannerUseCase>(),
+                        dismissBannerUseCase: context
+                            .read<DismissBannerUseCase>(),
+                      )..loadBanners(),
+                      child: const HomeScreen(),
+                    ),
+                  ),
                 );
               case ShowSnackBar(:final message):
                 final snackBar = SnackBar(content: Text(message));
