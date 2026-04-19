@@ -9,10 +9,19 @@ class ArticleApi {
   ArticleApi(this._dio, {required String articleStatus})
     : _articleStatus = articleStatus;
 
-  Future<List<Article>> fetchArticles() async {
+  Future<({List<Article> articles, int totalCount})> fetchArticles({
+    int limit = 10,
+    int offset = 0,
+  }) async {
     final response = await _dio.get(
       '/items/articles',
-      queryParameters: {'fields': '*', 'filter[status][_eq]': _articleStatus},
+      queryParameters: {
+        'fields': '*',
+        'filter[status][_eq]': _articleStatus,
+        'limit': limit,
+        'offset': offset,
+        'meta': 'filter_count',
+      },
     );
 
     final data = response.data;
@@ -28,7 +37,13 @@ class ArticleApi {
       throw FormatException('data 필드가 배열이 아닙니다: ${list.runtimeType}');
     }
 
-    return list.map((e) => Article.fromJson(e)).toList();
+    final meta = data['meta'] as Map<String, dynamic>?;
+    final totalCount = meta?['filter_count'] as int? ?? 0;
+
+    return (
+      articles: list.map((e) => Article.fromJson(e)).toList(),
+      totalCount: totalCount,
+    );
   }
 
   Future<ArticleDetail?> fetchArticleBySlug(String slugOrId) async {
