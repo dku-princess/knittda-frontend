@@ -10,7 +10,7 @@ class ArticleApi {
     : _articleStatus = articleStatus;
 
   Future<({List<Article> articles, int totalCount})> fetchArticles({
-    int limit = 10,
+    int limit = 15,
     int offset = 0,
   }) async {
     final response = await _dio.get(

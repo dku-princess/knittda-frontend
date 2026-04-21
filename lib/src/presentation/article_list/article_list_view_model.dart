@@ -5,7 +5,7 @@ import 'package:knittda/src/presentation/article_list/article_list_state.dart';
 
 class ArticleListViewModel extends ChangeNotifier {
   final ArticleRepository _repository;
-  static const _pageSize = 10;
+  static const _pageSize = 15;
 
   ArticleListState _state = ArticleListState(
     articles: [],
