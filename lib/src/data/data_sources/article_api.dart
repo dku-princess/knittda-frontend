@@ -10,14 +10,14 @@ class ArticleApi {
     : _articleStatus = articleStatus;
 
   Future<({List<Article> articles, int totalCount})> fetchArticles({
-    int limit = 10,
+    int limit = 15,
     int offset = 0,
   }) async {
     final response = await _dio.get(
       '/items/articles',
       queryParameters: {
         'fields': '*',
-        'filter[status][_eq]': _articleStatus,
+        'filter[status][_in]': _articleStatus,
         'limit': limit,
         'offset': offset,
         'meta': 'filter_count',
@@ -56,7 +56,7 @@ class ArticleApi {
         'fields':
             '*,sections.*,sections.item.*.*,sections.item.qa_item_block.gallery.*,sections.item.pattern_item_block.gallery.*,sections.item.pattern_item_block.gallery_second.*',
         filterKey: slugOrId,
-        'filter[status][_eq]': _articleStatus,
+        'filter[status][_in]': _articleStatus,
       },
     );
 

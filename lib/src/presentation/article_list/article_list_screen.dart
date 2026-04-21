@@ -39,7 +39,7 @@ class ArticleListScreen extends StatelessWidget {
           if (state.errorMessage != null) {
             return RefreshIndicator(
               onRefresh: () async {
-                await viewModel.onEvent(ArticleListEvent.fetchArticles());
+                await viewModel.onEvent(ArticleListEvent.loadArticles());
               },
               child: ListView(
                 children: [
@@ -58,19 +58,19 @@ class ArticleListScreen extends StatelessWidget {
 
           return RefreshIndicator(
             onRefresh: () async {
-              await viewModel.onEvent(ArticleListEvent.fetchArticles());
+              await viewModel.onEvent(ArticleListEvent.loadArticles());
             },
             child: NotificationListener<ScrollNotification>(
-              onNotification: (scroll) {
-                if (scroll.metrics.pixels >=
-                        scroll.metrics.maxScrollExtent - 200 &&
-                    !state.isLoadingMore &&
-                    state.hasMore) {
-                  viewModel.onEvent(ArticleListEvent.fetchMore());
+              onNotification: (notification) {
+                if (notification is ScrollUpdateNotification &&
+                    notification.metrics.pixels >=
+                        notification.metrics.maxScrollExtent - 200) {
+                  viewModel.onEvent(ArticleListEvent.loadMore());
                 }
                 return false;
               },
               child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
                 itemCount:
                     state.articles.length + (state.isLoadingMore ? 1 : 0),
                 itemBuilder: (context, index) {
