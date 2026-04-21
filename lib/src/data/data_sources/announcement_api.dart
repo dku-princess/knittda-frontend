@@ -30,6 +30,26 @@ class AnnouncementApi {
     );
   }
 
+  Future<Announcement?> fetchAnnouncement(String slugOrId) async {
+    final isId = int.tryParse(slugOrId) != null;
+    final filterKey = isId ? 'filter[id][_eq]' : 'filter[slug][_eq]';
+
+    final response = await _dio.get(
+      '/items/announcements',
+      queryParameters: {
+        'filter[status][_in]': _directusStatus,
+        filterKey: slugOrId,
+        'fields': 'id,status,is_pinned,title,slug,description,category,published_at,body,tracking_label',
+      },
+    );
+
+    final list = response.data['data'];
+
+    if (list is! List || list.isEmpty) return null;
+
+    return Announcement.fromJson(list.first);
+  }
+
   String getAssetUrl(String assetId) {
     return '${_dio.options.baseUrl}/assets/$assetId';
   }

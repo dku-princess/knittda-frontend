@@ -54,7 +54,9 @@ class AnnouncementListItem extends StatelessWidget {
 
                 const SizedBox(width: 8),
                 Text(
-                  DateUtilsHelper.toDotFormat(announcement.publishedAt),
+                  announcement.publishedAt != null
+                      ? DateUtilsHelper.toDotFormat(announcement.publishedAt!)
+                      : '',
                   style: const TextStyle(
                     fontSize: 10,
                     color: Color(0xFFA6A6A6),

@@ -16,7 +16,7 @@ abstract class Announcement with _$Announcement {
     String? slug,
     String? description,
     String? category,
-    @JsonKey(name: 'published_at') required DateTime publishedAt,
+    @JsonKey(name: 'published_at') DateTime? publishedAt,
     required String body,
     @JsonKey(name: 'tracking_label') String? trackingLabel,
   }) = _Announcement;
