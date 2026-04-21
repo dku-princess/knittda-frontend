@@ -10,9 +10,10 @@ class AnnouncementRepositoryImpl implements AnnouncementRepository {
   AnnouncementRepositoryImpl(this._api);
 
   @override
-  Future<List<Announcement>> getAnnouncements() async {
+  Future<({List<Announcement> announcements, int totalCount})>
+  getAnnouncements({int limit = 25, int offset = 0}) async {
     try {
-      return await _api.fetchAnnouncements();
+      return await _api.fetchAnnouncements(limit: limit, offset: offset);
     } on DioException catch (e, st) {
       Sentry.captureException(e, stackTrace: st);
       switch (e.type) {

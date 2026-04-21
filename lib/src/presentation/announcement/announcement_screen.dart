@@ -25,21 +25,49 @@ class AnnouncementScreen extends StatelessWidget {
             return const Center(child: Text('등록된 공지가 없습니다'));
           }
 
-          return ListView.separated(
-            itemBuilder: (context, index) {
-              final announcement = state.announcements[index];
-              return AnnouncementListItem(
-                announcement: announcement,
-                onTap: (id, slug) {},
-              );
+          return RefreshIndicator(
+            onRefresh: () async {
+              await viewModel.loadAnnouncement();
             },
-            separatorBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: const Divider(height: 0.5, color: Color(0xFFE6E6E6)),
-              );
-            },
-            itemCount: state.announcements.length,
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (notification) {
+                if (notification is ScrollUpdateNotification &&
+                    notification.metrics.pixels >=
+                        notification.metrics.maxScrollExtent - 200) {
+                  viewModel.loadMore();
+                }
+                return false;
+              },
+              child: ListView.separated(
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  if (index == state.announcements.length) {
+                    return const Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+
+                  final announcement = state.announcements[index];
+                  return AnnouncementListItem(
+                    announcement: announcement,
+                    onTap: (id, slug) {},
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  if (index == state.announcements.length - 1 &&
+                      state.hasMore) {
+                    return const SizedBox.shrink();
+                  }
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    child: Divider(height: 0.5, color: Color(0xFFE6E6E6)),
+                  );
+                },
+                itemCount:
+                    state.announcements.length + (state.isLoadingMore ? 1 : 0),
+              ),
+            ),
           );
         },
       ),

@@ -6,17 +6,10 @@ class GetAnnouncementUseCase {
 
   GetAnnouncementUseCase(this._repository);
 
-  Future<List<Announcement>> call() async {
-    final list = await _repository.getAnnouncements();
-
-    list.sort((a, b) {
-      final pinCompare = (b.isPinned == true ? 1 : 0)
-          .compareTo(a.isPinned == true ? 1 : 0);
-      if (pinCompare != 0) return pinCompare;
-
-      return b.publishedAt.compareTo(a.publishedAt);
-    });
-
-    return list;
+  Future<({List<Announcement> announcements, int totalCount})> call({
+    int limit = 25,
+    int offset = 0,
+  }) async {
+    return await _repository.getAnnouncements(limit: limit, offset: offset);
   }
 }
