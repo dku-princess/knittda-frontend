@@ -13,10 +13,6 @@ abstract class PatternSection with _$PatternSection {
     String? description,
     @JsonKey(name: 'tracking_label') String? trackingLabel,
     @JsonKey(name: 'pattern_item_block') @Default([]) List<PatternItemBlock> patternItemBlock,
-
-    @JsonKey(name: 'date_created') String? dateCreated,
-    @JsonKey(name: 'date_updated') String? dateUpdated,
-    @JsonKey(name: 'user_created') String? userCreated,
   }) = _PatternSection;
 
   factory PatternSection.fromJson(Map<String, dynamic> json) =>
@@ -33,11 +29,6 @@ abstract class PatternItemBlock with _$PatternItemBlock {
     @JsonKey(name: 'image_ratio') @Default('landscape_4_3') String imageRatio,
     @Default([]) List<GalleryItem> gallery,
     @JsonKey(name: 'gallery_second') @Default([]) List<GalleryItem> gallerySecond,
-
-    @JsonKey(name: 'date_created') String? dateCreated,
-    @JsonKey(name: 'date_updated') String? dateUpdated,
-    @JsonKey(name: 'user_created') String? userCreated,
-    @JsonKey(name: 'pattern_section_id') int? patternSectionId,
   }) = _PatternItemBlock;
 
   factory PatternItemBlock.fromJson(Map<String, dynamic> json) =>
