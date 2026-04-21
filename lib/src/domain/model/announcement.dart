@@ -6,6 +6,8 @@ part 'announcement.g.dart';
 
 @freezed
 abstract class Announcement with _$Announcement {
+  const Announcement._();
+
   factory Announcement({
     required int id,
     String? status,
@@ -14,7 +16,7 @@ abstract class Announcement with _$Announcement {
     String? slug,
     String? description,
     String? category,
-    @JsonKey(name: 'published_at') required String publishedAt,
+    @JsonKey(name: 'published_at') required DateTime publishedAt,
     required String body,
     @JsonKey(name: 'tracking_label') String? trackingLabel,
     @JsonKey(name: 'date_created') String? dateCreated,
@@ -25,4 +27,17 @@ abstract class Announcement with _$Announcement {
 
   factory Announcement.fromJson(Map<String, dynamic> json) =>
       _$AnnouncementFromJson(json);
+
+  String get categoryLabel {
+    switch (category) {
+      case 'notice':
+        return '공지';
+      case 'event':
+        return '이벤트';
+      case 'update':
+        return '업데이트';
+      default:
+        return '공지';
+    }
+  }
 }

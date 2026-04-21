@@ -3,10 +3,14 @@ import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:knittda/src/domain/repository/announcement_repository.dart';
 import 'package:knittda/src/domain/repository/authentication_repository.dart';
 import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_announcement_use_case.dart';
 import 'package:knittda/src/domain/use_case/setting_nickname_use_case.dart';
 import 'package:knittda/src/domain/use_case/social_login_use_case.dart';
+import 'package:knittda/src/presentation/announcement/announcement_screen.dart';
+import 'package:knittda/src/presentation/announcement/announcement_view_model.dart';
 import 'package:knittda/src/presentation/login/login_screen.dart';
 import 'package:knittda/src/presentation/login/login_view_model.dart';
 import 'package:knittda/src/presentation/mypage/mypage_event.dart';
@@ -266,6 +270,27 @@ class _MypageScreenState extends State<MypageScreen> {
                   );
                 }
               }
+            },
+          ),
+
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+            title: const Text('공지사항'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChangeNotifierProvider(
+                    create: (context) => AnnouncementViewModel(
+                      GetAnnouncementUseCase(
+                        context.read<AnnouncementRepository>(),
+                      ),
+                    ),
+                    child: const AnnouncementScreen(),
+                  ),
+                ),
+              );
             },
           ),
 

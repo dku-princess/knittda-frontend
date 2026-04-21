@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:knittda/app_config.dart';
+import 'package:knittda/src/data/data_sources/announcement_api.dart';
 import 'package:knittda/src/data/data_sources/article_api.dart';
 import 'package:knittda/src/data/data_sources/authentication_api.dart';
 import 'package:knittda/src/data/data_sources/banner_local_storage.dart';
@@ -18,6 +19,7 @@ import 'package:knittda/src/data/data_sources/social_login_apple.dart';
 import 'package:knittda/src/data/data_sources/social_login_apple_dummy.dart';
 import 'package:knittda/src/data/data_sources/social_login_kakao.dart';
 import 'package:knittda/src/data/data_sources/user_storage.dart';
+import 'package:knittda/src/data/repository/announcement_repository_impl.dart';
 import 'package:knittda/src/data/repository/article_repository_impl.dart';
 import 'package:knittda/src/data/repository/authentication_repository_impl.dart';
 import 'package:knittda/src/data/repository/feed_api_repository_impl.dart';
@@ -25,6 +27,7 @@ import 'package:knittda/src/data/repository/in_app_banner_repository_impl.dart';
 import 'package:knittda/src/data/repository/project_api_repository_impl.dart';
 import 'package:knittda/src/data/repository/record_api_repository_impl.dart';
 import 'package:knittda/src/data/repository/report_api_repository_impl.dart';
+import 'package:knittda/src/domain/repository/announcement_repository.dart';
 import 'package:knittda/src/domain/repository/article_repository.dart';
 import 'package:knittda/src/domain/repository/authentication_repository.dart';
 import 'package:knittda/src/domain/repository/feed_api_repository.dart';
@@ -190,6 +193,16 @@ Future<List<SingleChildWidget>> getProviders() async {
     ),
     Provider<DismissBannerUseCase>(
       create: (_) => DismissBannerUseCase(bannerLocalStorage),
+    ),
+
+    ProxyProvider<DirectusDio, AnnouncementApi>(
+      update: (context, directusDio, _) => AnnouncementApi(
+        directusDio.dio,
+        directusStatus: AppConfig.directusStatus,
+      ),
+    ),
+    ProxyProvider<AnnouncementApi, AnnouncementRepository>(
+      update: (context, api, _) => AnnouncementRepositoryImpl(api),
     ),
   ];
 }
