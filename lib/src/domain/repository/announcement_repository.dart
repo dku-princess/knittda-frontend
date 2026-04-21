@@ -4,7 +4,7 @@ abstract class AnnouncementRepository {
   Future<({List<Announcement> announcements, int totalCount})>
   getAnnouncements({int limit = 25, int offset = 0});
 
-  Future<Announcement?> fetchAnnouncement(String slugOrId);
+  Future<Announcement?> getAnnouncement(String slugOrId);
 
   String getAssetUrl(String assetId);
 }

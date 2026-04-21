@@ -35,7 +35,7 @@ class AnnouncementRepositoryImpl implements AnnouncementRepository {
   }
 
   @override
-  Future<Announcement?> fetchAnnouncement(String slugOrId) async {
+  Future<Announcement?> getAnnouncement(String slugOrId) async {
     try {
       return await _api.fetchAnnouncement(slugOrId);
     } on DioException catch (e, st) {

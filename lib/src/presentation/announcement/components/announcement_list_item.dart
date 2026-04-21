@@ -4,7 +4,7 @@ import 'package:knittda/src/domain/model/announcement.dart';
 
 class AnnouncementListItem extends StatelessWidget {
   final Announcement announcement;
-  final void Function(int id, String slug)? onTap;
+  final void Function()? onTap;
 
   const AnnouncementListItem({
     super.key,
@@ -15,9 +15,9 @@ class AnnouncementListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => onTap?.call(announcement.id, announcement.slug ?? ''),
+      onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

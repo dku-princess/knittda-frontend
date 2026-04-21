@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/domain/repository/announcement_repository.dart';
 import 'package:knittda/src/presentation/announcement/announcement_view_model.dart';
 import 'package:knittda/src/presentation/announcement/components/announcement_list_item.dart';
+import 'package:knittda/src/presentation/announcement_detail/announcement_detail_screen.dart';
+import 'package:knittda/src/presentation/announcement_detail/announcement_detail_view_model.dart';
 import 'package:provider/provider.dart';
 
 class AnnouncementScreen extends StatelessWidget {
@@ -54,6 +57,7 @@ class AnnouncementScreen extends StatelessWidget {
               },
               child: ListView.separated(
                 physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 itemBuilder: (context, index) {
                   if (index == state.announcements.length) {
                     return const Padding(
@@ -65,7 +69,24 @@ class AnnouncementScreen extends StatelessWidget {
                   final announcement = state.announcements[index];
                   return AnnouncementListItem(
                     announcement: announcement,
-                    onTap: (id, slug) {},
+                    onTap: () {
+                      final slugOrId =
+                          (announcement.slug?.trim().isEmpty ?? true)
+                          ? announcement.id.toString()
+                          : announcement.slug!;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChangeNotifierProvider(
+                            create: (context) => AnnouncementDetailViewModel(
+                              context.read<AnnouncementRepository>(),
+                              slugOrId: slugOrId,
+                            ),
+                            child: const AnnouncementDetailScreen(),
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
                 separatorBuilder: (context, index) {
