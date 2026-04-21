@@ -22,7 +22,13 @@ abstract class Article with _$Article {
     @Default('') String slug,
     @Default('') String status,
     List<int>? sections,
+
+    @JsonKey(name: 'date_created') String? dateCreated,
+    @JsonKey(name: 'date_updated') String? dateUpdated,
+    @JsonKey(name: 'user_created') String? userCreated,
+    @JsonKey(name: 'user_updated') String? userUpdated,
   }) = _Article;
 
-  factory Article.fromJson(Map<String, dynamic> json) => _$ArticleFromJson(json);
+  factory Article.fromJson(Map<String, dynamic> json) =>
+      _$ArticleFromJson(json);
 }

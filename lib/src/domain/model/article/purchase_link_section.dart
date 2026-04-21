@@ -14,6 +14,10 @@ abstract class PurchaseLinkSection with _$PurchaseLinkSection {
     @JsonKey(name: 'button_text') @Default('') String buttonText,
     @JsonKey(name: 'button_url') @Default('') String buttonUrl,
     @JsonKey(name: 'preview_image') String? previewImage,
+
+    @JsonKey(name: 'date_created') String? dateCreated,
+    @JsonKey(name: 'date_updated') String? dateUpdated,
+    @JsonKey(name: 'user_created') String? userCreated,
   }) = _PurchaseLinkSection;
 
   factory PurchaseLinkSection.fromJson(Map<String, dynamic> json) =>
