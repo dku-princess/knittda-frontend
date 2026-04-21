@@ -19,10 +19,6 @@ abstract class Announcement with _$Announcement {
     @JsonKey(name: 'published_at') required DateTime publishedAt,
     required String body,
     @JsonKey(name: 'tracking_label') String? trackingLabel,
-    @JsonKey(name: 'date_created') String? dateCreated,
-    @JsonKey(name: 'date_updated') String? dateUpdated,
-    @JsonKey(name: 'user_created') String? userCreated,
-    @JsonKey(name: 'user_updated') String? userUpdated,
   }) = _Announcement;
 
   factory Announcement.fromJson(Map<String, dynamic> json) =>

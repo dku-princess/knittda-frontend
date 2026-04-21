@@ -17,8 +17,22 @@ class AnnouncementScreen extends StatelessWidget {
           if (state.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
+
           if (state.errorMessage != null) {
-            return Center(child: Text(state.errorMessage!));
+            return RefreshIndicator(
+              onRefresh: () async {
+                await viewModel.loadAnnouncement();
+              },
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    child: Center(child: Text(state.errorMessage!)),
+                  ),
+                ],
+              ),
+            );
           }
 
           if (state.announcements.isEmpty) {
