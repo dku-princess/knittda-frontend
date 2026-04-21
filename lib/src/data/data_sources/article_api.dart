@@ -17,7 +17,7 @@ class ArticleApi {
       '/items/articles',
       queryParameters: {
         'fields': '*',
-        'filter[status][_eq]': _articleStatus,
+        'filter[status][_in]': _articleStatus,
         'limit': limit,
         'offset': offset,
         'meta': 'filter_count',
@@ -56,7 +56,7 @@ class ArticleApi {
         'fields':
             '*,sections.*,sections.item.*.*,sections.item.qa_item_block.gallery.*,sections.item.pattern_item_block.gallery.*,sections.item.pattern_item_block.gallery_second.*',
         filterKey: slugOrId,
-        'filter[status][_eq]': _articleStatus,
+        'filter[status][_in]': _articleStatus,
       },
     );
 
