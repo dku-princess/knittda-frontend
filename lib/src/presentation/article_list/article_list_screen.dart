@@ -87,6 +87,9 @@ class ArticleListScreen extends StatelessWidget {
                   if (article.isFeatured) {
                     return GestureDetector(
                       onTap: () {
+                        final slugOrId = article.slug.trim().isEmpty
+                            ? article.id.toString()
+                            : article.slug;
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -96,7 +99,7 @@ class ArticleListScreen extends StatelessWidget {
                                 GetArticlePreviewsUseCase(
                                   context.read<ProjectApiRepository>(),
                                 ),
-                                slugOrId: article.slug,
+                                slugOrId: slugOrId,
                               ),
                               child: const ArticleDetailScreen(),
                             ),
@@ -114,6 +117,9 @@ class ArticleListScreen extends StatelessWidget {
 
                   return GestureDetector(
                     onTap: () {
+                      final slugOrId = article.slug.trim().isEmpty
+                            ? article.id.toString()
+                            : article.slug;
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -123,7 +129,7 @@ class ArticleListScreen extends StatelessWidget {
                               GetArticlePreviewsUseCase(
                                 context.read<ProjectApiRepository>(),
                               ),
-                              slugOrId: article.slug,
+                              slugOrId: slugOrId,
                             ),
                             child: const ArticleDetailScreen(),
                           ),
