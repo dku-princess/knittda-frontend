@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/domain/repository/announcement_repository.dart';
 import 'package:knittda/src/domain/repository/article_repository.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/use_case/get_article_previews_use_case.dart';
@@ -10,6 +11,8 @@ import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/logout_use_case.dart';
 import 'package:knittda/src/domain/use_case/setting_profile_image_use_case.dart';
 import 'package:knittda/src/domain/use_case/signout_use_case.dart';
+import 'package:knittda/src/presentation/announcement_detail/announcement_detail_screen.dart';
+import 'package:knittda/src/presentation/announcement_detail/announcement_detail_view_model.dart';
 import 'package:knittda/src/presentation/article_detail/article_detail_screen.dart';
 import 'package:knittda/src/presentation/article_detail/article_detail_view_model.dart';
 import 'package:knittda/src/presentation/article_list/article_list_screen.dart';
@@ -140,7 +143,21 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       }
-                    // TODO: notice
+                      if (banner.targetType == 'notice' &&
+                          banner.targetId != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChangeNotifierProvider(
+                              create: (context) => AnnouncementDetailViewModel(
+                                context.read<AnnouncementRepository>(),
+                                slugOrId: banner.targetId.toString(),
+                              ),
+                              child: const AnnouncementDetailScreen(),
+                            ),
+                          ),
+                        );
+                      }
                     case 'external_url':
                       if (banner.externalUrl != null &&
                           banner.externalUrl!.isNotEmpty) {
