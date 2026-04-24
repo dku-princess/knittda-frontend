@@ -214,15 +214,6 @@ class _MypageScreenState extends State<MypageScreen> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                Spacer(),
-                IconButton(
-                  onPressed: () {
-                    final user = context.read<MypageViewModel>().state.user;
-                    if (user == null) return;
-                    _showSettingProfileSheet();
-                  },
-                  icon: Icon(Icons.edit, color: Colors.black54),
-                ),
               ],
             ),
           ),
@@ -235,7 +226,13 @@ class _MypageScreenState extends State<MypageScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildSectionHeader('나의 계정정보'),
-                _buildMenuItem('회원정보 수정', onTap: () {}),
+                _buildMenuItem(
+                  '회원정보 수정',
+                  onTap: () {
+                    if (user == null) return;
+                    _showSettingProfileSheet();
+                  },
+                ),
                 _buildMenuItem(
                   '로그아웃',
                   onTap: () {
