@@ -36,7 +36,7 @@ final List<BottomNavigationBarItem> myTabs = <BottomNavigationBarItem>[
   BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: '홈'),
   BottomNavigationBarItem(icon: Icon(Icons.search_outlined), label: '작품'),
   BottomNavigationBarItem(icon: Icon(Icons.watch_later_outlined), label: '피드'),
-  BottomNavigationBarItem(icon: Icon(Icons.person), label: '마이페이지'),
+  BottomNavigationBarItem(icon: Icon(Icons.person), label: '마이'),
 ];
 
 class HomeScreen extends StatefulWidget {

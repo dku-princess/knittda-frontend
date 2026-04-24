@@ -118,7 +118,7 @@ class ProjectsScreen extends StatelessWidget {
                                   horizontal: 30,
                                 ),
                                 child: Divider(
-                                  color: Colors.grey.shade300,
+                                  color: Color(0xFFE6E6E6),
                                   height: 10,
                                   thickness: 1,
                                 ),
