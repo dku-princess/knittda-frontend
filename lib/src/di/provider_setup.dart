@@ -96,9 +96,9 @@ Future<List<SingleChildWidget>> getProviders() async {
     ProxyProvider<Dio, AuthenticationApi>(
       update: (context, dio, _) => AuthenticationApi(dio),
     ),
-    ProxyProvider<AuthenticationApi, AuthenticationRepository>(
-      update: (context, api, _) => AuthenticationRepositoryImpl(
-        api,
+    Provider<AuthenticationRepository>(
+      create: (context) => AuthenticationRepositoryImpl(
+        context.read<AuthenticationApi>(),
         SocialLoginKakao(),
         appleLogin,
         tokenStorage,
@@ -144,8 +144,10 @@ Future<List<SingleChildWidget>> getProviders() async {
     ProxyProvider<Dio, ProjectApi>(
       update: (context, dio, _) => ProjectApi(dio),
     ),
-    ProxyProvider<ProjectApi, ProjectApiRepository>(
-      update: (context, api, _) => ProjectApiRepositoryImpl(api),
+    Provider<ProjectApiRepository>(
+      create: (context) => ProjectApiRepositoryImpl(
+        context.read<ProjectApi>(),
+      ),
     ),
     ProxyProvider<ProjectApiRepository, OrderProjectsUseCase>(
       update: (context, repository, _) => OrderProjectsUseCase(repository),
