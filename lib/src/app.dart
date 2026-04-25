@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       ),
 
       home: ChangeNotifierProvider(
-        create: (_) => LoginViewModel(
+        create: (context) => LoginViewModel(
           context.read<AutoLoginUseCase>(),
           context.read<SocialLoginUseCase>(),
         ),

@@ -19,13 +19,11 @@ class ArticleListScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: false,
         scrolledUnderElevation: 0,
-        title: const Padding(
-          padding: EdgeInsets.only(left: 8),
-          child: Text(
-            '뜨다 아티클',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-          ),
+        title: const Text(
+          '뜨다 아티클',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
         ),
+        titleSpacing: 30,
       ),
 
       body: Consumer<ArticleListViewModel>(

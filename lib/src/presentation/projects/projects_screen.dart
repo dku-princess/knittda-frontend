@@ -40,16 +40,14 @@ class ProjectsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 90,
+        toolbarHeight: kToolbarHeight + 30,
         centerTitle: false,
         scrolledUnderElevation: 0,
-        title: const Padding(
-          padding: EdgeInsets.only(left: 8),
-          child: Text(
-            '나의\n뜨개 작품',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-          ),
+        title: const Text(
+          '나의\n뜨개 작품',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
         ),
+        titleSpacing: 30,
       ),
 
       floatingActionButton: FloatingActionButton(
@@ -88,7 +86,7 @@ class ProjectsScreen extends StatelessWidget {
               children: [
                 Column(
                   children: [
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 30),
 
                     OrderSection(
                       projectOrder: state.projectOrder,
@@ -113,8 +111,18 @@ class ProjectsScreen extends StatelessWidget {
                                 textAlign: TextAlign.center,
                               ),
                             )
-                          : ListView.builder(
+                          : ListView.separated(
                               padding: const EdgeInsets.only(bottom: 80),
+                              separatorBuilder: (context, index) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 30,
+                                ),
+                                child: Divider(
+                                  color: Color(0xFFE6E6E6),
+                                  height: 10,
+                                  thickness: 1,
+                                ),
+                              ),
                               itemBuilder: (context, index) {
                                 return ProjectsItem(
                                   project: state.projects[index],
@@ -157,9 +165,7 @@ class ProjectsScreen extends StatelessWidget {
                                                           >(),
                                                     ),
                                                     context
-                                                        .read<
-                                                          GetUserUseCase
-                                                        >(),
+                                                        .read<GetUserUseCase>(),
                                                     projectId: state
                                                         .projects[index]
                                                         .id!,
@@ -177,27 +183,37 @@ class ProjectsScreen extends StatelessWidget {
                                     final addRecord = await Navigator.push<Records>(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => ChangeNotifierProvider(
-                                          create: (context) => AddEditRecordViewModel(
-                                            AddRecordUseCase(
-                                              context.read<RecordApiRepository>(),
+                                        builder: (context) =>
+                                            ChangeNotifierProvider(
+                                              create: (context) =>
+                                                  AddEditRecordViewModel(
+                                                    AddRecordUseCase(
+                                                      context
+                                                          .read<
+                                                            RecordApiRepository
+                                                          >(),
+                                                    ),
+                                                    UpdateRecordUseCase(
+                                                      context
+                                                          .read<
+                                                            RecordApiRepository
+                                                          >(),
+                                                    ),
+                                                    GetQuestionUseCase(
+                                                      context
+                                                          .read<
+                                                            RecordApiRepository
+                                                          >(),
+                                                    ),
+                                                    projectId: state
+                                                        .projects[index]
+                                                        .id!,
+                                                  ),
+                                              child: AddEditRecordScreen(
+                                                projectId:
+                                                    state.projects[index].id!,
+                                              ),
                                             ),
-                                            UpdateRecordUseCase(
-                                              context.read<RecordApiRepository>(),
-                                            ),
-                                            GetQuestionUseCase(
-                                              context.read<RecordApiRepository>(),
-                                            ),
-                                            projectId: state
-                                                .projects[index]
-                                                .id!,
-                                          ),
-                                          child: AddEditRecordScreen(
-                                            projectId: state
-                                                .projects[index]
-                                                .id!,
-                                          ),
-                                        ),
                                       ),
                                     );
 
