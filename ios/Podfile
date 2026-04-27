@@ -1,5 +1,5 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '13.0'
+platform :ios, '15.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -30,8 +30,7 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 flutter_ios_podfile_setup
 
 target 'Runner' do
-  use_frameworks!
-
+  use_modular_headers!
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do
     inherit! :search_paths
@@ -39,10 +38,29 @@ target 'Runner' do
 end
 
 post_install do |installer|
+  privacy_manifest_paths = [
+    File.join(installer.sandbox.root.to_s, 'GoogleUtilities', 'GoogleUtilities', 'Privacy', 'Resources', 'PrivacyInfo.xcprivacy'),
+    File.join(installer.sandbox.root.to_s, 'FirebaseAuth', 'FirebaseAuth', 'Sources', 'Resources', 'PrivacyInfo.xcprivacy'),
+  ]
+  privacy_manifest_paths.each do |manifest_path|
+    next if File.exist?(manifest_path)
+    FileUtils.mkdir_p(File.dirname(manifest_path))
+    File.write(
+      manifest_path,
+      <<~PLIST
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict/>
+        </plist>
+      PLIST
+    )
+  end
+
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
     target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
       config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-Onone'
 
     end

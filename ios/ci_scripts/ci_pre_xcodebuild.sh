@@ -66,8 +66,8 @@ if [ "$APP_CHANNEL" = "beta" ]; then
     echo "PRODUCT_BUNDLE_IDENTIFIER=com.tteuda.app.beta" > ios/Flutter/Debug-local.xcconfig
     echo "✅ Debug-local.xcconfig → com.tteuda.app.beta"
 else
-    echo "PRODUCT_BUNDLE_IDENTIFIER=com.tteuda.app" > ios/Flutter/Release-local.xcconfig
-    echo "✅ Release-local.xcconfig → com.tteuda.app"
+    echo "PRODUCT_BUNDLE_IDENTIFIER=com.example.knittda" > ios/Flutter/Release-local.xcconfig
+    echo "✅ Release-local.xcconfig → com.example.knittda"
 fi
 
 # ── 6. Flutter 설치 (Xcode Cloud에 Flutter가 없을 경우 대비)
