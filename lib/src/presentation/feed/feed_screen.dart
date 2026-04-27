@@ -59,13 +59,11 @@ class _FeedScreenState extends State<FeedScreen> {
       appBar: AppBar(
         centerTitle: false,
         scrolledUnderElevation: 0,
-        title: const Padding(
-          padding: EdgeInsets.only(left: 8),
-          child: Text(
-            '피드',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-          ),
+        title: const Text(
+          '피드',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
         ),
+        titleSpacing: 30,
         actions: [
           IconButton(
             onPressed: () {

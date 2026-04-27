@@ -32,16 +32,10 @@ class PurchaseLinkSectionWidget extends StatelessWidget {
             purchaseLinkSection.description!.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
-            child:
-            MarkdownBody(
-              data: normalizeMarkdown(
-                  purchaseLinkSection.description!,
-              ),
+            child: MarkdownBody(
+              data: normalizeMarkdown(purchaseLinkSection.description!),
               styleSheet: MarkdownStyleSheet(
-                p: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                ),
+                p: const TextStyle(fontSize: 14, color: Colors.black54),
               ),
             ),
           ),
@@ -55,11 +49,22 @@ class PurchaseLinkSectionWidget extends StatelessWidget {
               width: double.infinity,
               child: TextButton(
                 onPressed: () async {
-                  final url = Uri.parse(purchaseLinkSection.buttonUrl);
-                  if (!await launchUrl(
-                    url,
-                    mode: LaunchMode.externalApplication,
-                  )) {
+                  try {
+                    final url = Uri.parse(purchaseLinkSection.buttonUrl);
+                    if (!await launchUrl(
+                      url,
+                      mode: LaunchMode.externalApplication,
+                    )) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('링크를 열 수 없습니다.')),
+                        );
+                      }
+                    }
+                  } catch (e) {
+                    debugPrint(
+                      'Failed to launch URL: ${purchaseLinkSection.buttonUrl}, error: $e',
+                    );
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('링크를 열 수 없습니다.')),

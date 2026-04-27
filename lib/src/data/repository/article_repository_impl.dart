@@ -5,15 +5,18 @@ import 'package:knittda/src/domain/model/article/article_detail.dart';
 import 'package:knittda/src/domain/repository/article_repository.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
-class ArticleRepositoryImpl implements ArticleRepository{
+class ArticleRepositoryImpl implements ArticleRepository {
   final ArticleApi _api;
 
   ArticleRepositoryImpl(this._api);
 
   @override
-  Future<List<Article>> getArticles() async {
+  Future<({List<Article> articles, int totalCount})> getArticles({
+    int limit = 15,
+    int offset = 0,
+  }) async {
     try {
-      return await _api.fetchArticles();
+      return await _api.fetchArticles(limit: limit, offset: offset);
     } on DioException catch (e, st) {
       Sentry.captureException(e, stackTrace: st);
       throw _handleDioError(e);
@@ -57,5 +60,4 @@ class ArticleRepositoryImpl implements ArticleRepository{
         return Exception('알 수 없는 오류가 발생했습니다.');
     }
   }
-  
 }

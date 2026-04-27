@@ -10,6 +10,7 @@ abstract class ArticleDetail with _$ArticleDetail {
   const factory ArticleDetail({
     @Default(0) int id,
     @Default('') String title,
+    @Default('') String description,
     @Default('') String subtitle,
     @Default('') String category,
     @Default('') String editor,

@@ -50,6 +50,12 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>애플리케이션에서 사진을 찍어 업로드하거나 프로필을 설정할 수 있게 허용합니다.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_dartobservatory._tcp</string>
+	</array>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>디버그 모드에서 Flutter 개발 도구가 앱과 통신하기 위해 로컬 네트워크 접근이 필요합니다.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>앱이 사진을 저장하려면 접근 권한이 필요합니다.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

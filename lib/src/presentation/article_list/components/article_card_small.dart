@@ -15,6 +15,8 @@ class ArticleCardSmall extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final imageWidth = MediaQuery.of(context).size.width * 0.3;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
@@ -24,8 +26,8 @@ class ArticleCardSmall extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: SizedBox(
-                width: 117,
-                height: 130,
+                width: imageWidth,
+                height: imageWidth * 10 / 9,
                 child: imageUrl != null
                     ? Image.network(
                         imageUrl!,
@@ -54,7 +56,7 @@ class ArticleCardSmall extends StatelessWidget {
 
           Expanded(
             child: SizedBox(
-              height: 130,
+              height: imageWidth * 10 / 9,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

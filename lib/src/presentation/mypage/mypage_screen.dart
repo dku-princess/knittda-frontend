@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:knittda/src/domain/repository/announcement_repository.dart';
 import 'package:knittda/src/domain/repository/authentication_repository.dart';
 import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_announcement_use_case.dart';
 import 'package:knittda/src/domain/use_case/setting_nickname_use_case.dart';
 import 'package:knittda/src/domain/use_case/social_login_use_case.dart';
+import 'package:knittda/src/presentation/announcement/announcement_screen.dart';
+import 'package:knittda/src/presentation/announcement/announcement_view_model.dart';
 import 'package:knittda/src/presentation/login/login_screen.dart';
 import 'package:knittda/src/presentation/login/login_view_model.dart';
 import 'package:knittda/src/presentation/mypage/mypage_event.dart';
@@ -144,6 +147,25 @@ class _MypageScreenState extends State<MypageScreen> {
     );
   }
 
+  Future<void> _launchExternalUrl(Uri url) async {
+    try {
+      if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('링크를 열 수 없습니다.')));
+        }
+      }
+    } catch (e) {
+      debugPrint('Failed to launch URL: $url, error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('링크를 열 수 없습니다.')));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<MypageViewModel>();
@@ -154,27 +176,28 @@ class _MypageScreenState extends State<MypageScreen> {
       appBar: AppBar(
         centerTitle: false,
         scrolledUnderElevation: 0,
-        title: const Padding(
-          padding: EdgeInsets.only(left: 8),
-          child: Text(
-            '마이페이지',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-          ),
+        title: const Text(
+          '마이페이지',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
         ),
+        titleSpacing: 30,
       ),
 
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: ListView(
         children: [
           SizedBox(height: 20),
+
           Container(
-            padding: EdgeInsets.only(top: 16, bottom: 16, left: 20, right: 20),
+            padding: EdgeInsets.only(top: 8, bottom: 24, left: 30, right: 30),
             decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+              border: Border(
+                bottom: BorderSide(color: Color(0xFFF5F7F8), width: 3),
+              ),
             ),
             child: Row(
               children: [
                 CircleAvatar(
+                  radius: 24,
                   backgroundImage: state.previewImage != null
                       ? FileImage(File(state.previewImage!.path)) // 미리보기 우선
                       : (user?.profileImageUrl != null &&
@@ -183,122 +206,150 @@ class _MypageScreenState extends State<MypageScreen> {
                       : null,
                   backgroundColor: Colors.grey,
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 20),
                 Text(
                   user?.nickname ?? '알 수 없는 사용자',
-                  style: const TextStyle(fontSize: 16),
-                ),
-                Spacer(),
-                IconButton(
-                  onPressed: () {
-                    final user = context.read<MypageViewModel>().state.user;
-                    if (user == null) return;
-                    _showSettingProfileSheet();
-                  },
-                  icon: Icon(Icons.edit, color: Colors.black54),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
           ),
 
-          SizedBox(height: 20),
+          SizedBox(height: 28),
 
-          // 로그아웃 버튼
-          ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-            title: const Text('로그아웃'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              viewModel.onEvent(MypageEvent.logout());
-            },
-          ),
-
-          //회원탈퇴
-          ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-            title: const Text('회원 탈퇴'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () async {
-              final confirmed = await showDialog<bool>(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text('회원탈퇴'),
-                  content: Text('정말 탈퇴하시겠습니까?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: Text('취소'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, true),
-
-                      child: Text('탈퇴', style: TextStyle(color: Colors.red)),
-                    ),
-                  ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionHeader('나의 계정정보'),
+                _buildMenuItem(
+                  '회원정보 수정',
+                  onTap: () {
+                    if (user == null) return;
+                    _showSettingProfileSheet();
+                  },
                 ),
-              );
-              if (confirmed == true) {
-                viewModel.onEvent(MypageEvent.signout());
-              }
-            },
-          ),
+                _buildMenuItem(
+                  '로그아웃',
+                  onTap: () {
+                    viewModel.onEvent(MypageEvent.logout());
+                  },
+                ),
+                _buildMenuItem(
+                  '회원탈퇴',
+                  onTap: () async {
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('회원탈퇴'),
+                        content: Text('정말 탈퇴하시겠습니까?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: Text('취소'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
 
-          ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-            title: const Text('문의·신고'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () async {
-              if (!await launchUrl(
-                MypageScreen._url1,
-                mode: LaunchMode.externalApplication,
-              )) {
-                throw Exception('Could not launch ${MypageScreen._url1}');
-              }
-            },
-          ),
+                            child: Text(
+                              '탈퇴',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirmed == true) {
+                      viewModel.onEvent(MypageEvent.signout());
+                    }
+                  },
+                ),
 
-          SizedBox(height: 20),
+                SizedBox(height: 40),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: '서비스 이용약관 및 커뮤니티 운영정책',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                      decoration: TextDecoration.underline,
-                      decorationColor: Colors.grey,
-                    ),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () async {
-                        if (!await launchUrl(
-                          MypageScreen._url2,
-                          mode: LaunchMode.externalApplication,
-                        )) {
-                          throw Exception(
-                            'Could not launch ${MypageScreen._url2}',
-                          );
-                        }
-                      },
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Text(
-              '1.0.2+25',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+                _buildSectionHeader('문의'),
+                _buildMenuItem(
+                  '공지사항',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider(
+                          create: (context) => AnnouncementViewModel(
+                            GetAnnouncementUseCase(
+                              context.read<AnnouncementRepository>(),
+                            ),
+                          ),
+                          child: const AnnouncementScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                _buildMenuItem(
+                  '고객센터',
+                  onTap: () async {
+                    await _launchExternalUrl(MypageScreen._url1);
+                  },
+                ),
+                _buildMenuItem(
+                  '개인정보 처리방침',
+                  onTap: () async {
+                    await _launchExternalUrl(MypageScreen._url2);
+                  },
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
   }
+}
+
+// 섹션 헤더 위젯
+Widget _buildSectionHeader(String title) {
+  return Container(
+    width: double.infinity,
+    padding: const EdgeInsets.only(bottom: 12),
+    decoration: const BoxDecoration(
+      border: Border(bottom: BorderSide(color: Color(0xFF4D4D4D), width: 1)),
+    ),
+    child: Text(
+      title,
+      style: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: Color(0xFF4D4D4D),
+      ),
+    ),
+  );
+}
+
+// 메뉴 아이템 위젯
+Widget _buildMenuItem(String title, {required VoidCallback onTap}) {
+  return InkWell(
+    onTap: onTap,
+    child: Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Color(0xFFE6E6E6), width: 0.5),
+        ),
+      ),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: Color(0xFF4D4D4D),
+        ),
+      ),
+    ),
+  );
 }

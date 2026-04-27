@@ -19,13 +19,11 @@ class ArticleListScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: false,
         scrolledUnderElevation: 0,
-        title: const Padding(
-          padding: EdgeInsets.only(left: 8),
-          child: Text(
-            '뜨다 아티클',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-          ),
+        title: const Text(
+          '뜨다 아티클',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
         ),
+        titleSpacing: 30,
       ),
 
       body: Consumer<ArticleListViewModel>(
@@ -39,7 +37,7 @@ class ArticleListScreen extends StatelessWidget {
           if (state.errorMessage != null) {
             return RefreshIndicator(
               onRefresh: () async {
-                await viewModel.onEvent(ArticleListEvent.fetchArticles());
+                await viewModel.onEvent(ArticleListEvent.loadArticles());
               },
               child: ListView(
                 children: [
@@ -58,16 +56,68 @@ class ArticleListScreen extends StatelessWidget {
 
           return RefreshIndicator(
             onRefresh: () async {
-              await viewModel.onEvent(ArticleListEvent.fetchArticles());
+              await viewModel.onEvent(ArticleListEvent.loadArticles());
             },
-            child: ListView.builder(
-              itemCount: state.articles.length,
-              itemBuilder: (context, index) {
-                final article = state.articles[index];
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (notification) {
+                if (notification is ScrollUpdateNotification &&
+                    notification.metrics.pixels >=
+                        notification.metrics.maxScrollExtent - 200) {
+                  viewModel.onEvent(ArticleListEvent.loadMore());
+                }
+                return false;
+              },
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount:
+                    state.articles.length + (state.isLoadingMore ? 1 : 0),
+                itemBuilder: (context, index) {
+                  // 마지막 아이템이면 로딩 인디케이터
+                  if (index == state.articles.length) {
+                    return const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
 
-                if (article.isFeatured) {
+                  final article = state.articles[index];
+
+                  if (article.isFeatured) {
+                    return GestureDetector(
+                      onTap: () {
+                        final slugOrId = article.slug.trim().isEmpty
+                            ? article.id.toString()
+                            : article.slug;
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChangeNotifierProvider(
+                              create: (context) => ArticleDetailViewModel(
+                                context.read<ArticleRepository>(),
+                                GetArticlePreviewsUseCase(
+                                  context.read<ProjectApiRepository>(),
+                                ),
+                                slugOrId: slugOrId,
+                              ),
+                              child: const ArticleDetailScreen(),
+                            ),
+                          ),
+                        );
+                      },
+                      child: ArticleCardLarge(
+                        article: article,
+                        imageUrl: article.thumbnailImageLarge.isNotEmpty
+                            ? viewModel.getAssetUrl(article.thumbnailImageLarge)
+                            : null,
+                      ),
+                    );
+                  }
+
                   return GestureDetector(
                     onTap: () {
+                      final slugOrId = article.slug.trim().isEmpty
+                            ? article.id.toString()
+                            : article.slug;
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -77,49 +127,23 @@ class ArticleListScreen extends StatelessWidget {
                               GetArticlePreviewsUseCase(
                                 context.read<ProjectApiRepository>(),
                               ),
-                              slugOrId: article.slug,
+                              slugOrId: slugOrId,
                             ),
                             child: const ArticleDetailScreen(),
                           ),
                         ),
                       );
                     },
-                    child: ArticleCardLarge(
+                    child: ArticleCardSmall(
                       article: article,
-                      imageUrl: article.thumbnailImageLarge.isNotEmpty
-                          ? viewModel.getAssetUrl(article.thumbnailImageLarge)
+                      index: index,
+                      imageUrl: article.thumbnailImageSmall.isNotEmpty
+                          ? viewModel.getAssetUrl(article.thumbnailImageSmall)
                           : null,
                     ),
                   );
-                }
-
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ChangeNotifierProvider(
-                          create: (context) => ArticleDetailViewModel(
-                            context.read<ArticleRepository>(),
-                            GetArticlePreviewsUseCase(
-                              context.read<ProjectApiRepository>(),
-                            ),
-                            slugOrId: article.slug,
-                          ),
-                          child: const ArticleDetailScreen(),
-                        ),
-                      ),
-                    );
-                  },
-                  child: ArticleCardSmall(
-                    article: article,
-                    index: index,
-                    imageUrl: article.thumbnailImageSmall.isNotEmpty
-                        ? viewModel.getAssetUrl(article.thumbnailImageSmall)
-                        : null,
-                  ),
-                );
-              },
+                },
+              ),
             ),
           );
         },

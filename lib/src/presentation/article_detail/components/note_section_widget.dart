@@ -54,8 +54,20 @@ class NoteSectionWidget extends StatelessWidget {
             data: normalizeMarkdown(noteSection.copyrightItemBlock!),
             onTapLink: (text, href, title) async {
               if (href == null) return;
-              final url = Uri.parse(href);
-              if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+              try {
+                final url = Uri.parse(href);
+                if (!await launchUrl(
+                  url,
+                  mode: LaunchMode.externalApplication,
+                )) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('링크를 열 수 없습니다.')),
+                    );
+                  }
+                }
+              } catch (e) {
+                debugPrint('Failed to launch URL: $href, error: $e');
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('링크를 열 수 없습니다.')),

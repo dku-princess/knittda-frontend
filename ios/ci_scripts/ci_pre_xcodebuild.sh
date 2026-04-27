@@ -24,6 +24,7 @@ REQUIRED_VARS=(
     API_BASE_URL
     SENTRY_DSN
     SENTRY_ENVIRONMENT
+    GOOGLE_SERVICE_INFO_PLIST
 )
 missing=0
 for var in "${REQUIRED_VARS[@]}"; do
@@ -44,7 +45,8 @@ cat > "config/${APP_CHANNEL}.json" << EOF
   "KAKAO_NATIVE_APP_KEY": "${KAKAO_NATIVE_APP_KEY}",
   "API_BASE_URL": "${API_BASE_URL}",
   "DIRECTUS_BASE_URL": "${DIRECTUS_BASE_URL:-}",
-  "ARTICLE_STATUS": "${ARTICLE_STATUS:-published}",
+  "ARTICLE_STATUS": "published",
+  "DIRECTUS_STATUS": "published",
   "APP_CHANNEL": "${APP_CHANNEL}",
   "SENTRY_DSN": "${SENTRY_DSN}",
   "SENTRY_ENVIRONMENT": "${SENTRY_ENVIRONMENT}",
@@ -53,7 +55,11 @@ cat > "config/${APP_CHANNEL}.json" << EOF
 EOF
 echo "✅ config/${APP_CHANNEL}.json created (release=${RELEASE})"
 
-# ── 3. xcconfig local 파일 생성 (gitignored → CI에서 직접 생성)
+# ── 3. GoogleService-Info.plist 생성 (gitignored → Base64 환경변수에서 복원)
+echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > ios/Runner/GoogleService-Info.plist
+echo "✅ GoogleService-Info.plist created"
+
+# ── 4. xcconfig local 파일 생성 (gitignored → CI에서 직접 생성)
 # beta: Release-beta 빌드 구성이 Debug.xcconfig → Debug-local.xcconfig 를 읽음
 # prod: Release 빌드 구성이 Release.xcconfig → Release-local.xcconfig 를 읽음
 if [ "$APP_CHANNEL" = "beta" ]; then
@@ -64,7 +70,7 @@ else
     echo "✅ Release-local.xcconfig → com.tteuda.app"
 fi
 
-# ── 4. Flutter 설치 (Xcode Cloud에 Flutter가 없을 경우 대비)
+# ── 6. Flutter 설치 (Xcode Cloud에 Flutter가 없을 경우 대비)
 if ! command -v flutter &> /dev/null; then
     echo "⚠️  Flutter not found — installing stable..."
     git clone https://github.com/flutter/flutter.git \
@@ -75,14 +81,14 @@ echo "Flutter: $(flutter --version --machine 2>/dev/null | python3 -c \
     'import sys,json; d=json.load(sys.stdin); print(d["frameworkVersion"])' \
     2>/dev/null || echo "(version check skipped)")"
 
-# ── 5. Flutter 의존성 설치
+# ── 7. Flutter 의존성 설치
 echo "📦 flutter pub get..."
 flutter pub get
 
 echo "🍎 flutter precache --ios..."
 flutter precache --ios
 
-# ── 6. Flutter 빌드 (Generated.xcconfig에 DART_DEFINES 주입)
+# ── 8. Flutter 빌드 (Generated.xcconfig에 DART_DEFINES 주입)
 # --no-codesign: 코드서명은 Xcode Cloud가 담당
 # Xcode Cloud가 이후 xcodebuild archive를 실행할 때 DART_DEFINES가 필요하므로
 # 이 단계에서 Generated.xcconfig를 올바르게 생성해 둠
@@ -100,7 +106,7 @@ else
         --dart-define-from-file="config/prod.json"
 fi
 
-# ── 7. CocoaPods
+# ── 9. CocoaPods
 echo "🔧 pod install..."
 cd ios && pod install && cd ..
 

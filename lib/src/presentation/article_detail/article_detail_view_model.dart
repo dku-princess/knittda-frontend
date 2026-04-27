@@ -36,7 +36,14 @@ class ArticleDetailViewModel extends ChangeNotifier {
       if (article != null) {
         final ids = article.sections
             .where((s) => s.collection == 'project_section' && s.item != null)
-            .expand((s) => ProjectSection.fromJson(s.item!).projectItemBlock)
+            .expand((s) {
+              try {
+                return ProjectSection.fromJson(s.item!).projectItemBlock;
+              } catch (e) {
+                debugPrint('ProjectSection 파싱 실패: $e');
+                return <ProjectItemBlock>[];
+              }
+            })
             .map((b) => b.projectId)
             .where((id) => id != 0)
             .toList();
