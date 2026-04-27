@@ -97,12 +97,12 @@ if [ ! -f "lib/src/domain/model/announcement.freezed.dart" ] || [ ! -f "lib/src/
     exit 1
 fi
 
-if ! rg -q "^part of 'announcement\\.dart';" "lib/src/domain/model/announcement.freezed.dart"; then
+if ! grep -q "^part of 'announcement\.dart';" "lib/src/domain/model/announcement.freezed.dart"; then
     echo "❌ Invalid generated file: announcement.freezed.dart is missing part-of declaration"
     exit 1
 fi
 
-if ! rg -q "^part of 'announcement\\.dart';" "lib/src/domain/model/announcement.g.dart"; then
+if ! grep -q "^part of 'announcement\.dart';" "lib/src/domain/model/announcement.g.dart"; then
     echo "❌ Invalid generated file: announcement.g.dart is missing part-of declaration"
     exit 1
 fi
