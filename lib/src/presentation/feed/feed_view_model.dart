@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/feed_pagination.dart';
 import 'package:knittda/src/domain/use_case/get_feed_use_case.dart';
+import 'package:knittda/src/performance/initial_load_tracker.dart';
 import 'package:knittda/src/presentation/feed/feed_event.dart';
 import 'package:knittda/src/presentation/feed/feed_state.dart';
 
 class FeedViewModel extends ChangeNotifier {
   final GetFeedUseCase _getFeedUseCase;
+
+  bool _emittedInitialPerfT1 = false;
 
   FeedViewModel(this._getFeedUseCase){
     _loadFeed(0, 20, null);
@@ -35,6 +38,11 @@ class FeedViewModel extends ChangeNotifier {
   }
 
   Future<void> _loadFeed(int page, int size, List<String>? sort) async {
+    if (page == 0 && !_emittedInitialPerfT1) {
+      InitialLoadTracker.feed.markT1();
+      _emittedInitialPerfT1 = true;
+    }
+
     final isFirstPage = page == 0;
 
     if (isFirstPage) {
@@ -68,6 +76,7 @@ class FeedViewModel extends ChangeNotifier {
 
       case Error():
         _state = state.copyWith(errorMessage: "피드를 불러오지 못했어요. 다시 시도해 주세요.");
+        InitialLoadTracker.feed.abortSession();
     }
 
     if (isFirstPage) {

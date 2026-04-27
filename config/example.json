@@ -1,7 +1,10 @@
 {
-  "KAKAO_NATIVE_APP_KEY" : "",
-  "SENTRY_FLUTTER_DNS" : "",
-  "API_BASE_URL" : "",
-  "DIRECTUS_BASE_URL" : "",
-  "ARTICLE_STATUS" : ""
+  "KAKAO_NATIVE_APP_KEY": "",
+  "API_BASE_URL": "",
+  "DIRECTUS_BASE_URL": "",
+  "ARTICLE_STATUS": "",
+  "APP_CHANNEL": "",
+  "SENTRY_DSN": "",
+  "SENTRY_ENVIRONMENT": "",
+  "SENTRY_RELEASE": ""
 }

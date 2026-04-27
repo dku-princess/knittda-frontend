@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
+import 'package:knittda/src/performance/initial_load_tracker.dart';
 import 'package:knittda/src/domain/model/article/article_preview.dart';
 import 'package:knittda/src/domain/model/project.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -163,7 +164,14 @@ class ProjectApi {
 
   Future<Result<Iterable>> getProjectPreviews() async {
     try {
+      final tracker = InitialLoadTracker.projectPreviews;
+      if (tracker.isSessionActive) {
+        tracker.markT2();
+      }
       final response = await _dio.get('/api/v1/projects/previews');
+      if (tracker.isSessionActive) {
+        tracker.markT3();
+      }
 
       if (response.statusCode == 200) {
         final data = response.data;

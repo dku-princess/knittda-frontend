@@ -10,6 +10,7 @@ import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_projects_use_case.dart';
 import 'package:knittda/src/presentation/feed/components/feed_item.dart';
+import 'package:knittda/src/performance/initial_load_tracker.dart';
 import 'package:knittda/src/presentation/feed/feed_event.dart';
 import 'package:knittda/src/presentation/feed/feed_view_model.dart';
 import 'package:knittda/src/presentation/feed_search/feed_search_screen.dart';
@@ -28,6 +29,7 @@ class FeedScreen extends StatefulWidget {
 
 class _FeedScreenState extends State<FeedScreen> {
   final ScrollController _scrollController = ScrollController();
+  bool _initialLoadT4Scheduled = false;
 
   @override
   void initState() {
@@ -90,6 +92,19 @@ class _FeedScreenState extends State<FeedScreen> {
 
       body: Consumer<FeedViewModel>(
         builder: (context, viewModel, _) {
+          final s = viewModel.state;
+          final usable =
+              !(s.isLoading && s.feeds.isEmpty) &&
+              !(s.errorMessage != null && s.feeds.isEmpty);
+
+          if (usable && !_initialLoadT4Scheduled) {
+            _initialLoadT4Scheduled = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              InitialLoadTracker.feed.markT4();
+            });
+          }
+
           if (viewModel.state.isLoading && viewModel.state.feeds.isEmpty) {
             return const Center(
               child: Column(
@@ -163,9 +178,7 @@ class _FeedScreenState extends State<FeedScreen> {
                     );
 
                     if (deleted != null && deleted) {
-                      viewModel.onEvent(
-                        FeedEvent.refresh(20, null),
-                      );
+                      viewModel.onEvent(FeedEvent.refresh(20, null));
                     }
                   },
                   onImageTap: (imageIndex, images) {

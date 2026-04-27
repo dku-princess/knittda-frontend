@@ -63,6 +63,8 @@ migrate_working_dir/
 #.vscode/
 **/doc/api/
 **/ios/Flutter/.last_build_id
+ios/Flutter/Debug-local.xcconfig
+ios/Flutter/Release-local.xcconfig
 app.*.symbols
 app.*.map.json
 /android/app/debug

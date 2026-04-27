@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/di/provider_setup.dart';
 import './src/app.dart';
@@ -15,46 +14,44 @@ import 'app_config.dart';
 
 // 앱 실행
 Future<void> main() async {
-  await runZonedGuarded(() async {
-    // 바인딩 초기화는 반드시 runZoned 내부에서
-    WidgetsFlutterBinding.ensureInitialized();
+  await runZonedGuarded(
+    () async {
+      // 바인딩 초기화는 반드시 runZoned 내부에서
+      WidgetsFlutterBinding.ensureInitialized();
 
-    //세로 방향 고정
-    await SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp
-    ]);
+      //세로 방향 고정
+      await SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+      ]);
 
-    //provider 모음 생성
-    final providers = await getProviders();
+      //provider 모음 생성
+      final providers = await getProviders();
 
-    if (!kDebugMode) {
       await SentryFlutter.init((options) {
-        options.dsn = AppConfig.SentryFlutterDns;
+        options.dsn = AppConfig.sentryDsn;
         options.attachStacktrace = true;
         options.sendDefaultPii = false;
+        options.tracesSampleRate = 1.0;
+        options.environment = AppConfig.sentryEnvironment;
+        if (AppConfig.sentryRelease.isNotEmpty) {
+          options.release = AppConfig.sentryRelease;
+        }
+        options.tracePropagationTargets.add(AppConfig.apiBaseUrl);
       });
-    }
 
-    // Firebase 초기화
-    if (Platform.isIOS){
-      await Firebase.initializeApp();
-    }
+      // Firebase 초기화
+      if (Platform.isIOS) {
+        await Firebase.initializeApp();
+      }
 
-    // Kakao SDK 초기화 (필수 키 입력!)
-    KakaoSdk.init(nativeAppKey: AppConfig.kakaoNativeAppKey);
+      // Kakao SDK 초기화 (필수 키 입력!)
+      KakaoSdk.init(nativeAppKey: AppConfig.kakaoNativeAppKey);
 
-    // 앱 실행
-    runApp(
-      MultiProvider(
-        providers: providers,
-        child: const MyApp(),
-      ),
-    );
-
-  }, (error, stackTrace) async {
-    // 비동기 예외 추적
-    if (!kDebugMode) {
+      // 앱 실행
+      runApp(MultiProvider(providers: providers, child: const MyApp()));
+    },
+    (error, stackTrace) async {
       await Sentry.captureException(error, stackTrace: stackTrace);
-    }
-  });
+    },
+  );
 }

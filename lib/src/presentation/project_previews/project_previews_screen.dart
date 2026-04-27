@@ -7,6 +7,7 @@ import 'package:knittda/src/domain/use_case/get_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_records_projects_use_case.dart';
+import 'package:knittda/src/performance/initial_load_tracker.dart';
 import 'package:knittda/src/presentation/project_details/project_details_screen.dart';
 import 'package:knittda/src/presentation/project_details/project_details_view_model.dart';
 import 'package:knittda/src/presentation/project_previews/components/project_previews_item.dart';
@@ -14,8 +15,15 @@ import 'package:knittda/src/presentation/project_previews/project_previews_event
 import 'package:knittda/src/presentation/project_previews/project_previews_view_model.dart';
 import 'package:provider/provider.dart';
 
-class ProjectPreviewsScreen extends StatelessWidget {
+class ProjectPreviewsScreen extends StatefulWidget {
   const ProjectPreviewsScreen({super.key});
+
+  @override
+  State<ProjectPreviewsScreen> createState() => _ProjectPreviewsScreenState();
+}
+
+class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
+  bool _initialLoadT4Scheduled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +42,17 @@ class ProjectPreviewsScreen extends StatelessWidget {
 
       body: Consumer<ProjectPreviewsViewModel>(
         builder: (context, viewModel, _) {
+          final usable = !viewModel.state.isLoading &&
+              viewModel.state.errorMessage == null;
+
+          if (usable && !_initialLoadT4Scheduled) {
+            _initialLoadT4Scheduled = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              InitialLoadTracker.projectPreviews.markT4();
+            });
+          }
+
           if (viewModel.state.isLoading) {
             return Center(
               child: Column(

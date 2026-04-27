@@ -31,6 +31,7 @@ dependencies:
   freezed_annotation: ^3.1.0
   rxdart: ^0.28.0
   flutter_markdown_plus: ^1.0.7
+  sentry_dio: ^9.18.0
 
 
 dev_dependencies:
