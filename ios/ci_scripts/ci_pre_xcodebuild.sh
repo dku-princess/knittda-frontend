@@ -85,10 +85,41 @@ echo "Flutter: $(flutter --version --machine 2>/dev/null | python3 -c \
 echo "📦 flutter pub get..."
 flutter pub get
 
+echo "🧹 dart run build_runner clean..."
+dart run build_runner clean
+
+echo "🧊 dart run build_runner build --delete-conflicting-outputs..."
+dart run build_runner build --delete-conflicting-outputs
+
+echo "🔍 Verify generated Dart files..."
+if [ ! -f "lib/src/domain/model/announcement.freezed.dart" ] || [ ! -f "lib/src/domain/model/announcement.g.dart" ]; then
+    echo "❌ build_runner output missing: .freezed.dart/.g.dart files were not generated"
+    exit 1
+fi
+
+if ! rg -q "^part of 'announcement\\.dart';" "lib/src/domain/model/announcement.freezed.dart"; then
+    echo "❌ Invalid generated file: announcement.freezed.dart is missing part-of declaration"
+    exit 1
+fi
+
+if ! rg -q "^part of 'announcement\\.dart';" "lib/src/domain/model/announcement.g.dart"; then
+    echo "❌ Invalid generated file: announcement.g.dart is missing part-of declaration"
+    exit 1
+fi
+
+echo "✅ Generated Dart files verified"
+
 echo "🍎 flutter precache --ios..."
 flutter precache --ios
 
-# ── 8. Flutter 빌드 (Generated.xcconfig에 DART_DEFINES 주입)
+# ── 8. CocoaPods 재생성/설치 (xcconfig 누락 방지)
+echo "🔧 pod install (clean + repo update)..."
+cd ios
+rm -rf Pods
+pod install --repo-update
+cd ..
+
+# ── 9. Flutter 빌드 (Generated.xcconfig에 DART_DEFINES 주입)
 # --no-codesign: 코드서명은 Xcode Cloud가 담당
 # Xcode Cloud가 이후 xcodebuild archive를 실행할 때 DART_DEFINES가 필요하므로
 # 이 단계에서 Generated.xcconfig를 올바르게 생성해 둠
@@ -105,9 +136,5 @@ else
         --no-codesign \
         --dart-define-from-file="config/prod.json"
 fi
-
-# ── 9. CocoaPods
-echo "🔧 pod install..."
-cd ios && pod install && cd ..
 
 echo "✅ ci_pre_xcodebuild completed"
