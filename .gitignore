@@ -75,3 +75,10 @@ app.*.map.json
 
 config/*.json
 !config/example.json
+
+# iOS 로컬 xcconfig (카카오 로그인용)
+ios/Flutter/Debug-local.xcconfig
+ios/Flutter/Release-local.xcconfig
+
+# GoogleService-Info.plist (Xcode Cloud 원격 관리)
+ios/Runner/GoogleService-Info.plist

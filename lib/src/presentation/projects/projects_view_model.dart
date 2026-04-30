@@ -4,14 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/project.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
-import 'package:knittda/src/domain/use_case/get_projects_use_case.dart';
+import 'package:knittda/src/domain/use_case/order_projects_use_case.dart';
 import 'package:knittda/src/domain/util/project_order.dart';
 import 'package:knittda/src/presentation/projects/projects_event.dart';
 import 'package:knittda/src/presentation/projects/projects_state.dart';
 
 class ProjectsViewModel extends ChangeNotifier {
   final ProjectApiRepository _repository;
-  final GetProjectsUseCase _getProjectsUseCase;
+  final OrderProjectsUseCase _orderProjectsUseCase;
 
   StreamSubscription<List<Project>>? _subscription;
 
@@ -24,7 +24,7 @@ class ProjectsViewModel extends ChangeNotifier {
 
   ProjectsState get state => _state;
 
-  ProjectsViewModel(this._repository, this._getProjectsUseCase) {
+  ProjectsViewModel(this._repository, this._orderProjectsUseCase) {
     _subscription = _repository.projectsStream.listen(
       (_) {
         _orderProjects();
@@ -51,7 +51,7 @@ class ProjectsViewModel extends ChangeNotifier {
     _state = state.copyWith(isLoading: true, errorMessage: null);
     notifyListeners();
 
-    final Result<void> result = await _repository.fetchProjects();
+    final Result<void> result = await _repository.getMyProjects();
 
     switch (result) {
       case Success():
@@ -66,7 +66,7 @@ class ProjectsViewModel extends ChangeNotifier {
   void _orderProjects() {
     _state = state.copyWith(errorMessage: null);
 
-    final Result<List<Project>> result = _getProjectsUseCase(
+    final Result<List<Project>> result = _orderProjectsUseCase(
       state.projectOrder,
     );
 

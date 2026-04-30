@@ -6,7 +6,12 @@ class ProjectsItem extends StatelessWidget {
   final Project project;
   final VoidCallback onTap;
   final VoidCallback onPressed;
-  const ProjectsItem({super.key, required this.project, required this.onTap, required this.onPressed});
+  const ProjectsItem({
+    super.key,
+    required this.project,
+    required this.onTap,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,19 +22,14 @@ class ProjectsItem extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
-          ),
-
+        padding: const EdgeInsets.symmetric(horizontal: 30),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(10),
                 child:
                     (project.thumbnailUrl != null &&
                         project.thumbnailUrl!.isNotEmpty)
@@ -55,7 +55,7 @@ class ProjectsItem extends StatelessWidget {
                       ),
               ),
 
-              SizedBox(width: 14),
+              SizedBox(width: 10),
 
               Expanded(
                 child: Column(
@@ -63,7 +63,10 @@ class ProjectsItem extends StatelessWidget {
                   children: [
                     Text(
                       project.nickname,
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -93,18 +96,25 @@ class ProjectsItem extends StatelessWidget {
                 ),
               ),
 
-              TextButton(
-                onPressed: onPressed,
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.grey[300],
-                  minimumSize: const Size(0, 0),
-                  shape: RoundedRectangleBorder(
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: onPressed,
+                child: Container(
+                  width: 45,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF0F0F0),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                ),
-                child: Text(
-                  '추가',
-                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '추가',
+                    style: TextStyle(
+                      color: Color(0xFFA6A6A6),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
               ),
             ],

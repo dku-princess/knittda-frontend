@@ -1,5 +1,2 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
 #include "Generated.xcconfig"
-kakaoNativeAppKey=$(kakaoNativeAppKey)
-API_BASE_URL=$(API_BASE_URL)
-SENTRY_DSN=$(SENTRY_DSN)

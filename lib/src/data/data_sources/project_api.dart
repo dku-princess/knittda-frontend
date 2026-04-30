@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
+import 'package:knittda/src/domain/model/article/article_preview.dart';
 import 'package:knittda/src/domain/model/project.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
@@ -12,10 +13,10 @@ class ProjectApi {
 
   ProjectApi(this._dio);
 
-  Future<Result<Iterable>> getProjects() async {
+  Future<Result<Iterable>> getMyProjects() async {
     try {
       final response = await _dio.get(
-        '/api/v1/projects/',
+        '/api/v1/projects/my',
         options: Options(headers: {'accessToken': 'true'}),
       );
 
@@ -207,5 +208,23 @@ class ProjectApi {
       Sentry.captureException(e, stackTrace: stack);
       return Result.error('알 수 없는 에러');
     }
+  }
+
+  Future<ArticlePreviewData> getArticlePreviews({
+    required List<int> ids,
+  }) async {
+    final uniqueIds = ids.toSet().toList();
+
+    final response = await _dio.get(
+      '/api/v1/projects/article-previews',
+      queryParameters: {'ids': uniqueIds.join(',')},
+    );
+
+    final data = response.data;
+    if (data['success'] != true) {
+      throw Exception('API 오류 [${data['code']}]: ${data['message']}');
+    }
+
+    return ArticlePreviewData.fromJson(data['data']);
   }
 }

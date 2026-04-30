@@ -59,6 +59,8 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
               case ShowSnackBar(:final message):
                 final snackBar = SnackBar(content: Text(message));
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              case NotFound():
+                Navigator.pop(context, false);
             }
           }
         });
