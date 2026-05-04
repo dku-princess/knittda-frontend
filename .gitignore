@@ -39,6 +39,10 @@ android/key.properties
 *.tmp
 *.temp
 
+# macOS Finder duplicate copies (e.g. "file 2.dart")
+* 2.dart
+* 3.sh
+
 # Environment files (except example)
 env.dart
 !env.dart.example
