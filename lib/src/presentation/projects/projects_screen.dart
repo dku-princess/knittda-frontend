@@ -88,13 +88,21 @@ class ProjectsScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: 30),
 
-                    OrderSection(
-                      projectOrder: state.projectOrder,
-                      onOrderChanged: (projectOrder) {
-                        viewModel.onEvent(
-                          ProjectsEvent.changeOrder(projectOrder),
-                        );
-                      },
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 12,
+                        bottom: 15,
+                        left: 30,
+                        right: 30,
+                      ),
+                      child: OrderSection(
+                        projectOrder: state.projectOrder,
+                        onOrderChanged: (projectOrder) {
+                          viewModel.onEvent(
+                            ProjectsEvent.changeOrder(projectOrder),
+                          );
+                        },
+                      ),
                     ),
 
                     const SizedBox(height: 20),
@@ -113,116 +121,110 @@ class ProjectsScreen extends StatelessWidget {
                             )
                           : ListView.separated(
                               padding: const EdgeInsets.only(bottom: 80),
-                              separatorBuilder: (context, index) => Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 30,
-                                ),
-                                child: Divider(
-                                  color: Color(0xFFE6E6E6),
-                                  height: 10,
-                                  thickness: 1,
-                                ),
-                              ),
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: 10),
                               itemBuilder: (context, index) {
-                                return ProjectsItem(
-                                  project: state.projects[index],
-                                  onTap: () async {
-                                    await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            ChangeNotifierProvider(
-                                              create: (context) =>
-                                                  ProjectDetailsViewModel(
-                                                    GetProjectUseCase(
-                                                      context
-                                                          .read<
-                                                            ProjectApiRepository
-                                                          >(),
-                                                    ),
-                                                    GetMyProjectUseCase(
-                                                      context
-                                                          .read<
-                                                            ProjectApiRepository
-                                                          >(),
-                                                    ),
-                                                    DeleteProjectUseCase(
-                                                      context
-                                                          .read<
-                                                            ProjectApiRepository
-                                                          >(),
-                                                    ),
-                                                    UpdateProjectUseCase(
-                                                      context
-                                                          .read<
-                                                            ProjectApiRepository
-                                                          >(),
-                                                    ),
-                                                    GetRecordsProjectsUseCase(
-                                                      context
-                                                          .read<
-                                                            RecordApiRepository
-                                                          >(),
-                                                    ),
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 30,
+                                  ),
+                                  child: ProjectsItem(
+                                    project: state.projects[index],
+                                    onTap: () async {
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ChangeNotifierProvider(
+                                            create: (context) =>
+                                                ProjectDetailsViewModel(
+                                                  GetProjectUseCase(
                                                     context
-                                                        .read<GetUserUseCase>(),
-                                                    projectId: state
-                                                        .projects[index]
-                                                        .id!,
-                                                    project:
-                                                        state.projects[index],
+                                                        .read<
+                                                          ProjectApiRepository
+                                                        >(),
                                                   ),
-                                              child:
-                                                  const ProjectDetailsScreen(),
-                                            ),
-                                      ),
-                                    );
-                                  },
-
-                                  onPressed: () async {
-                                    final addRecord = await Navigator.push<Records>(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            ChangeNotifierProvider(
-                                              create: (context) =>
-                                                  AddEditRecordViewModel(
-                                                    AddRecordUseCase(
-                                                      context
-                                                          .read<
-                                                            RecordApiRepository
-                                                          >(),
-                                                    ),
-                                                    UpdateRecordUseCase(
-                                                      context
-                                                          .read<
-                                                            RecordApiRepository
-                                                          >(),
-                                                    ),
-                                                    GetQuestionUseCase(
-                                                      context
-                                                          .read<
-                                                            RecordApiRepository
-                                                          >(),
-                                                    ),
-                                                    projectId: state
-                                                        .projects[index]
-                                                        .id!,
+                                                  GetMyProjectUseCase(
+                                                    context
+                                                        .read<
+                                                          ProjectApiRepository
+                                                        >(),
                                                   ),
-                                              child: AddEditRecordScreen(
-                                                projectId:
-                                                    state.projects[index].id!,
-                                              ),
-                                            ),
-                                      ),
-                                    );
-
-                                    if (addRecord != null) {
-                                      viewModel.onEvent(
-                                        ProjectsEvent.loadProjects(),
+                                                  DeleteProjectUseCase(
+                                                    context
+                                                        .read<
+                                                          ProjectApiRepository
+                                                        >(),
+                                                  ),
+                                                  UpdateProjectUseCase(
+                                                    context
+                                                        .read<
+                                                          ProjectApiRepository
+                                                        >(),
+                                                  ),
+                                                  GetRecordsProjectsUseCase(
+                                                    context
+                                                        .read<
+                                                          RecordApiRepository
+                                                        >(),
+                                                  ),
+                                                  context
+                                                      .read<GetUserUseCase>(),
+                                                  projectId:
+                                                      state.projects[index].id!,
+                                                  project:
+                                                      state.projects[index],
+                                                ),
+                                            child: const ProjectDetailsScreen(),
+                                          ),
+                                        ),
                                       );
-                                    }
-                                  },
+                                    },
+
+                                    onPressed: () async {
+                                      final addRecord = await Navigator.push<Records>(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ChangeNotifierProvider(
+                                                create: (context) =>
+                                                    AddEditRecordViewModel(
+                                                      AddRecordUseCase(
+                                                        context
+                                                            .read<
+                                                              RecordApiRepository
+                                                            >(),
+                                                      ),
+                                                      UpdateRecordUseCase(
+                                                        context
+                                                            .read<
+                                                              RecordApiRepository
+                                                            >(),
+                                                      ),
+                                                      GetQuestionUseCase(
+                                                        context
+                                                            .read<
+                                                              RecordApiRepository
+                                                            >(),
+                                                      ),
+                                                      projectId: state
+                                                          .projects[index]
+                                                          .id!,
+                                                    ),
+                                                child: AddEditRecordScreen(
+                                                  projectId:
+                                                      state.projects[index].id!,
+                                                ),
+                                              ),
+                                        ),
+                                      );
+
+                                      if (addRecord != null) {
+                                        viewModel.onEvent(
+                                          ProjectsEvent.loadProjects(),
+                                        );
+                                      }
+                                    },
+                                  ),
                                 );
                               },
                               itemCount: state.projects.length,
