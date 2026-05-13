@@ -340,7 +340,7 @@ class _ProjectHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 10, right: 30, left: 30, bottom: 10),
+      padding: const EdgeInsets.only(top: 0, right: 20, left: 20, bottom: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
