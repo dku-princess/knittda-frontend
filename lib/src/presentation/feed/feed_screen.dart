@@ -118,11 +118,9 @@ class _FeedScreenState extends State<FeedScreen> {
             onRefresh: () async {
               await viewModel.onEvent(FeedEvent.refresh(20, null));
             },
-            child: ListView.separated(
-              padding: const EdgeInsets.only(top: 10),
+            child: ListView.builder(
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
-              separatorBuilder: (context, index) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 if (viewModel.state.isLoadingMore &&
                     index == viewModel.state.feeds.length) {
@@ -131,54 +129,51 @@ class _FeedScreenState extends State<FeedScreen> {
                     child: Center(child: CircularProgressIndicator()),
                   );
                 }
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: FeedItem(
-                    feed: viewModel.state.feeds[index],
-                    onTap: () async {
-                      final deleted = await Navigator.push<bool>(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ChangeNotifierProvider(
-                            create: (context) => ProjectDetailsViewModel(
-                              GetProjectUseCase(
-                                context.read<ProjectApiRepository>(),
-                              ),
-                              GetMyProjectUseCase(
-                                context.read<ProjectApiRepository>(),
-                              ),
-                              DeleteProjectUseCase(
-                                context.read<ProjectApiRepository>(),
-                              ),
-                              UpdateProjectUseCase(
-                                context.read<ProjectApiRepository>(),
-                              ),
-                              GetRecordsProjectsUseCase(
-                                context.read<RecordApiRepository>(),
-                              ),
-                              context.read<GetUserUseCase>(),
-                              projectId: viewModel.state.feeds[index].projectId,
+                return FeedItem(
+                  feed: viewModel.state.feeds[index],
+                  onTap: () async {
+                    final deleted = await Navigator.push<bool>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider(
+                          create: (context) => ProjectDetailsViewModel(
+                            GetProjectUseCase(
+                              context.read<ProjectApiRepository>(),
                             ),
-                            child: const ProjectDetailsScreen(),
+                            GetMyProjectUseCase(
+                              context.read<ProjectApiRepository>(),
+                            ),
+                            DeleteProjectUseCase(
+                              context.read<ProjectApiRepository>(),
+                            ),
+                            UpdateProjectUseCase(
+                              context.read<ProjectApiRepository>(),
+                            ),
+                            GetRecordsProjectsUseCase(
+                              context.read<RecordApiRepository>(),
+                            ),
+                            context.read<GetUserUseCase>(),
+                            projectId: viewModel.state.feeds[index].projectId,
                           ),
+                          child: const ProjectDetailsScreen(),
                         ),
-                      );
+                      ),
+                    );
 
-                      if (deleted != null && deleted) {
-                        viewModel.onEvent(FeedEvent.refresh(20, null));
-                      }
-                    },
-                    onImageTap: (imageIndex, images) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ImageViewer(
-                            images: images,
-                            initialIndex: imageIndex,
-                          ),
+                    if (deleted != null && deleted) {
+                      viewModel.onEvent(FeedEvent.refresh(20, null));
+                    }
+                  },
+                  onImageTap: (imageIndex, images) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ImageViewer(
+                          images: images,
+                          initialIndex: imageIndex,
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
                 );
               },
               itemCount:
