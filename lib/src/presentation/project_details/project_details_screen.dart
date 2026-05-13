@@ -340,7 +340,7 @@ class _ProjectHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 10, right: 20, left: 20, bottom: 10),
+      padding: const EdgeInsets.only(top: 10, right: 30, left: 30, bottom: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -405,7 +405,7 @@ class _InfoTap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: EdgeInsets.only(top: 26, right: 40, left: 40),
+      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
 
       children: [
         Row(
@@ -596,7 +596,7 @@ class _ReportTap extends StatelessWidget {
         : '목표일 정보 없음';
 
     return Padding(
-      padding: EdgeInsets.all(26),
+      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
