@@ -19,10 +19,13 @@ class ProjectsItem extends StatelessWidget {
       project.lastRecordAt,
     );
 
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30),
+    return Container(
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: Color(0xFFE6E6E6), width: 1)),
+      ),
+
+      child: InkWell(
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Row(

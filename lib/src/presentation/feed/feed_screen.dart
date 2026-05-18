@@ -161,9 +161,7 @@ class _FeedScreenState extends State<FeedScreen> {
                     );
 
                     if (deleted != null && deleted) {
-                      viewModel.onEvent(
-                        FeedEvent.refresh(20, null),
-                      );
+                      viewModel.onEvent(FeedEvent.refresh(20, null));
                     }
                   },
                   onImageTap: (imageIndex, images) {

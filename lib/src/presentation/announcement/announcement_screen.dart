@@ -57,7 +57,6 @@ class AnnouncementScreen extends StatelessWidget {
               },
               child: ListView.separated(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 10),
                 itemBuilder: (context, index) {
                   if (index == state.announcements.length) {
                     return const Padding(
@@ -67,8 +66,7 @@ class AnnouncementScreen extends StatelessWidget {
                   }
 
                   final announcement = state.announcements[index];
-                  return AnnouncementListItem(
-                    announcement: announcement,
+                  return InkWell(
                     onTap: () {
                       final slugOrId =
                           (announcement.slug?.trim().isEmpty ?? true)
@@ -87,6 +85,13 @@ class AnnouncementScreen extends StatelessWidget {
                         ),
                       );
                     },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 30,
+                        vertical: 12,
+                      ),
+                      child: AnnouncementListItem(announcement: announcement),
+                    ),
                   );
                 },
                 separatorBuilder: (context, index) {

@@ -32,7 +32,13 @@ class AnnouncementDetailScreen extends StatelessWidget {
 
           return ListView(
             children: [
-              AnnouncementListItem(announcement: announcement),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                child: AnnouncementListItem(announcement: announcement),
+              ),
 
               const SizedBox(height: 8),
               const Divider(height: 0.5, color: Color(0xFFE6E6E6)),

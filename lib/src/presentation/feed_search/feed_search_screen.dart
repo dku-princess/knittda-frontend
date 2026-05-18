@@ -15,6 +15,7 @@ import 'package:knittda/src/presentation/feed_search/feed_search_ui_event.dart';
 import 'package:knittda/src/presentation/feed_search/feed_search_view_model.dart';
 import 'package:knittda/src/presentation/project_details/project_details_screen.dart';
 import 'package:knittda/src/presentation/project_details/project_details_view_model.dart';
+import 'package:knittda/src/presentation/widgets/image_viewer.dart';
 import 'package:provider/provider.dart';
 
 class FeedSearchScreen extends StatefulWidget {
@@ -195,6 +196,14 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
                   if (deleted != null && deleted) {
                     _onSearch();
                   }
+                },
+                onImageTap: (imageIndex, images) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ImageViewer(images: images, initialIndex: imageIndex),
+                    ),
+                  );
                 },
               );
             },
