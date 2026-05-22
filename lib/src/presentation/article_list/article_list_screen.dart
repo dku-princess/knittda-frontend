@@ -83,9 +83,14 @@ class ArticleListScreen extends StatelessWidget {
 
                   final article = state.articles[index];
 
-                  if (article.isFeatured) {
+                  if (index == 0) {
                     return Padding(
-                      padding: const EdgeInsets.only(left: 30, right: 30, top: 0, bottom: 40),
+                      padding: const EdgeInsets.only(
+                        left: 30,
+                        right: 30,
+                        top: 0,
+                        bottom: 40,
+                      ),
                       child: GestureDetector(
                         onTap: () {
                           final slugOrId = article.slug.trim().isEmpty
@@ -110,7 +115,9 @@ class ArticleListScreen extends StatelessWidget {
                         child: ArticleCardLarge(
                           article: article,
                           imageUrl: article.thumbnailImageLarge.isNotEmpty
-                              ? viewModel.getAssetUrl(article.thumbnailImageLarge)
+                              ? viewModel.getAssetUrl(
+                                  article.thumbnailImageLarge,
+                                )
                               : null,
                         ),
                       ),
@@ -118,12 +125,17 @@ class ArticleListScreen extends StatelessWidget {
                   }
 
                   return Padding(
-                    padding: const EdgeInsets.only(left: 30, right: 30, top: 0, bottom: 24),
+                    padding: const EdgeInsets.only(
+                      left: 30,
+                      right: 30,
+                      top: 0,
+                      bottom: 24,
+                    ),
                     child: GestureDetector(
                       onTap: () {
                         final slugOrId = article.slug.trim().isEmpty
-                              ? article.id.toString()
-                              : article.slug;
+                            ? article.id.toString()
+                            : article.slug;
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -142,7 +154,6 @@ class ArticleListScreen extends StatelessWidget {
                       },
                       child: ArticleCardSmall(
                         article: article,
-                        index: index,
                         imageUrl: article.thumbnailImageSmall.isNotEmpty
                             ? viewModel.getAssetUrl(article.thumbnailImageSmall)
                             : null,
