@@ -18,6 +18,7 @@ class ArticleApi {
       queryParameters: {
         'fields': '*',
         'filter[status][_in]': _articleStatus,
+        'sort': '-sort',
         'limit': limit,
         'offset': offset,
         'meta': 'filter_count',

@@ -19,10 +19,10 @@ abstract class ArticleDetail with _$ArticleDetail {
     @JsonKey(name: 'thumbnail_image_small') @Default('') String thumbnailImageSmall,
     @JsonKey(name: 'cover_image') String? coverImage,
     @JsonKey(name: 'published_at') @Default('') String publishedAt,
-    @JsonKey(name: 'is_featured') @Default(false) bool isFeatured,
     @Default('') String slug,
     @Default('') String status,
     @Default([]) List<ArticleSection> sections,
+    @Default(0) int sort,
   }) = _ArticleDetail;
 
   factory ArticleDetail.fromJson(Map<String, dynamic> json) =>
