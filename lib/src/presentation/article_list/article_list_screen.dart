@@ -68,6 +68,7 @@ class ArticleListScreen extends StatelessWidget {
                 return false;
               },
               child: ListView.builder(
+                padding: const EdgeInsets.only(top: 20),
                 physics: const AlwaysScrollableScrollPhysics(),
                 itemCount:
                     state.articles.length + (state.isLoadingMore ? 1 : 0),
@@ -82,8 +83,55 @@ class ArticleListScreen extends StatelessWidget {
 
                   final article = state.articles[index];
 
-                  if (article.isFeatured) {
-                    return GestureDetector(
+                  if (index == 0) {
+                    return Padding(
+                      padding: const EdgeInsets.only(
+                        left: 30,
+                        right: 30,
+                        top: 0,
+                        bottom: 40,
+                      ),
+                      child: GestureDetector(
+                        onTap: () {
+                          final slugOrId = article.slug.trim().isEmpty
+                              ? article.id.toString()
+                              : article.slug;
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChangeNotifierProvider(
+                                create: (context) => ArticleDetailViewModel(
+                                  context.read<ArticleRepository>(),
+                                  GetArticlePreviewsUseCase(
+                                    context.read<ProjectApiRepository>(),
+                                  ),
+                                  slugOrId: slugOrId,
+                                ),
+                                child: const ArticleDetailScreen(),
+                              ),
+                            ),
+                          );
+                        },
+                        child: ArticleCardLarge(
+                          article: article,
+                          imageUrl: article.thumbnailImageLarge.isNotEmpty
+                              ? viewModel.getAssetUrl(
+                                  article.thumbnailImageLarge,
+                                )
+                              : null,
+                        ),
+                      ),
+                    );
+                  }
+
+                  return Padding(
+                    padding: const EdgeInsets.only(
+                      left: 30,
+                      right: 30,
+                      top: 0,
+                      bottom: 24,
+                    ),
+                    child: GestureDetector(
                       onTap: () {
                         final slugOrId = article.slug.trim().isEmpty
                             ? article.id.toString()
@@ -104,42 +152,12 @@ class ArticleListScreen extends StatelessWidget {
                           ),
                         );
                       },
-                      child: ArticleCardLarge(
+                      child: ArticleCardSmall(
                         article: article,
-                        imageUrl: article.thumbnailImageLarge.isNotEmpty
-                            ? viewModel.getAssetUrl(article.thumbnailImageLarge)
+                        imageUrl: article.thumbnailImageSmall.isNotEmpty
+                            ? viewModel.getAssetUrl(article.thumbnailImageSmall)
                             : null,
                       ),
-                    );
-                  }
-
-                  return GestureDetector(
-                    onTap: () {
-                      final slugOrId = article.slug.trim().isEmpty
-                            ? article.id.toString()
-                            : article.slug;
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ChangeNotifierProvider(
-                            create: (context) => ArticleDetailViewModel(
-                              context.read<ArticleRepository>(),
-                              GetArticlePreviewsUseCase(
-                                context.read<ProjectApiRepository>(),
-                              ),
-                              slugOrId: slugOrId,
-                            ),
-                            child: const ArticleDetailScreen(),
-                          ),
-                        ),
-                      );
-                    },
-                    child: ArticleCardSmall(
-                      article: article,
-                      index: index,
-                      imageUrl: article.thumbnailImageSmall.isNotEmpty
-                          ? viewModel.getAssetUrl(article.thumbnailImageSmall)
-                          : null,
                     ),
                   );
                 },

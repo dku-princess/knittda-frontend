@@ -85,18 +85,13 @@ class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
               );
             },
             child: GridView.builder(
-              padding: const EdgeInsets.only(
-                top: 20,
-                bottom: 20,
-                left: 20,
-                right: 20,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
               itemCount: viewModel.state.projectPreviews.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.85,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 0.9,
               ),
               itemBuilder: (context, index) {
                 final projectPreviews = viewModel.state.projectPreviews[index];

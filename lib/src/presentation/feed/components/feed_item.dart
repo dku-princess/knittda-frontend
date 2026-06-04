@@ -24,14 +24,12 @@ class FeedItem extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 20),
-
           decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
           ),
-
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
