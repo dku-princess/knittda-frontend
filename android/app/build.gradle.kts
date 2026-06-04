@@ -22,8 +22,8 @@ if (localPropertiesFile.exists()) {
 
 android {
     namespace = "com.tteuda.app"
-    compileSdk = 36
-    ndkVersion = "27.0.12077973"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
