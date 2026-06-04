@@ -21,7 +21,7 @@ class ArticleApi {
       '/items/articles',
       queryParameters: {
         'fields': '*',
-        'filter[status][_in]': _articleStatus,
+        ..._statusFilter,
         'sort': '-sort',
         'limit': limit,
         'offset': offset,
