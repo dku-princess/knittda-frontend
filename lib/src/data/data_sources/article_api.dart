@@ -4,10 +4,14 @@ import 'package:knittda/src/domain/model/article/article_detail.dart';
 
 class ArticleApi {
   final Dio _dio;
-  final String _articleStatus;
+  final String _directusStatus;
 
-  ArticleApi(this._dio, {required String articleStatus})
-    : _articleStatus = articleStatus;
+  ArticleApi(this._dio, {required String directusStatus})
+    : _directusStatus = directusStatus;
+
+  // 빈 값이면 status 필터를 생략하여 모든 상태(draft/published/archived 등) 허용
+  Map<String, dynamic> get _statusFilter =>
+      _directusStatus.isEmpty ? const {} : {'filter[status][_in]': _directusStatus};
 
   Future<({List<Article> articles, int totalCount})> fetchArticles({
     int limit = 15,
@@ -17,7 +21,7 @@ class ArticleApi {
       '/items/articles',
       queryParameters: {
         'fields': '*',
-        'filter[status][_in]': _articleStatus,
+        ..._statusFilter,
         'limit': limit,
         'offset': offset,
         'meta': 'filter_count',
@@ -26,12 +30,10 @@ class ArticleApi {
 
     final data = response.data;
 
-    // response.data가 이미 Map으로 파싱된 상태
     if (data is! Map<String, dynamic>) {
       throw FormatException('예상치 못한 응답 형식: ${data.runtimeType}');
     }
 
-    // json.data가 배열인지 확인
     final list = data['data'];
     if (list is! List) {
       throw FormatException('data 필드가 배열이 아닙니다: ${list.runtimeType}');
@@ -56,7 +58,7 @@ class ArticleApi {
         'fields':
             '*,sections.*,sections.item.*.*,sections.item.qa_item_block.gallery.*,sections.item.pattern_item_block.gallery.*,sections.item.pattern_item_block.gallery_second.*',
         filterKey: slugOrId,
-        'filter[status][_in]': _articleStatus,
+        ..._statusFilter,
       },
     );
 

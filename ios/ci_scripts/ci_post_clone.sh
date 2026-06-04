@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🚀 [Xcode Cloud] ci_pre_xcodebuild start"
+echo "🚀 [Xcode Cloud] ci_post_clone start"
 
 # ── 0. 프로젝트 루트 결정
 PROJECT_ROOT="${CI_PRIMARY_REPOSITORY_PATH:-}"
@@ -40,20 +40,26 @@ mkdir -p config
 PUBSPEC_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
 RELEASE="${SENTRY_RELEASE:-knittda@${PUBSPEC_VERSION}}"
 
+# DIRECTUS_STATUS: prod는 "published"만, beta는 모든 상태 허용(빈 값)
+if [ "$APP_CHANNEL" = "beta" ]; then
+    DIRECTUS_STATUS_VALUE=""
+else
+    DIRECTUS_STATUS_VALUE="published"
+fi
+
 cat > "config/${APP_CHANNEL}.json" << EOF
 {
   "KAKAO_NATIVE_APP_KEY": "${KAKAO_NATIVE_APP_KEY}",
   "API_BASE_URL": "${API_BASE_URL}",
   "DIRECTUS_BASE_URL": "${DIRECTUS_BASE_URL:-}",
-  "ARTICLE_STATUS": "published",
-  "DIRECTUS_STATUS": "published",
+  "DIRECTUS_STATUS": "${DIRECTUS_STATUS_VALUE}",
   "APP_CHANNEL": "${APP_CHANNEL}",
   "SENTRY_DSN": "${SENTRY_DSN}",
   "SENTRY_ENVIRONMENT": "${SENTRY_ENVIRONMENT}",
   "SENTRY_RELEASE": "${RELEASE}"
 }
 EOF
-echo "✅ config/${APP_CHANNEL}.json created (release=${RELEASE})"
+echo "✅ config/${APP_CHANNEL}.json created (release=${RELEASE}, status='${DIRECTUS_STATUS_VALUE}')"
 
 # ── 3. GoogleService-Info.plist 생성 (gitignored → Base64 환경변수에서 복원)
 echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > ios/Runner/GoogleService-Info.plist
@@ -62,15 +68,25 @@ echo "✅ GoogleService-Info.plist created"
 # ── 4. xcconfig local 파일 생성 (gitignored → CI에서 직접 생성)
 # beta: Release-beta 빌드 구성이 Debug.xcconfig → Debug-local.xcconfig 를 읽음
 # prod: Release 빌드 구성이 Release.xcconfig → Release-local.xcconfig 를 읽음
+#
+# kakaoNativeAppKey: Info.plist의 $(kakaoNativeAppKey)는 dart-define이 아닌
+# Xcode Build Settings(xcconfig)에서 값을 참조하므로 반드시 여기에 선언해야 함.
+# 누락 시 빈 값으로 빌드되어 카카오 로그인이 동작하지 않음.
 if [ "$APP_CHANNEL" = "beta" ]; then
-    echo "PRODUCT_BUNDLE_IDENTIFIER=com.tteuda.app.beta" > ios/Flutter/Debug-local.xcconfig
-    echo "✅ Debug-local.xcconfig → com.tteuda.app.beta"
+    {
+        echo "PRODUCT_BUNDLE_IDENTIFIER=com.tteuda.app.beta"
+        echo "kakaoNativeAppKey=${KAKAO_NATIVE_APP_KEY}"
+    } > ios/Flutter/Debug-local.xcconfig
+    echo "✅ Debug-local.xcconfig → com.tteuda.app.beta, kakaoNativeAppKey=***"
 else
-    echo "PRODUCT_BUNDLE_IDENTIFIER=com.example.knittda" > ios/Flutter/Release-local.xcconfig
-    echo "✅ Release-local.xcconfig → com.example.knittda"
+    {
+        echo "PRODUCT_BUNDLE_IDENTIFIER=com.example.knittda"
+        echo "kakaoNativeAppKey=${KAKAO_NATIVE_APP_KEY}"
+    } > ios/Flutter/Release-local.xcconfig
+    echo "✅ Release-local.xcconfig → com.example.knittda, kakaoNativeAppKey=***"
 fi
 
-# ── 6. Flutter 설치 (Xcode Cloud에 Flutter가 없을 경우 대비)
+# ── 5. Flutter 설치 (Xcode Cloud에 Flutter가 없을 경우 대비)
 if ! command -v flutter &> /dev/null; then
     echo "⚠️  Flutter not found — installing stable..."
     git clone https://github.com/flutter/flutter.git \
@@ -81,7 +97,7 @@ echo "Flutter: $(flutter --version --machine 2>/dev/null | python3 -c \
     'import sys,json; d=json.load(sys.stdin); print(d["frameworkVersion"])' \
     2>/dev/null || echo "(version check skipped)")"
 
-# ── 7. Flutter 의존성 설치
+# ── 6. Flutter 의존성 설치
 echo "📦 flutter pub get..."
 flutter pub get
 
@@ -112,12 +128,22 @@ echo "✅ Generated Dart files verified"
 echo "🍎 flutter precache --ios..."
 flutter precache --ios
 
-# ── 8. CocoaPods 재생성/설치 (xcconfig 누락 방지)
+# ── 7. CocoaPods 재생성/설치 (xcconfig 누락 방지)
 echo "🔧 pod install (clean + repo update)..."
 cd ios
 rm -rf Pods
 pod install --repo-update
 cd ..
+
+# ── 8. SPM 의존성 resolve (Xcode Cloud는 자동 resolve가 비활성화됨)
+# Package.resolved가 누락/outdated여도 빌드가 실패하지 않도록 미리 resolve
+echo "📦 Resolve Swift Package Manager dependencies..."
+xcodebuild -resolvePackageDependencies \
+    -workspace ios/Runner.xcworkspace \
+    -scheme Runner \
+    -configuration Release || {
+    echo "⚠️  SPM resolve failed; continuing (Package.resolved이 commit되어 있다면 정상 진행 가능)"
+}
 
 # ── 9. Flutter 빌드 (Generated.xcconfig에 DART_DEFINES 주입)
 # --no-codesign: 코드서명은 Xcode Cloud가 담당
@@ -137,4 +163,4 @@ else
         --dart-define-from-file="config/prod.json"
 fi
 
-echo "✅ ci_pre_xcodebuild completed"
+echo "✅ ci_post_clone completed"
