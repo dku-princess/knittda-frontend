@@ -2,7 +2,7 @@
   "KAKAO_NATIVE_APP_KEY": "",
   "API_BASE_URL": "",
   "DIRECTUS_BASE_URL": "",
-  "DIRECTUS_STATUS": "published | (\ube48 \uac12\uc774\uba74 \ubaa8\ub4e0 \uc0c1\ud0dc \ud5c8\uc6a9)",
+  "DIRECTUS_STATUS": "published | (빈 값이면 모든 상태 허용)",
   "APP_CHANNEL": "",
   "SENTRY_DSN": "",
   "SENTRY_ENVIRONMENT": "",
