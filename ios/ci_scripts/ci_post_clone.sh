@@ -157,13 +157,13 @@ if [ "$APP_CHANNEL" = "beta" ]; then
         --release \
         --no-codesign \
         --flavor beta \
-        --dart-define-from-file="config/beta.json"
+        --dart-define-from-file="config/beta.json" \
         --config-only
 else
     flutter build ios \
         --release \
         --no-codesign \
-        --dart-define-from-file="config/prod.json"
+        --dart-define-from-file="config/prod.json" \
         --config-only
 fi
 
