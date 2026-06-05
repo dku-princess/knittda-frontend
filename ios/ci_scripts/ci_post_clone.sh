@@ -22,9 +22,11 @@ REQUIRED_VARS=(
     APP_CHANNEL
     KAKAO_NATIVE_APP_KEY
     API_BASE_URL
+    DIRECTUS_BASE_URL
     SENTRY_DSN
     SENTRY_ENVIRONMENT
     GOOGLE_SERVICE_INFO_PLIST
+
 )
 missing=0
 for var in "${REQUIRED_VARS[@]}"; do
@@ -51,7 +53,7 @@ cat > "config/${APP_CHANNEL}.json" << EOF
 {
   "KAKAO_NATIVE_APP_KEY": "${KAKAO_NATIVE_APP_KEY}",
   "API_BASE_URL": "${API_BASE_URL}",
-  "DIRECTUS_BASE_URL": "${DIRECTUS_BASE_URL:-}",
+  "DIRECTUS_BASE_URL": "${DIRECTUS_BASE_URL}",
   "DIRECTUS_STATUS": "${DIRECTUS_STATUS_VALUE}",
   "APP_CHANNEL": "${APP_CHANNEL}",
   "SENTRY_DSN": "${SENTRY_DSN}",
@@ -156,11 +158,13 @@ if [ "$APP_CHANNEL" = "beta" ]; then
         --no-codesign \
         --flavor beta \
         --dart-define-from-file="config/beta.json"
+        --config-only
 else
     flutter build ios \
         --release \
         --no-codesign \
         --dart-define-from-file="config/prod.json"
+        --config-only
 fi
 
 echo "✅ ci_post_clone completed"
