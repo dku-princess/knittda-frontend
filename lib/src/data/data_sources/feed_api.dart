@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
+import 'package:knittda/src/performance/initial_load_tracker.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 class FeedApi {
@@ -13,6 +14,10 @@ class FeedApi {
     List<String>? sort,
   ) async {
     try {
+      final tracker = InitialLoadTracker.feed;
+      if (page == 0 && tracker.isSessionActive) {
+        tracker.markT2();
+      }
       final response = await _dio.get(
         '/api/v1/feed/',
         queryParameters: {
@@ -21,6 +26,9 @@ class FeedApi {
           if (sort != null) 'sort': sort,
         },
       );
+      if (page == 0 && tracker.isSessionActive) {
+        tracker.markT3();
+      }
 
       if (response.statusCode == 200) {
         final data = response.data;

@@ -14,6 +14,12 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
+
 android {
     namespace = "com.tteuda.app"
     compileSdk = flutter.compileSdkVersion
@@ -40,20 +46,28 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.tteuda.app"
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
-        val localProperties = Properties()
-        val localPropertiesFile = rootProject.file("local.properties")
-        if(localPropertiesFile.exists()){
-            localProperties.load(FileInputStream(localPropertiesFile))
-        }
         val kakaoKey = localProperties.getProperty("KAKAO_NATIVE_APP_KEY") ?: ""
         manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = kakaoKey
+    }
+
+    flavorDimensions += "channel"
+
+    productFlavors {
+        create("beta") {
+            dimension = "channel"
+            applicationId = "com.tteuda.app.beta"
+            resValue("string", "app_name", "뜨다 Beta")
+        }
+        create("prod") {
+            dimension = "channel"
+            applicationId = "com.tteuda.app"
+            resValue("string", "app_name", "뜨다")
+        }
     }
 
     buildTypes {

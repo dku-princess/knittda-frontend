@@ -49,6 +49,7 @@ import 'package:knittda/src/domain/use_case/social_login_use_case.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
+import 'package:sentry_dio/sentry_dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/data_sources/auth_interceptor.dart';
@@ -64,9 +65,8 @@ Future<List<SingleChildWidget>> getProviders() async {
   final bannerLocalStorage = BannerLocalStorage(sharedPrefs);
   await bannerLocalStorage.cleanUpOldKeys();
 
-  final SocialLogin appleLogin = Platform.isIOS
-      ? SocialLoginApple()
-      : SocialLoginAppleDummy();
+  final SocialLogin appleLogin =
+      Platform.isIOS ? SocialLoginApple() : SocialLoginAppleDummy();
 
   final packageInfo = await PackageInfo.fromPlatform();
   final appVersion = packageInfo.version;
@@ -76,6 +76,7 @@ Future<List<SingleChildWidget>> getProviders() async {
       create: (_) {
         final dio = Dio(BaseOptions(baseUrl: AppConfig.apiBaseUrl));
         dio.interceptors.add(AuthInterceptor(tokenStorage));
+        dio.addSentry();
         return dio;
       },
     ),
@@ -83,16 +84,15 @@ Future<List<SingleChildWidget>> getProviders() async {
       create: (_) {
         final dio = Dio(BaseOptions(baseUrl: AppConfig.directusBaseUrl));
         dio.interceptors.add(AuthInterceptor(tokenStorage));
+        dio.addSentry();
         return DirectusDio(dio);
       },
     ),
-
     ProxyProvider<Dio, ReportApi>(update: (context, dio, _) => ReportApi(dio)),
     ProxyProvider<ReportApi, ReportApiRepository>(
       update: (context, api, _) =>
           ReportApiRepositoryImpl(api, reportDataSource),
     ),
-
     ProxyProvider<Dio, AuthenticationApi>(
       update: (context, dio, _) => AuthenticationApi(dio),
     ),
@@ -109,27 +109,18 @@ Future<List<SingleChildWidget>> getProviders() async {
       update: (context, authRepository, _) =>
           SocialLoginUseCase(authRepository),
     ),
-    ProxyProvider2<
-      AuthenticationRepository,
-      ReportApiRepository,
-      AutoLoginUseCase
-    >(
+    ProxyProvider2<AuthenticationRepository, ReportApiRepository,
+        AutoLoginUseCase>(
       update: (context, authRepository, reportRepository, _) =>
           AutoLoginUseCase(authRepository, reportRepository),
     ),
-    ProxyProvider2<
-      AuthenticationRepository,
-      ReportApiRepository,
-      SignoutUseCase
-    >(
+    ProxyProvider2<AuthenticationRepository, ReportApiRepository,
+        SignoutUseCase>(
       update: (context, authRepository, reportRepository, _) =>
           SignoutUseCase(authRepository, reportRepository),
     ),
-    ProxyProvider2<
-      AuthenticationRepository,
-      ReportApiRepository,
-      LogoutUseCase
-    >(
+    ProxyProvider2<AuthenticationRepository, ReportApiRepository,
+        LogoutUseCase>(
       update: (context, authRepository, reportRepository, _) =>
           LogoutUseCase(authRepository, reportRepository),
     ),
@@ -140,7 +131,6 @@ Future<List<SingleChildWidget>> getProviders() async {
     ProxyProvider<AuthenticationRepository, GetUserUseCase>(
       update: (context, authRepository, _) => GetUserUseCase(authRepository),
     ),
-
     ProxyProvider<Dio, ProjectApi>(
       update: (context, dio, _) => ProjectApi(dio),
     ),
@@ -155,7 +145,6 @@ Future<List<SingleChildWidget>> getProviders() async {
     ProxyProvider<ProjectApiRepository, GetProjectPreviewsUseCase>(
       update: (context, repository, _) => GetProjectPreviewsUseCase(repository),
     ),
-
     ProxyProvider<Dio, FeedApi>(update: (context, dio, _) => FeedApi(dio)),
     ProxyProvider<FeedApi, FeedApiRepository>(
       update: (context, api, _) => FeedApiRepositoryImpl(api),
@@ -163,15 +152,13 @@ Future<List<SingleChildWidget>> getProviders() async {
     ProxyProvider<FeedApiRepository, GetFeedUseCase>(
       update: (context, repository, _) => GetFeedUseCase(repository),
     ),
-
     ProxyProvider<Dio, RecordApi>(update: (context, dio, _) => RecordApi(dio)),
     ProxyProvider<RecordApi, RecordApiRepository>(
       update: (context, api, _) => RecordApiRepositoryImpl(api),
     ),
-
     ProxyProvider<DirectusDio, ArticleApi>(
       update: (context, directusDio, _) =>
-          ArticleApi(directusDio.dio, articleStatus: AppConfig.articleStatus),
+          ArticleApi(directusDio.dio, directusStatus: AppConfig.directusStatus),
     ),
     ProxyProvider<ArticleApi, ArticleRepository>(
       update: (context, api, _) => ArticleRepositoryImpl(api),

@@ -1,13 +1,15 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '13.0'
+platform :ios, '15.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
 project 'Runner', {
   'Debug' => :debug,
+  'Debug-Beta' => :debug,
   'Profile' => :release,
   'Release' => :release,
+  'Release-Beta' => :release,
 }
 
 def flutter_root
@@ -28,9 +30,7 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 flutter_ios_podfile_setup
 
 target 'Runner' do
-  use_frameworks!
   use_modular_headers!
-
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do
     inherit! :search_paths
@@ -38,11 +38,52 @@ target 'Runner' do
 end
 
 post_install do |installer|
+  privacy_manifest_paths = [
+    File.join(installer.sandbox.root.to_s, 'GoogleUtilities', 'GoogleUtilities', 'Privacy', 'Resources', 'PrivacyInfo.xcprivacy'),
+    File.join(installer.sandbox.root.to_s, 'FirebaseAuth', 'FirebaseAuth', 'Sources', 'Resources', 'PrivacyInfo.xcprivacy'),
+  ]
+  privacy_manifest_paths.each do |manifest_path|
+    next if File.exist?(manifest_path)
+    FileUtils.mkdir_p(File.dirname(manifest_path))
+    File.write(
+      manifest_path,
+      <<~PLIST
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict/>
+        </plist>
+      PLIST
+    )
+  end
+
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
     target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
       config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-Onone'
+
     end
+  end
+
+  # Flutter regenerates these files with iOS 13.0 (Flutter's own minimum), but
+  # Firebase requires iOS 15.0. Patch after every pod install so Xcode's SPM
+  # resolver sees the correct minimum before opening the workspace.
+  spm_files = [
+    File.join(__dir__, 'Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift'),
+    File.join(__dir__, 'Flutter/ephemeral/Packages/.packages/FlutterFramework/Package.swift'),
+  ]
+  spm_files.each do |path|
+    next unless File.exist?(path)
+    original = File.read(path)
+    patched = original.gsub('.iOS("13.0")', '.iOS("15.0")')
+    File.write(path, patched) if patched != original
+  end
+
+  podspec = File.join(__dir__, 'Flutter/Flutter.podspec')
+  if File.exist?(podspec)
+    original = File.read(podspec)
+    patched = original.gsub("s.ios.deployment_target = '13.0'", "s.ios.deployment_target = '15.0'")
+    File.write(podspec, patched) if patched != original
   end
 end

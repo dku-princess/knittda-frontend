@@ -39,6 +39,10 @@ android/key.properties
 *.tmp
 *.temp
 
+# macOS Finder duplicate copies (e.g. "file 2.dart")
+* 2.dart
+* 3.sh
+
 # Environment files (except example)
 env.dart
 !env.dart.example
@@ -63,6 +67,8 @@ migrate_working_dir/
 #.vscode/
 **/doc/api/
 **/ios/Flutter/.last_build_id
+ios/Flutter/Debug-local.xcconfig
+ios/Flutter/Release-local.xcconfig
 app.*.symbols
 app.*.map.json
 /android/app/debug
@@ -75,10 +81,6 @@ app.*.map.json
 
 config/*.json
 !config/example.json
-
-# iOS 로컬 xcconfig (카카오 로그인용)
-ios/Flutter/Debug-local.xcconfig
-ios/Flutter/Release-local.xcconfig
 
 # GoogleService-Info.plist (Xcode Cloud 원격 관리)
 ios/Runner/GoogleService-Info.plist
