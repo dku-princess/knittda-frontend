@@ -74,7 +74,8 @@ app.*.map.json
 *.freezed.dart
 
 config/*.json
-!config/example.json
+!config/example.run.json
+!config/example.release.json
 
 # iOS 로컬 xcconfig (카카오 로그인용)
 ios/Flutter/Debug-local.xcconfig
