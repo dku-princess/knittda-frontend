@@ -60,18 +60,13 @@ PODS:
   - GTMSessionFetcher/Core (4.5.0)
   - image_picker_ios (0.0.1):
     - Flutter
-  - kakao_flutter_sdk_common (1.9.7-3):
-    - Flutter
-  - objective_c (0.0.1):
+  - kakao_flutter_sdk_common (1.10.0):
     - Flutter
   - package_info_plus (0.4.5):
     - Flutter
-  - path_provider_foundation (0.0.1):
-    - Flutter
-    - FlutterMacOS
   - RecaptchaInterop (101.0.0)
   - Sentry/HybridSDK (8.56.2)
-  - sentry_flutter (9.8.0):
+  - sentry_flutter (9.14.0):
     - Flutter
     - FlutterMacOS
     - Sentry/HybridSDK (= 8.56.2)
@@ -96,9 +91,7 @@ DEPENDENCIES:
   - gal (from `.symlinks/plugins/gal/darwin`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - kakao_flutter_sdk_common (from `.symlinks/plugins/kakao_flutter_sdk_common/ios`)
-  - objective_c (from `.symlinks/plugins/objective_c/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
-  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
@@ -135,12 +128,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   kakao_flutter_sdk_common:
     :path: ".symlinks/plugins/kakao_flutter_sdk_common/ios"
-  objective_c:
-    :path: ".symlinks/plugins/objective_c/ios"
   package_info_plus:
     :path: ".symlinks/plugins/package_info_plus/ios"
-  path_provider_foundation:
-    :path: ".symlinks/plugins/path_provider_foundation/darwin"
   sentry_flutter:
     :path: ".symlinks/plugins/sentry_flutter/ios"
   share_plus:
@@ -156,32 +145,30 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Firebase: d99ac19b909cd2c548339c2241ecd0d1599ab02e
-  firebase_auth: 5342db41af2ba5ed32a6177d9e326eecbebda912
-  firebase_core: 99a37263b3c27536063a7b601d9e2a49400a433c
+  firebase_auth: 50af8366c87bb88c80ebeae62eb60189c7246b9b
+  firebase_core: 995454a784ff288be5689b796deb9e9fa3601818
   FirebaseAppCheckInterop: 06fe5a3799278ae4667e6c432edd86b1030fa3df
   FirebaseAuth: a6575e5fbf46b046c58dc211a28a5fbdd8d4c83b
   FirebaseAuthInterop: 7087d7a4ee4bc4de019b2d0c240974ed5d89e2fd
   FirebaseCore: efb3893e5b94f32b86e331e3bd6dadf18b66568e
   FirebaseCoreExtension: edbd30474b5ccf04e5f001470bdf6ea616af2435
   FirebaseCoreInternal: 9afa45b1159304c963da48addb78275ef701c6b4
-  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
-  gal: 6a522c75909f1244732d4596d11d6a2f86ff37a5
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_secure_storage: 1ed9476fba7e7a782b22888f956cce43e2c62f13
+  gal: baecd024ebfd13c441269ca7404792a7152fde89
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   GTMSessionFetcher: fc75fc972958dceedee61cb662ae1da7a83a91cf
-  image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
-  kakao_flutter_sdk_common: 3dc8492c202af7853585d151490b1c5c6b7576cb
-  objective_c: 77e887b5ba1827970907e10e832eec1683f3431d
-  package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
-  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  image_picker_ios: e0ece4aa2a75771a7de3fa735d26d90817041326
+  kakao_flutter_sdk_common: 682b3606698f87467788598dc2dc09d4e6867fbd
+  package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   Sentry: b53951377b78e21a734f5dc8318e333dbfc682d7
-  sentry_flutter: f074f75557daea0e1dd9607381a05cc0e3e456fe
-  share_plus: 8b6f8b3447e494cca5317c8c3073de39b3600d1f
-  shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
-  sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
-  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
-  webview_flutter_wkwebview: a4af96a051138e28e29f60101d094683b9f82188
+  sentry_flutter: 841fa2fe08dc72eb95e2320b76e3f751f3400cf5
+  share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
+  shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
+  sign_in_with_apple: c5dcc141574c8c54d5ac99dd2163c0c72ad22418
+  url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
+  webview_flutter_wkwebview: 8ebf4fded22593026f7dbff1fbff31ea98573c8d
 
 PODFILE CHECKSUM: 9db5e8ab117fb6cb23d3166ea436fa67e824f37d
 
