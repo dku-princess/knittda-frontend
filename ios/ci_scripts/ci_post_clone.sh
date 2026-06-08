@@ -20,7 +20,6 @@ echo "📁 Project root: $PROJECT_ROOT"
 # Xcode Cloud 워크플로우 설정에서 반드시 선언해야 하는 변수들
 REQUIRED_VARS=(
     APP_CHANNEL
-    APP_BUNDLE_ID
     KAKAO_NATIVE_APP_KEY
     API_BASE_URL
     DIRECTUS_BASE_URL
@@ -61,21 +60,14 @@ echo "✅ config/env.json created (channel=${APP_CHANNEL}, release=${RELEASE}, s
 echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > ios/Runner/GoogleService-Info.plist
 echo "✅ GoogleService-Info.plist created"
 
-# ── 4. Bundle ID 교체
-# project.pbxproj 타겟 레벨 설정이 xcconfig를 오버라이드하므로 sed로 직접 교체
-# RunnerTests 타겟은 변경하지 않는다
-PBXPROJ="$PROJECT_ROOT/ios/Runner.xcodeproj/project.pbxproj"
-sed -i '' "/RunnerTests/!s/PRODUCT_BUNDLE_IDENTIFIER = .*;/PRODUCT_BUNDLE_IDENTIFIER = $APP_BUNDLE_ID;/" "$PBXPROJ"
-echo "✅ Bundle ID → $APP_BUNDLE_ID"
-
-# ── 5. xcconfig에 kakaoNativeAppKey 주입
+# ── 4. xcconfig에 kakaoNativeAppKey 주입
 # Info.plist의 $(kakaoNativeAppKey)는 dart-define이 아닌 Xcode Build Settings에서 값을 참조
 # 누락 시 빈 값으로 빌드되어 카카오 로그인이 동작하지 않음
 echo "kakaoNativeAppKey=${KAKAO_NATIVE_APP_KEY}" >> "$PROJECT_ROOT/ios/Flutter/Debug.xcconfig"
 echo "kakaoNativeAppKey=${KAKAO_NATIVE_APP_KEY}" >> "$PROJECT_ROOT/ios/Flutter/Release.xcconfig"
 echo "✅ xcconfig updated (kakaoNativeAppKey injected)"
 
-# ── 6. Flutter 설치 (Xcode Cloud에 Flutter가 없을 경우 대비)
+# ── 5. Flutter 설치 (Xcode Cloud에 Flutter가 없을 경우 대비)
 if ! command -v flutter &> /dev/null; then
     echo "⚠️  Flutter not found — installing stable..."
     git clone https://github.com/flutter/flutter.git \
@@ -84,7 +76,7 @@ if ! command -v flutter &> /dev/null; then
 fi
 echo "Flutter: $(flutter --version 2>/dev/null | head -1)"
 
-# ── 7. Flutter 의존성 설치
+# ── 6. Flutter 의존성 설치
 echo "📦 flutter pub get..."
 flutter pub get
 
@@ -115,28 +107,29 @@ echo "✅ Generated Dart files verified"
 echo "🍎 flutter precache --ios..."
 flutter precache --ios
 
-# ── 8. Flutter 빌드 설정 생성 (Generated.xcconfig에 DART_DEFINES 주입)
+# ── 7. Flutter 빌드 설정 생성 (Generated.xcconfig에 DART_DEFINES 주입)
+# --flavor: APP_CHANNEL(beta|prod)에 맞는 build configuration(Release-Beta|Release-Prod) 선택
 # --no-codesign: 코드서명은 Xcode Cloud가 담당
-echo "🔨 flutter build ios --no-codesign (DART_DEFINES 생성)..."
+echo "🔨 flutter build ios --flavor ${APP_CHANNEL} --no-codesign (DART_DEFINES 생성)..."
 flutter build ios \
     --release \
     --no-codesign \
+    --flavor "$APP_CHANNEL" \
     --dart-define-from-file="config/env.json" \
     --config-only
 
-# ── 9. CocoaPods 재생성/설치 (xcconfig 누락 방지)
+# ── 8. CocoaPods 재생성/설치 (xcconfig 누락 방지)
 echo "🔧 pod install (clean + repo update)..."
 cd ios
 rm -rf Pods
 pod install --repo-update
 cd ..
 
-# ── 10. SPM 의존성 resolve (Xcode Cloud는 자동 resolve가 비활성화됨)
+# ── 9. SPM 의존성 resolve (Xcode Cloud는 자동 resolve가 비활성화됨)
 echo "📦 Resolve Swift Package Manager dependencies..."
 xcodebuild -resolvePackageDependencies \
     -workspace ios/Runner.xcworkspace \
-    -scheme Runner \
-    -configuration Release || {
+    -scheme "$APP_CHANNEL" || {
     echo "⚠️  SPM resolve failed; continuing (Package.resolved이 commit되어 있다면 정상 진행 가능)"
 }
 
