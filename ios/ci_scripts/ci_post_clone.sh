@@ -45,14 +45,23 @@ echo "kakaoNativeAppKey=$kakaoNativeAppKey" >> "$CI_PRIMARY_REPOSITORY_PATH/ios/
 echo "xcconfig updated"
 
 # ==============================
-# 4) Flutter SDK 설치
+# 4) Bundle ID 교체
+# project.pbxproj의 Runner 타겟 번들 ID를 Workflow별 APP_BUNDLE_ID로 교체한다
+# RunnerTests 타겟은 변경하지 않는다
+# ==============================
+PBXPROJ="$CI_PRIMARY_REPOSITORY_PATH/ios/Runner.xcodeproj/project.pbxproj"
+sed -i '' "/RunnerTests/!s/PRODUCT_BUNDLE_IDENTIFIER = .*;/PRODUCT_BUNDLE_IDENTIFIER = $APP_BUNDLE_ID;/" "$PBXPROJ"
+echo "bundle id updated to $APP_BUNDLE_ID"
+
+# ==============================
+# 5) Flutter SDK 설치
 # stable 브랜치의 최신 버전을 설치한다
 # ==============================
 git clone https://github.com/flutter/flutter.git --depth 1 -b stable $HOME/flutter
 export PATH="$PATH:$HOME/flutter/bin"
 
 # ==============================
-# 5) Flutter 의존성 설치
+# 6) Flutter 의존성 설치
 # iOS 빌드에 필요한 아티팩트와 pub 패키지를 설치한다
 # ==============================
 flutter precache --ios
@@ -62,14 +71,14 @@ flutter pub get
 dart run build_runner build
 
 # ==============================
-# 6) Flutter 빌드 설정 생성
+# 7) Flutter 빌드 설정 생성
 # ==============================
 flutter build ios --release --no-codesign \
   --dart-define-from-file=config/env.json \
   --config-only
 
 # ==============================
-# 7)  CocoaPods 설치 및 pod install
+# 8) CocoaPods 설치 및 pod install
 # ==============================
 HOMEBREW_NO_AUTO_UPDATE=1
 brew install cocoapods
