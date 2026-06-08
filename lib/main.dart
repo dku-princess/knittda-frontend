@@ -29,10 +29,10 @@ Future<void> main() async {
 
       await SentryFlutter.init((options) {
         options.dsn = AppConfig.sentryDsn;
+        options.environment = AppConfig.sentryEnvironment;
         options.attachStacktrace = true;
         options.sendDefaultPii = false;
         options.tracesSampleRate = 1.0;
-        options.environment = AppConfig.sentryEnvironment;
         if (AppConfig.sentryRelease.isNotEmpty) {
           options.release = AppConfig.sentryRelease;
         }

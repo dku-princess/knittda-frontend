@@ -20,13 +20,14 @@ echo "📁 Project root: $PROJECT_ROOT"
 # Xcode Cloud 워크플로우 설정에서 반드시 선언해야 하는 변수들
 REQUIRED_VARS=(
     APP_CHANNEL
+    APP_BUNDLE_ID
     KAKAO_NATIVE_APP_KEY
     API_BASE_URL
     DIRECTUS_BASE_URL
+    DIRECTUS_STATUS
     SENTRY_DSN
     SENTRY_ENVIRONMENT
     GOOGLE_SERVICE_INFO_PLIST
-
 )
 missing=0
 for var in "${REQUIRED_VARS[@]}"; do
@@ -42,64 +43,47 @@ mkdir -p config
 PUBSPEC_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
 RELEASE="${SENTRY_RELEASE:-knittda@${PUBSPEC_VERSION}}"
 
-# DIRECTUS_STATUS: prod는 "published"만, beta는 모든 상태 허용(빈 값)
-if [ "$APP_CHANNEL" = "beta" ]; then
-    DIRECTUS_STATUS_VALUE=""
-else
-    DIRECTUS_STATUS_VALUE="published"
-fi
-
-cat > "config/${APP_CHANNEL}.json" << EOF
+cat > "config/env.json" << EOF
 {
   "KAKAO_NATIVE_APP_KEY": "${KAKAO_NATIVE_APP_KEY}",
   "API_BASE_URL": "${API_BASE_URL}",
   "DIRECTUS_BASE_URL": "${DIRECTUS_BASE_URL}",
-  "DIRECTUS_STATUS": "${DIRECTUS_STATUS_VALUE}",
-  "APP_CHANNEL": "${APP_CHANNEL}",
+  "DIRECTUS_STATUS": "${DIRECTUS_STATUS}",
   "SENTRY_DSN": "${SENTRY_DSN}",
   "SENTRY_ENVIRONMENT": "${SENTRY_ENVIRONMENT}",
   "SENTRY_RELEASE": "${RELEASE}"
 }
 EOF
-echo "✅ config/${APP_CHANNEL}.json created (release=${RELEASE}, status='${DIRECTUS_STATUS_VALUE}')"
+echo "✅ config/env.json created (channel=${APP_CHANNEL}, release=${RELEASE}, status='${DIRECTUS_STATUS}')"
 
 # ── 3. GoogleService-Info.plist 생성 (gitignored → Base64 환경변수에서 복원)
 echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > ios/Runner/GoogleService-Info.plist
 echo "✅ GoogleService-Info.plist created"
 
-# ── 4. xcconfig local 파일 생성 (gitignored → CI에서 직접 생성)
-# beta: Release-beta 빌드 구성이 Debug.xcconfig → Debug-local.xcconfig 를 읽음
-# prod: Release 빌드 구성이 Release.xcconfig → Release-local.xcconfig 를 읽음
-#
-# kakaoNativeAppKey: Info.plist의 $(kakaoNativeAppKey)는 dart-define이 아닌
-# Xcode Build Settings(xcconfig)에서 값을 참조하므로 반드시 여기에 선언해야 함.
-# 누락 시 빈 값으로 빌드되어 카카오 로그인이 동작하지 않음.
-if [ "$APP_CHANNEL" = "beta" ]; then
-    {
-        echo "PRODUCT_BUNDLE_IDENTIFIER=com.tteuda.app.beta"
-        echo "kakaoNativeAppKey=${KAKAO_NATIVE_APP_KEY}"
-    } > ios/Flutter/Debug-local.xcconfig
-    echo "✅ Debug-local.xcconfig → com.tteuda.app.beta, kakaoNativeAppKey=***"
-else
-    {
-        echo "PRODUCT_BUNDLE_IDENTIFIER=com.example.knittda"
-        echo "kakaoNativeAppKey=${KAKAO_NATIVE_APP_KEY}"
-    } > ios/Flutter/Release-local.xcconfig
-    echo "✅ Release-local.xcconfig → com.example.knittda, kakaoNativeAppKey=***"
-fi
+# ── 4. Bundle ID 교체
+# project.pbxproj 타겟 레벨 설정이 xcconfig를 오버라이드하므로 sed로 직접 교체
+# RunnerTests 타겟은 변경하지 않는다
+PBXPROJ="$PROJECT_ROOT/ios/Runner.xcodeproj/project.pbxproj"
+sed -i '' "/RunnerTests/!s/PRODUCT_BUNDLE_IDENTIFIER = .*;/PRODUCT_BUNDLE_IDENTIFIER = $APP_BUNDLE_ID;/" "$PBXPROJ"
+echo "✅ Bundle ID → $APP_BUNDLE_ID"
 
-# ── 5. Flutter 설치 (Xcode Cloud에 Flutter가 없을 경우 대비)
+# ── 5. xcconfig에 kakaoNativeAppKey 주입
+# Info.plist의 $(kakaoNativeAppKey)는 dart-define이 아닌 Xcode Build Settings에서 값을 참조
+# 누락 시 빈 값으로 빌드되어 카카오 로그인이 동작하지 않음
+echo "kakaoNativeAppKey=${KAKAO_NATIVE_APP_KEY}" >> "$PROJECT_ROOT/ios/Flutter/Debug.xcconfig"
+echo "kakaoNativeAppKey=${KAKAO_NATIVE_APP_KEY}" >> "$PROJECT_ROOT/ios/Flutter/Release.xcconfig"
+echo "✅ xcconfig updated (kakaoNativeAppKey injected)"
+
+# ── 6. Flutter 설치 (Xcode Cloud에 Flutter가 없을 경우 대비)
 if ! command -v flutter &> /dev/null; then
     echo "⚠️  Flutter not found — installing stable..."
     git clone https://github.com/flutter/flutter.git \
         -b stable --depth 1 "$HOME/flutter"
     export PATH="$HOME/flutter/bin:$PATH"
 fi
-echo "Flutter: $(flutter --version --machine 2>/dev/null | python3 -c \
-    'import sys,json; d=json.load(sys.stdin); print(d["frameworkVersion"])' \
-    2>/dev/null || echo "(version check skipped)")"
+echo "Flutter: $(flutter --version 2>/dev/null | head -1)"
 
-# ── 6. Flutter 의존성 설치
+# ── 7. Flutter 의존성 설치
 echo "📦 flutter pub get..."
 flutter pub get
 
@@ -109,7 +93,7 @@ dart run build_runner clean
 echo "🧊 dart run build_runner build --delete-conflicting-outputs..."
 dart run build_runner build --delete-conflicting-outputs
 
-echo "🔍 Verify generated Dart files..."
+echo "🔍 Generated Dart files 검증..."
 if [ ! -f "lib/src/domain/model/announcement.freezed.dart" ] || [ ! -f "lib/src/domain/model/announcement.g.dart" ]; then
     echo "❌ build_runner output missing: .freezed.dart/.g.dart files were not generated"
     exit 1
@@ -130,15 +114,23 @@ echo "✅ Generated Dart files verified"
 echo "🍎 flutter precache --ios..."
 flutter precache --ios
 
-# ── 7. CocoaPods 재생성/설치 (xcconfig 누락 방지)
+# ── 8. Flutter 빌드 설정 생성 (Generated.xcconfig에 DART_DEFINES 주입)
+# --no-codesign: 코드서명은 Xcode Cloud가 담당
+echo "🔨 flutter build ios --no-codesign (DART_DEFINES 생성)..."
+flutter build ios \
+    --release \
+    --no-codesign \
+    --dart-define-from-file="config/env.json" \
+    --config-only
+
+# ── 9. CocoaPods 재생성/설치 (xcconfig 누락 방지)
 echo "🔧 pod install (clean + repo update)..."
 cd ios
 rm -rf Pods
 pod install --repo-update
 cd ..
 
-# ── 8. SPM 의존성 resolve (Xcode Cloud는 자동 resolve가 비활성화됨)
-# Package.resolved가 누락/outdated여도 빌드가 실패하지 않도록 미리 resolve
+# ── 10. SPM 의존성 resolve (Xcode Cloud는 자동 resolve가 비활성화됨)
 echo "📦 Resolve Swift Package Manager dependencies..."
 xcodebuild -resolvePackageDependencies \
     -workspace ios/Runner.xcworkspace \
@@ -146,25 +138,5 @@ xcodebuild -resolvePackageDependencies \
     -configuration Release || {
     echo "⚠️  SPM resolve failed; continuing (Package.resolved이 commit되어 있다면 정상 진행 가능)"
 }
-
-# ── 9. Flutter 빌드 (Generated.xcconfig에 DART_DEFINES 주입)
-# --no-codesign: 코드서명은 Xcode Cloud가 담당
-# Xcode Cloud가 이후 xcodebuild archive를 실행할 때 DART_DEFINES가 필요하므로
-# 이 단계에서 Generated.xcconfig를 올바르게 생성해 둠
-echo "🔨 flutter build ios --no-codesign (DART_DEFINES 생성)..."
-if [ "$APP_CHANNEL" = "beta" ]; then
-    flutter build ios \
-        --release \
-        --no-codesign \
-        --flavor beta \
-        --dart-define-from-file="config/beta.json" \
-        --config-only
-else
-    flutter build ios \
-        --release \
-        --no-codesign \
-        --dart-define-from-file="config/prod.json" \
-        --config-only
-fi
 
 echo "✅ ci_post_clone completed"
