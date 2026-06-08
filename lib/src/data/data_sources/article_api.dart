@@ -4,10 +4,10 @@ import 'package:knittda/src/domain/model/article/article_detail.dart';
 
 class ArticleApi {
   final Dio _dio;
-  final String _articleStatus;
+  final String _directusStatus;
 
-  ArticleApi(this._dio, {required String articleStatus})
-    : _articleStatus = articleStatus;
+  ArticleApi(this._dio, {required String directusStatus})
+    : _directusStatus = directusStatus;
 
   Future<({List<Article> articles, int totalCount})> fetchArticles({
     int limit = 15,
@@ -17,7 +17,7 @@ class ArticleApi {
       '/items/articles',
       queryParameters: {
         'fields': '*',
-        'filter[status][_in]': _articleStatus,
+        if (_directusStatus.isNotEmpty) 'filter[status][_in]': _directusStatus,
         'limit': limit,
         'offset': offset,
         'meta': 'filter_count',
@@ -56,7 +56,7 @@ class ArticleApi {
         'fields':
             '*,sections.*,sections.item.*.*,sections.item.qa_item_block.gallery.*,sections.item.pattern_item_block.gallery.*,sections.item.pattern_item_block.gallery_second.*',
         filterKey: slugOrId,
-        'filter[status][_in]': _articleStatus,
+        if (_directusStatus.isNotEmpty) 'filter[status][_in]': _directusStatus,
       },
     );
 

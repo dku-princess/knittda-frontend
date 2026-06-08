@@ -3,6 +3,5 @@ class AppConfig {
   static const String sentryDsn = String.fromEnvironment('SENTRY_DSN');
   static const String apiBaseUrl = String.fromEnvironment('API_BASE_URL');
   static const String directusBaseUrl = String.fromEnvironment('DIRECTUS_BASE_URL');
-  static const String articleStatus = String.fromEnvironment('ARTICLE_STATUS');
   static const String directusStatus = String.fromEnvironment('DIRECTUS_STATUS');
 }

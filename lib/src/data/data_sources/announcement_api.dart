@@ -13,7 +13,7 @@ class AnnouncementApi {
     final response = await _dio.get(
       '/items/announcements',
       queryParameters: {
-        'filter[status][_in]': _directusStatus,
+        if (_directusStatus.isNotEmpty) 'filter[status][_in]': _directusStatus,
         'sort': '-is_pinned,-published_at',
         'limit': limit,
         'offset': offset,
@@ -37,7 +37,7 @@ class AnnouncementApi {
     final response = await _dio.get(
       '/items/announcements',
       queryParameters: {
-        'filter[status][_in]': _directusStatus,
+        if (_directusStatus.isNotEmpty) 'filter[status][_in]': _directusStatus,
         filterKey: slugOrId,
         'fields': 'id,status,is_pinned,title,slug,description,category,published_at,body,tracking_label',
       },

@@ -12,7 +12,7 @@ class InAppBannerApi {
     final response = await _dio.get(
       '/items/in_app_banner',
       queryParameters: {
-        'filter[status][_in]': _directusStatus,
+        if (_directusStatus.isNotEmpty) 'filter[status][_in]': _directusStatus,
         'filter[is_active][_eq]': true,
         'filter[placement][_eq]': 'bottom',
         'sort': 'priority',
