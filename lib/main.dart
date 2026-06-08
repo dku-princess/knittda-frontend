@@ -30,6 +30,7 @@ Future<void> main() async {
     if (!kDebugMode) {
       await SentryFlutter.init((options) {
         options.dsn = AppConfig.sentryDsn;
+        options.environment = AppConfig.sentryEnvironment;
         options.attachStacktrace = true;
         options.sendDefaultPii = false;
       });
