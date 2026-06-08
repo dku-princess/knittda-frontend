@@ -57,6 +57,7 @@ env.local
 .history
 .svn/
 .swiftpm/
+ios/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved
 migrate_working_dir/
 *.iml
 *.ipr
