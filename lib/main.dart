@@ -29,7 +29,7 @@ Future<void> main() async {
 
     if (!kDebugMode) {
       await SentryFlutter.init((options) {
-        options.dsn = AppConfig.sentryDns;
+        options.dsn = AppConfig.sentryDsn;
         options.attachStacktrace = true;
         options.sendDefaultPii = false;
       });

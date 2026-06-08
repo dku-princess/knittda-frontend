@@ -1,8 +1,8 @@
 {
-  "KAKAO_NATIVE_APP_KEY" : "",
-  "SENTRY_DNS" : "",
-  "API_BASE_URL" : "",
-  "DIRECTUS_BASE_URL" : "",
-  "ARTICLE_STATUS" : "draft | prototype_published | published | archived",
-  "DIRECTUS_STATUS" : "draft | published | archived"
+  "KAKAO_NATIVE_APP_KEY": "",
+  "API_BASE_URL": "",
+  "DIRECTUS_BASE_URL": "",
+  "DIRECTUS_STATUS": "",
+  "ARTICLE_STATUS": "",
+  "SENTRY_DSN": ""
 }
