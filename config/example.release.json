@@ -2,8 +2,7 @@
   "KAKAO_NATIVE_APP_KEY": "",
   "API_BASE_URL": "",
   "DIRECTUS_BASE_URL": "",
-  "DIRECTUS_STATUS": "published | (빈 값이면 모든 상태 허용)",
-  "APP_CHANNEL": "",
+  "DIRECTUS_STATUS": "published,draft,archived",
   "SENTRY_DSN": "",
   "SENTRY_ENVIRONMENT": "",
   "SENTRY_RELEASE": ""

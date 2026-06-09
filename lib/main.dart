@@ -10,6 +10,7 @@ import 'package:flutter/widgets.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'app_config.dart';
 
 // 앱 실행
@@ -27,17 +28,19 @@ Future<void> main() async {
       //provider 모음 생성
       final providers = await getProviders();
 
-      await SentryFlutter.init((options) {
-        options.dsn = AppConfig.sentryDsn;
-        options.attachStacktrace = true;
-        options.sendDefaultPii = false;
-        options.tracesSampleRate = 1.0;
-        options.environment = AppConfig.sentryEnvironment;
-        if (AppConfig.sentryRelease.isNotEmpty) {
-          options.release = AppConfig.sentryRelease;
-        }
-        options.tracePropagationTargets.add(AppConfig.apiBaseUrl);
-      });
+      if (!kDebugMode) {
+        await SentryFlutter.init((options) {
+          options.dsn = AppConfig.sentryDsn;
+          options.environment = AppConfig.sentryEnvironment;
+          options.attachStacktrace = true;
+          options.sendDefaultPii = false;
+          options.tracesSampleRate = 1.0;
+          if (AppConfig.sentryRelease.isNotEmpty) {
+            options.release = AppConfig.sentryRelease;
+          }
+          options.tracePropagationTargets.add(AppConfig.apiBaseUrl);
+        });
+      }
 
       // Firebase 초기화
       if (Platform.isIOS) {

@@ -2,7 +2,7 @@ name: knittda
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.5+29
+version: 1.0.5+40
 
 environment:
   sdk: ^3.8.0
@@ -16,7 +16,8 @@ dependencies:
   provider: ^6.1.5
   flutter_secure_storage: ^10.0.0
   image_picker: ^1.2.1
-  sentry_flutter: ^9.8.0
+  sentry_flutter: 9.6.0
+  sentry_dio: 9.6.0
   shared_preferences: ^2.5.3
   dio: ^5.9.0
   http_parser: ^4.1.2
@@ -31,7 +32,6 @@ dependencies:
   freezed_annotation: ^3.1.0
   rxdart: ^0.28.0
   flutter_markdown_plus: ^1.0.7
-  sentry_dio: ^9.20.0
   package_info_plus: ^9.0.1
 
 
@@ -45,7 +45,12 @@ dev_dependencies:
   json_serializable: ^6.11.1
   freezed: ^3.2.3
 
+dependency_overrides:
+  path_provider_foundation: 2.5.1
+
 flutter:
+  config:
+    enable-swift-package-manager: false
   uses-material-design: true
 
   assets:

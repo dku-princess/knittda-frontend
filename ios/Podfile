@@ -1,5 +1,5 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '15.0'
+platform :ios, '16.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -7,9 +7,11 @@ ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 project 'Runner', {
   'Debug' => :debug,
   'Debug-Beta' => :debug,
+  'Debug-Prod' => :debug,
   'Profile' => :release,
   'Release' => :release,
   'Release-Beta' => :release,
+  'Release-Prod' => :release,
 }
 
 def flutter_root
@@ -60,7 +62,7 @@ post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
     target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
       config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-Onone'
 
     end
@@ -76,14 +78,14 @@ post_install do |installer|
   spm_files.each do |path|
     next unless File.exist?(path)
     original = File.read(path)
-    patched = original.gsub('.iOS("13.0")', '.iOS("15.0")')
+    patched = original.gsub('.iOS("13.0")', '.iOS("16.0")')
     File.write(path, patched) if patched != original
   end
 
   podspec = File.join(__dir__, 'Flutter/Flutter.podspec')
   if File.exist?(podspec)
     original = File.read(podspec)
-    patched = original.gsub("s.ios.deployment_target = '13.0'", "s.ios.deployment_target = '15.0'")
+    patched = original.gsub("s.ios.deployment_target = '13.0'", "s.ios.deployment_target = '16.0'")
     File.write(podspec, patched) if patched != original
   end
 end

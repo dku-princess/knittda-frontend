@@ -57,6 +57,7 @@ env.local
 .history
 .svn/
 .swiftpm/
+ios/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved
 migrate_working_dir/
 *.iml
 *.ipr
@@ -80,7 +81,8 @@ app.*.map.json
 *.freezed.dart
 
 config/*.json
-!config/example.json
+!config/example.run.json
+!config/example.release.json
 
 # GoogleService-Info.plist (Xcode Cloud 원격 관리)
 ios/Runner/GoogleService-Info.plist

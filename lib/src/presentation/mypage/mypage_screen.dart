@@ -51,8 +51,8 @@ class _MypageScreenState extends State<MypageScreen> {
             switch (event) {
               case Completed():
                 Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                    builder: (context) =>
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
                         ChangeNotifierProvider<LoginViewModel>(
                           create: (context) => LoginViewModel(
                             context.read<AutoLoginUseCase>(),
@@ -60,6 +60,10 @@ class _MypageScreenState extends State<MypageScreen> {
                           ),
                           child: const LoginScreen(),
                         ),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) =>
+                            child,
+                    transitionDuration: Duration.zero,
                   ),
                   (route) => false,
                 );
