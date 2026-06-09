@@ -45,6 +45,9 @@ dev_dependencies:
   json_serializable: ^6.11.1
   freezed: ^3.2.3
 
+dependency_overrides:
+  path_provider_foundation: 2.5.1
+
 flutter:
   config:
     enable-swift-package-manager: false
