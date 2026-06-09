@@ -125,11 +125,4 @@ rm -rf Pods
 pod install --repo-update
 cd ..
 
-# ── 9. SPM 의존성 resolve (Package.resolved 생성 — gitignore됨, CI에서 직접 생성)
-echo "📦 Resolve Swift Package Manager dependencies..."
-xcodebuild -resolvePackageDependencies \
-    -workspace ios/Runner.xcworkspace \
-    -scheme "$APP_CHANNEL"
-echo "✅ Package.resolved generated"
-
 echo "✅ ci_post_clone completed"
