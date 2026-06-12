@@ -18,6 +18,7 @@ class InAppBannerApi {
         ..._statusFilter,
         'filter[is_active][_eq]': true,
         'filter[placement][_eq]': 'bottom',
+        'filter[priority][_nnull]': true,
         'sort': 'priority',
       },
     );
