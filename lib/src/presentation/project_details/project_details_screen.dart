@@ -246,7 +246,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                         _DiaryTap(
                           state: state.diaryTapState,
                           onRecordTap: (record) async {
-                            bool? isChanged = await Navigator.push<bool>(
+                            await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ChangeNotifierProvider(
@@ -261,25 +261,25 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                                     record: record,
                                     isOwner: state.isOwner,
                                   ),
-                                  child: const RecordDetailsScreen(),
+                                  child: RecordDetailsScreen(
+                                    onChanged: () {
+                                      viewModel.onEvent(
+                                        ProjectDetailsEvent.loadRecords(
+                                          projectId: state.project!.id!,
+                                        ),
+                                      );
+
+                                      viewModel.onEvent(
+                                        ProjectDetailsEvent.loadProject(
+                                          projectId: state.project!.id!,
+                                          project: state.project,
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
                               ),
                             );
-
-                            if (isChanged == true) {
-                              viewModel.onEvent(
-                                ProjectDetailsEvent.loadRecords(
-                                  projectId: state.project!.id!,
-                                ),
-                              );
-
-                              viewModel.onEvent(
-                                ProjectDetailsEvent.loadProject(
-                                  projectId: state.project!.id!,
-                                  project: state.project,
-                                ),
-                              );
-                            }
                           },
                         ),
                         _ReportTap(
@@ -402,82 +402,41 @@ class _InfoTap extends StatelessWidget {
 
   const _InfoTap({required this.project});
 
+  Widget _infoRow(String label, String? value) {
+    final isEmpty = value == null || value.isEmpty;
+
+    return Row(
+      children: [
+        SizedBox(
+          width: 100,
+          child: Text(label, style: const TextStyle(fontSize: 16)),
+        ),
+        Expanded(
+          child: Text(
+            isEmpty ? '-' : value,
+            style: TextStyle(fontSize: 16, color: isEmpty ? Colors.grey : null),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView(
       padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
 
       children: [
-        Row(
-          children: [
-            SizedBox(
-              width: 100,
-              child: Text("도안", style: TextStyle(fontSize: 16)),
-            ),
-            Expanded(
-              child: Text(
-                (project.design?.title?.isNotEmpty ?? false)
-                    ? project.design!.title!
-                    : '정보를 추가해 주세요',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-          ],
-        ),
+        _infoRow('도안', project.design?.title),
         SizedBox(height: 20),
 
-        Row(
-          children: [
-            SizedBox(
-              width: 100,
-              child: Text("작가", style: TextStyle(fontSize: 16)),
-            ),
-            Expanded(
-              child: Text(
-                (project.design?.designer?.isNotEmpty ?? false)
-                    ? project.design!.designer!
-                    : '정보를 추가해 주세요',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-          ],
-        ),
+        _infoRow('작가', project.design?.designer),
         SizedBox(height: 20),
 
-        Row(
-          children: [
-            SizedBox(
-              width: 100,
-              child: Text("실", style: TextStyle(fontSize: 16)),
-            ),
-            Expanded(
-              child: Text(
-                (project.design?.yarnInfo?.isNotEmpty ?? false)
-                    ? project.design!.yarnInfo!
-                    : '정보를 추가해 주세요',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-          ],
-        ),
+        _infoRow('실', project.design?.yarnInfo),
         SizedBox(height: 20),
 
-        Row(
-          children: [
-            SizedBox(
-              width: 100,
-              child: Text("바늘", style: TextStyle(fontSize: 16)),
-            ),
-            Expanded(
-              child: Text(
-                (project.design?.needleInfo?.isNotEmpty ?? false)
-                    ? project.design!.needleInfo!
-                    : '정보를 추가해 주세요',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-          ],
-        ),
+        _infoRow('바늘', project.design?.needleInfo),
         SizedBox(height: 20),
       ],
     );

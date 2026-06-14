@@ -19,19 +19,13 @@ class LogoutUseCase {
       type = const Apple();
     }
 
-    Result<bool>? socialResult;
-
     if (type != null) {
-      socialResult = await _authenticationRepository.socialLogout(type: type);
+      await _authenticationRepository.socialLogout(type: type);
     }
 
     await _authenticationRepository.clearLocalAuth();
 
     await _reportApiRepository.clearReport();
-
-    if (socialResult is Error<bool>) {
-      return Result.error(socialResult.e);
-    }
 
     return Result.success(null);
   }

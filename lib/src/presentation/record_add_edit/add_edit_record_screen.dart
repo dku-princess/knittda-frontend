@@ -135,21 +135,28 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
   Future<void> _pickImage(ImageSource source) async {
     if (_existingImages.length + _newImages.length >= 5) return;
 
-    final XFile? file = await _picker.pickImage(
-      source: source,
-      maxWidth: 1024,
-      maxHeight: 1024,
-      imageQuality: 80,
-    );
+    try {
+      final XFile? file = await _picker.pickImage(
+        source: source,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 80,
+      );
 
-    if (file == null) return;
-    if (!mounted) return;
+      if (file == null) return;
+      if (!mounted) return;
 
-    setState(() {
-      if (_existingImages.length + _newImages.length < 5) {
-        _newImages.add(file);
-      }
-    });
+      setState(() {
+        if (_existingImages.length + _newImages.length < 5) {
+          _newImages.add(file);
+        }
+      });
+    } catch(_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('카메라를 사용할 수 없습니다. 설정에서 권한을 확인해 주세요.')),
+      );
+    }
   }
 
   Future<void> _saveRecord() async {
@@ -333,19 +340,26 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                         final bool isSelected = _recordStatus == status;
 
                         return GestureDetector(
+                          behavior: HitTestBehavior.opaque,
                           onTap: () {
                             setState(() {
                               _recordStatus = status;
                             });
                           },
-                          child: Container(
-                            width: 20,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: isSelected
-                                  ? PRIMARY_COLOR
-                                  : Colors.grey[300],
+                          child: SizedBox(
+                            width: 44,
+                            height: 44,
+                            child: Center(
+                              child: Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isSelected
+                                      ? PRIMARY_COLOR
+                                      : Colors.grey[300],
+                                ),
+                              ),
                             ),
                           ),
                         );

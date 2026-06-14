@@ -89,19 +89,11 @@ class MypageViewModel extends ChangeNotifier {
     _state = state.copyWith(isLoading: true);
     notifyListeners();
 
-    final Result<void> result = await _logoutUseCase(user);
+    await _logoutUseCase(user);
 
     _state = state.copyWith(isLoading: false, user: null);
 
-    switch (result) {
-      case Success():
-        _eventController.add(MypageUiEvent.completed());
-      case Error():
-        _eventController.add(
-          MypageUiEvent.showSnackBar('로그아웃에 실패했어요. 다시 시도해 주세요.'),
-        );
-        _eventController.add(MypageUiEvent.completed());
-    }
+    _eventController.add(MypageUiEvent.completed());
   }
 
   Future<void> _signout() async {
