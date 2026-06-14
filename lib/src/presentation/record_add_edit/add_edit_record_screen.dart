@@ -333,19 +333,26 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                         final bool isSelected = _recordStatus == status;
 
                         return GestureDetector(
+                          behavior: HitTestBehavior.opaque,
                           onTap: () {
                             setState(() {
                               _recordStatus = status;
                             });
                           },
-                          child: Container(
-                            width: 20,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: isSelected
-                                  ? PRIMARY_COLOR
-                                  : Colors.grey[300],
+                          child: SizedBox(
+                            width: 44,
+                            height: 44,
+                            child: Center(
+                              child: Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isSelected
+                                      ? PRIMARY_COLOR
+                                      : Colors.grey[300],
+                                ),
+                              ),
                             ),
                           ),
                         );
