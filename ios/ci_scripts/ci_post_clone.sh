@@ -107,7 +107,17 @@ echo "✅ Generated Dart files verified"
 echo "🍎 flutter precache --ios..."
 flutter precache --ios
 
-# ── 7. Flutter 빌드 설정 생성 (Generated.xcconfig에 DART_DEFINES 주입)
+# ── 7. 빌드 번호를 CI_BUILD_NUMBER로 갱신 (App Store Connect 중복 방지)
+# CI_BUILD_NUMBER는 Xcode Cloud가 빌드마다 자동 증가시키는 값
+if [ -n "${CI_BUILD_NUMBER}" ]; then
+    MARKETING_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
+    sed -i '' "s/^version: .*/version: ${MARKETING_VERSION}+${CI_BUILD_NUMBER}/" pubspec.yaml
+    echo "✅ Build number updated: ${MARKETING_VERSION}+${CI_BUILD_NUMBER}"
+else
+    echo "⚠️  CI_BUILD_NUMBER not set — keeping pubspec.yaml version as-is"
+fi
+
+# ── 8. Flutter 빌드 설정 생성 (Generated.xcconfig에 DART_DEFINES 주입)
 # --flavor: APP_CHANNEL(beta|prod)에 맞는 build configuration(Release-Beta|Release-Prod) 선택
 # --no-codesign: 코드서명은 Xcode Cloud가 담당
 echo "🔨 flutter build ios --flavor ${APP_CHANNEL} --no-codesign (DART_DEFINES 생성)..."
@@ -118,7 +128,7 @@ flutter build ios \
     --dart-define-from-file="config/env.json" \
     --config-only
 
-# ── 8. CocoaPods 재생성/설치 (xcconfig 누락 방지)
+# ── 9. CocoaPods 재생성/설치 (xcconfig 누락 방지)
 echo "🔧 pod install (clean + repo update)..."
 cd ios
 rm -rf Pods
