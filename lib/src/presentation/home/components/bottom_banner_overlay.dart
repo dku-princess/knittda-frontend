@@ -43,10 +43,17 @@ class BottomBannerOverlay extends StatelessWidget {
                           ? Image.network(
                               imageUrl!,
                               fit: BoxFit.cover,
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Container(
+                                      color: Colors.grey.shade300,
+                                    );
+                                  },
                               errorBuilder: (context, error, stackTrace) =>
-                                  Container(color: Colors.grey.shade200),
+                                  Container(color: Colors.grey.shade300),
                             )
-                          : Container(color: Colors.grey.shade200),
+                          : Container(color: Colors.grey.shade300),
                     ),
                   ),
                 ),
@@ -59,7 +66,8 @@ class BottomBannerOverlay extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextButton(
-                      onPressed: () => onDismiss(BannerDismissType.dismissForToday),
+                      onPressed: () =>
+                          onDismiss(BannerDismissType.dismissForToday),
                       child: const Text(
                         '하루 동안 보지 않기',
                         style: TextStyle(color: Colors.white),
