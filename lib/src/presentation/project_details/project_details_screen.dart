@@ -246,7 +246,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                         _DiaryTap(
                           state: state.diaryTapState,
                           onRecordTap: (record) async {
-                            bool? isChanged = await Navigator.push<bool>(
+                            await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ChangeNotifierProvider(
@@ -261,25 +261,25 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                                     record: record,
                                     isOwner: state.isOwner,
                                   ),
-                                  child: const RecordDetailsScreen(),
+                                  child: RecordDetailsScreen(
+                                    onChanged: () {
+                                      viewModel.onEvent(
+                                        ProjectDetailsEvent.loadRecords(
+                                          projectId: state.project!.id!,
+                                        ),
+                                      );
+
+                                      viewModel.onEvent(
+                                        ProjectDetailsEvent.loadProject(
+                                          projectId: state.project!.id!,
+                                          project: state.project,
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
                               ),
                             );
-
-                            if (isChanged == true) {
-                              viewModel.onEvent(
-                                ProjectDetailsEvent.loadRecords(
-                                  projectId: state.project!.id!,
-                                ),
-                              );
-
-                              viewModel.onEvent(
-                                ProjectDetailsEvent.loadProject(
-                                  projectId: state.project!.id!,
-                                  project: state.project,
-                                ),
-                              );
-                            }
                           },
                         ),
                         _ReportTap(

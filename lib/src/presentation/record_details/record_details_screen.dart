@@ -20,7 +20,9 @@ import 'package:provider/provider.dart';
 import '../../domain/use_case/update_record_use_case.dart';
 
 class RecordDetailsScreen extends StatefulWidget {
-  const RecordDetailsScreen({super.key});
+  final VoidCallback? onChanged;
+
+  const RecordDetailsScreen({super.key, this.onChanged});
 
   @override
   State<RecordDetailsScreen> createState() => _RecordDetailsScreenState();
@@ -41,7 +43,7 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
           if (mounted) {
             switch (event) {
               case DeletedRecord():
-                Navigator.pop(context, true);
+                Navigator.pop(context);
               case ShowSnackBar(:final message):
                 final snackBar = SnackBar(content: Text(message));
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -68,11 +70,11 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
     final timeStr = DateUtilsHelper.toHourMinuteFormat(record.createdAt!);
 
     return PopScope<bool>(
-      canPop: false,
+      canPop: true,
       onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-
-        Navigator.pop(context, viewModel.state.isChanged);
+        if (didPop && viewModel.state.isChanged) {
+          widget.onChanged?.call();
+        }
       },
       child: Scaffold(
         appBar: AppBar(
