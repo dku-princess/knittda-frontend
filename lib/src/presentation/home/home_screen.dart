@@ -19,6 +19,7 @@ import 'package:knittda/src/presentation/article_list/article_list_screen.dart';
 import 'package:knittda/src/presentation/article_list/article_list_view_model.dart';
 import 'package:knittda/src/presentation/feed/feed_screen.dart';
 import 'package:knittda/src/presentation/feed/feed_view_model.dart';
+import 'package:knittda/src/performance/banner_load_tracker.dart';
 import 'package:knittda/src/presentation/home/components/bottom_banner_overlay.dart';
 import 'package:knittda/src/presentation/home/home_view_model.dart';
 import 'package:knittda/src/presentation/mypage/mypage_screen.dart';
@@ -48,6 +49,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 1;
+  bool _bannerT4Scheduled = false;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -96,6 +98,17 @@ class _HomeScreenState extends State<HomeScreen> {
     return Consumer<HomeViewModel>(
       builder: (context, viewModel, _) {
         final banner = viewModel.state.currentBanner;
+
+        // T4: 배너가 처음 나타난 프레임
+        if (banner != null && !_bannerT4Scheduled) {
+          _bannerT4Scheduled = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            BannerLoadTracker.instance.markT4(
+              hasImage: banner.thumbnailImage != null,
+            );
+          });
+        }
 
         return Stack(
           children: [

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:knittda/src/data/data_sources/social_login.dart';
@@ -6,38 +7,42 @@ import 'package:knittda/src/data/data_sources/social_login_result.dart';
 class SocialLoginKakao implements SocialLogin {
   @override
   Future<SocialLoginResult?> login() async {
-    if (await isKakaoTalkInstalled()) {
-      try {
-        OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
-        return SocialLoginResult(token: token.accessToken);
-        // 카카오톡으로 로그인 성공
-      } catch (error) {
-        // 카카오톡으로 로그인 실패
+    final kakaoTalkInstalled = await isKakaoTalkInstalled();
+    debugPrint('[KakaoLogin] 카카오톡 설치 여부: $kakaoTalkInstalled');
 
-        // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
-        // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
+    if (kakaoTalkInstalled) {
+      try {
+        debugPrint('[KakaoLogin] 카카오톡 앱으로 로그인 시도');
+        OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
+        debugPrint('[KakaoLogin] 카카오톡 로그인 성공');
+        return SocialLoginResult(token: token.accessToken);
+      } catch (error) {
+        debugPrint('[KakaoLogin] 카카오톡 로그인 실패: $error');
+
         if (error is PlatformException && error.code == 'CANCELED') {
+          debugPrint('[KakaoLogin] 사용자 취소');
           return null;
         }
-        // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
 
         try {
+          debugPrint('[KakaoLogin] 카카오계정으로 로그인 시도 (fallback)');
           OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+          debugPrint('[KakaoLogin] 카카오계정 로그인 성공');
           return SocialLoginResult(token: token.accessToken);
-          // 카카오계정으로 로그인 성공
         } catch (error) {
+          debugPrint('[KakaoLogin] 카카오계정 로그인 실패: $error');
           return null;
-          // 카카오계정으로 로그인 실패
         }
       }
     } else {
       try {
+        debugPrint('[KakaoLogin] 카카오계정으로 로그인 시도 (카카오톡 미설치)');
         OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+        debugPrint('[KakaoLogin] 카카오계정 로그인 성공');
         return SocialLoginResult(token: token.accessToken);
-        // 카카오계정으로 로그인 성공
       } catch (error) {
+        debugPrint('[KakaoLogin] 카카오계정 로그인 실패: $error');
         return null;
-        // 카카오계정으로 로그인 실패
       }
     }
   }

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/user.dart';
@@ -60,6 +61,7 @@ class AuthenticationApi {
 
   //사용자 정보 조회
   Future<Result<Map<String, dynamic>>> getAuthMe() async {
+    debugPrint('[AuthenticationApi] getAuthMe 요청 시작');
     try {
       final response = await _dio.get(
         '/api/v1/auth/me',
@@ -67,15 +69,19 @@ class AuthenticationApi {
       );
 
       if (response.statusCode == 200) {
+        debugPrint('[AuthenticationApi] getAuthMe 성공 (200)');
         final data = response.data;
         final Map<String, dynamic> hits = data['data'];
         return Result.success(hits);
       } else {
+        debugPrint('[AuthenticationApi] getAuthMe 실패: status=${response.statusCode}');
         return Result.error('서버 오류: ${response.statusCode}');
       }
     } on DioException catch (e) {
+      debugPrint('[AuthenticationApi] getAuthMe DioException: type=${e.type}, message=${e.message}, status=${e.response?.statusCode}');
       return Result.error('네트워크 에러: ${e.message}');
     } catch (e) {
+      debugPrint('[AuthenticationApi] getAuthMe 알 수 없는 에러: $e');
       return Result.error('알 수 없는 에러');
     }
   }

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:knittda/src/domain/model/in_app_banner.dart';
+import 'package:knittda/src/performance/banner_load_tracker.dart';
 
 class InAppBannerApi {
   final Dio _dio;
@@ -12,6 +13,8 @@ class InAppBannerApi {
       _directusStatus.isEmpty ? const {} : {'filter[status][_in]': _directusStatus};
 
   Future<List<InAppBanner>> fetchBottomBanners() async {
+    final tracker = BannerLoadTracker.instance;
+    if (tracker.isSessionActive) tracker.markT2(); // T2: HTTP 전송 직전
     final response = await _dio.get(
       '/items/in_app_banner',
       queryParameters: {
@@ -22,6 +25,7 @@ class InAppBannerApi {
         'sort': 'priority',
       },
     );
+    if (tracker.isSessionActive) tracker.markT3(); // T3: 응답 수신 완료
 
     final List<dynamic> data = response.data['data'];
 
