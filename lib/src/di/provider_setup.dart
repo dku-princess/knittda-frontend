@@ -74,7 +74,12 @@ Future<List<SingleChildWidget>> getProviders() async {
   return [
     Provider<Dio>(
       create: (_) {
-        final dio = Dio(BaseOptions(baseUrl: AppConfig.apiBaseUrl));
+        final dio = Dio(BaseOptions(
+          baseUrl: AppConfig.apiBaseUrl,
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
+          sendTimeout: const Duration(seconds: 10),
+        ));
         dio.interceptors.add(AuthInterceptor(tokenStorage));
         dio.addSentry();
         return dio;
@@ -82,7 +87,12 @@ Future<List<SingleChildWidget>> getProviders() async {
     ),
     Provider<DirectusDio>(
       create: (_) {
-        final dio = Dio(BaseOptions(baseUrl: AppConfig.directusBaseUrl));
+        final dio = Dio(BaseOptions(
+          baseUrl: AppConfig.directusBaseUrl,
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
+          sendTimeout: const Duration(seconds: 10),
+        ));
         dio.interceptors.add(AuthInterceptor(tokenStorage));
         dio.addSentry();
         return DirectusDio(dio);
