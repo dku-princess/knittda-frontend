@@ -13,7 +13,7 @@ abstract class InAppBanner with _$InAppBanner {
     String? description,
     @JsonKey(name: 'thumbnail_image') String? thumbnailImage,
     @JsonKey(name: 'tracking_label') String? trackingLabel,
-    required int priority,
+    @Default(999) int priority,
     @JsonKey(name: 'start_at') DateTime? startAt,
     @JsonKey(name: 'end_at') DateTime? endAt,
 
