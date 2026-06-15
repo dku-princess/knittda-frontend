@@ -18,11 +18,12 @@ class SocialLoginUseCase {
     }
 
     final social = (loginResult as Success<SocialLoginResult>).data;
+    final token = social.token;
 
     final Result<User> authResult = switch (type) {
-      Kakao() => await _authenticationRepository.getAuthKakao(token: social.token),
+      Kakao() => await _authenticationRepository.getAuthKakao(token: token),
       Apple() => await _authenticationRepository.getAuthApple(
-        token: social.token,
+        token: token,
         name: social.name ?? '',
       ),
     };

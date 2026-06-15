@@ -17,6 +17,7 @@ class AutoLoginUseCase {
     }
 
     final storedUser = await _authenticationRepository.getStoredUser();
+
     final result = await _authenticationRepository.getAuthMe();
 
     if (result is Success<User>) {
@@ -28,7 +29,6 @@ class AutoLoginUseCase {
 
       return Result.success(null);
     } else {
-      final error = (result as Error).e;
       await _authenticationRepository.clearLocalAuth();
       await _reportApiRepository.clearReport();
       return Result.error('token_invalid');
