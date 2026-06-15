@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
@@ -54,7 +53,6 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   Future<void> _autoLogin() async {
-    debugPrint('[LoginViewModel] _autoLogin 시작');
     _startLoading();
 
     try {
@@ -62,26 +60,18 @@ class LoginViewModel extends ChangeNotifier {
 
       switch (result) {
         case Success():
-          debugPrint('[LoginViewModel] 자동 로그인 성공, 홈 화면으로 이동');
           _eventController.add(LoginUiEvent.login());
-        case Error(:final e):
-          debugPrint('[LoginViewModel] 자동 로그인 실패: $e');
+        case Error():
+          break;
       }
-    } catch (e, stackTrace) {
-      debugPrint('[LoginViewModel] _autoLogin 예외 발생: $e');
-      debugPrint('[LoginViewModel] $stackTrace');
+    } catch (_) {
     } finally {
-      debugPrint('[LoginViewModel] _autoLogin 종료, isLoading 감소');
       _stopLoading();
     }
   }
 
   Future<void> _socialLogin({required SocialLoginType type}) async {
-    if (_isSocialLoginInProgress) {
-      debugPrint('[LoginViewModel] 소셜 로그인 이미 진행 중, 중복 요청 무시');
-      return;
-    }
-    debugPrint('[LoginViewModel] _socialLogin 시작: $type');
+    if (_isSocialLoginInProgress) return;
     _isSocialLoginInProgress = true;
     _startLoading();
 
@@ -90,17 +80,13 @@ class LoginViewModel extends ChangeNotifier {
 
       switch (result) {
         case Success():
-          debugPrint('[LoginViewModel] 로그인 성공, 홈 화면으로 이동');
           _eventController.add(LoginUiEvent.login());
-        case Error(:final e):
-          debugPrint('[LoginViewModel] 로그인 실패: $e');
+        case Error():
           _eventController.add(
             LoginUiEvent.showSnackBar('로그인에 실패했습니다. 다시 시도해주세요'),
           );
       }
-    } catch (e, stackTrace) {
-      debugPrint('[LoginViewModel] _socialLogin 예외 발생: $e');
-      debugPrint('[LoginViewModel] $stackTrace');
+    } catch (_) {
       _eventController.add(
         LoginUiEvent.showSnackBar('로그인에 실패했습니다. 다시 시도해주세요'),
       );
