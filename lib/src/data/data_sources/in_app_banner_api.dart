@@ -33,6 +33,6 @@ class InAppBannerApi {
   }
 
   String getAssetUrl(String assetId) {
-    return '${_dio.options.baseUrl}/assets/$assetId';
+    return '${_dio.options.baseUrl}/assets/$assetId?width=750&format=webp&quality=85';
   }
 }
