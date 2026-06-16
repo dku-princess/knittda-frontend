@@ -51,7 +51,19 @@ class ArticleListScreen extends StatelessWidget {
           }
 
           if (state.articles.isEmpty) {
-            return const Center(child: Text('아티클이 없습니다.'));
+            return RefreshIndicator(
+              onRefresh: () async {
+                await viewModel.onEvent(ArticleListEvent.loadArticles());
+              },
+              child: ListView(
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    child: const Center(child: Text('아티클이 없습니다.')),
+                  ),
+                ],
+              ),
+            );
           }
 
           return RefreshIndicator(
