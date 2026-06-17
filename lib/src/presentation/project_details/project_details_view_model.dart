@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
+import 'package:knittda/src/data/data_sources/analytics_service.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/project.dart';
 import 'package:knittda/src/domain/model/records.dart';
@@ -122,6 +123,7 @@ class ProjectDetailsViewModel extends ChangeNotifier {
       switch (result) {
         case Success(:final data):
           _state = state.copyWith(project: data);
+          AnalyticsService.instance.logViewProject(projectId.toString());
         case Error():
           _eventController.add(
             ProjectDetailsUiEvent.showSnackBar("삭제되었거나 존재하지 않는 작품이에요."),
@@ -147,6 +149,7 @@ class ProjectDetailsViewModel extends ChangeNotifier {
 
     switch (result) {
       case Success():
+        AnalyticsService.instance.logDeleteProject(projectId.toString());
         _eventController.add(ProjectDetailsUiEvent.deletedProject());
       case Error():
         _eventController.add(

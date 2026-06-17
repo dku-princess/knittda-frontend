@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/data/data_sources/analytics_service.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/feed_pagination.dart';
 import 'package:knittda/src/domain/repository/feed_api_repository.dart';
@@ -82,6 +83,10 @@ class FeedSearchViewModel extends ChangeNotifier {
 
     switch (result) {
       case Success(:final data):
+        if (isFirstPage) {
+          AnalyticsService.instance.logSearch(keyword, 'feed');
+        }
+
         final updatedFeeds = isFirstPage
             ? data.content
             : [...state.feeds, ...data.content];

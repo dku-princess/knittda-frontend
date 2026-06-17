@@ -37,6 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
               case Login():
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
+                    settings: const RouteSettings(name: 'home'),
                     builder: (context) => ChangeNotifierProvider(
                       create: (context) => HomeViewModel(
                         inAppBannerRepository: context

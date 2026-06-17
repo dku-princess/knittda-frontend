@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:knittda/src/di/provider_setup.dart';
 import './src/app.dart';
@@ -25,8 +23,13 @@ Future<void> main() async {
         DeviceOrientation.portraitUp,
       ]);
 
-      //provider 모음 생성
-      final providers = await getProviders();
+      // Firebase 초기화 (AnalyticsService가 사용하기 전에 실행)
+      // 실패해도 앱은 계속 진행 — GA만 누락되고 검은 화면은 방지
+      try {
+        await Firebase.initializeApp();
+      } catch (e, st) {
+        await Sentry.captureException(e, stackTrace: st);
+      }
 
       if (!kDebugMode) {
         await SentryFlutter.init((options) {
@@ -39,13 +42,19 @@ Future<void> main() async {
             options.release = AppConfig.sentryRelease;
           }
           options.tracePropagationTargets.add(AppConfig.apiBaseUrl);
+          // Flutter 앱은 단일 FlutterViewController에서 동작하므로 이 자동 트랜잭션은 노이즈.
+          options.beforeSendTransaction = (transaction, hint) {
+            final name = transaction.transaction;
+            if (name != null && name.startsWith('FlutterViewController')) {
+              return null;
+            }
+            return transaction;
+          };
         });
       }
 
-      // Firebase 초기화
-      if (Platform.isIOS) {
-        await Firebase.initializeApp();
-      }
+      //provider 모음 생성
+      final providers = await getProviders();
 
       // Kakao SDK 초기화 (필수 키 입력!)
       KakaoSdk.init(nativeAppKey: AppConfig.kakaoNativeAppKey);

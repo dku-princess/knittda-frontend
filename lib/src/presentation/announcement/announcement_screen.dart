@@ -75,6 +75,7 @@ class AnnouncementScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
+                          settings: const RouteSettings(name: 'announcement_detail'),
                           builder: (context) => ChangeNotifierProvider(
                             create: (context) => AnnouncementDetailViewModel(
                               context.read<AnnouncementRepository>(),

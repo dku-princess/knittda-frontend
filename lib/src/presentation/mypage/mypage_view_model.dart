@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:knittda/src/data/data_sources/analytics_service.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/user.dart';
 import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
@@ -34,6 +35,9 @@ class MypageViewModel extends ChangeNotifier {
     this._getUserUseCase,
   ) {
     _streamSubscription = _getUserUseCase.execute().listen((user) {
+      if (state.user == null) {
+        AnalyticsService.instance.setUserId(user.id.toString());
+      }
       _state = state.copyWith(user: user);
       notifyListeners();
     });
@@ -92,6 +96,8 @@ class MypageViewModel extends ChangeNotifier {
     await _logoutUseCase(user);
 
     _state = state.copyWith(isLoading: false, user: null);
+    AnalyticsService.instance.logLogout();
+    AnalyticsService.instance.setUserId(null);
 
     _eventController.add(MypageUiEvent.completed());
   }
@@ -115,6 +121,8 @@ class MypageViewModel extends ChangeNotifier {
 
     switch (result) {
       case Success():
+        AnalyticsService.instance.logLogout();
+        AnalyticsService.instance.setUserId(null);
         _eventController.add(MypageUiEvent.completed());
       case Error():
         _eventController.add(

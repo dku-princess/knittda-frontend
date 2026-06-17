@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/data/data_sources/analytics_service.dart';
 import 'package:knittda/src/domain/repository/announcement_repository.dart';
 import 'package:knittda/src/presentation/announcement_detail/announcement_detail_state.dart';
 
@@ -23,6 +24,10 @@ class AnnouncementDetailViewModel extends ChangeNotifier {
     try {
       final announcement = await _repository.getAnnouncement(slugOrId);
       _state = state.copyWith(announcement: announcement);
+      if (announcement != null) {
+        AnalyticsService.instance
+            .logViewAnnouncement(announcement.id.toString());
+      }
     } on Exception catch (e) {
       final error = e.toString().replaceFirst('Exception: ', '');
       _state = state.copyWith(errorMessage: error);

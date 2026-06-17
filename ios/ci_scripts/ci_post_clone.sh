@@ -26,7 +26,8 @@ REQUIRED_VARS=(
     DIRECTUS_STATUS
     SENTRY_DSN
     SENTRY_ENVIRONMENT
-    GOOGLE_SERVICE_INFO_PLIST
+    GOOGLE_SERVICE_INFO_PLIST_PROD
+    GOOGLE_SERVICE_INFO_PLIST_BETA
 )
 missing=0
 for var in "${REQUIRED_VARS[@]}"; do
@@ -56,9 +57,12 @@ cat > "config/env.json" << EOF
 EOF
 echo "✅ config/env.json created (channel=${APP_CHANNEL}, release=${RELEASE}, status='${DIRECTUS_STATUS}')"
 
-# ── 3. GoogleService-Info.plist 생성 (gitignored → Base64 환경변수에서 복원)
-echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > ios/Runner/GoogleService-Info.plist
-echo "✅ GoogleService-Info.plist created"
+# ── 3. GoogleService-Info-{Prod,Beta}.plist 생성 (gitignored → Base64 환경변수에서 복원)
+# Xcode Runner target의 Run Script Phase가 CONFIGURATION에 따라 둘 중 하나를 골라
+# 빌드 산출물의 GoogleService-Info.plist로 복사함
+echo "$GOOGLE_SERVICE_INFO_PLIST_PROD" | base64 --decode > ios/Runner/GoogleService-Info-Prod.plist
+echo "$GOOGLE_SERVICE_INFO_PLIST_BETA" | base64 --decode > ios/Runner/GoogleService-Info-Beta.plist
+echo "✅ GoogleService-Info-Prod.plist / GoogleService-Info-Beta.plist created"
 
 # ── 4. xcconfig에 kakaoNativeAppKey 주입
 # Info.plist의 $(kakaoNativeAppKey)는 dart-define이 아닌 Xcode Build Settings에서 값을 참조
@@ -131,10 +135,31 @@ flutter build ios \
     --config-only
 
 # ── 9. CocoaPods 재생성/설치 (xcconfig 누락 방지)
-echo "🔧 pod install (clean + repo update)..."
+# Xcode Cloud는 매 빌드 깨끗한 클론이라 CDN에서 필요한 podspec만 on-demand로 받음.
+# --repo-update(전체 CDN 메타데이터 강제 동기화)는 불필요하고 jsdelivr CDN DNS 실패의
+# 주 원인이므로 기본 경로에서 제외하고, 일시적 네트워크 실패에 대비해 재시도한다.
+echo "🔧 pod install..."
 cd ios
 rm -rf Pods
-pod install --repo-update
+
+pod_install() {
+    # 1차: repo-update 없이 시도 (가장 빠르고 안정적)
+    local attempt
+    for attempt in 1 2 3; do
+        echo "📦 pod install (attempt ${attempt}/3)..."
+        if pod install; then
+            return 0
+        fi
+        echo "⚠️  pod install failed (attempt ${attempt}). Retrying in 10s..."
+        sleep 10
+    done
+
+    # 2차 폴백: 그래도 실패하면 CDN 저장소를 갱신한 뒤 마지막 시도
+    echo "🔁 Falling back to pod install --repo-update..."
+    pod install --repo-update
+}
+
+pod_install
 cd ..
 
 echo "✅ ci_post_clone completed"

@@ -70,6 +70,7 @@ class _FeedScreenState extends State<FeedScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
+                  settings: const RouteSettings(name: 'feed_search'),
                   builder: (context) => ChangeNotifierProvider(
                     create: (context) {
                       final repository = context.read<FeedApiRepository>();
@@ -150,6 +151,7 @@ class _FeedScreenState extends State<FeedScreen> {
                     final deleted = await Navigator.push<bool>(
                       context,
                       MaterialPageRoute(
+                        settings: const RouteSettings(name: 'project_detail'),
                         builder: (context) => ChangeNotifierProvider(
                           create: (context) => ProjectDetailsViewModel(
                             GetProjectUseCase(

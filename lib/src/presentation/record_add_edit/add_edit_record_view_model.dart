@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:knittda/src/data/data_sources/analytics_service.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/records.dart';
 import 'package:knittda/src/domain/use_case/add_record_use_case.dart';
@@ -78,6 +79,11 @@ class AddEditRecordViewModel extends ChangeNotifier {
 
     switch (result) {
       case Success(:final data):
+        if (record.id == null) {
+          AnalyticsService.instance.logAddRecord(projectId.toString());
+        } else {
+          AnalyticsService.instance.logEditRecord(record.id.toString());
+        }
         _eventController.add(AddEditRecordUiEvent.savedRecord(data));
       case Error():
         _eventController.add(AddEditRecordUiEvent.showSnackBar("기록을 저장하지 못했어요. 다시 시도해 주세요."));

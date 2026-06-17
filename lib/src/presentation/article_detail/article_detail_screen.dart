@@ -208,6 +208,7 @@ class ArticleDetailScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
+                            settings: const RouteSettings(name: 'article_detail'),
                             builder: (_) => ChangeNotifierProvider(
                               create: (_) => ArticleDetailViewModel(
                                 context.read<ArticleRepository>(),
@@ -239,6 +240,7 @@ class ArticleDetailScreen extends StatelessWidget {
                         await Navigator.push<bool>(
                           context,
                           MaterialPageRoute(
+                            settings: const RouteSettings(name: 'project_detail'),
                             builder: (context) => ChangeNotifierProvider(
                               create: (context) => ProjectDetailsViewModel(
                                 GetProjectUseCase(

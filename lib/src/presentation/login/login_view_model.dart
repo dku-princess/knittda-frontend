@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/data/data_sources/analytics_service.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/social_login_use_case.dart';
 import 'package:knittda/src/domain/util/social_login_type.dart';
 import 'package:knittda/src/presentation/login/login_event.dart';
@@ -12,6 +14,7 @@ import 'package:knittda/src/presentation/login/login_ui_event.dart';
 class LoginViewModel extends ChangeNotifier {
   final AutoLoginUseCase _autoLoginUseCase;
   final SocialLoginUseCase _socialLoginUseCase;
+  final GetUserUseCase _getUserUseCase;
 
   LoginState _state = LoginState(isLoading: false);
 
@@ -25,8 +28,23 @@ class LoginViewModel extends ChangeNotifier {
   int _pendingLoads = 0;
   bool _isSocialLoginInProgress = false;
 
-  LoginViewModel(this._autoLoginUseCase, this._socialLoginUseCase) {
+  LoginViewModel(
+    this._autoLoginUseCase,
+    this._socialLoginUseCase,
+    this._getUserUseCase,
+  ) {
     _autoLogin();
+  }
+
+  // 로그인 성공 직후 GA4 user_id 설정. 화면 전환 지연 방지를 위해 fire-and-forget.
+  // timeout으로 user stream이 emit 안 될 경우의 StreamSubscription 누수 방지.
+  void _setUserIdAfterLogin() {
+    _getUserUseCase
+        .execute()
+        .first
+        .timeout(const Duration(seconds: 5))
+        .then((user) => AnalyticsService.instance.setUserId(user.id.toString()))
+        .catchError((_) {});
   }
 
   Future<void> onEvent(LoginEvent event) async {
@@ -60,6 +78,7 @@ class LoginViewModel extends ChangeNotifier {
 
       switch (result) {
         case Success():
+          _setUserIdAfterLogin();
           _eventController.add(LoginUiEvent.login());
         case Error():
           break;
@@ -80,6 +99,12 @@ class LoginViewModel extends ChangeNotifier {
 
       switch (result) {
         case Success():
+          final provider = switch (type) {
+            Kakao() => 'kakao',
+            Apple() => 'apple',
+          };
+          AnalyticsService.instance.logLogin(provider);
+          _setUserIdAfterLogin();
           _eventController.add(LoginUiEvent.login());
         case Error():
           _eventController.add(

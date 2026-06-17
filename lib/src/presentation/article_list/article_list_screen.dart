@@ -113,6 +113,7 @@ class ArticleListScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
+                              settings: const RouteSettings(name: 'article_detail'),
                               builder: (context) => ChangeNotifierProvider(
                                 create: (context) => ArticleDetailViewModel(
                                   context.read<ArticleRepository>(),
@@ -153,6 +154,7 @@ class ArticleListScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
+                            settings: const RouteSettings(name: 'article_detail'),
                             builder: (context) => ChangeNotifierProvider(
                               create: (context) => ArticleDetailViewModel(
                                 context.read<ArticleRepository>(),

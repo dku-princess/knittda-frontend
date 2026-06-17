@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:knittda/src/data/data_sources/analytics_service.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/project.dart';
 import 'package:knittda/src/domain/use_case/add_project_use_case.dart';
@@ -51,6 +52,11 @@ class AddEditProjectViewModel extends ChangeNotifier {
 
     switch (result) {
       case Success(:final data):
+        if (project.id == null) {
+          AnalyticsService.instance.logCreateProject();
+        } else {
+          AnalyticsService.instance.logEditProject(project.id.toString());
+        }
         _eventController.add(AddEditProjectUiEvent.savedProject(data));
       case Error():
         _eventController.add(AddEditProjectUiEvent.showSnackBar("작품 저장을 저장하지 못했어요. 다시 시도해 주세요."));
