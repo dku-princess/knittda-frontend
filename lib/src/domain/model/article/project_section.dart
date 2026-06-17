@@ -10,6 +10,7 @@ abstract class ProjectSection with _$ProjectSection {
     @Default(0) int id,
     @Default('') String title,
     @Default('') String description,
+    @JsonKey(name: 'tracking_label') String? trackingLabel,
     @JsonKey(name: 'project_item_block') @Default([]) List<ProjectItemBlock> projectItemBlock,
 }) = _ProjectSection;
 

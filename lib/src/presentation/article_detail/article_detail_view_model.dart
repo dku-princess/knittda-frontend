@@ -10,6 +10,9 @@ class ArticleDetailViewModel extends ChangeNotifier {
   final ArticleRepository _repository;
   final GetArticlePreviewsUseCase _getArticlePreviewsUseCase;
 
+  /// 진입 경로(GA4 source 파라미터). 예: article_list / in_app_banner / note_link
+  final String source;
+
   ArticleDetailState _state = ArticleDetailState(
     article: null,
     isLoading: false,
@@ -22,6 +25,7 @@ class ArticleDetailViewModel extends ChangeNotifier {
     this._repository,
     this._getArticlePreviewsUseCase, {
     required String slugOrId,
+    this.source = 'article_list',
   }) {
     fetchArticle(slugOrId);
   }
@@ -34,7 +38,7 @@ class ArticleDetailViewModel extends ChangeNotifier {
       final article = await _repository.getArticleBySlug(slugOrId);
       _state = state.copyWith(article: article);
       if (article != null) {
-        AnalyticsService.instance.logViewArticle(article.id.toString());
+        AnalyticsService.instance.logArticleView(article, source: source);
       }
 
       if (article != null) {

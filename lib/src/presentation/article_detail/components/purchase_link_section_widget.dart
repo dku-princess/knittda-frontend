@@ -8,9 +8,17 @@ import 'package:url_launcher/url_launcher.dart';
 class PurchaseLinkSectionWidget extends StatelessWidget {
   final PurchaseLinkSection purchaseLinkSection;
 
+  /// 구매 버튼 탭 시점 (URL launch 시도 직전). pattern_link_click 발화용.
+  final VoidCallback? onPatternLinkClick;
+
+  /// 외부 URL 오픈 성공 시점. external_pattern_page_open 발화용.
+  final VoidCallback? onExternalPatternPageOpen;
+
   const PurchaseLinkSectionWidget({
     super.key,
     required this.purchaseLinkSection,
+    this.onPatternLinkClick,
+    this.onExternalPatternPageOpen,
   });
 
   @override
@@ -49,6 +57,8 @@ class PurchaseLinkSectionWidget extends StatelessWidget {
               width: double.infinity,
               child: TextButton(
                 onPressed: () async {
+                  // 클릭은 launch 성공/실패와 무관하게 종착 지표로 먼저 기록
+                  onPatternLinkClick?.call();
                   try {
                     final url = Uri.parse(purchaseLinkSection.buttonUrl);
                     if (!await launchUrl(
@@ -60,6 +70,9 @@ class PurchaseLinkSectionWidget extends StatelessWidget {
                           const SnackBar(content: Text('링크를 열 수 없습니다.')),
                         );
                       }
+                    } else {
+                      // launch 성공 시에만 외부 이동 정합 이벤트 발화
+                      onExternalPatternPageOpen?.call();
                     }
                   } catch (e) {
                     debugPrint(
