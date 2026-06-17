@@ -125,7 +125,12 @@ class _FeedScreenState extends State<FeedScreen> {
               },
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: [Center(child: Text(viewModel.state.errorMessage!))],
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    child: Center(child: Text(viewModel.state.errorMessage!)),
+                  ),
+                ],
               ),
             );
           }

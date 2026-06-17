@@ -22,7 +22,7 @@ if (localPropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.example.knittda"
+    namespace = "com.tteuda.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
