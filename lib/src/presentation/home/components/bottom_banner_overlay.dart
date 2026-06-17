@@ -74,7 +74,7 @@ class _BottomBannerOverlayState extends State<BottomBannerOverlay> {
                                   _imageMeasured = true;
                                   BannerLoadTracker.instance.markT5ImageError();
                                 }
-                                return Container(color: Colors.grey.shade200);
+                                return Container(color: Colors.grey.shade300);
                               },
                             )
                           : Container(color: Colors.grey.shade300),
