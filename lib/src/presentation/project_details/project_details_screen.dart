@@ -107,6 +107,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                       final editedProject = await Navigator.push<Project>(
                         context,
                         MaterialPageRoute(
+                          settings: const RouteSettings(name: 'project_edit'),
                           builder: (context) => ChangeNotifierProvider(
                             create: (context) => AddEditProjectViewModel(
                               AddProjectUseCase(
@@ -154,6 +155,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                           final addRecord = await Navigator.push<Records>(
                             context,
                             MaterialPageRoute(
+                              settings: const RouteSettings(name: 'record_add'),
                               builder: (context) => ChangeNotifierProvider(
                                 create: (context) => AddEditRecordViewModel(
                                   AddRecordUseCase(
@@ -249,6 +251,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                             await Navigator.push(
                               context,
                               MaterialPageRoute(
+                                settings: const RouteSettings(name: 'record_detail'),
                                 builder: (context) => ChangeNotifierProvider(
                                   create: (context) => RecordDetailsViewModel(
                                     GetRecordUseCase(

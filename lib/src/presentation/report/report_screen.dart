@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gal/gal.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/data/data_sources/analytics_service.dart';
 import 'package:knittda/src/presentation/report/report_view_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -186,6 +187,7 @@ class _ReportScreenState extends State<ReportScreen> {
         '${dir.path}/report_${DateTime.now().millisecondsSinceEpoch}.png',
       ).writeAsBytes(bytes);
 
+      AnalyticsService.instance.logShare('report', 'weekly_report');
       await SharePlus.instance.share(
         ShareParams(
           files: [XFile(file.path)],

@@ -56,6 +56,7 @@ class ProjectsScreen extends StatelessWidget {
           await Navigator.push<Project>(
             context,
             MaterialPageRoute(
+              settings: const RouteSettings(name: 'project_add'),
               builder: (context) => ChangeNotifierProvider(
                 create: (context) => AddEditProjectViewModel(
                   AddProjectUseCase(context.read<ProjectApiRepository>()),
@@ -134,6 +135,7 @@ class ProjectsScreen extends StatelessWidget {
                                       await Navigator.push(
                                         context,
                                         MaterialPageRoute(
+                                          settings: const RouteSettings(name: 'project_detail'),
                                           builder: (context) => ChangeNotifierProvider(
                                             create: (context) =>
                                                 ProjectDetailsViewModel(
@@ -184,6 +186,7 @@ class ProjectsScreen extends StatelessWidget {
                                       final addRecord = await Navigator.push<Records>(
                                         context,
                                         MaterialPageRoute(
+                                          settings: const RouteSettings(name: 'record_add'),
                                           builder: (context) =>
                                               ChangeNotifierProvider(
                                                 create: (context) =>
@@ -242,6 +245,7 @@ class ProjectsScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
+                            settings: const RouteSettings(name: 'report'),
                             builder: (context) => ChangeNotifierProvider(
                               create: (context) => ReportViewModel(
                                 GetReportUseCase(

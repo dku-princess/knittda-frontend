@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/data/data_sources/analytics_service.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/user.dart';
 import 'package:knittda/src/domain/use_case/setting_nickname_use_case.dart';
@@ -51,6 +52,7 @@ class MypageSettingNicknameViewModel extends ChangeNotifier {
 
     switch (result) {
       case Success():
+        AnalyticsService.instance.logUpdateNickname();
         _eventController.add(MypageSettingNicknameUiEvent.setNickname());
 
       case Error():

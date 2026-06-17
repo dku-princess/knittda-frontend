@@ -6,6 +6,7 @@ import 'package:knittda/src/domain/repository/announcement_repository.dart';
 import 'package:knittda/src/domain/repository/authentication_repository.dart';
 import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_announcement_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/setting_nickname_use_case.dart';
 import 'package:knittda/src/domain/use_case/social_login_use_case.dart';
 import 'package:knittda/src/presentation/announcement/announcement_screen.dart';
@@ -57,6 +58,7 @@ class _MypageScreenState extends State<MypageScreen> {
                           create: (context) => LoginViewModel(
                             context.read<AutoLoginUseCase>(),
                             context.read<SocialLoginUseCase>(),
+                            context.read<GetUserUseCase>(),
                           ),
                           child: const LoginScreen(),
                         ),
@@ -140,6 +142,7 @@ class _MypageScreenState extends State<MypageScreen> {
     await Navigator.push<bool>(
       context,
       MaterialPageRoute(
+        settings: const RouteSettings(name: 'mypage_nickname'),
         builder: (context) => ChangeNotifierProvider(
           create: (context) => MypageSettingNicknameViewModel(
             SettingNicknameUseCase(context.read<AuthenticationRepository>()),
@@ -282,6 +285,7 @@ class _MypageScreenState extends State<MypageScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
+                        settings: const RouteSettings(name: 'announcement'),
                         builder: (context) => ChangeNotifierProvider(
                           create: (context) => AnnouncementViewModel(
                             GetAnnouncementUseCase(

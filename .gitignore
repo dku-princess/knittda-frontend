@@ -86,3 +86,9 @@ config/*.json
 
 # GoogleService-Info.plist (Xcode Cloud 원격 관리)
 ios/Runner/GoogleService-Info.plist
+ios/Runner/GoogleService-Info-Prod.plist
+ios/Runner/GoogleService-Info-Beta.plist
+
+# google-services.json (Android, 사용자 직접 배치)
+android/app/src/main/google-services.json
+android/app/src/beta/google-services.json

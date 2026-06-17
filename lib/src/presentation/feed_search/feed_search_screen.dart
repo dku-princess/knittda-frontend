@@ -168,6 +168,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
                   final deleted = await Navigator.push<bool>(
                     context,
                     MaterialPageRoute(
+                      settings: const RouteSettings(name: 'project_detail'),
                       builder: (context) => ChangeNotifierProvider(
                         create: (context) => ProjectDetailsViewModel(
                           GetProjectUseCase(

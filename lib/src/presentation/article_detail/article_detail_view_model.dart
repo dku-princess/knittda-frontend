@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/data/data_sources/analytics_service.dart';
 import 'package:knittda/src/domain/model/article/article_preview.dart';
 import 'package:knittda/src/domain/model/article/project_section.dart';
 import 'package:knittda/src/domain/repository/article_repository.dart';
@@ -32,6 +33,9 @@ class ArticleDetailViewModel extends ChangeNotifier {
     try {
       final article = await _repository.getArticleBySlug(slugOrId);
       _state = state.copyWith(article: article);
+      if (article != null) {
+        AnalyticsService.instance.logViewArticle(article.id.toString());
+      }
 
       if (article != null) {
         final ids = article.sections

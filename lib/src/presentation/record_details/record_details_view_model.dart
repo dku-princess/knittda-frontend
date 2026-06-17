@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/data/data_sources/analytics_service.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/records.dart';
 import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
@@ -84,6 +85,7 @@ class RecordDetailsViewModel extends ChangeNotifier {
 
     switch (result) {
       case Success():
+        AnalyticsService.instance.logDeleteRecord(recordId.toString());
         _state = state.copyWith(isChanged: true);
         _eventController.add(RecordDetailsUiEvent.deletedRecord());
       case Error():

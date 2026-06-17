@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/data/data_sources/analytics_service.dart';
 import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
 import 'package:knittda/src/domain/use_case/social_login_use_case.dart';
 import 'package:knittda/src/presentation/login/login_screen.dart';
 import 'package:knittda/src/presentation/login/login_view_model.dart';
@@ -11,6 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorObservers: [AnalyticsService.instance.observer],
       debugShowCheckedModeBanner: false,
 
       //모든 항목에서 pretendard 폰트 사용
@@ -34,6 +37,7 @@ class MyApp extends StatelessWidget {
         create: (context) => LoginViewModel(
           context.read<AutoLoginUseCase>(),
           context.read<SocialLoginUseCase>(),
+          context.read<GetUserUseCase>(),
         ),
         child: const LoginScreen(),
       ),

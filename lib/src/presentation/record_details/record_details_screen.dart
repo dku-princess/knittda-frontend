@@ -86,6 +86,7 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
                   final editedRecord = await Navigator.push<Records>(
                     context,
                     MaterialPageRoute(
+                      settings: const RouteSettings(name: 'record_edit'),
                       builder: (context) => ChangeNotifierProvider(
                         create: (context) => AddEditRecordViewModel(
                           AddRecordUseCase(context.read<RecordApiRepository>()),

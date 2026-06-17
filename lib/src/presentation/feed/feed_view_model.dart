@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/data/data_sources/analytics_service.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/feed_pagination.dart';
 import 'package:knittda/src/domain/use_case/get_feed_use_case.dart';
@@ -62,6 +63,9 @@ class FeedViewModel extends ChangeNotifier {
 
     switch (result) {
       case Success(:final data):
+        if (!isFirstPage) {
+          AnalyticsService.instance.logLoadMore('feed', page);
+        }
 
         final updatedFeeds = isFirstPage
             ? data.content

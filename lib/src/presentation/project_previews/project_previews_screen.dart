@@ -101,6 +101,7 @@ class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
                     final deleted = await Navigator.push<bool>(
                       context,
                       MaterialPageRoute(
+                        settings: const RouteSettings(name: 'project_detail'),
                         builder: (context) => ChangeNotifierProvider(
                           create: (context) => ProjectDetailsViewModel(
                             GetProjectUseCase(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/data/data_sources/analytics_service.dart';
 import 'package:knittda/src/domain/repository/announcement_repository.dart';
 import 'package:knittda/src/domain/repository/article_repository.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
@@ -51,7 +52,19 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 1;
   bool _bannerT4Scheduled = false;
 
+  static const _tabNames = ['article', 'home', 'project', 'feed', 'mypage'];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      AnalyticsService.instance.logScreenView(_tabNames[_selectedIndex]);
+    });
+  }
+
   void _onItemTapped(int index) {
+    AnalyticsService.instance.logTabSelect(_tabNames[index]);
+    AnalyticsService.instance.logScreenView(_tabNames[index]);
     setState(() {
       _selectedIndex = index;
     });
@@ -131,9 +144,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? viewModel.getAssetUrl(banner.thumbnailImage!)
                     : null,
                 onDismiss: (dismissType) {
+                  AnalyticsService.instance.logBannerDismiss(
+                    banner.id.toString(),
+                    dismissType.name,
+                  );
                   viewModel.dismissBanner(dismissType);
                 },
                 onTapBanner: () async {
+                  AnalyticsService.instance.logBannerClick(
+                    banner.id.toString(),
+                    banner.actionType,
+                  );
                   switch (banner.actionType) {
                     case 'none':
                       return;
@@ -143,6 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
+                            settings: const RouteSettings(name: 'article_detail'),
                             builder: (context) => ChangeNotifierProvider(
                               create: (context) => ArticleDetailViewModel(
                                 context.read<ArticleRepository>(),
@@ -161,6 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
+                            settings: const RouteSettings(name: 'announcement_detail'),
                             builder: (context) => ChangeNotifierProvider(
                               create: (context) => AnnouncementDetailViewModel(
                                 context.read<AnnouncementRepository>(),

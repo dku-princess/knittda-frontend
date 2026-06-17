@@ -26,7 +26,8 @@ REQUIRED_VARS=(
     DIRECTUS_STATUS
     SENTRY_DSN
     SENTRY_ENVIRONMENT
-    GOOGLE_SERVICE_INFO_PLIST
+    GOOGLE_SERVICE_INFO_PLIST_PROD
+    GOOGLE_SERVICE_INFO_PLIST_BETA
 )
 missing=0
 for var in "${REQUIRED_VARS[@]}"; do
@@ -56,9 +57,12 @@ cat > "config/env.json" << EOF
 EOF
 echo "✅ config/env.json created (channel=${APP_CHANNEL}, release=${RELEASE}, status='${DIRECTUS_STATUS}')"
 
-# ── 3. GoogleService-Info.plist 생성 (gitignored → Base64 환경변수에서 복원)
-echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > ios/Runner/GoogleService-Info.plist
-echo "✅ GoogleService-Info.plist created"
+# ── 3. GoogleService-Info-{Prod,Beta}.plist 생성 (gitignored → Base64 환경변수에서 복원)
+# Xcode Runner target의 Run Script Phase가 CONFIGURATION에 따라 둘 중 하나를 골라
+# 빌드 산출물의 GoogleService-Info.plist로 복사함
+echo "$GOOGLE_SERVICE_INFO_PLIST_PROD" | base64 --decode > ios/Runner/GoogleService-Info-Prod.plist
+echo "$GOOGLE_SERVICE_INFO_PLIST_BETA" | base64 --decode > ios/Runner/GoogleService-Info-Beta.plist
+echo "✅ GoogleService-Info-Prod.plist / GoogleService-Info-Beta.plist created"
 
 # ── 4. xcconfig에 kakaoNativeAppKey 주입
 # Info.plist의 $(kakaoNativeAppKey)는 dart-define이 아닌 Xcode Build Settings에서 값을 참조
