@@ -44,6 +44,10 @@ class ProjectDetailsViewModel extends ChangeNotifier {
 
   Stream<ProjectDetailsUiEvent> get eventStream => _eventController.stream;
 
+  /// 작품 상세 진입 경로(GA4 source 파라미터).
+  /// 예: project_list / article_detail / feed / feed_search / project_previews
+  final String source;
+
   ProjectDetailsViewModel(
     this._getProjectUseCase,
     this._getMyProjectUseCase,
@@ -53,6 +57,7 @@ class ProjectDetailsViewModel extends ChangeNotifier {
     this._getUserUseCase, {
     required int projectId,
     Project? project,
+    this.source = 'unknown',
   }) {
     _loadUser();
     _loadProject(projectId: projectId, project: project);
@@ -104,6 +109,10 @@ class ProjectDetailsViewModel extends ChangeNotifier {
       switch (result) {
         case Success(:final data):
           _state = state.copyWith(project: data);
+          AnalyticsService.instance.logViewProject(
+            projectId.toString(),
+            source: source,
+          );
         case Error():
           _eventController.add(
             ProjectDetailsUiEvent.showSnackBar("작품을 불러오지 못했어요. 다시 시도해 주세요."),
@@ -123,7 +132,10 @@ class ProjectDetailsViewModel extends ChangeNotifier {
       switch (result) {
         case Success(:final data):
           _state = state.copyWith(project: data);
-          AnalyticsService.instance.logViewProject(projectId.toString());
+          AnalyticsService.instance.logViewProject(
+            projectId.toString(),
+            source: source,
+          );
         case Error():
           _eventController.add(
             ProjectDetailsUiEvent.showSnackBar("삭제되었거나 존재하지 않는 작품이에요."),

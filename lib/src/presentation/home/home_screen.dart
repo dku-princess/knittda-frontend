@@ -172,6 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   context.read<ProjectApiRepository>(),
                                 ),
                                 slugOrId: banner.targetId.toString(),
+                                source: 'in_app_banner',
                               ),
                               child: const ArticleDetailScreen(),
                             ),
