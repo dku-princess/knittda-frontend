@@ -66,7 +66,7 @@ android {
         }
         create("prod") {
             dimension = "channel"
-            applicationId = "com.tteuda.app"
+            applicationId = "com.example.knittda"
             resValue("string", "app_name", "뜨다")
         }
     }
