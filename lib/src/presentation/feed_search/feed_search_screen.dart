@@ -188,6 +188,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
                           ),
                           context.read<GetUserUseCase>(),
                           projectId: feed.projectId,
+                          source: 'feed_search',
                         ),
                         child: const ProjectDetailsScreen(),
                       ),

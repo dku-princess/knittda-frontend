@@ -8,7 +8,7 @@ import 'package:knittda/src/presentation/article_detail/components/article_previ
 class ProjectSectionWidget extends StatelessWidget {
   final ProjectSection projectSection;
   final ArticlePreview? Function(int projectId) getArticlePreview;
-  final void Function(int projectId)? onProjectTap;
+  final void Function(int projectId, int position)? onProjectTap;
 
   const ProjectSectionWidget({
     super.key,
@@ -68,7 +68,7 @@ class ProjectSectionWidget extends StatelessWidget {
                   width: 180,
                   child: ArticlePreviewItem(
                     articlePreview: preview,
-                    onTap: () => onProjectTap?.call(block.projectId),
+                    onTap: () => onProjectTap?.call(block.projectId, index),
                   ),
                 );
               },

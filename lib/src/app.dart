@@ -13,7 +13,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      navigatorObservers: [AnalyticsService.instance.observer],
+      navigatorObservers: [
+        AnalyticsService.instance.observer,
+        AnalyticsService.routeObserver,
+      ],
       debugShowCheckedModeBanner: false,
 
       //모든 항목에서 pretendard 폰트 사용

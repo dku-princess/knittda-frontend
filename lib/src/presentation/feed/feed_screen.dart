@@ -176,6 +176,7 @@ class _FeedScreenState extends State<FeedScreen> {
                             ),
                             context.read<GetUserUseCase>(),
                             projectId: viewModel.state.feeds[index].projectId,
+                            source: 'feed',
                           ),
                           child: const ProjectDetailsScreen(),
                         ),

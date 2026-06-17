@@ -175,6 +175,7 @@ class ProjectsScreen extends StatelessWidget {
                                                       state.projects[index].id!,
                                                   project:
                                                       state.projects[index],
+                                                  source: 'project_list',
                                                 ),
                                             child: const ProjectDetailsScreen(),
                                           ),

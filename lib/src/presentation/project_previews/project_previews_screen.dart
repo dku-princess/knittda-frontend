@@ -128,6 +128,7 @@ class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
                             ),
                             context.read<GetUserUseCase>(),
                             projectId: projectPreviews.projectId,
+                            source: 'project_previews',
                           ),
                           child: const ProjectDetailsScreen(),
                         ),

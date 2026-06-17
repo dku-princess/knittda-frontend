@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:knittda/app_config.dart';
+import 'package:knittda/src/data/data_sources/analytics_service.dart';
 import 'package:knittda/src/data/data_sources/announcement_api.dart';
 import 'package:knittda/src/data/data_sources/article_api.dart';
 import 'package:knittda/src/data/data_sources/authentication_api.dart';
@@ -70,6 +71,12 @@ Future<List<SingleChildWidget>> getProviders() async {
 
   final packageInfo = await PackageInfo.fromPlatform();
   final appVersion = packageInfo.version;
+
+  // GA4 공통 파라미터(environment / app_version) 1회 설정
+  AnalyticsService.instance.configure(
+    environment: AppConfig.appChannel,
+    appVersion: appVersion,
+  );
 
   return [
     Provider<Dio>(
