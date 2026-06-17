@@ -40,6 +40,7 @@ class ArticleListScreen extends StatelessWidget {
                 await viewModel.onEvent(ArticleListEvent.loadArticles());
               },
               child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 children: [
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.7,
@@ -56,6 +57,7 @@ class ArticleListScreen extends StatelessWidget {
                 await viewModel.onEvent(ArticleListEvent.loadArticles());
               },
               child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 children: [
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.7,

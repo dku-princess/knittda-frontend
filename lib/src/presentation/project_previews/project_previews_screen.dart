@@ -85,6 +85,7 @@ class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
               );
             },
             child: GridView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
               itemCount: viewModel.state.projectPreviews.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
