@@ -42,6 +42,14 @@ Future<void> main() async {
             options.release = AppConfig.sentryRelease;
           }
           options.tracePropagationTargets.add(AppConfig.apiBaseUrl);
+          // Flutter 앱은 단일 FlutterViewController에서 동작하므로 이 자동 트랜잭션은 노이즈.
+          options.beforeSendTransaction = (transaction, hint) {
+            final name = transaction.transaction;
+            if (name != null && name.startsWith('FlutterViewController')) {
+              return null;
+            }
+            return transaction;
+          };
         });
       }
 
