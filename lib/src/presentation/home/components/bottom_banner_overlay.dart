@@ -24,6 +24,16 @@ class BottomBannerOverlay extends StatefulWidget {
 class _BottomBannerOverlayState extends State<BottomBannerOverlay> {
   bool _imageMeasured = false;
 
+  // 이미지가 측정되기 전에 위젯이 해제되면 image_download span과 트랜잭션을
+  // 명시적으로 종료하여 BannerLoadTracker 세션이 영구 잠금 상태에 빠지지 않도록 한다.
+  @override
+  void dispose() {
+    if (!_imageMeasured && BannerLoadTracker.instance.isSessionActive) {
+      BannerLoadTracker.instance.abortSession();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
