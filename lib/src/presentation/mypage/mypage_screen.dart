@@ -27,7 +27,7 @@ class MypageScreen extends StatefulWidget {
 
   static final Uri _url1 = Uri.parse('http://pf.kakao.com/_KDdNn/chat');
   static final Uri _url2 = Uri.parse(
-    'https://tteuda.notion.site/sevice-guidline',
+    'https://tteuda.notion.site/tteuda-service-guideline',
   );
 
   @override
