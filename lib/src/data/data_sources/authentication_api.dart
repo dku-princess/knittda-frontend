@@ -58,7 +58,6 @@ class AuthenticationApi {
     }
   }
 
-  //사용자 정보 조회
   Future<Result<Map<String, dynamic>>> getAuthMe() async {
     try {
       final response = await _dio.get(

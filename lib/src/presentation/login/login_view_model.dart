@@ -21,6 +21,10 @@ class LoginViewModel extends ChangeNotifier {
 
   Stream<LoginUiEvent> get eventStream => _eventController.stream;
 
+  // 동시에 실행 중인 로딩 작업 수 — 모두 완료돼야 isLoading = false
+  int _pendingLoads = 0;
+  bool _isSocialLoginInProgress = false;
+
   LoginViewModel(this._autoLoginUseCase, this._socialLoginUseCase) {
     _autoLogin();
   }
@@ -32,9 +36,24 @@ class LoginViewModel extends ChangeNotifier {
     }
   }
 
+  void _startLoading() {
+    _pendingLoads++;
+    if (_state.isLoading == false) {
+      _state = state.copyWith(isLoading: true);
+      notifyListeners();
+    }
+  }
+
+  void _stopLoading() {
+    if (_pendingLoads > 0) _pendingLoads--;
+    if (_pendingLoads == 0) {
+      _state = state.copyWith(isLoading: false);
+      notifyListeners();
+    }
+  }
+
   Future<void> _autoLogin() async {
-    _state = state.copyWith(isLoading: true);
-    notifyListeners();
+    _startLoading();
 
     try {
       final Result<void> result = await _autoLoginUseCase();
@@ -45,29 +64,36 @@ class LoginViewModel extends ChangeNotifier {
         case Error():
           break;
       }
+    } catch (_) {
     } finally {
-      _state = state.copyWith(isLoading: false);
-      notifyListeners();
+      _stopLoading();
     }
   }
 
   Future<void> _socialLogin({required SocialLoginType type}) async {
-    _state = state.copyWith(isLoading: true);
-    notifyListeners();
+    if (_isSocialLoginInProgress) return;
+    _isSocialLoginInProgress = true;
+    _startLoading();
 
-    final Result<void> result = await _socialLoginUseCase(type);
+    try {
+      final Result<void> result = await _socialLoginUseCase(type);
 
-    switch (result) {
-      case Success():
-        _eventController.add(LoginUiEvent.login());
-      case Error():
-        _eventController.add(
-          LoginUiEvent.showSnackBar('로그인에 실패했습니다. 다시 시도해주세요'),
-        );
+      switch (result) {
+        case Success():
+          _eventController.add(LoginUiEvent.login());
+        case Error():
+          _eventController.add(
+            LoginUiEvent.showSnackBar('로그인에 실패했습니다. 다시 시도해주세요'),
+          );
+      }
+    } catch (_) {
+      _eventController.add(
+        LoginUiEvent.showSnackBar('로그인에 실패했습니다. 다시 시도해주세요'),
+      );
+    } finally {
+      _isSocialLoginInProgress = false;
+      _stopLoading();
     }
-
-    _state = state.copyWith(isLoading: false);
-    notifyListeners();
   }
 
   @override

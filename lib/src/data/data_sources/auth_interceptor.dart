@@ -16,10 +16,13 @@ class AuthInterceptor extends Interceptor {
     if (options.headers['accessToken'] == 'true') {
       options.headers.remove('accessToken');
 
-      final token = await _storage.readToken();
-
-      if (token != null && token.isNotEmpty) {
-        options.headers['Authorization'] = 'Bearer $token';
+      try {
+        final token = await _storage.readToken();
+        if (token != null && token.isNotEmpty) {
+          options.headers['Authorization'] = 'Bearer $token';
+        }
+      } catch (_) {
+        // 토큰 읽기 실패 시 인증 없이 진행 (서버에서 401 처리)
       }
     }
 
