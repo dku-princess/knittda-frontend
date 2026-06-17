@@ -40,7 +40,8 @@ class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
 
       body: Consumer<ProjectPreviewsViewModel>(
         builder: (context, viewModel, _) {
-          final usable = !viewModel.state.isLoading &&
+          final usable =
+              !viewModel.state.isLoading &&
               viewModel.state.errorMessage == null;
 
           if (usable && !_initialLoadT4Scheduled) {
@@ -73,7 +74,12 @@ class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
               },
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: [Center(child: Text(viewModel.state.errorMessage!))],
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    child: Center(child: Text(viewModel.state.errorMessage!)),
+                  ),
+                ],
               ),
             );
           }
