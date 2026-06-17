@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 /// 배너 초기 로딩 전체를 Sentry Performance transaction 1개로 측정합니다.
@@ -61,8 +60,6 @@ class BannerLoadTracker {
       _spanVmToRequest,
       description: 'T1→T2: ViewModel init to Directus HTTP send',
     );
-
-    _debugLog('T1 banner load start');
   }
 
   /// T2: Directus HTTP 요청 전송 직전.
@@ -76,11 +73,6 @@ class BannerLoadTracker {
       _spanApiRoundTrip,
       description: 'T2→T3: HTTP request to Directus in flight',
     );
-
-    final t1 = _t1;
-    if (t1 != null) {
-      _debugLog('T2 HTTP about to send (+${_t2!.difference(t1).inMilliseconds}ms from T1)');
-    }
   }
 
   /// T3: Directus HTTP 응답 수신 완료.
@@ -94,11 +86,6 @@ class BannerLoadTracker {
       _spanResponseToRender,
       description: 'T3→T4: response parsed to banner widget first frame',
     );
-
-    final t2 = _t2;
-    if (t2 != null) {
-      _debugLog('T3 HTTP received (round-trip ${_t3!.difference(t2).inMilliseconds}ms)');
-    }
   }
 
   /// T4: 배너 위젯이 처음 화면에 그려진 프레임.
@@ -116,11 +103,9 @@ class BannerLoadTracker {
         _spanImageDownload,
         description: 'T4→T5: Image.network download and decode',
       );
-      _debugLog('T4 banner widget rendered, image download starting');
     } else {
       _currentSpan = null;
       _attachMeasurements(t5: null);
-      _debugLogSummary(t5: null);
       final tx = _transaction;
       _transaction = null;
       if (tx != null) unawaited(tx.finish(status: SpanStatus.ok()));
@@ -138,7 +123,6 @@ class BannerLoadTracker {
     _currentSpan = null;
 
     _attachMeasurements(t5: _t5);
-    _debugLogSummary(t5: _t5);
 
     final tx = _transaction;
     _transaction = null;
@@ -158,7 +142,6 @@ class BannerLoadTracker {
     _currentSpan = null;
 
     _attachMeasurements(t5: _t5);
-    _debugLogSummary(t5: _t5);
 
     final tx = _transaction;
     _transaction = null;
@@ -170,8 +153,6 @@ class BannerLoadTracker {
   /// API 오류 또는 활성 배너 없음으로 조기 종료할 때 호출.
   void abortSession() {
     if (!_sessionActive) return;
-
-    _debugLog('session aborted (no banner or error)');
 
     _finishCurrentSpan(SpanStatus.internalError());
     _currentSpan = null;
@@ -214,29 +195,6 @@ class BannerLoadTracker {
     if (t4 != null && t5 != null) {
       tx.setMeasurement('image_load_ms', t5.difference(t4).inMilliseconds, unit: unit);
     }
-  }
-
-  void _debugLog(String message) {
-    if (!kDebugMode) return;
-    debugPrint('[Perf][Banner] $message');
-  }
-
-  void _debugLogSummary({required DateTime? t5}) {
-    if (!kDebugMode) return;
-    final t1 = _t1;
-    final t2 = _t2;
-    final t3 = _t3;
-    final t4 = _t4;
-    if (t1 == null || t2 == null || t3 == null || t4 == null) return;
-    final end = t5 ?? t4;
-    debugPrint(
-      '[Perf][Banner] done — '
-      'total=${end.difference(t1).inMilliseconds}ms '
-      'T2-T1=${t2.difference(t1).inMilliseconds}ms '
-      'T3-T2=${t3.difference(t2).inMilliseconds}ms '
-      'T4-T3=${t4.difference(t3).inMilliseconds}ms'
-      '${t5 != null ? ' T5-T4=${t5.difference(t4).inMilliseconds}ms' : ''}',
-    );
   }
 
   void _reset() {
