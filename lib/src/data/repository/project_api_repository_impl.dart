@@ -6,7 +6,7 @@ import 'package:knittda/src/data/data_sources/project_api.dart';
 import 'package:knittda/src/data/data_sources/result.dart';
 import 'package:knittda/src/domain/model/article/article_preview.dart';
 import 'package:knittda/src/domain/model/project.dart';
-import 'package:knittda/src/domain/model/project_previews.dart';
+import 'package:knittda/src/domain/model/project_previews_page.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
@@ -115,12 +115,18 @@ class ProjectApiRepositoryImpl implements ProjectApiRepository {
   }
 
   @override
-  Future<Result<List<ProjectPreviews>>> getProjectPreviews() async {
-    final Result<Iterable> result = await _api.getProjectPreviews();
+  Future<Result<ProjectPreviewsPage>> getProjectPreviews({
+    int page = 0,
+    int size = 50,
+  }) async {
+    final Result<Map<String, dynamic>> result = await _api.getProjectPreviews(
+      page: page,
+      size: size,
+    );
 
     return switch (result) {
       Success(:final data) => Result.success(
-        data.map((e) => ProjectPreviews.fromJson(e)).toList(),
+        ProjectPreviewsPage.fromJson(data),
       ),
       Error(:final e) => Result.error(e),
     };

@@ -24,6 +24,30 @@ class ProjectPreviewsScreen extends StatefulWidget {
 
 class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
   bool _initialLoadT4Scheduled = false;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final position = _scrollController.position;
+    if (position.pixels >= position.maxScrollExtent - 300) {
+      context.read<ProjectPreviewsViewModel>().onEvent(
+        const ProjectPreviewsEvent.loadMore(),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,18 +108,51 @@ class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
                 ProjectPreviewsEvent.loadProjectPreviews(),
               );
             },
-            child: GridView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-              itemCount: viewModel.state.projectPreviews.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.9,
-              ),
-              itemBuilder: (context, index) {
-                final projectPreviews = viewModel.state.projectPreviews[index];
-                return ProjectPreviewsItem(
+            child: CustomScrollView(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 20,
+                  ),
+                  sliver: SliverGrid(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 0.9,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => _buildItem(context, viewModel, index),
+                      childCount: viewModel.state.projectPreviews.length,
+                    ),
+                  ),
+                ),
+                if (viewModel.state.isLoadingMore)
+                  const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildItem(
+    BuildContext context,
+    ProjectPreviewsViewModel viewModel,
+    int index,
+  ) {
+    final projectPreviews = viewModel.state.projectPreviews[index];
+    return ProjectPreviewsItem(
                   projectPreviews: projectPreviews,
                   onTap: () async {
                     final deleted = await Navigator.push<bool>(
@@ -135,11 +192,5 @@ class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
                     }
                   },
                 );
-              },
-            ),
-          );
-        },
-      ),
-    );
   }
 }

@@ -401,7 +401,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "  if [[ \"${CONFIGURATION}\" == *\"-Prod\" ]]; then\n    cp \"${PROJECT_DIR}/Runner/GoogleService-Info-Prod.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\"\n    echo \"✅ Copied Prod GoogleService-Info.plist\"\n  else\n    cp \"${PROJECT_DIR}/Runner/GoogleService-Info-Beta.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\"\n    echo \"✅ Copied Beta GoogleService-Info.plist\"\n  fi\n";
+			shellScript = "  if [[ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.example.knittda\" ]]; then\n    cp \"${PROJECT_DIR}/Runner/GoogleService-Info-Prod.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\"\n    echo \"✅ Copied Prod GoogleService-Info.plist (bundle=${PRODUCT_BUNDLE_IDENTIFIER}, config=${CONFIGURATION})\"\n  elif [[ \"${PRODUCT_BUNDLE_IDENTIFIER}\" == \"com.tteuda.app.beta\" ]]; then\n    cp \"${PROJECT_DIR}/Runner/GoogleService-Info-Beta.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\"\n    echo \"✅ Copied Beta GoogleService-Info.plist (bundle=${PRODUCT_BUNDLE_IDENTIFIER}, config=${CONFIGURATION})\"\n  else\n    echo \"❌ Unknown bundle id: ${PRODUCT_BUNDLE_IDENTIFIER} (config=${CONFIGURATION}) — no GoogleService-Info.plist copied\"\n    exit 1\n  fi\n";
 		};
 		90CB67472EEFF63D009A328D /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;

@@ -14,8 +14,8 @@ class ProjectPreviewsItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String? imageUrl =
-        (projectPreviews.recentImageUrls?.isNotEmpty ?? false)
-        ? projectPreviews.recentImageUrls!.first
+        (projectPreviews.recentImageUrl?.isNotEmpty ?? false)
+        ? projectPreviews.recentImageUrl
         : null;
 
     return Card(
