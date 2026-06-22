@@ -14,6 +14,8 @@ class FeedSearchViewModel extends ChangeNotifier {
   final GetSearchFeedUseCase _getSearchFeedUseCase;
   final FeedApiRepository _feedApiRepository;
 
+  int _searchGeneration = 0;
+
   FeedSearchViewModel(this._getSearchFeedUseCase, this._feedApiRepository);
 
   FeedSearchState _state = FeedSearchState(
@@ -68,11 +70,13 @@ class FeedSearchViewModel extends ChangeNotifier {
     }
 
     if (isFirstPage) {
-      _state = state.copyWith(isLoading: true);
+      _state = state.copyWith(isLoading: true, feeds: [], keyword: keyword);
     } else {
       _state = state.copyWith(isLoadingMore: true);
     }
     notifyListeners();
+
+    final generation = ++_searchGeneration;
 
     final Result<FeedPagination> result = await _getSearchFeedUseCase(
       keyword,
@@ -80,6 +84,8 @@ class FeedSearchViewModel extends ChangeNotifier {
       size,
       sort,
     );
+
+    if (generation != _searchGeneration) return;
 
     switch (result) {
       case Success(:final data):
@@ -126,11 +132,14 @@ class FeedSearchViewModel extends ChangeNotifier {
   }
 
   void _clear() {
+    _searchGeneration++;
     _state = state.copyWith(
       feeds: [],
       keyword: '',
       page: 0,
       hasMore: true,
+      isLoading: false,
+      isLoadingMore: false,
       searchId: null,
       searchVersion: null,
     );
