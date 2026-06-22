@@ -41,11 +41,14 @@ class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
 
   void _onScroll() {
     if (!_scrollController.hasClients) return;
+    final viewModel = context.read<ProjectPreviewsViewModel>();
     final position = _scrollController.position;
     if (position.pixels >= position.maxScrollExtent - 300) {
-      context.read<ProjectPreviewsViewModel>().onEvent(
-        const ProjectPreviewsEvent.loadMore(),
-      );
+      if (viewModel.state.hasMore && !viewModel.state.isLoadingMore) {
+        viewModel.onEvent(
+          const ProjectPreviewsEvent.loadMore(),
+        );
+      }
     }
   }
 
@@ -64,7 +67,8 @@ class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
 
       body: Consumer<ProjectPreviewsViewModel>(
         builder: (context, viewModel, _) {
-          final usable = !viewModel.state.isLoading &&
+          final usable =
+              !viewModel.state.isLoading &&
               viewModel.state.errorMessage == null;
 
           if (usable && !_initialLoadT4Scheduled) {
@@ -120,11 +124,11 @@ class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
                   sliver: SliverGrid(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 0.9,
-                    ),
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 0.9,
+                        ),
                     delegate: SliverChildBuilderDelegate(
                       (context, index) => _buildItem(context, viewModel, index),
                       childCount: viewModel.state.projectPreviews.length,
@@ -153,44 +157,32 @@ class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
   ) {
     final projectPreviews = viewModel.state.projectPreviews[index];
     return ProjectPreviewsItem(
-                  projectPreviews: projectPreviews,
-                  onTap: () async {
-                    final deleted = await Navigator.push<bool>(
-                      context,
-                      MaterialPageRoute(
-                        settings: const RouteSettings(name: 'project_detail'),
-                        builder: (context) => ChangeNotifierProvider(
-                          create: (context) => ProjectDetailsViewModel(
-                            GetProjectUseCase(
-                              context.read<ProjectApiRepository>(),
-                            ),
-                            GetMyProjectUseCase(
-                              context.read<ProjectApiRepository>(),
-                            ),
-                            DeleteProjectUseCase(
-                              context.read<ProjectApiRepository>(),
-                            ),
-                            UpdateProjectUseCase(
-                              context.read<ProjectApiRepository>(),
-                            ),
-                            GetRecordsProjectsUseCase(
-                              context.read<RecordApiRepository>(),
-                            ),
-                            context.read<GetUserUseCase>(),
-                            projectId: projectPreviews.projectId,
-                            source: 'project_previews',
-                          ),
-                          child: const ProjectDetailsScreen(),
-                        ),
-                      ),
-                    );
+      projectPreviews: projectPreviews,
+      onTap: () async {
+        final deleted = await Navigator.push<bool>(
+          context,
+          MaterialPageRoute(
+            settings: const RouteSettings(name: 'project_detail'),
+            builder: (context) => ChangeNotifierProvider(
+              create: (context) => ProjectDetailsViewModel(
+                GetProjectUseCase(context.read<ProjectApiRepository>()),
+                GetMyProjectUseCase(context.read<ProjectApiRepository>()),
+                DeleteProjectUseCase(context.read<ProjectApiRepository>()),
+                UpdateProjectUseCase(context.read<ProjectApiRepository>()),
+                GetRecordsProjectsUseCase(context.read<RecordApiRepository>()),
+                context.read<GetUserUseCase>(),
+                projectId: projectPreviews.projectId,
+                source: 'project_previews',
+              ),
+              child: const ProjectDetailsScreen(),
+            ),
+          ),
+        );
 
-                    if (deleted != null && deleted) {
-                      viewModel.onEvent(
-                        ProjectPreviewsEvent.loadProjectPreviews(),
-                      );
-                    }
-                  },
-                );
+        if (deleted != null && deleted) {
+          viewModel.onEvent(ProjectPreviewsEvent.loadProjectPreviews());
+        }
+      },
+    );
   }
 }
