@@ -68,7 +68,10 @@ class RecordApi {
       final response = await _dio.put(
         '/api/v1/records/',
         data: formData,
-        options: Options(headers: {'accessToken': 'true'}),
+        options: Options(
+          headers: {'accessToken': 'true'},
+          sendTimeout: const Duration(seconds: 30),
+        ),
       );
 
       if (response.statusCode == 200) {
@@ -80,7 +83,7 @@ class RecordApi {
         Sentry.captureException(error, stackTrace: StackTrace.current);
         return Result.error(error);
       }
-    } on DioException catch (e,stack) {
+    } on DioException catch (e, stack) {
       Sentry.captureException(e, stackTrace: stack);
       return Result.error('네트워크 에러: ${e.message}');
     } catch (e, stack) {
@@ -113,7 +116,10 @@ class RecordApi {
       final response = await _dio.post(
         '/api/v1/records/',
         data: formData,
-        options: Options(headers: {'accessToken': 'true'}),
+        options: Options(
+          headers: {'accessToken': 'true'},
+          sendTimeout: const Duration(seconds: 30),
+        ),
       );
 
       if (response.statusCode == 200) {

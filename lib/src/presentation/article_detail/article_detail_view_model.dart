@@ -65,7 +65,7 @@ class ArticleDetailViewModel extends ChangeNotifier {
           }
         }
       }
-    } on Exception catch (e) {
+    } catch (e) {
       final error = e.toString().replaceFirst('Exception: ', '');
       _state = state.copyWith(errorMessage: error);
     }

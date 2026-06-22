@@ -83,9 +83,9 @@ Future<List<SingleChildWidget>> getProviders() async {
       create: (_) {
         final dio = Dio(BaseOptions(
           baseUrl: AppConfig.apiBaseUrl,
-          connectTimeout: const Duration(seconds: 10),
-          receiveTimeout: const Duration(seconds: 10),
-          sendTimeout: const Duration(seconds: 10),
+          connectTimeout: const Duration(seconds: 30),
+          receiveTimeout: const Duration(seconds: 30),
+          sendTimeout: const Duration(seconds: 30),
         ));
         dio.interceptors.add(AuthInterceptor(tokenStorage));
         dio.addSentry();
@@ -96,9 +96,9 @@ Future<List<SingleChildWidget>> getProviders() async {
       create: (_) {
         final dio = Dio(BaseOptions(
           baseUrl: AppConfig.directusBaseUrl,
-          connectTimeout: const Duration(seconds: 10),
-          receiveTimeout: const Duration(seconds: 10),
-          sendTimeout: const Duration(seconds: 10),
+          connectTimeout: const Duration(seconds: 30),
+          receiveTimeout: const Duration(seconds: 30),
+          sendTimeout: const Duration(seconds: 30),
         ));
         dio.interceptors.add(AuthInterceptor(tokenStorage));
         dio.addSentry();

@@ -112,6 +112,12 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context, viewModel, _) {
         final banner = viewModel.state.currentBanner;
 
+        // 배너가 사라지면 T4 플래그를 리셋하여 다음 loadBanners() 사이클에서
+        // T4가 다시 호출될 수 있도록 한다. markT4()는 세션이 없으면 no-op이므로 안전하다.
+        if (banner == null) {
+          _bannerT4Scheduled = false;
+        }
+
         // T4: 배너가 처음 나타난 프레임
         if (banner != null && !_bannerT4Scheduled) {
           _bannerT4Scheduled = true;

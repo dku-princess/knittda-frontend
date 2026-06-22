@@ -458,12 +458,12 @@ class _DiaryTap extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (state.records.isEmpty) {
-      return const Center(child: Text('기록을 작성해 주세요.'));
-    }
-
     if (state.errorMessage != null) {
       return Center(child: Text(state.errorMessage!));
+    }
+
+    if (state.records.isEmpty) {
+      return const Center(child: Text('기록을 작성해 주세요.'));
     }
 
     return ListView.builder(
