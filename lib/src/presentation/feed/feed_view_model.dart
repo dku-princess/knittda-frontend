@@ -12,7 +12,7 @@ class FeedViewModel extends ChangeNotifier {
 
   bool _emittedInitialPerfT1 = false;
 
-  FeedViewModel(this._getFeedUseCase){
+  FeedViewModel(this._getFeedUseCase) {
     _loadFeed(0, 20, null);
   }
 
@@ -49,7 +49,7 @@ class FeedViewModel extends ChangeNotifier {
     if (isFirstPage) {
       _state = state.copyWith(isLoading: true, errorMessage: null);
     } else {
-      if (!state.hasMore || state.isLoadingMore) return;
+      if (state.isLoading || state.isLoadingMore || !state.hasMore) return;
 
       _state = state.copyWith(isLoadingMore: true);
     }
