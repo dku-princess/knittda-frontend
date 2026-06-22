@@ -8,6 +8,9 @@ abstract class ProjectPreviewsState with _$ProjectPreviewsState {
   factory ProjectPreviewsState(
     List<ProjectPreviews> projectPreviews,
     bool isLoading,
-    String? errorMessage,
-  ) = _ProjectPreviewsState;
+    String? errorMessage, {
+    @Default(0) int currentPage,
+    @Default(true) bool hasMore,
+    @Default(false) bool isLoadingMore,
+  }) = _ProjectPreviewsState;
 }

@@ -162,20 +162,27 @@ class ProjectApi {
     }
   }
 
-  Future<Result<Iterable>> getProjectPreviews() async {
+  Future<Result<Map<String, dynamic>>> getProjectPreviews({
+    int page = 0,
+    int size = 50,
+  }) async {
     try {
       final tracker = InitialLoadTracker.projectPreviews;
       if (tracker.isSessionActive) {
         tracker.markT2();
       }
-      final response = await _dio.get('/api/v1/projects/previews');
+      final response = await _dio.get(
+        '/api/v2/projects/previews',
+        queryParameters: {'page': page, 'size': size},
+      );
       if (tracker.isSessionActive) {
         tracker.markT3();
       }
 
       if (response.statusCode == 200) {
         final data = response.data;
-        final Iterable hits = data['data'];
+        final Map<String, dynamic> hits =
+            (data['data'] as Map).cast<String, dynamic>();
         return Result.success(hits);
       } else {
         final error = '서버 오류: ${response.statusCode}';

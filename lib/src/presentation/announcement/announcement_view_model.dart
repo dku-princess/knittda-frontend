@@ -37,7 +37,7 @@ class AnnouncementViewModel extends ChangeNotifier {
   }
 
   Future<void> loadMore() async {
-    if (state.isLoadingMore || !state.hasMore) return;
+    if (state.isLoading || state.isLoadingMore || !state.hasMore) return;
 
     _state = state.copyWith(isLoadingMore: true);
     notifyListeners();

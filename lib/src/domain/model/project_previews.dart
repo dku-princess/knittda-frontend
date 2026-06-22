@@ -12,7 +12,7 @@ abstract class ProjectPreviews with _$ProjectPreviews {
     required String projectName,
     required int recordNum,
     DateTime? lastRecordAt,
-    List<String>? recentImageUrls,
+    String? recentImageUrl,
   }) = _ProjectPreviews;
 
   factory ProjectPreviews.fromJson(Map<String, dynamic> json) =>

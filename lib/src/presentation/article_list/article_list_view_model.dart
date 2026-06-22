@@ -44,7 +44,7 @@ class ArticleListViewModel extends ChangeNotifier {
   }
 
   Future<void> _loadMore() async {
-    if (state.isLoadingMore || !state.hasMore) return;
+    if (state.isLoading || state.isLoadingMore || !state.hasMore) return;
 
     _state = state.copyWith(isLoadingMore: true);
     notifyListeners();
