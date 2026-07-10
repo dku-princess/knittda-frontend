@@ -16,6 +16,7 @@ import 'package:knittda/src/presentation/record_details/record_details_ui_event.
 import 'package:knittda/src/presentation/record_details/record_details_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_viewer.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 import '../../domain/use_case/update_record_use_case.dart';
 
@@ -134,7 +135,7 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("기록 불러오는 중..."),
-                    SizedBox(height: 24),
+                    SizedBox(height: AppSpacing.space24),
                     CircularProgressIndicator(),
                   ],
                 ),
@@ -160,8 +161,8 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
 
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 20,
+                      horizontal: AppSpacing.space20,
+                      vertical: AppSpacing.space20,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,26 +171,26 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
                         Text(
                           '$dateStr $timeStr',
                           style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
+                            fontSize: AppFontSize.sm,
+                            color: AppColors.grey400,
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: AppSpacing.space20),
 
                         //기록
                         if (record.comment != null &&
                             record.comment!.isNotEmpty) ...[
                           Text(
                             record.comment!,
-                            style: const TextStyle(fontSize: 16),
+                            style: const TextStyle(fontSize: AppFontSize.lg),
                           ),
-                          const SizedBox(height: 40),
+                          const SizedBox(height: AppSpacing.space40),
                         ],
 
                         //태그
                         if (record.tags != null && record.tags!.isNotEmpty) ...[
                           _RecordTags(tags: record.tags!),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: AppSpacing.space16),
                         ],
                       ],
                     ),
@@ -245,6 +246,8 @@ class _RecordImagesState extends State<_RecordImages> {
     final images = widget.images;
     final onImageTap = widget.onImageTap;
 
+    // 기록 상세 이미지는 디자인 시스템의 둥근 모서리(ClipRRect) 적용 예외 —
+    // 모서리 제거 결정(#124)을 유지하고, 색상만 디자인 토큰을 반영한다.
     if (images.length == 1) {
       return GestureDetector(
         onTap: () {
@@ -265,11 +268,11 @@ class _RecordImagesState extends State<_RecordImages> {
 
             errorBuilder: (context, exception, stackTrace) {
               return Container(
-                color: Colors.grey.shade300,
+                color: AppColors.grey200,
                 alignment: Alignment.center,
                 child: const Icon(
                   Icons.broken_image,
-                  color: Colors.grey,
+                  color: AppColors.grey400,
                   size: 40,
                 ),
               );
@@ -310,11 +313,11 @@ class _RecordImagesState extends State<_RecordImages> {
 
                   errorBuilder: (context, exception, stackTrace) {
                     return Container(
-                      color: Colors.grey.shade300,
+                      color: AppColors.grey200,
                       alignment: Alignment.center,
                       child: const Icon(
                         Icons.broken_image,
-                        color: Colors.grey,
+                        color: AppColors.grey400,
                         size: 40,
                       ),
                     );
@@ -380,14 +383,14 @@ class _RecordTags extends StatelessWidget {
       runSpacing: 10, // 줄 바뀔 때 세로 간격
       children: tags.map((tag) {
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space8, vertical: AppSpacing.space8),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20), // 완전 둥근 테두리
+            borderRadius: BorderRadius.circular(AppRadius.pill), // 완전 둥근 테두리
             border: Border.all(color: PRIMARY_COLOR, width: 1),
           ),
           child: Text(
             tag,
-            style: const TextStyle(fontSize: 12, color: PRIMARY_COLOR),
+            style: const TextStyle(fontSize: AppFontSize.sm, color: PRIMARY_COLOR),
           ),
         );
       }).toList(),

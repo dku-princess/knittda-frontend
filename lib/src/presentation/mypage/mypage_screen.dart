@@ -21,6 +21,7 @@ import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class MypageScreen extends StatefulWidget {
   const MypageScreen({super.key});
@@ -185,20 +186,20 @@ class _MypageScreenState extends State<MypageScreen> {
         scrolledUnderElevation: 0,
         title: const Text(
           '마이페이지',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: AppFontSize.display, fontWeight: AppFontWeight.semibold),
         ),
         titleSpacing: 30,
       ),
 
       body: ListView(
         children: [
-          SizedBox(height: 20),
+          SizedBox(height: AppSpacing.space20),
 
           Container(
-            padding: EdgeInsets.only(top: 8, bottom: 24, left: 30, right: 30),
+            padding: EdgeInsets.only(top: AppSpacing.space8, bottom: AppSpacing.space24, left: AppSpacing.space32, right: AppSpacing.space32),
             decoration: BoxDecoration(
               border: Border(
-                bottom: BorderSide(color: Color(0xFFF5F7F8), width: 3),
+                bottom: BorderSide(color: AppColors.grey50, width: 3),
               ),
             ),
             child: Row(
@@ -211,14 +212,14 @@ class _MypageScreenState extends State<MypageScreen> {
                             user!.profileImageUrl!.isNotEmpty)
                       ? NetworkImage(user.profileImageUrl!)
                       : null,
-                  backgroundColor: Colors.grey,
+                  backgroundColor: AppColors.grey400,
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(width: AppSpacing.space20),
                 Text(
                   user?.nickname ?? '알 수 없는 사용자',
                   style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                    fontSize: AppFontSize.md,
+                    fontWeight: AppFontWeight.semibold,
                   ),
                 ),
               ],
@@ -228,7 +229,7 @@ class _MypageScreenState extends State<MypageScreen> {
           SizedBox(height: 28),
 
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space32),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -264,7 +265,7 @@ class _MypageScreenState extends State<MypageScreen> {
 
                             child: Text(
                               '탈퇴',
-                              style: TextStyle(color: Colors.red),
+                              style: TextStyle(color: AppColors.error),
                             ),
                           ),
                         ],
@@ -276,7 +277,7 @@ class _MypageScreenState extends State<MypageScreen> {
                   },
                 ),
 
-                SizedBox(height: 40),
+                SizedBox(height: AppSpacing.space40),
 
                 _buildSectionHeader('문의'),
                 _buildMenuItem(
@@ -323,16 +324,16 @@ class _MypageScreenState extends State<MypageScreen> {
 Widget _buildSectionHeader(String title) {
   return Container(
     width: double.infinity,
-    padding: const EdgeInsets.only(bottom: 12),
+    padding: const EdgeInsets.only(bottom: AppSpacing.space12),
     decoration: const BoxDecoration(
-      border: Border(bottom: BorderSide(color: Color(0xFF4D4D4D), width: 1)),
+      border: Border(bottom: BorderSide(color: AppColors.grey800, width: 1)),
     ),
     child: Text(
       title,
       style: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: Color(0xFF4D4D4D),
+        fontSize: AppFontSize.md,
+        fontWeight: AppFontWeight.semibold,
+        color: AppColors.grey800,
       ),
     ),
   );
@@ -344,18 +345,18 @@ Widget _buildMenuItem(String title, {required VoidCallback onTap}) {
     onTap: onTap,
     child: Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.space12),
       decoration: const BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: Color(0xFFE6E6E6), width: 0.5),
+          bottom: BorderSide(color: AppColors.grey200, width: 0.5),
         ),
       ),
       child: Text(
         title,
         style: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          color: Color(0xFF4D4D4D),
+          fontSize: AppFontSize.md,
+          fontWeight: AppFontWeight.regular,
+          color: AppColors.grey800,
         ),
       ),
     ),

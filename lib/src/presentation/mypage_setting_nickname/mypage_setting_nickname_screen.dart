@@ -6,6 +6,7 @@ import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_
 import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_ui_event.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class MypageSettingNicknameScreen extends StatefulWidget {
   const MypageSettingNicknameScreen({super.key});
@@ -63,7 +64,7 @@ class _MypageSettingNicknameScreenState
           scrolledUnderElevation: 0,
           title: Text(
             '닉네임 설정',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            style: TextStyle(fontSize: AppFontSize.xl, fontWeight: AppFontWeight.semibold),
           ),
           centerTitle: true,
           actions: [
@@ -85,31 +86,31 @@ class _MypageSettingNicknameScreenState
                     },
               style: TextButton.styleFrom(
                 backgroundColor: PRIMARY_COLOR,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadius.card),
                 ),
               ),
-              child: const Text('저장', style: TextStyle(fontSize: 16)),
+              child: const Text('저장', style: TextStyle(fontSize: AppFontSize.lg)),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.space8),
           ],
         ),
 
         body: Padding(
-          padding: EdgeInsets.all(20),
+          padding: EdgeInsets.all(AppSpacing.space20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 "닉네임",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: AppFontSize.lg,
+                  fontWeight: AppFontWeight.medium,
                 ),
               ),
-              SizedBox(height: 12),
+              SizedBox(height: AppSpacing.space12),
               TextField(
                 maxLines: 1,
                 maxLength: 8,
@@ -118,10 +119,10 @@ class _MypageSettingNicknameScreenState
                 decoration: InputDecoration(
                   isDense: true,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.button),
                   ),
                 ),
-                style: const TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: AppFontSize.md),
               ),
             ],
           ),

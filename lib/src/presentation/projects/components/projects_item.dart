@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/domain/model/project.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class ProjectsItem extends StatelessWidget {
   final Project project;
@@ -21,18 +22,18 @@ class ProjectsItem extends StatelessWidget {
 
     return Container(
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFFE6E6E6), width: 1)),
+        border: Border(bottom: BorderSide(color: AppColors.grey200, width: 1)),
       ),
 
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(AppSpacing.space8),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppRadius.card),
                 child:
                     (project.thumbnailUrl != null &&
                         project.thumbnailUrl!.isNotEmpty)
@@ -45,20 +46,20 @@ class ProjectsItem extends StatelessWidget {
                           return Container(
                             width: 60,
                             height: 60,
-                            color: Colors.grey[300],
-                            child: Icon(Icons.broken_image, color: Colors.grey),
+                            color: AppColors.grey200,
+                            child: Icon(Icons.broken_image, color: AppColors.grey400),
                           );
                         },
                       )
                     : Container(
                         width: 60,
                         height: 60,
-                        color: Colors.grey[300],
-                        child: Icon(Icons.image_outlined, color: Colors.grey),
+                        color: AppColors.grey200,
+                        child: Icon(Icons.image_outlined, color: AppColors.grey400),
                       ),
               ),
 
-              SizedBox(width: 10),
+              SizedBox(width: AppSpacing.space12),
 
               Expanded(
                 child: Column(
@@ -67,30 +68,30 @@ class ProjectsItem extends StatelessWidget {
                     Text(
                       project.nickname,
                       style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                        fontSize: AppFontSize.lg,
+                        fontWeight: AppFontWeight.medium,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
 
-                    SizedBox(height: 16),
+                    SizedBox(height: AppSpacing.space16),
 
                     Row(
                       children: [
                         Text(
                           "기록일",
                           style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
+                            fontSize: AppFontSize.sm,
+                            color: AppColors.grey600,
                           ),
                         ),
-                        SizedBox(width: 4),
+                        SizedBox(width: AppSpacing.space4),
                         Text(
                           lastRecordAt,
                           style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
+                            fontSize: AppFontSize.sm,
+                            color: AppColors.grey600,
                           ),
                         ),
                       ],
@@ -106,16 +107,16 @@ class ProjectsItem extends StatelessWidget {
                   width: 45,
                   height: 30,
                   decoration: BoxDecoration(
-                    color: Color(0xFFF0F0F0),
-                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.grey100,
+                    borderRadius: BorderRadius.circular(AppRadius.card),
                   ),
                   alignment: Alignment.center,
                   child: Text(
                     '추가',
                     style: TextStyle(
-                      color: Color(0xFFA6A6A6),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                      color: AppColors.grey400,
+                      fontSize: AppFontSize.md,
+                      fontWeight: AppFontWeight.medium,
                     ),
                   ),
                 ),

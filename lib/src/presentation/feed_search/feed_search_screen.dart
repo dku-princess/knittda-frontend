@@ -17,6 +17,7 @@ import 'package:knittda/src/presentation/project_details/project_details_screen.
 import 'package:knittda/src/presentation/project_details/project_details_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_viewer.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class FeedSearchScreen extends StatefulWidget {
   const FeedSearchScreen({super.key});
@@ -100,10 +101,10 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
           decoration: InputDecoration(
             hintText: '검색',
             filled: true,
-            fillColor: Colors.grey[200],
-            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            fillColor: AppColors.grey100,
+            contentPadding: EdgeInsets.symmetric(vertical: AppSpacing.space0, horizontal: AppSpacing.space8),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppRadius.button),
               borderSide: BorderSide.none,
             ),
             prefixIcon: Icon(Icons.search),
@@ -123,7 +124,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("검색 하는 중..."),
-                  SizedBox(height: 24),
+                  SizedBox(height: AppSpacing.space24),
                   CircularProgressIndicator(),
                 ],
               ),
@@ -138,7 +139,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
             return Center(
               child: Text(
                 '"${viewModel.state.keyword}" 에 대한 결과가 없습니다.',
-                style: TextStyle(color: Colors.grey),
+                style: TextStyle(color: AppColors.grey400),
               ),
             );
           }
@@ -149,7 +150,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
               if (viewModel.state.isLoadingMore &&
                   index == viewModel.state.feeds.length) {
                 return const Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: EdgeInsets.all(AppSpacing.space16),
                   child: Center(child: CircularProgressIndicator()),
                 );
               }

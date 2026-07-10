@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/domain/model/images.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class ImageViewer extends StatefulWidget {
   final List<Images> images;
@@ -31,7 +32,7 @@ class _ImageViewerState extends State<ImageViewer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.black,
       body: SafeArea(
         child: Stack(
           children: [
@@ -60,7 +61,7 @@ class _ImageViewerState extends State<ImageViewer> {
                       },
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
-                          color: Colors.grey.shade800,
+                          color: AppColors.grey800,
                           alignment: Alignment.center,
                           child: const Icon(
                             Icons.broken_image,
@@ -79,7 +80,7 @@ class _ImageViewerState extends State<ImageViewer> {
               top: 8,
               right: 8,
               child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white),
+                icon: const Icon(Icons.close, color: AppColors.white),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
@@ -92,16 +93,16 @@ class _ImageViewerState extends State<ImageViewer> {
                 child: Center(
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
+                      horizontal: AppSpacing.space12,
+                      vertical: AppSpacing.space8,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.black54,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.card),
                     ),
                     child: Text(
                       '${_currentIndex + 1}/${widget.images.length}',
-                      style: const TextStyle(color: Colors.white, fontSize: 14),
+                      style: const TextStyle(color: AppColors.white, fontSize: AppFontSize.md),
                     ),
                   ),
                 ),

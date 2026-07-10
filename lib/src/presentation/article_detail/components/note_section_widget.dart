@@ -3,6 +3,7 @@ import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:knittda/src/core/utils/markdown_utils.dart';
 import 'package:knittda/src/domain/model/article/note_section.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class NoteSectionWidget extends StatelessWidget {
   final NoteSection noteSection;
@@ -22,7 +23,7 @@ class NoteSectionWidget extends StatelessWidget {
         if (noteSection.noteItemBlock != null &&
             noteSection.noteItemBlock!.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.only(bottom: AppSpacing.space16),
             child: MarkdownBody(
               data: normalizeMarkdown(noteSection.noteItemBlock!),
               onTapLink: (text, href, title) async {
@@ -37,10 +38,10 @@ class NoteSectionWidget extends StatelessWidget {
                 }
               },
               styleSheet: MarkdownStyleSheet(
-                p: const TextStyle(fontSize: 14),
+                p: const TextStyle(fontSize: AppFontSize.md),
                 a: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.black,
+                  fontSize: AppFontSize.md,
+                  color: AppColors.black,
                   decoration: TextDecoration.underline,
                 ),
               ),
@@ -76,9 +77,9 @@ class NoteSectionWidget extends StatelessWidget {
               }
             },
             styleSheet: MarkdownStyleSheet(
-              p: const TextStyle(fontSize: 12, color: Colors.black54),
+              p: const TextStyle(fontSize: AppFontSize.sm, color: Colors.black54),
               a: const TextStyle(
-                fontSize: 12,
+                fontSize: AppFontSize.sm,
                 color: Colors.black54,
                 decoration: TextDecoration.underline,
               ),

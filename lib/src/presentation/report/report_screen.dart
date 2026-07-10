@@ -11,6 +11,7 @@ import 'package:knittda/src/presentation/report/report_view_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 final List<Map<String, dynamic>> scoreRanges = [
   {
@@ -218,7 +219,7 @@ class _ReportScreenState extends State<ReportScreen> {
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0,
-        backgroundColor: Colors.grey[300],
+        backgroundColor: AppColors.grey200,
 
         actions: [
           if (!state.isLoading && report != null) ...[
@@ -244,7 +245,7 @@ class _ReportScreenState extends State<ReportScreen> {
         ],
       ),
 
-      backgroundColor: Colors.grey[300],
+      backgroundColor: AppColors.grey200,
 
       body: state.isLoading
           ? const Center(
@@ -252,7 +253,7 @@ class _ReportScreenState extends State<ReportScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("주간 리포트 불러오는 중..."),
-                  SizedBox(height: 24),
+                  SizedBox(height: AppSpacing.space24),
                   CircularProgressIndicator(),
                 ],
               ),
@@ -261,10 +262,10 @@ class _ReportScreenState extends State<ReportScreen> {
           ? const Center(child: Text('주간 리포트를 불러오지 못 했어요'))
           : SingleChildScrollView(
               padding: const EdgeInsets.only(
-                top: 16,
-                bottom: 24,
-                right: 24,
-                left: 24,
+                top: AppSpacing.space16,
+                bottom: AppSpacing.space24,
+                right: AppSpacing.space24,
+                left: AppSpacing.space24,
               ),
               child: RepaintBoundary(
                 key: _captureKey,
@@ -272,12 +273,12 @@ class _ReportScreenState extends State<ReportScreen> {
                   padding: const EdgeInsets.only(
                     top: 45,
                     bottom: 45,
-                    right: 24,
-                    left: 24,
+                    right: AppSpacing.space24,
+                    left: AppSpacing.space24,
                   ),
                   decoration: BoxDecoration(
-                    color: Color(0xFFF2F2F7),
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.surfaceAlt,
+                    borderRadius: BorderRadius.circular(AppRadius.button),
                   ),
                   child: Column(
                     children: [
@@ -285,8 +286,8 @@ class _ReportScreenState extends State<ReportScreen> {
                         textAlign: TextAlign.center,
                         TextSpan(
                           style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w700,
+                            fontSize: AppFontSize.display,
+                            fontWeight: AppFontWeight.bold,
                           ),
                           children: [
                             TextSpan(text: '이번 주는\n'),
@@ -298,24 +299,24 @@ class _ReportScreenState extends State<ReportScreen> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 26),
+                      SizedBox(height: AppSpacing.space24),
 
                       if (stageImage != null)
                         AspectRatio(
                           aspectRatio: 4 / 3, // width : height
                           child: Image.asset(stageImage, fit: BoxFit.contain),
                         ),
-                      SizedBox(height: 16),
+                      SizedBox(height: AppSpacing.space16),
 
                       Text('${stage?["label"]}'),
                       Text('${report.knittingLevel}cm'),
 
                       SizedBox(height: 35),
                       Divider(),
-                      SizedBox(height: 16),
+                      SizedBox(height: AppSpacing.space16),
 
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space8),
                         child: Column(
                           children: [
                             Row(
@@ -324,14 +325,14 @@ class _ReportScreenState extends State<ReportScreen> {
                                 Text(
                                   "주간 기록",
                                   style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
+                                    fontSize: AppFontSize.md,
+                                    fontWeight: AppFontWeight.semibold,
                                   ),
                                 ),
                                 Text('${report.weeklyKnittingCount}개'),
                               ],
                             ),
-                            SizedBox(height: 16),
+                            SizedBox(height: AppSpacing.space16),
 
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -339,14 +340,14 @@ class _ReportScreenState extends State<ReportScreen> {
                                 Text(
                                   "남긴 사진",
                                   style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
+                                    fontSize: AppFontSize.md,
+                                    fontWeight: AppFontWeight.semibold,
                                   ),
                                 ),
                                 Text('${report.weeklyKnittingPhotoCount}개'),
                               ],
                             ),
-                            SizedBox(height: 16),
+                            SizedBox(height: AppSpacing.space16),
 
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -354,29 +355,29 @@ class _ReportScreenState extends State<ReportScreen> {
                                 Text(
                                   "주간 진행도",
                                   style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
+                                    fontSize: AppFontSize.md,
+                                    fontWeight: AppFontWeight.semibold,
                                   ),
                                 ),
                                 Text('${report.weeklyProgress}%'),
                               ],
                             ),
-                            SizedBox(height: 16),
+                            SizedBox(height: AppSpacing.space16),
                           ],
                         ),
                       ),
 
                       if ((report.topTags?.isNotEmpty ?? false)) ...[
                         Divider(),
-                        SizedBox(height: 16),
+                        SizedBox(height: AppSpacing.space16),
                         Text(
                           "이번 주 가장 많이 사용한 태그",
                           style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                            fontSize: AppFontSize.lg,
+                            fontWeight: AppFontWeight.semibold,
                           ),
                         ),
-                        SizedBox(height: 16),
+                        SizedBox(height: AppSpacing.space16),
                         Wrap(
                           spacing: 10,
                           runSpacing: 10,
@@ -385,41 +386,41 @@ class _ReportScreenState extends State<ReportScreen> {
                               .map(
                                 (tag) => Container(
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 6,
+                                    horizontal: AppSpacing.space8,
+                                    vertical: AppSpacing.space8,
                                   ),
                                   decoration: BoxDecoration(
                                     border: Border.all(color: PRIMARY_COLOR),
-                                    borderRadius: BorderRadius.circular(20),
+                                    borderRadius: BorderRadius.circular(AppRadius.pill),
                                   ),
                                   child: Text(
                                     tag,
                                     style: TextStyle(
                                       color: PRIMARY_COLOR,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12,
+                                      fontWeight: AppFontWeight.medium,
+                                      fontSize: AppFontSize.sm,
                                     ),
                                   ),
                                 ),
                               )
                               .toList(),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppSpacing.space16),
                       ],
 
                       if ((report.weeklyHashtags?.isNotEmpty ?? false)) ...[
                         Divider(),
-                        SizedBox(height: 16),
+                        SizedBox(height: AppSpacing.space16),
                         Text(
                           "이번 주 해시태그 요약",
                           style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                            fontSize: AppFontSize.lg,
+                            fontWeight: AppFontWeight.semibold,
                           ),
                         ),
-                        SizedBox(height: 16),
+                        SizedBox(height: AppSpacing.space16),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space8),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: report.weeklyHashtags!.map((tag) {
@@ -429,16 +430,16 @@ class _ReportScreenState extends State<ReportScreen> {
                                   Text(
                                     '${tag.hashtag}',
                                     style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
+                                      fontSize: AppFontSize.lg,
+                                      fontWeight: AppFontWeight.semibold,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: AppSpacing.space4),
                                   Text(
                                     '${tag.description}',
-                                    style: TextStyle(fontSize: 14),
+                                    style: TextStyle(fontSize: AppFontSize.md),
                                   ),
-                                  const SizedBox(height: 16),
+                                  const SizedBox(height: AppSpacing.space16),
                                 ],
                               );
                             }).toList(),
