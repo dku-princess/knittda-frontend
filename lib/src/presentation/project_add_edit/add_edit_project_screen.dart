@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
@@ -206,12 +207,8 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
     return Stack(
       children: [
         Scaffold(
-          appBar: AppBar(
-            scrolledUnderElevation: 0,
-            title: Text(
-              widget.project != null ? '작품 수정' : '작품 추가',
-              style: TextStyle(fontSize: AppFontSize.xl, fontWeight: AppFontWeight.semibold),
-            ),
+          appBar: KnittdaAppBar(
+            title: widget.project != null ? '작품 수정' : '작품 추가',
             centerTitle: true,
             actions: [
               //저장버튼

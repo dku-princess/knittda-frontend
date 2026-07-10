@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gal/gal.dart';
 import 'package:knittda/src/core/constants/color.dart';
@@ -217,8 +218,7 @@ class _ReportScreenState extends State<ReportScreen> {
     final String? stageImage = stage?["image"];
 
     return Scaffold(
-      appBar: AppBar(
-        scrolledUnderElevation: 0,
+      appBar: KnittdaAppBar(
         backgroundColor: AppColors.grey200,
 
         actions: [

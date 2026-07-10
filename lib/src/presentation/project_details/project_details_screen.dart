@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/domain/model/project.dart';
@@ -99,8 +100,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
           final tabController = DefaultTabController.of(context);
 
           return Scaffold(
-            appBar: AppBar(
-              scrolledUnderElevation: 0,
+            appBar: KnittdaAppBar(
               actions: [
                 if (!state.isLoading && state.project != null && state.isOwner)
                   PopupMenuSection(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/domain/repository/feed_api_repository.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/repository/record_api_repository.dart';
@@ -57,14 +58,10 @@ class _FeedScreenState extends State<FeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        scrolledUnderElevation: 0,
-        title: const Text(
-          '피드',
-          style: TextStyle(fontSize: AppFontSize.display, fontWeight: AppFontWeight.semibold),
-        ),
-        titleSpacing: 30,
+      appBar: KnittdaAppBar(
+        title: '피드',
+        large: true,
+        showBack: false,
         actions: [
           IconButton(
             onPressed: () {

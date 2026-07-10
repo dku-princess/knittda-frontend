@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/data_sources/analytics_service.dart';
@@ -212,7 +213,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(scrolledUnderElevation: 0),
+      appBar: const KnittdaAppBar(),
 
       body: Consumer<ArticleDetailViewModel>(
         builder: (context, viewModel, _) {

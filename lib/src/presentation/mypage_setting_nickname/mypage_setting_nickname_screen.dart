@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_event.dart';
 import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_view_model.dart';
@@ -60,12 +61,8 @@ class _MypageSettingNicknameScreenState
     return PopScope(
       canPop: !isLoading,
       child: Scaffold(
-        appBar: AppBar(
-          scrolledUnderElevation: 0,
-          title: Text(
-            '닉네임 설정',
-            style: TextStyle(fontSize: AppFontSize.xl, fontWeight: AppFontWeight.semibold),
-          ),
+        appBar: KnittdaAppBar(
+          title: '닉네임 설정',
           centerTitle: true,
           actions: [
             //저장버튼

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/domain/repository/article_repository.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/use_case/get_article_previews_use_case.dart';
@@ -17,14 +18,10 @@ class ArticleListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        scrolledUnderElevation: 0,
-        title: const Text(
-          '뜨다 아티클',
-          style: TextStyle(fontSize: AppFontSize.display, fontWeight: AppFontWeight.semibold),
-        ),
-        titleSpacing: 30,
+      appBar: const KnittdaAppBar(
+        title: '뜨다 아티클',
+        large: true,
+        showBack: false,
       ),
 
       body: Consumer<ArticleListViewModel>(
