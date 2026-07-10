@@ -53,7 +53,7 @@ class ImageBox extends StatelessWidget {
             onTap: onRemove,
             child: Container(
               decoration: const BoxDecoration(
-                color: Colors.black54,
+                color: AppColors.overlay,
                 shape: BoxShape.circle,
               ),
               padding: const EdgeInsets.all(AppSpacing.space4),

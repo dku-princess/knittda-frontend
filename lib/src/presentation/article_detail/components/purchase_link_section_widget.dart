@@ -44,7 +44,7 @@ class PurchaseLinkSectionWidget extends StatelessWidget {
             child: MarkdownBody(
               data: normalizeMarkdown(purchaseLinkSection.description!),
               styleSheet: MarkdownStyleSheet(
-                p: const TextStyle(fontSize: AppFontSize.md, color: Colors.black54),
+                p: const TextStyle(fontSize: AppFontSize.md, color: AppColors.textSecondary),
               ),
             ),
           ),

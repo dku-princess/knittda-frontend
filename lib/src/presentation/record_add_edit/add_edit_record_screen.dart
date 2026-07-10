@@ -434,7 +434,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                           child: const Center(
                             child: Icon(
                               Icons.add,
-                              size: 32,
+                              size: AppIconSize.lg,
                               color: AppColors.grey400,
                             ),
                           ),
@@ -488,7 +488,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
           Positioned.fill(
             child: AbsorbPointer(
               child: Container(
-                color: Colors.black26,
+                color: AppColors.scrim,
                 child: const Center(child: CircularProgressIndicator()),
               ),
             ),

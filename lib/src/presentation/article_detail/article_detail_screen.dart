@@ -304,7 +304,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                         child: Icon(
                           Icons.image_not_supported_outlined,
                           color: AppColors.grey400,
-                          size: 32,
+                          size: AppIconSize.lg,
                         ),
                       ),
                     );
@@ -345,7 +345,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
             padding: const EdgeInsets.only(bottom: AppSpacing.space16),
             child: Text(
               article.subtitle,
-              style: TextStyle(fontSize: AppFontSize.lg, color: Colors.black54),
+              style: TextStyle(fontSize: AppFontSize.lg, color: AppColors.textSecondary),
             ),
           ),
 

@@ -77,10 +77,10 @@ class NoteSectionWidget extends StatelessWidget {
               }
             },
             styleSheet: MarkdownStyleSheet(
-              p: const TextStyle(fontSize: AppFontSize.sm, color: Colors.black54),
+              p: const TextStyle(fontSize: AppFontSize.sm, color: AppColors.textSecondary),
               a: const TextStyle(
                 fontSize: AppFontSize.sm,
-                color: Colors.black54,
+                color: AppColors.textSecondary,
                 decoration: TextDecoration.underline,
               ),
             ),

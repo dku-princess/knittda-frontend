@@ -114,7 +114,7 @@ class _RecordImages extends StatelessWidget {
                   child: const Icon(
                     Icons.broken_image,
                     color: AppColors.grey400,
-                    size: 40,
+                    size: AppIconSize.xl,
                   ),
                 );
               },
@@ -157,7 +157,7 @@ class _RecordImages extends StatelessWidget {
                       child: const Icon(
                         Icons.broken_image,
                         color: AppColors.grey400,
-                        size: 40,
+                        size: AppIconSize.xl,
                       ),
                     );
                   },

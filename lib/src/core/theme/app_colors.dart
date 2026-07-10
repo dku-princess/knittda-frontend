@@ -20,7 +20,7 @@ class AppColors {
   static const Color grey50 = Color(0xFFF5F7F8); // 배경 틴트
   static const Color grey100 = Color(0xFFEEEEEE); // muted 표면
   static const Color grey200 = Color(0xFFE0E0E0); // 테두리
-  static const Color grey400 = Color(0xFF9E9E9E); // 힌트·비활성 텍스트
+  static const Color grey400 = Color(0xFFA6A6A6); // 힌트·비활성 텍스트 (Figma 디자인 시스템 정합)
   static const Color grey600 = Color(0xFF757575); // 보조 텍스트
   static const Color grey800 = Color(0xFF4D4D4D); // 강한 텍스트
   static const Color black = Color(0xFF000000);
@@ -33,6 +33,13 @@ class AppColors {
   static const Color error = Color(0xFFF44336);
 
   static const Color transparent = Color(0x00000000);
+
+  // ── Overlay (반투명 검정, 역할별) ────────────────────────
+  /// 로딩·모달 뒤 전체 화면 딤. (기존 `Colors.black26` 대체)
+  static const Color scrim = Color(0x42000000);
+
+  /// 이미지·미디어 위 컨트롤/배지 배경. (기존 `Colors.black54` 대체)
+  static const Color overlay = Color(0x8A000000);
 
   // ── Text (의미 별칭, 3단계) ──────────────────────────────
   static const Color textPrimary = black;
