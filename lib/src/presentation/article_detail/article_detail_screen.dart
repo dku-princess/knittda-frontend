@@ -29,6 +29,7 @@ import 'package:knittda/src/presentation/project_details/project_details_screen.
 import 'package:knittda/src/presentation/project_details/project_details_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 /// 섹션별 가시 시간 누적 상태 (article_section_read_time 계산용).
 class _SectionAccum {
@@ -231,10 +232,10 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
           }
 
           return ListView.separated(
-            padding: const EdgeInsets.only(bottom: 50, right: 20, left: 20),
+            padding: const EdgeInsets.only(bottom: 50, right: AppSpacing.space20, left: AppSpacing.space20),
             separatorBuilder: (context, index) {
               if (index == 0) {
-                return const SizedBox(height: 20);
+                return const SizedBox(height: AppSpacing.space20);
               }
               return const SizedBox(height: 50);
             },
@@ -284,11 +285,11 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
       children: [
         if (article.coverImage != null && article.coverImage!.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.only(bottom: 20),
+            padding: const EdgeInsets.only(bottom: AppSpacing.space20),
             child: AspectRatio(
               aspectRatio: 4 / 3,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppRadius.button),
                 child: Image.network(
                   viewModel.getAssetUrl(article.coverImage!),
                   fit: BoxFit.cover,
@@ -296,13 +297,13 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(8),
+                        color: AppColors.grey100,
+                        borderRadius: BorderRadius.circular(AppRadius.button),
                       ),
                       child: const Center(
                         child: Icon(
                           Icons.image_not_supported_outlined,
-                          color: Colors.grey,
+                          color: AppColors.grey400,
                           size: 32,
                         ),
                       ),
@@ -316,35 +317,35 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
 
         if (article.category.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.only(bottom: AppSpacing.space16),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space8, vertical: AppSpacing.space4),
               decoration: BoxDecoration(
-                color: Color(0xFF7ECDC0).withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(20),
+                color: AppColors.primaryLight.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(AppRadius.pill),
               ),
               child: Text(
                 article.category,
-                style: const TextStyle(fontSize: 12, color: PRIMARY_COLOR),
+                style: const TextStyle(fontSize: AppFontSize.sm, color: PRIMARY_COLOR),
               ),
             ),
           ),
 
         if (article.title.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.only(bottom: AppSpacing.space16),
             child: Text(
               article.title,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+              style: TextStyle(fontSize: AppFontSize.display, fontWeight: AppFontWeight.bold),
             ),
           ),
 
         if (article.subtitle.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.only(bottom: AppSpacing.space16),
             child: Text(
               article.subtitle,
-              style: TextStyle(fontSize: 16, color: Colors.black54),
+              style: TextStyle(fontSize: AppFontSize.lg, color: Colors.black54),
             ),
           ),
 
@@ -354,15 +355,15 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
               if (article.interviewee.isNotEmpty)
                 Text(
                   article.interviewee,
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                  style: TextStyle(fontSize: AppFontSize.sm, color: AppColors.grey400),
                 ),
               if (article.interviewee.isNotEmpty &&
                   article.publishedAt.isNotEmpty)
-                SizedBox(width: 12),
+                SizedBox(width: AppSpacing.space12),
               if (article.publishedAt.isNotEmpty)
                 Text(
                   DateUtilsHelper.toKoreanFormat(article.publishedAt),
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                  style: TextStyle(fontSize: AppFontSize.sm, color: AppColors.grey400),
                 ),
             ],
           ),

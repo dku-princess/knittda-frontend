@@ -12,6 +12,7 @@ import 'package:knittda/src/presentation/login/login_view_model.dart';
 import 'package:knittda/src/presentation/home/home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/presentation/login/login_ui_event.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -104,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
 
                     if (Platform.isIOS) ...[
-                      const SizedBox(height: 10),
+                      const SizedBox(height: AppSpacing.space12),
                       GestureDetector(
                         onTap: () async {
                           await viewModel.onEvent(

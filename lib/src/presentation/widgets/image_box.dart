@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class ImageBox extends StatelessWidget {
   final String? localImageUrl;
@@ -28,7 +29,7 @@ class ImageBox extends StatelessWidget {
     return Stack(
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(AppRadius.chip),
           child: Image(
             image: image,
             width: width,
@@ -38,9 +39,9 @@ class ImageBox extends StatelessWidget {
               return Container(
                 width: width,
                 height: height,
-                color: Colors.grey[300],
+                color: AppColors.grey200,
                 alignment: Alignment.center,
-                child: const Icon(Icons.broken_image, color: Colors.white),
+                child: const Icon(Icons.broken_image, color: AppColors.white),
               );
             },
           ),
@@ -55,8 +56,8 @@ class ImageBox extends StatelessWidget {
                 color: Colors.black54,
                 shape: BoxShape.circle,
               ),
-              padding: const EdgeInsets.all(4),
-              child: const Icon(Icons.close, size: 14, color: Colors.white),
+              padding: const EdgeInsets.all(AppSpacing.space4),
+              child: const Icon(Icons.close, size: 14, color: AppColors.white),
             ),
           ),
         ),

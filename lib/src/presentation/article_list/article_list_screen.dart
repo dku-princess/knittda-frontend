@@ -9,6 +9,7 @@ import 'package:knittda/src/presentation/article_list/article_list_view_model.da
 import 'package:knittda/src/presentation/article_list/components/article_card_large.dart';
 import 'package:knittda/src/presentation/article_list/components/article_card_small.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class ArticleListScreen extends StatelessWidget {
   const ArticleListScreen({super.key});
@@ -21,7 +22,7 @@ class ArticleListScreen extends StatelessWidget {
         scrolledUnderElevation: 0,
         title: const Text(
           '뜨다 아티클',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: AppFontSize.display, fontWeight: AppFontWeight.semibold),
         ),
         titleSpacing: 30,
       ),
@@ -82,7 +83,7 @@ class ArticleListScreen extends StatelessWidget {
                 return false;
               },
               child: ListView.builder(
-                padding: const EdgeInsets.only(top: 20),
+                padding: const EdgeInsets.only(top: AppSpacing.space20),
                 physics: const AlwaysScrollableScrollPhysics(),
                 itemCount:
                     state.articles.length + (state.isLoadingMore ? 1 : 0),
@@ -90,7 +91,7 @@ class ArticleListScreen extends StatelessWidget {
                   // 마지막 아이템이면 로딩 인디케이터
                   if (index == state.articles.length) {
                     return const Padding(
-                      padding: EdgeInsets.all(16),
+                      padding: EdgeInsets.all(AppSpacing.space16),
                       child: Center(child: CircularProgressIndicator()),
                     );
                   }
@@ -100,10 +101,10 @@ class ArticleListScreen extends StatelessWidget {
                   if (index == 0) {
                     return Padding(
                       padding: const EdgeInsets.only(
-                        left: 30,
-                        right: 30,
-                        top: 0,
-                        bottom: 40,
+                        left: AppSpacing.space32,
+                        right: AppSpacing.space32,
+                        top: AppSpacing.space0,
+                        bottom: AppSpacing.space40,
                       ),
                       child: GestureDetector(
                         onTap: () {
@@ -142,10 +143,10 @@ class ArticleListScreen extends StatelessWidget {
 
                   return Padding(
                     padding: const EdgeInsets.only(
-                      left: 30,
-                      right: 30,
-                      top: 0,
-                      bottom: 24,
+                      left: AppSpacing.space32,
+                      right: AppSpacing.space32,
+                      top: AppSpacing.space0,
+                      bottom: AppSpacing.space24,
                     ),
                     child: GestureDetector(
                       onTap: () {

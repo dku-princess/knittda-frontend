@@ -29,6 +29,7 @@ import 'package:knittda/src/presentation/record_add_edit/add_edit_record_view_mo
 import 'package:knittda/src/presentation/report/report_screen.dart';
 import 'package:knittda/src/presentation/report/report_view_model.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class ProjectsScreen extends StatelessWidget {
   const ProjectsScreen({super.key});
@@ -45,7 +46,7 @@ class ProjectsScreen extends StatelessWidget {
         scrolledUnderElevation: 0,
         title: const Text(
           '나의\n뜨개 작품',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: AppFontSize.display, fontWeight: AppFontWeight.semibold),
         ),
         titleSpacing: 30,
       ),
@@ -67,7 +68,7 @@ class ProjectsScreen extends StatelessWidget {
             ),
           );
         },
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: AppColors.white),
       ),
 
       body: state.isLoading
@@ -76,7 +77,7 @@ class ProjectsScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("작품 불러오는 중..."),
-                  SizedBox(height: 24),
+                  SizedBox(height: AppSpacing.space24),
                   CircularProgressIndicator(),
                 ],
               ),
@@ -87,14 +88,14 @@ class ProjectsScreen extends StatelessWidget {
               children: [
                 Column(
                   children: [
-                    const SizedBox(height: 30),
+                    const SizedBox(height: AppSpacing.space32),
 
                     Padding(
                       padding: const EdgeInsets.only(
-                        top: 12,
+                        top: AppSpacing.space12,
                         bottom: 15,
-                        left: 30,
-                        right: 30,
+                        left: AppSpacing.space32,
+                        right: AppSpacing.space32,
                       ),
                       child: OrderSection(
                         projectOrder: state.projectOrder,
@@ -106,7 +107,7 @@ class ProjectsScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: AppSpacing.space20),
 
                     Expanded(
                       child: state.projects.isEmpty
@@ -114,8 +115,8 @@ class ProjectsScreen extends StatelessWidget {
                               child: Text(
                                 '작품이 없습니다',
                                 style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey,
+                                  fontSize: AppFontSize.lg,
+                                  color: AppColors.grey400,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -123,11 +124,11 @@ class ProjectsScreen extends StatelessWidget {
                           : ListView.separated(
                               padding: const EdgeInsets.only(bottom: 80),
                               separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 10),
+                                  const SizedBox(height: AppSpacing.space12),
                               itemBuilder: (context, index) {
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 30,
+                                    horizontal: AppSpacing.space32,
                                   ),
                                   child: ProjectsItem(
                                     project: state.projects[index],

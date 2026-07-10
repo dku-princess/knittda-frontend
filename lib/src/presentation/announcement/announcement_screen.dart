@@ -5,6 +5,7 @@ import 'package:knittda/src/presentation/announcement/components/announcement_li
 import 'package:knittda/src/presentation/announcement_detail/announcement_detail_screen.dart';
 import 'package:knittda/src/presentation/announcement_detail/announcement_detail_view_model.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class AnnouncementScreen extends StatelessWidget {
   const AnnouncementScreen({super.key});
@@ -60,7 +61,7 @@ class AnnouncementScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   if (index == state.announcements.length) {
                     return const Padding(
-                      padding: EdgeInsets.all(16.0),
+                      padding: EdgeInsets.all(AppSpacing.space16),
                       child: Center(child: CircularProgressIndicator()),
                     );
                   }
@@ -88,8 +89,8 @@ class AnnouncementScreen extends StatelessWidget {
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 12,
+                        horizontal: AppSpacing.space32,
+                        vertical: AppSpacing.space12,
                       ),
                       child: AnnouncementListItem(announcement: announcement),
                     ),
@@ -101,8 +102,8 @@ class AnnouncementScreen extends StatelessWidget {
                     return const SizedBox.shrink();
                   }
                   return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
-                    child: Divider(height: 0.5, color: Color(0xFFE6E6E6)),
+                    padding: EdgeInsets.symmetric(vertical: AppSpacing.space8),
+                    child: Divider(height: 0.5, color: AppColors.grey200),
                   );
                 },
                 itemCount:

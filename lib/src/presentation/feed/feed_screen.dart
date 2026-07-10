@@ -19,6 +19,7 @@ import 'package:knittda/src/presentation/project_details/project_details_screen.
 import 'package:knittda/src/presentation/project_details/project_details_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_viewer.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
@@ -61,7 +62,7 @@ class _FeedScreenState extends State<FeedScreen> {
         scrolledUnderElevation: 0,
         title: const Text(
           '피드',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: AppFontSize.display, fontWeight: AppFontWeight.semibold),
         ),
         titleSpacing: 30,
         actions: [
@@ -110,7 +111,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("피드 불러오는 중..."),
-                  SizedBox(height: 24),
+                  SizedBox(height: AppSpacing.space24),
                   CircularProgressIndicator(),
                 ],
               ),
@@ -146,7 +147,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 if (viewModel.state.isLoadingMore &&
                     index == viewModel.state.feeds.length) {
                   return const Padding(
-                    padding: EdgeInsets.all(16),
+                    padding: EdgeInsets.all(AppSpacing.space16),
                     child: Center(child: CircularProgressIndicator()),
                   );
                 }

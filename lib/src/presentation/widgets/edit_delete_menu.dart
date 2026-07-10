@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class EditDeleteMenu extends StatelessWidget {
   final VoidCallback onEdit;
@@ -17,7 +18,7 @@ class EditDeleteMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton <String>(
-      icon: const Icon(Icons.more_vert, color: Colors.black),
+      icon: const Icon(Icons.more_vert, color: AppColors.black),
 
       itemBuilder: (context) => [
         const PopupMenuItem(
@@ -46,7 +47,7 @@ class EditDeleteMenu extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context, true),
-                  child: Text('삭제', style: TextStyle(color: Colors.red)),
+                  child: Text('삭제', style: TextStyle(color: AppColors.error)),
                 ),
               ],
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/domain/model/article/article.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class ArticleCardSmall extends StatelessWidget {
   final Article article;
@@ -18,9 +19,9 @@ class ArticleCardSmall extends StatelessWidget {
     return Row(
       children: [
         Padding(
-          padding: const EdgeInsets.only(right: 12),
+          padding: const EdgeInsets.only(right: AppSpacing.space12),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(AppRadius.card),
             child: SizedBox(
               width: imageWidth,
               height: imageWidth * 10 / 9,
@@ -30,20 +31,20 @@ class ArticleCardSmall extends StatelessWidget {
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
-                          color: Colors.grey[200],
+                          color: AppColors.grey100,
                           child: const Icon(
                             Icons.image_not_supported,
-                            color: Colors.grey,
+                            color: AppColors.grey400,
                           ),
                         );
                       },
                     )
                   : Container(
                       alignment: Alignment.center,
-                      color: Colors.grey[200],
+                      color: AppColors.grey100,
                       child: const Text(
                         '이미지 준비 중',
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(fontSize: AppFontSize.sm),
                       ),
                     ),
             ),
@@ -58,7 +59,7 @@ class ArticleCardSmall extends StatelessWidget {
               children: [
                 if (article.category.isNotEmpty)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
+                    padding: const EdgeInsets.only(bottom: AppSpacing.space4),
                     child: _CategoryTag(category: article.category),
                   ),
 
@@ -67,8 +68,8 @@ class ArticleCardSmall extends StatelessWidget {
                     article.title,
                     style: const TextStyle(
                       color: Colors.black87,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      fontSize: AppFontSize.lg,
+                      fontWeight: AppFontWeight.semibold,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -77,7 +78,7 @@ class ArticleCardSmall extends StatelessWidget {
                 if (article.interviewee.isNotEmpty) ...[
                   Text(
                     article.interviewee,
-                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: AppFontSize.md, color: AppColors.grey600),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -99,14 +100,14 @@ class _CategoryTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space8, vertical: AppSpacing.space8),
       decoration: BoxDecoration(
-        color: Color(0xFF7ECDC0),
-        borderRadius: BorderRadius.circular(10),
+        color: AppColors.primaryLight,
+        borderRadius: BorderRadius.circular(AppRadius.card),
       ),
       child: Text(
         category,
-        style: const TextStyle(fontSize: 12, color: Colors.white),
+        style: const TextStyle(fontSize: AppFontSize.sm, color: AppColors.white),
       ),
     );
   }

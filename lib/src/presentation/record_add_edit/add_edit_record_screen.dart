@@ -10,6 +10,7 @@ import 'package:knittda/src/presentation/record_add_edit/add_edit_record_ui_even
 import 'package:knittda/src/presentation/record_add_edit/add_edit_record_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class AddEditRecordScreen extends StatefulWidget {
   final int projectId;
@@ -233,7 +234,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
             scrolledUnderElevation: 0,
             title: Text(
               widget.record != null ? '기록 수정' : '기록 추가',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: AppFontSize.xl, fontWeight: AppFontWeight.semibold),
             ),
             centerTitle: true,
             actions: [
@@ -242,22 +243,22 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                 onPressed: state.isLoading ? null : _saveRecord,
                 style: TextButton.styleFrom(
                   backgroundColor: PRIMARY_COLOR,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.card),
                   ),
                 ),
-                child: const Text('저장', style: TextStyle(fontSize: 16)),
+                child: const Text('저장', style: TextStyle(fontSize: AppFontSize.lg)),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.space8),
             ],
           ),
 
           body: ListView(
             padding: const EdgeInsets.only(
-              left: 20.0,
-              right: 20.0,
-              top: 20,
+              left: AppSpacing.space20,
+              right: AppSpacing.space20,
+              top: AppSpacing.space20,
               bottom: 50,
             ),
 
@@ -266,12 +267,12 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
               Text(
                 "오늘 뜨개는 어떠셨어요?",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: AppFontSize.xl,
+                  fontWeight: AppFontWeight.medium,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.space20),
               Wrap(
                 spacing: 8,
                 runSpacing: 10,
@@ -290,21 +291,21 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
+                        horizontal: AppSpacing.space8,
+                        vertical: AppSpacing.space8,
                       ),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
                         border: Border.all(
-                          color: isSelected ? PRIMARY_COLOR : Colors.grey,
+                          color: isSelected ? PRIMARY_COLOR : AppColors.grey400,
                           width: 1,
                         ),
                       ),
                       child: Text(
                         tag,
                         style: TextStyle(
-                          fontSize: 12,
-                          color: isSelected ? PRIMARY_COLOR : Colors.grey,
+                          fontSize: AppFontSize.sm,
+                          color: isSelected ? PRIMARY_COLOR : AppColors.grey400,
                         ),
                       ),
                     ),
@@ -317,12 +318,12 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
               Text(
                 "얼마나 떴나요?",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: AppFontSize.xl,
+                  fontWeight: AppFontWeight.medium,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.space20),
               SizedBox(
                 height: 50,
                 child: Stack(
@@ -331,7 +332,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                     Positioned(
                       left: 20,
                       right: 20,
-                      child: Container(height: 2, color: Colors.grey[300]),
+                      child: Container(height: 2, color: AppColors.grey200),
                     ),
 
                     Row(
@@ -357,7 +358,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                                   shape: BoxShape.circle,
                                   color: isSelected
                                       ? PRIMARY_COLOR
-                                      : Colors.grey[300],
+                                      : AppColors.grey200,
                                 ),
                               ),
                             ),
@@ -374,12 +375,12 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
               Text(
                 "사진을 추가해주세요.",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: AppFontSize.xl,
+                  fontWeight: AppFontWeight.medium,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.space20),
               SizedBox(
                 height: 100,
                 child: ListView(
@@ -387,7 +388,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                   children: [
                     ..._existingImages.map((image) {
                       return Padding(
-                        padding: const EdgeInsets.only(right: 10.0),
+                        padding: const EdgeInsets.only(right: AppSpacing.space8),
                         child: ImageBox(
                           localImageUrl: null,
                           networkImageUrl: image.imageUrl,
@@ -405,7 +406,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
 
                     ..._newImages.map((file) {
                       return Padding(
-                        padding: const EdgeInsets.only(right: 10.0),
+                        padding: const EdgeInsets.only(right: AppSpacing.space8),
                         child: ImageBox(
                           localImageUrl: file.path,
                           networkImageUrl: null,
@@ -427,14 +428,14 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                           width: 100,
                           height: 100,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(AppRadius.button),
+                            border: Border.all(color: AppColors.grey400),
                           ),
                           child: const Center(
                             child: Icon(
                               Icons.add,
                               size: 32,
-                              color: Colors.grey,
+                              color: AppColors.grey400,
                             ),
                           ),
                         ),
@@ -447,20 +448,20 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
               Text(
                 "뜨개 기록을 남겨주세요",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: AppFontSize.xl,
+                  fontWeight: AppFontWeight.medium,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.space12),
               if (questionText != null) ...[
                 Text(
                   questionText,
-                  style: const TextStyle(color: Colors.grey, fontSize: 14),
+                  style: const TextStyle(color: AppColors.grey400, fontSize: AppFontSize.md),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.space12),
               ],
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.space20),
               //기록 추가
               TextField(
                 maxLines: 8,
@@ -470,11 +471,11 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                 decoration: InputDecoration(
                   hintText: "내용을 입력해주세요",
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.button),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
+                    horizontal: AppSpacing.space16,
+                    vertical: AppSpacing.space12,
                   ),
                 ),
               ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/domain/model/project_previews.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class ProjectPreviewsItem extends StatelessWidget {
   final ProjectPreviews projectPreviews;
@@ -19,9 +20,9 @@ class ProjectPreviewsItem extends StatelessWidget {
         : null;
 
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      color: Colors.white,
-      elevation: 7,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.card)),
+      color: AppColors.white,
+      elevation: AppElevation.card,
       shadowColor: Colors.black38,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -32,7 +33,7 @@ class ProjectPreviewsItem extends StatelessWidget {
             Expanded(
               flex: 4,
               child: Container(
-                color: Colors.grey.shade300,
+                color: AppColors.grey200,
                 alignment: Alignment.center,
                 child: imageUrl != null
                     ? Image.network(
@@ -49,7 +50,7 @@ class ProjectPreviewsItem extends StatelessWidget {
                         errorBuilder: (context, exception, stackTrace) {
                           return const Icon(
                             Icons.broken_image,
-                            color: Colors.grey,
+                            color: AppColors.grey400,
                             size: 40,
                           );
                         },
@@ -57,7 +58,7 @@ class ProjectPreviewsItem extends StatelessWidget {
                     : const Icon(
                         Icons.image_outlined,
                         size: 40,
-                        color: Colors.grey,
+                        color: AppColors.grey400,
                       ),
               ),
             ),
@@ -65,7 +66,7 @@ class ProjectPreviewsItem extends StatelessWidget {
             Expanded(
               flex: 3,
               child: Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(AppSpacing.space8),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,16 +74,16 @@ class ProjectPreviewsItem extends StatelessWidget {
                     Text(
                       projectPreviews.projectName,
                       style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                        fontSize: AppFontSize.md,
+                        fontWeight: AppFontWeight.medium,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.space8),
                     Text(
                       projectPreviews.userName ?? '알 수 없음',
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      style: const TextStyle(fontSize: AppFontSize.sm, color: AppColors.grey400),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

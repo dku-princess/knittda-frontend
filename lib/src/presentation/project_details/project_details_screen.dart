@@ -28,6 +28,7 @@ import 'package:knittda/src/presentation/record_details/record_details_screen.da
 import 'package:knittda/src/presentation/record_details/record_details_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_viewer.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 import '../../domain/use_case/update_record_use_case.dart';
 
@@ -191,7 +192,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                           }
                         },
                         backgroundColor: PRIMARY_COLOR,
-                        child: const Icon(Icons.add, color: Colors.white),
+                        child: const Icon(Icons.add, color: AppColors.white),
                       )
                     : const SizedBox.shrink();
               },
@@ -203,7 +204,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text("작품 불러오는 중..."),
-                        SizedBox(height: 24),
+                        SizedBox(height: AppSpacing.space24),
                         CircularProgressIndicator(),
                       ],
                     ),
@@ -343,13 +344,13 @@ class _ProjectHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 0, right: 20, left: 20, bottom: 10),
+      padding: const EdgeInsets.only(top: AppSpacing.space0, right: AppSpacing.space20, left: AppSpacing.space20, bottom: AppSpacing.space8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 작품 대표 사진
           ClipRRect(
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(AppRadius.chip),
             child:
                 (project.thumbnailUrl != null &&
                     project.thumbnailUrl!.isNotEmpty)
@@ -362,29 +363,29 @@ class _ProjectHeader extends StatelessWidget {
                       return Container(
                         width: 115,
                         height: 115,
-                        color: Colors.grey[300],
-                        child: Icon(Icons.broken_image, color: Colors.grey),
+                        color: AppColors.grey200,
+                        child: Icon(Icons.broken_image, color: AppColors.grey400),
                       );
                     },
                   )
                 : Container(
                     width: 115,
                     height: 115,
-                    color: Colors.grey[300],
-                    child: Icon(Icons.image_outlined, color: Colors.grey),
+                    color: AppColors.grey200,
+                    child: Icon(Icons.image_outlined, color: AppColors.grey400),
                   ),
           ),
 
-          SizedBox(width: 26),
+          SizedBox(width: AppSpacing.space24),
 
           //작품 이름, 작품 상태 버튼
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(project.nickname, style: TextStyle(fontSize: 20)),
+                Text(project.nickname, style: TextStyle(fontSize: AppFontSize.xl)),
 
-                SizedBox(height: 16),
+                SizedBox(height: AppSpacing.space16),
 
                 if (isOwner)
                   ProgressSection(
@@ -412,12 +413,12 @@ class _InfoTap extends StatelessWidget {
       children: [
         SizedBox(
           width: 100,
-          child: Text(label, style: const TextStyle(fontSize: 16)),
+          child: Text(label, style: const TextStyle(fontSize: AppFontSize.lg)),
         ),
         Expanded(
           child: Text(
             isEmpty ? '-' : value,
-            style: TextStyle(fontSize: 16, color: isEmpty ? Colors.grey : null),
+            style: TextStyle(fontSize: AppFontSize.lg, color: isEmpty ? AppColors.grey400 : null),
           ),
         ),
       ],
@@ -427,20 +428,20 @@ class _InfoTap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+      padding: EdgeInsets.symmetric(horizontal: AppSpacing.space40, vertical: AppSpacing.space20),
 
       children: [
         _infoRow('도안', project.design?.title),
-        SizedBox(height: 20),
+        SizedBox(height: AppSpacing.space20),
 
         _infoRow('작가', project.design?.designer),
-        SizedBox(height: 20),
+        SizedBox(height: AppSpacing.space20),
 
         _infoRow('실', project.design?.yarnInfo),
-        SizedBox(height: 20),
+        SizedBox(height: AppSpacing.space20),
 
         _infoRow('바늘', project.design?.needleInfo),
-        SizedBox(height: 20),
+        SizedBox(height: AppSpacing.space20),
       ],
     );
   }
@@ -467,7 +468,7 @@ class _DiaryTap extends StatelessWidget {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.only(bottom: AppSpacing.space20),
       itemCount: state.records.length,
       itemBuilder: (context, index) {
         return RecordItem(
@@ -558,16 +559,16 @@ class _ReportTap extends StatelessWidget {
         : '목표일 정보 없음';
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+      padding: EdgeInsets.symmetric(horizontal: AppSpacing.space32, vertical: AppSpacing.space20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             "나의 진행도",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: AppFontSize.xl, fontWeight: AppFontWeight.medium),
           ),
 
-          SizedBox(height: 26),
+          SizedBox(height: AppSpacing.space24),
 
           Row(
             children: [
@@ -575,10 +576,10 @@ class _ReportTap extends StatelessWidget {
                 child: SizedBox(
                   height: 130,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.card),
                     child: Stack(
                       children: [
-                        Container(color: Colors.grey[200]),
+                        Container(color: AppColors.grey100),
 
                         Align(
                           alignment: Alignment.bottomCenter,
@@ -590,7 +591,7 @@ class _ReportTap extends StatelessWidget {
                                 gradient: LinearGradient(
                                   begin: Alignment.bottomCenter,
                                   end: Alignment.topCenter,
-                                  colors: [PRIMARY_COLOR, Color(0xFFEEEEEE)],
+                                  colors: [PRIMARY_COLOR, AppColors.grey100],
                                 ),
                               ),
                             ),
@@ -601,8 +602,8 @@ class _ReportTap extends StatelessWidget {
                           child: Text(
                             '$percent%',
                             style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                              fontSize: AppFontSize.xl,
+                              fontWeight: AppFontWeight.bold,
                               color: PRIMARY_COLOR,
                             ),
                           ),
@@ -613,15 +614,15 @@ class _ReportTap extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(width: 26),
+              const SizedBox(width: AppSpacing.space24),
 
               Expanded(
                 child: Container(
                   height: 130,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.grey100,
+                    borderRadius: BorderRadius.circular(AppRadius.card),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -629,34 +630,34 @@ class _ReportTap extends StatelessWidget {
                       Text(
                         dPlusText,
                         style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
+                          fontSize: AppFontSize.xl,
+                          fontWeight: AppFontWeight.medium,
                           color: PRIMARY_COLOR,
                         ),
                       ),
                       Text(
                         startDateText,
                         style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
+                          fontSize: AppFontSize.sm,
+                          color: AppColors.grey400,
                         ),
                       ),
 
-                      const SizedBox(height: 10),
+                      const SizedBox(height: AppSpacing.space12),
 
                       Text(
                         dMinusText,
                         style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
+                          fontSize: AppFontSize.xl,
+                          fontWeight: AppFontWeight.medium,
                           color: PRIMARY_COLOR,
                         ),
                       ),
                       Text(
                         goalDateText,
                         style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
+                          fontSize: AppFontSize.sm,
+                          color: AppColors.grey400,
                         ),
                       ),
                     ],

@@ -5,6 +5,7 @@ import 'package:knittda/src/presentation/announcement/components/announcement_li
 import 'package:knittda/src/presentation/announcement_detail/announcement_detail_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class AnnouncementDetailScreen extends StatelessWidget {
   const AnnouncementDetailScreen({super.key});
@@ -34,18 +35,18 @@ class AnnouncementDetailScreen extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
+                  horizontal: AppSpacing.space20,
+                  vertical: AppSpacing.space12,
                 ),
                 child: AnnouncementListItem(announcement: announcement),
               ),
 
-              const SizedBox(height: 8),
-              const Divider(height: 0.5, color: Color(0xFFE6E6E6)),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.space8),
+              const Divider(height: 0.5, color: AppColors.grey200),
+              const SizedBox(height: AppSpacing.space32),
 
               Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 40),
+                padding: const EdgeInsets.only(left: AppSpacing.space20, right: AppSpacing.space20, bottom: AppSpacing.space40),
                 child: MarkdownBody(
                   data: normalizeMarkdown(announcement.body),
 

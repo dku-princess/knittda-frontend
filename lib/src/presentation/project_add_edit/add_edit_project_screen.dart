@@ -10,6 +10,7 @@ import 'package:knittda/src/presentation/project_add_edit/add_edit_project_ui_ev
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class AddEditProjectScreen extends StatefulWidget {
   final Project? project;
@@ -200,7 +201,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
             scrolledUnderElevation: 0,
             title: Text(
               widget.project != null ? '작품 수정' : '작품 추가',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: AppFontSize.xl, fontWeight: AppFontWeight.semibold),
             ),
             centerTitle: true,
             actions: [
@@ -209,22 +210,22 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                 onPressed: viewModel.state.isLoading ? null : _saveProject,
                 style: TextButton.styleFrom(
                   backgroundColor: PRIMARY_COLOR,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.card),
                   ),
                 ),
-                child: const Text('저장', style: TextStyle(fontSize: 16)),
+                child: const Text('저장', style: TextStyle(fontSize: AppFontSize.lg)),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.space8),
             ],
           ),
 
           body: ListView(
             padding: const EdgeInsets.only(
-              left: 20.0,
-              right: 20.0,
-              top: 20,
+              left: AppSpacing.space20,
+              right: AppSpacing.space20,
+              top: AppSpacing.space20,
               bottom: 50,
             ),
 
@@ -235,13 +236,13 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                 title: Text(
                   "기본 정보",
                   style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
+                    color: AppColors.black,
+                    fontSize: AppFontSize.xl,
+                    fontWeight: AppFontWeight.medium,
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: AppSpacing.space12),
 
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,12 +251,12 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                   Text(
                     "대표 사진",
                     style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      color: AppColors.black,
+                      fontSize: AppFontSize.lg,
+                      fontWeight: AppFontWeight.medium,
                     ),
                   ),
-                  SizedBox(height: 12),
+                  SizedBox(height: AppSpacing.space12),
                   GestureDetector(
                     onTap: _pickImage,
                     child:
@@ -277,29 +278,29 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                       width: 115,
                       height: 115,
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(6),
+                        color: AppColors.grey200,
+                        borderRadius: BorderRadius.circular(AppRadius.chip),
                       ),
                       child: const Center(
                         child: Icon(
                           Icons.add,
-                          color: Colors.white,
+                          color: AppColors.white,
                           size: 40,
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(height: 14),
+                  SizedBox(height: AppSpacing.space16),
 
                   Text(
                     "작품 이름",
                     style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      color: AppColors.black,
+                      fontSize: AppFontSize.lg,
+                      fontWeight: AppFontWeight.medium,
                     ),
                   ),
-                  SizedBox(height: 12),
+                  SizedBox(height: AppSpacing.space12),
                   TextField(
                     controller: _nicknameController,
                     maxLines: 1,
@@ -307,45 +308,45 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                     decoration: InputDecoration(
                       isDense: true,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(AppRadius.button),
                       ),
                     ),
-                    style: const TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: AppFontSize.md),
                   ),
 
                   Text(
                     "시작일 ~ 목표일",
                     style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      color: AppColors.black,
+                      fontSize: AppFontSize.lg,
+                      fontWeight: AppFontWeight.medium,
                     ),
                   ),
-                  SizedBox(height: 12),
+                  SizedBox(height: AppSpacing.space12),
                   GestureDetector(
                     onTap: () => _pickDateRange(context),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
+                        horizontal: AppSpacing.space16,
+                        vertical: AppSpacing.space12,
                       ),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.black54),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(AppRadius.button),
                       ),
                       child: Row(
                         children: [
                           Icon(Icons.calendar_today, size: 20),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: AppSpacing.space12),
                           Text(
                             (_startDate != null && _goalDate != null)
                                 ? '${DateUtilsHelper.toHyphenFormat(_startDate!)} ~ ${DateUtilsHelper.toHyphenFormat(_goalDate!)}'
                                 : 'yyyy-mm-dd ~ yyyy-mm-dd',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: AppFontSize.md,
                               color: (_startDate != null && _goalDate != null)
-                                  ? Colors.black
-                                  : Colors.grey,
+                                  ? AppColors.black
+                                  : AppColors.grey400,
                             ),
                           ),
                         ],
@@ -354,30 +355,30 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 40),
+              SizedBox(height: AppSpacing.space40),
 
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text(
                   "디자인",
                   style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
+                    color: AppColors.black,
+                    fontSize: AppFontSize.xl,
+                    fontWeight: AppFontWeight.medium,
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: AppSpacing.space12),
 
               Text(
                 "도안명",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: AppFontSize.lg,
+                  fontWeight: AppFontWeight.medium,
                 ),
               ),
-              SizedBox(height: 12),
+              SizedBox(height: AppSpacing.space12),
               TextField(
                 controller: _designTitleController,
                 maxLines: 1,
@@ -385,46 +386,46 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                 decoration: InputDecoration(
                   isDense: true,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.button),
                   ),
                 ),
-                style: const TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: AppFontSize.md),
               ),
-              SizedBox(height: 14),
+              SizedBox(height: AppSpacing.space16),
 
               Text(
                 "작가",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: AppFontSize.lg,
+                  fontWeight: AppFontWeight.medium,
                 ),
               ),
-              SizedBox(height: 12),
+              SizedBox(height: AppSpacing.space12),
               TextField(
                 controller: _designerController,
                 maxLines: 1,
                 maxLength: 15,
                 decoration: InputDecoration(
                   isDense: true,
-                  fillColor: Colors.grey[200],
+                  fillColor: AppColors.grey100,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.button),
                   ),
                 ),
-                style: const TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: AppFontSize.md),
               ),
-              SizedBox(height: 14),
+              SizedBox(height: AppSpacing.space16),
 
               Text(
                 "실",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: AppFontSize.lg,
+                  fontWeight: AppFontWeight.medium,
                 ),
               ),
-              SizedBox(height: 12),
+              SizedBox(height: AppSpacing.space12),
               TextField(
                 controller: _yarnInfoController,
                 maxLines: 1,
@@ -432,22 +433,22 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                 decoration: InputDecoration(
                   isDense: true,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.button),
                   ),
                 ),
-                style: const TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: AppFontSize.md),
               ),
-              SizedBox(height: 14),
+              SizedBox(height: AppSpacing.space16),
 
               Text(
                 "바늘",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: AppFontSize.lg,
+                  fontWeight: AppFontWeight.medium,
                 ),
               ),
-              SizedBox(height: 12),
+              SizedBox(height: AppSpacing.space12),
               TextField(
                 controller: _needleInfoController,
                 maxLines: 1,
@@ -455,10 +456,10 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                 decoration: InputDecoration(
                   isDense: true,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.button),
                   ),
                 ),
-                style: const TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: AppFontSize.md),
               ),
             ],
           ),

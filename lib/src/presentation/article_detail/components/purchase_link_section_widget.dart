@@ -4,6 +4,7 @@ import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/markdown_utils.dart';
 import 'package:knittda/src/domain/model/article/purchase_link_section.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class PurchaseLinkSectionWidget extends StatelessWidget {
   final PurchaseLinkSection purchaseLinkSection;
@@ -28,10 +29,10 @@ class PurchaseLinkSectionWidget extends StatelessWidget {
       children: [
         if (purchaseLinkSection.title.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.only(bottom: 20),
+            padding: const EdgeInsets.only(bottom: AppSpacing.space20),
             child: Text(
               purchaseLinkSection.title,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: AppFontSize.xl, fontWeight: AppFontWeight.semibold),
             ),
           ),
         ],
@@ -39,11 +40,11 @@ class PurchaseLinkSectionWidget extends StatelessWidget {
         if (purchaseLinkSection.description != null &&
             purchaseLinkSection.description!.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.only(bottom: 20),
+            padding: const EdgeInsets.only(bottom: AppSpacing.space20),
             child: MarkdownBody(
               data: normalizeMarkdown(purchaseLinkSection.description!),
               styleSheet: MarkdownStyleSheet(
-                p: const TextStyle(fontSize: 14, color: Colors.black54),
+                p: const TextStyle(fontSize: AppFontSize.md, color: Colors.black54),
               ),
             ),
           ),
@@ -52,7 +53,7 @@ class PurchaseLinkSectionWidget extends StatelessWidget {
         if (purchaseLinkSection.buttonUrl.isNotEmpty &&
             purchaseLinkSection.buttonText.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space24),
             child: SizedBox(
               width: double.infinity,
               child: TextButton(
@@ -87,17 +88,17 @@ class PurchaseLinkSectionWidget extends StatelessWidget {
                 },
                 style: TextButton.styleFrom(
                   backgroundColor: PRIMARY_COLOR,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  foregroundColor: AppColors.white,
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.space12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
                   ),
                 ),
                 child: Text(
                   purchaseLinkSection.buttonText,
                   style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                    fontSize: AppFontSize.md,
+                    fontWeight: AppFontWeight.semibold,
                   ),
                   textAlign: TextAlign.center,
                 ),

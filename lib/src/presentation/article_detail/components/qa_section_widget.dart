@@ -4,6 +4,7 @@ import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/markdown_utils.dart';
 import 'package:knittda/src/domain/model/article/qa_section.dart';
 import 'package:knittda/src/presentation/article_detail/components/gellery_widge.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class QaSectionWidget extends StatelessWidget {
   final QaSection qaSection;
@@ -22,10 +23,10 @@ class QaSectionWidget extends StatelessWidget {
       children: [
         if (qaSection.title.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.only(bottom: 20),
+            padding: const EdgeInsets.only(bottom: AppSpacing.space20),
             child: Text(
               qaSection.title,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: AppFontSize.xl, fontWeight: AppFontWeight.semibold),
             ),
           ),
         ],
@@ -33,11 +34,11 @@ class QaSectionWidget extends StatelessWidget {
         if (qaSection.description != null &&
             qaSection.description!.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.only(bottom: 20),
+            padding: const EdgeInsets.only(bottom: AppSpacing.space20),
             child: MarkdownBody(
               data: normalizeMarkdown(qaSection.description!),
               styleSheet: MarkdownStyleSheet(
-                p: const TextStyle(fontSize: 14, color: Colors.black54),
+                p: const TextStyle(fontSize: AppFontSize.md, color: Colors.black54),
               ),
             ),
           ),
@@ -45,14 +46,14 @@ class QaSectionWidget extends StatelessWidget {
 
         for (int i = 0; i < qaSection.qaItemBlock.length; i++) ...[
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 //질문
                 if (qaSection.qaItemBlock[i].question.isNotEmpty)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.only(bottom: AppSpacing.space16),
                     child: _QuestionBubble(
                       question: qaSection.qaItemBlock[i].question,
                     ),
@@ -61,11 +62,11 @@ class QaSectionWidget extends StatelessWidget {
                 //답변
                 if (qaSection.qaItemBlock[i].answer.isNotEmpty)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.only(bottom: AppSpacing.space16),
                     child: MarkdownBody(
                       data: normalizeMarkdown(qaSection.qaItemBlock[i].answer),
                       styleSheet: MarkdownStyleSheet(
-                        p: const TextStyle(fontSize: 14),
+                        p: const TextStyle(fontSize: AppFontSize.md),
                       ),
                     ),
                   ),
@@ -74,7 +75,7 @@ class QaSectionWidget extends StatelessWidget {
                 if (qaSection.qaItemBlock[i].image != null &&
                     qaSection.qaItemBlock[i].image!.isNotEmpty) ...[
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppRadius.button),
                     child: AspectRatio(
                       aspectRatio:
                           qaSection.qaItemBlock[i].imageRatio == 'portrait_3_4'
@@ -86,11 +87,11 @@ class QaSectionWidget extends StatelessWidget {
                         width: double.infinity,
                         errorBuilder: (context, error, stackTrace) {
                           return Container(
-                            color: Colors.grey.shade200,
+                            color: AppColors.grey100,
                             child: const Center(
                               child: Icon(
                                 Icons.image_not_supported_outlined,
-                                color: Colors.grey,
+                                color: AppColors.grey400,
                                 size: 32,
                               ),
                             ),
@@ -111,7 +112,7 @@ class QaSectionWidget extends StatelessWidget {
               ],
             ),
           ),
-          if (i < qaSection.qaItemBlock.length - 1) const SizedBox(height: 40),
+          if (i < qaSection.qaItemBlock.length - 1) const SizedBox(height: AppSpacing.space40),
         ],
       ],
     );
@@ -127,16 +128,16 @@ class _QuestionBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       //width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space8, vertical: AppSpacing.space8),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppRadius.card),
         border: Border.all(color: PRIMARY_COLOR, width: 1),
       ),
       child: Text(
         question,
         style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
+          fontSize: AppFontSize.lg,
+          fontWeight: AppFontWeight.semibold,
           color: PRIMARY_COLOR,
         ),
       ),

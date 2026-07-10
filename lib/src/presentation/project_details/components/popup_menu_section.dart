@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class PopupMenuSection extends StatelessWidget {
   final VoidCallback onEdit;
@@ -44,7 +45,7 @@ class PopupMenuSection extends StatelessWidget {
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('삭제', style: TextStyle(color: Colors.red)),
+              child: const Text('삭제', style: TextStyle(color: AppColors.error)),
             ),
           ],
         );
