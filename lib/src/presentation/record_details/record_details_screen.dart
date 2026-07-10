@@ -273,11 +273,11 @@ class _RecordImagesState extends State<_RecordImages> {
                 child: const Icon(
                   Icons.broken_image,
                   color: AppColors.grey400,
-                  size: 40,
+                  size: AppIconSize.xl,
                 ),
               );
             },
-          ),
+),
         ),
       );
     }
@@ -318,7 +318,7 @@ class _RecordImagesState extends State<_RecordImages> {
                       child: const Icon(
                         Icons.broken_image,
                         color: AppColors.grey400,
-                        size: 40,
+                        size: AppIconSize.xl,
                       ),
                     );
                   },
@@ -335,7 +335,7 @@ class _RecordImagesState extends State<_RecordImages> {
             child: _PageIndicator(
               count: images.length,
               currentIndex: _currentIndex,
-            ),
+),
           ),
         ],
       ),

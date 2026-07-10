@@ -21,7 +21,7 @@ class ArticlePreviewItem extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.card)),
       color: AppColors.white,
       elevation: AppElevation.card,
-      shadowColor: Colors.black38,
+      shadowColor: AppColors.black,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
@@ -49,13 +49,13 @@ class ArticlePreviewItem extends StatelessWidget {
                           return const Icon(
                             Icons.broken_image,
                             color: AppColors.grey400,
-                            size: 40,
+                            size: AppIconSize.xl,
                           );
                         },
                       )
                     : const Icon(
                         Icons.image_outlined,
-                        size: 40,
+                        size: AppIconSize.xl,
                         color: AppColors.grey400,
                       ),
               ),

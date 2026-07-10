@@ -48,7 +48,7 @@ class ProjectSectionWidget extends StatelessWidget {
               styleSheet: MarkdownStyleSheet(
                 p: const TextStyle(
                   fontSize: AppFontSize.md,
-                  color: Colors.black54,
+                  color: AppColors.textSecondary,
                 ),
               ),
             ),

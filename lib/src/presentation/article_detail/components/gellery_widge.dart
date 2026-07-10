@@ -39,7 +39,7 @@ class GalleryWidget extends StatelessWidget {
                     child: Icon(
                       Icons.image_not_supported_outlined,
                       color: AppColors.grey400,
-                      size: 24,
+                      size: AppIconSize.base,
                     ),
                   ),
                 ),

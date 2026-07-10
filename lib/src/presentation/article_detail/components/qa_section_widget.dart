@@ -38,7 +38,7 @@ class QaSectionWidget extends StatelessWidget {
             child: MarkdownBody(
               data: normalizeMarkdown(qaSection.description!),
               styleSheet: MarkdownStyleSheet(
-                p: const TextStyle(fontSize: AppFontSize.md, color: Colors.black54),
+                p: const TextStyle(fontSize: AppFontSize.md, color: AppColors.textSecondary),
               ),
             ),
           ),
@@ -92,7 +92,7 @@ class QaSectionWidget extends StatelessWidget {
                               child: Icon(
                                 Icons.image_not_supported_outlined,
                                 color: AppColors.grey400,
-                                size: 32,
+                                size: AppIconSize.lg,
                               ),
                             ),
                           );

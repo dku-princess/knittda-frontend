@@ -67,7 +67,7 @@ class ArticleCardSmall extends StatelessWidget {
                   Text(
                     article.title,
                     style: const TextStyle(
-                      color: Colors.black87,
+                      color: AppColors.textPrimary,
                       fontSize: AppFontSize.lg,
                       fontWeight: AppFontWeight.semibold,
                     ),

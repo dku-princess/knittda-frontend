@@ -37,7 +37,7 @@ class PatternSectionWidget extends StatelessWidget {
             child: MarkdownBody(
               data: normalizeMarkdown(patternSection.description!),
               styleSheet: MarkdownStyleSheet(
-                p: const TextStyle(fontSize: AppFontSize.md, color: Colors.black54),
+                p: const TextStyle(fontSize: AppFontSize.md, color: AppColors.textSecondary),
               ),
             ),
           ),
@@ -114,7 +114,7 @@ class PatternSectionWidget extends StatelessWidget {
                                 child: Icon(
                                   Icons.image_not_supported_outlined,
                                   color: AppColors.grey400,
-                                  size: 32,
+                                  size: AppIconSize.lg,
                                 ),
                               ),
                             );

@@ -130,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Positioned.fill(
               child: AbsorbPointer(
                 child: Container(
-                  color: Colors.black26,
+                  color: AppColors.scrim,
                   child: const Center(child: CircularProgressIndicator()),
                 ),
               ),

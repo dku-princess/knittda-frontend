@@ -66,7 +66,7 @@ class _ImageViewerState extends State<ImageViewer> {
                           child: const Icon(
                             Icons.broken_image,
                             color: Colors.white70,
-                            size: 40,
+                            size: AppIconSize.xl,
                           ),
                         );
                       },
@@ -97,7 +97,7 @@ class _ImageViewerState extends State<ImageViewer> {
                       vertical: AppSpacing.space8,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.black54,
+                      color: AppColors.overlay,
                       borderRadius: BorderRadius.circular(AppRadius.card),
                     ),
                     child: Text(

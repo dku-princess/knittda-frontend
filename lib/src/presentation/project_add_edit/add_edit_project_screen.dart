@@ -294,7 +294,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                         child: Icon(
                           Icons.add,
                           color: AppColors.white,
-                          size: 40,
+                          size: AppIconSize.xl,
                         ),
                       ),
                     ),
@@ -340,12 +340,12 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                         vertical: AppSpacing.space12,
                       ),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black54),
+                        border: Border.all(color: AppColors.border),
                         borderRadius: BorderRadius.circular(AppRadius.button),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.calendar_today, size: 20),
+                          Icon(Icons.calendar_today, size: AppIconSize.md),
                           const SizedBox(width: AppSpacing.space12),
                           Text(
                             (_startDate != null && _goalDate != null)
@@ -478,7 +478,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
           Positioned.fill(
             child: AbsorbPointer(
               child: Container(
-                color: Colors.black26,
+                color: AppColors.scrim,
                 child: const Center(child: CircularProgressIndicator()),
               ),
             ),

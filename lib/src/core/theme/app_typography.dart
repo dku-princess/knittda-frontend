@@ -32,10 +32,15 @@ class AppTextStyles {
 
   static const String fontFamily = 'Pretendard';
 
+  /// 기본 행간 배수. Figma 디자인 시스템과 동일하게 1.4로 명시한다.
+  /// (미지정 시 Pretendard 기본 행간이 적용되어 Figma 렌더와 어긋난다.)
+  static const double lineHeight = 1.4;
+
   static const TextStyle display = TextStyle(
     fontFamily: fontFamily,
     fontSize: AppFontSize.display,
     fontWeight: AppFontWeight.bold,
+    height: lineHeight,
     color: AppColors.textPrimary,
   );
 
@@ -43,6 +48,7 @@ class AppTextStyles {
     fontFamily: fontFamily,
     fontSize: AppFontSize.xl,
     fontWeight: AppFontWeight.semibold,
+    height: lineHeight,
     color: AppColors.textPrimary,
   );
 
@@ -50,6 +56,7 @@ class AppTextStyles {
     fontFamily: fontFamily,
     fontSize: AppFontSize.lg,
     fontWeight: AppFontWeight.semibold,
+    height: lineHeight,
     color: AppColors.textPrimary,
   );
 
@@ -57,6 +64,7 @@ class AppTextStyles {
     fontFamily: fontFamily,
     fontSize: AppFontSize.md,
     fontWeight: AppFontWeight.regular,
+    height: lineHeight,
     color: AppColors.textPrimary,
   );
 
@@ -64,6 +72,7 @@ class AppTextStyles {
     fontFamily: fontFamily,
     fontSize: AppFontSize.md,
     fontWeight: AppFontWeight.semibold,
+    height: lineHeight,
     color: AppColors.textPrimary,
   );
 
@@ -71,6 +80,7 @@ class AppTextStyles {
     fontFamily: fontFamily,
     fontSize: AppFontSize.sm,
     fontWeight: AppFontWeight.regular,
+    height: lineHeight,
     color: AppColors.textHint,
   );
 }
