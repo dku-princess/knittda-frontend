@@ -233,7 +233,6 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
         Scaffold(
           appBar: KnittdaAppBar(
             title: widget.record != null ? '기록 수정' : '기록 추가',
-            centerTitle: true,
             actions: [
               //저장버튼
               TextButton(

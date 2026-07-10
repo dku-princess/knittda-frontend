@@ -200,7 +200,6 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
         Scaffold(
           appBar: KnittdaAppBar(
             title: widget.project != null ? '작품 수정' : '작품 추가',
-            centerTitle: true,
             actions: [
               //저장버튼
               TextButton(

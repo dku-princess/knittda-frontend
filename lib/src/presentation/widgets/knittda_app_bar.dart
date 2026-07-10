@@ -82,7 +82,7 @@ class KnittdaAppBar extends StatelessWidget implements PreferredSizeWidget {
               onPressed: onBack,
             )
           : null,
-      centerTitle: centerTitle ?? (large ? false : null),
+      centerTitle: centerTitle ?? false,
       titleSpacing: titleSpacing ?? (large ? 30 : null),
       title: titleWidget ??
           (title != null ? Text(title!, style: _resolvedTitleStyle) : null),

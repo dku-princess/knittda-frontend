@@ -63,7 +63,6 @@ class _MypageSettingNicknameScreenState
       child: Scaffold(
         appBar: KnittdaAppBar(
           title: '닉네임 설정',
-          centerTitle: true,
           actions: [
             //저장버튼
             TextButton(
