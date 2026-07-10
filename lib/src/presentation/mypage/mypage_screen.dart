@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/domain/repository/announcement_repository.dart';
 import 'package:knittda/src/domain/repository/authentication_repository.dart';
 import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
@@ -181,14 +182,10 @@ class _MypageScreenState extends State<MypageScreen> {
     final user = state.user;
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        scrolledUnderElevation: 0,
-        title: const Text(
-          '마이페이지',
-          style: TextStyle(fontSize: AppFontSize.display, fontWeight: AppFontWeight.semibold),
-        ),
-        titleSpacing: 30,
+      appBar: const KnittdaAppBar(
+        title: '마이페이지',
+        large: true,
+        showBack: false,
       ),
 
       body: ListView(

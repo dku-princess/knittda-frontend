@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/domain/model/project.dart';
 import 'package:knittda/src/domain/model/records.dart';
@@ -40,15 +41,11 @@ class ProjectsScreen extends StatelessWidget {
     final state = viewModel.state;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: const KnittdaAppBar(
+        title: '나의\n뜨개 작품',
+        large: true,
+        showBack: false,
         toolbarHeight: kToolbarHeight + 30,
-        centerTitle: false,
-        scrolledUnderElevation: 0,
-        title: const Text(
-          '나의\n뜨개 작품',
-          style: TextStyle(fontSize: AppFontSize.display, fontWeight: AppFontWeight.semibold),
-        ),
-        titleSpacing: 30,
       ),
 
       floatingActionButton: FloatingActionButton(

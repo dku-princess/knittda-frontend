@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/domain/repository/announcement_repository.dart';
 import 'package:knittda/src/presentation/announcement/announcement_view_model.dart';
 import 'package:knittda/src/presentation/announcement/components/announcement_list_item.dart';
@@ -13,7 +14,7 @@ class AnnouncementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(scrolledUnderElevation: 0),
+      appBar: const KnittdaAppBar(),
       body: Consumer<AnnouncementViewModel>(
         builder: (context, viewModel, _) {
           final state = viewModel.state;

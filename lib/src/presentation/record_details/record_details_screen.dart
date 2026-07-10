@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/domain/model/images.dart';
@@ -78,8 +79,7 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          scrolledUnderElevation: 0,
+        appBar: KnittdaAppBar(
           actions: [
             if (!state.isLoading && state.isOwner)
               PopupMenuSection(

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/repository/record_api_repository.dart';
 import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
@@ -92,9 +93,8 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        scrolledUnderElevation: 0,
-        title: TextField(
+      appBar: KnittdaAppBar(
+        titleWidget: TextField(
           controller: _controller,
           textInputAction: TextInputAction.search,
           onSubmitted: (_) => _onSearch(),

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/domain/model/images.dart';
@@ -230,12 +231,8 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
     return Stack(
       children: [
         Scaffold(
-          appBar: AppBar(
-            scrolledUnderElevation: 0,
-            title: Text(
-              widget.record != null ? '기록 수정' : '기록 추가',
-              style: TextStyle(fontSize: AppFontSize.xl, fontWeight: AppFontWeight.semibold),
-            ),
+          appBar: KnittdaAppBar(
+            title: widget.record != null ? '기록 수정' : '기록 추가',
             centerTitle: true,
             actions: [
               //저장버튼
