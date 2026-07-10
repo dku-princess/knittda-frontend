@@ -39,7 +39,7 @@ class AppTextStyles {
   static const TextStyle display = TextStyle(
     fontFamily: fontFamily,
     fontSize: AppFontSize.display,
-    fontWeight: AppFontWeight.bold,
+    fontWeight: AppFontWeight.semibold,
     height: lineHeight,
     color: AppColors.textPrimary,
   );
