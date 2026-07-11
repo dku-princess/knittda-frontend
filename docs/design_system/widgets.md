@@ -204,24 +204,34 @@ Stack(children: [
 ## KnittdaTag
 
 `lib/src/presentation/widgets/knittda_tag.dart` · Figma `Tag`
+(Style=Outline/Filled/Grey)
 
-**Outline** 스타일 태그: 투명 배경 + `primary` 테두리 + `primary` 글씨,
-`AppRadius.chip`(**4**) 모서리, `caption` 크기. 혼재하던 3가지 태그를 하나로 통일.
-옵션: `label`(필수).
+메타데이터 라벨. `caption` 크기 고정, **스타일 3종 + 모서리 반경 선택**.
+
+### 옵션
+
+| 옵션 | 타입 | 기본값 | 설명 |
+|---|---|---|---|
+| `label` | `String` | (필수) | 태그 문구. |
+| `style` | `KnittdaTagStyle` | `outline` | `outline`(투명+primary 테두리) / `filled`(primary 채움+흰 글씨) / `grey`(surfaceAlt 배경+textSecondary). |
+| `radius` | `double` | `AppRadius.chip`(4) | 모서리 반경. |
 
 ### 사용되는 곳 (5)
 
-| 위치 | 대상 |
-|---|---|
-| `record_details_screen`·`record_item` | 기록 태그(`_RecordTags` Wrap 내부 칩) |
-| `feed_item` | 피드 태그(`_FeedTags` Wrap 내부 칩) |
-| `article_card_small` | 아티클 카테고리(`_CategoryTag` 대체·삭제) |
-| `announcement_list_item` | 공지 카테고리(`KnittdaBadge` 대체) |
+| 위치 | 스타일 | radius |
+|---|---|---|
+| `record_details_screen`·`record_item` (뜨개 태그) | outline | **6** |
+| `feed_item` (뜨개 태그) | outline | **6** |
+| `article_card_small` (카테고리) | outline | 4 |
+| `announcement_list_item` (카테고리) | outline | 4 |
 
-> **통일 내역**: `_RecordTags`/`_FeedTags`(아웃라인 pill·v8)·`_CategoryTag`
-> (filled primaryLight·card)·`KnittdaBadge`(filled primary·chip) → 전부
-> **Outline chip(4)**. `KnittdaBadge`·`knittda_badge.dart` 삭제, Figma
-> `Badge`→`Tag`(outline) 재구성. `radius/chip` 6→**4**.
+> **모서리 규칙**: 뜨개 태그(`_RecordTags`/`_FeedTags`)는 `radius: 6`, 카테고리
+> 태그는 기본 `chip`(4). **스타일**은 현재 전부 outline이며, filled/grey는
+> 필요 시 `style:`로 선택.
+>
+> **통일 이력**: `_RecordTags`/`_FeedTags`(아웃라인 pill)·`_CategoryTag`
+> (filled primaryLight)·`KnittdaBadge`(filled primary) → KnittdaTag로 통일.
+> `KnittdaBadge`·`knittda_badge.dart` 삭제, Figma `Badge`→`Tag`(3 style). `radius/chip` 6→4.
 
 ## KnittdaCard · KnittdaListItem (정의됨)
 
