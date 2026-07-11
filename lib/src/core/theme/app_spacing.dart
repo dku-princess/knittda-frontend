@@ -36,8 +36,11 @@ class AppRadius {
   /// 각 없음(직각).
   static const double none = 0;
 
-  /// 태그·칩·작은 배지.
+  /// 카테고리 칩·작은 배지.
   static const double chip = 4;
+
+  /// 뜨개 태그(선택형).
+  static const double tag = 6;
 
   /// 버튼·입력·컨트롤.
   static const double button = 8;

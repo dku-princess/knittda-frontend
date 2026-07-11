@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/domain/model/announcement.dart';
 import 'package:knittda/src/core/theme/theme.dart';
-import 'package:knittda/src/presentation/widgets/knittda_tag.dart';
+import 'package:knittda/src/presentation/widgets/knittda_chip.dart';
 
 class AnnouncementListItem extends StatelessWidget {
   final Announcement announcement;
@@ -26,7 +26,7 @@ class AnnouncementListItem extends StatelessWidget {
 
         Row(
           children: [
-            KnittdaTag(label: announcement.categoryLabel),
+            KnittdaChip(label: announcement.categoryLabel),
 
             const SizedBox(width: AppSpacing.space8),
             Text(
