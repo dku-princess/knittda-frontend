@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/domain/repository/in_app_banner_repository.dart';
 import 'package:knittda/src/domain/use_case/dismiss_banner_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_active_banner_use_case.dart';
@@ -53,8 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 );
               case ShowSnackBar(:final message):
-                final snackBar = SnackBar(content: Text(message));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                KnittdaSnackBar.show(context, message);
             }
           }
         });

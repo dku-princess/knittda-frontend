@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_event.dart';
@@ -37,8 +38,7 @@ class _MypageSettingNicknameScreenState
               case SetNickname():
                 Navigator.pop(context);
               case ShowSnackBar(:final message):
-                final snackBar = SnackBar(content: Text(message));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                KnittdaSnackBar.show(context, message);
             }
           }
         });
@@ -71,9 +71,7 @@ class _MypageSettingNicknameScreenState
                   : () {
                       final nickname = _nicknameController.text.trim();
                       if (nickname.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('닉네임을 입력해주세요.')),
-                        );
+                        KnittdaSnackBar.show(context, '닉네임을 입력해주세요.', tone: KnittdaSnackTone.info);
                         return;
                       }
                       context.read<MypageSettingNicknameViewModel>().onEvent(

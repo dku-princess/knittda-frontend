@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/domain/model/project.dart';
@@ -59,8 +61,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
               case DeletedProject():
                 Navigator.pop(context, true);
               case ShowSnackBar(:final message):
-                final snackBar = SnackBar(content: Text(message));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                KnittdaSnackBar.show(context, message);
               case NotFound():
                 Navigator.pop(context, false);
             }
@@ -351,29 +352,13 @@ class _ProjectHeader extends StatelessWidget {
           // 작품 대표 사진
           ClipRRect(
             borderRadius: BorderRadius.circular(AppRadius.chip),
-            child:
-                (project.thumbnailUrl != null &&
-                    project.thumbnailUrl!.isNotEmpty)
-                ? Image.network(
-                    project.thumbnailUrl!,
-                    width: 115,
-                    height: 115,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: 115,
-                        height: 115,
-                        color: AppColors.grey200,
-                        child: Icon(Icons.broken_image, color: AppColors.grey400),
-                      );
-                    },
-                  )
-                : Container(
-                    width: 115,
-                    height: 115,
-                    color: AppColors.grey200,
-                    child: Icon(Icons.image_outlined, color: AppColors.grey400),
-                  ),
+            child: KnittdaNetworkImage(
+              url: project.thumbnailUrl,
+              width: 115,
+              height: 115,
+              iconSize: AppIconSize.base,
+              showLoading: false,
+            ),
           ),
 
           SizedBox(width: AppSpacing.space24),

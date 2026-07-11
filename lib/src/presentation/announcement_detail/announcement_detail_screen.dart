@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:knittda/src/core/utils/markdown_utils.dart';
@@ -60,17 +61,13 @@ class AnnouncementDetailScreen extends StatelessWidget {
                         mode: LaunchMode.externalApplication,
                       )) {
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('링크를 열 수 없습니다.')),
-                          );
+                          KnittdaSnackBar.show(context, '링크를 열 수 없습니다.', tone: KnittdaSnackTone.error);
                         }
                       }
                     } catch (e) {
                       debugPrint('Failed to launch URL: $href, error: $e');
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('링크를 열 수 없습니다.')),
-                        );
+                        KnittdaSnackBar.show(context, '링크를 열 수 없습니다.', tone: KnittdaSnackTone.error);
                       }
                     }
                   },

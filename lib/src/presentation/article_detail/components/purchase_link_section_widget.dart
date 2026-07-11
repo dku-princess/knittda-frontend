@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/markdown_utils.dart';
@@ -67,9 +68,7 @@ class PurchaseLinkSectionWidget extends StatelessWidget {
                       mode: LaunchMode.externalApplication,
                     )) {
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('링크를 열 수 없습니다.')),
-                        );
+                        KnittdaSnackBar.show(context, '링크를 열 수 없습니다.', tone: KnittdaSnackTone.error);
                       }
                     } else {
                       // launch 성공 시에만 외부 이동 정합 이벤트 발화
@@ -80,9 +79,7 @@ class PurchaseLinkSectionWidget extends StatelessWidget {
                       'Failed to launch URL: ${purchaseLinkSection.buttonUrl}, error: $e',
                     );
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('링크를 열 수 없습니다.')),
-                      );
+                      KnittdaSnackBar.show(context, '링크를 열 수 없습니다.', tone: KnittdaSnackTone.error);
                     }
                   }
                 },

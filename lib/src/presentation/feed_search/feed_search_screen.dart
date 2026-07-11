@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/repository/record_api_repository.dart';
@@ -61,8 +62,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
           switch (event) {
             case ShowSnackBar(:final message):
               if (mounted) {
-                final snackBar = SnackBar(content: Text(message));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                KnittdaSnackBar.show(context, message);
               }
           }
         });

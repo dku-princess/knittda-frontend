@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
 import 'package:knittda/src/domain/model/project.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/core/theme/theme.dart';
@@ -34,29 +35,13 @@ class ProjectsItem extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadius.card),
-                child:
-                    (project.thumbnailUrl != null &&
-                        project.thumbnailUrl!.isNotEmpty)
-                    ? Image.network(
-                        project.thumbnailUrl!,
-                        width: 60,
-                        height: 60,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            width: 60,
-                            height: 60,
-                            color: AppColors.grey200,
-                            child: Icon(Icons.broken_image, color: AppColors.grey400),
-                          );
-                        },
-                      )
-                    : Container(
-                        width: 60,
-                        height: 60,
-                        color: AppColors.grey200,
-                        child: Icon(Icons.image_outlined, color: AppColors.grey400),
-                      ),
+                child: KnittdaNetworkImage(
+                  url: project.thumbnailUrl,
+                  width: 60,
+                  height: 60,
+                  iconSize: AppIconSize.base,
+                  showLoading: false,
+                ),
               ),
 
               SizedBox(width: AppSpacing.space12),

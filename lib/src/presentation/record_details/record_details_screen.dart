@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/domain/model/images.dart';
@@ -47,8 +49,7 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
               case DeletedRecord():
                 Navigator.pop(context);
               case ShowSnackBar(:final message):
-                final snackBar = SnackBar(content: Text(message));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                KnittdaSnackBar.show(context, message);
             }
           }
         });
@@ -255,29 +256,11 @@ class _RecordImagesState extends State<_RecordImages> {
         },
         child: AspectRatio(
           aspectRatio: 4 / 3,
-          child: Image.network(
-            images.first.imageUrl,
-            fit: BoxFit.cover,
-
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return const Center(
-                child: CircularProgressIndicator(strokeWidth: 2),
-              );
-            },
-
-            errorBuilder: (context, exception, stackTrace) {
-              return Container(
-                color: AppColors.grey200,
-                alignment: Alignment.center,
-                child: const Icon(
-                  Icons.broken_image,
-                  color: AppColors.grey400,
-                  size: AppIconSize.xl,
-                ),
-              );
-            },
-),
+          // borderRadius 미지정 — 이 화면은 모서리 제거 예외 유지
+          child: KnittdaNetworkImage(
+            url: images.first.imageUrl,
+            placeholderIcon: Icons.broken_image,
+          ),
         ),
       );
     }
@@ -300,28 +283,10 @@ class _RecordImagesState extends State<_RecordImages> {
                 onTap: () {
                   onImageTap?.call(index, images);
                 },
-                child: Image.network(
-                  images[index].imageUrl,
-                  fit: BoxFit.cover,
-
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return const Center(
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    );
-                  },
-
-                  errorBuilder: (context, exception, stackTrace) {
-                    return Container(
-                      color: AppColors.grey200,
-                      alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.broken_image,
-                        color: AppColors.grey400,
-                        size: AppIconSize.xl,
-                      ),
-                    );
-                  },
+                // borderRadius 미지정 — 이 화면은 모서리 제거 예외 유지
+                child: KnittdaNetworkImage(
+                  url: images[index].imageUrl,
+                  placeholderIcon: Icons.broken_image,
                 ),
               );
             },
@@ -335,7 +300,7 @@ class _RecordImagesState extends State<_RecordImages> {
             child: _PageIndicator(
               count: images.length,
               currentIndex: _currentIndex,
-),
+            ),
           ),
         ],
       ),

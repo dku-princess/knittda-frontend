@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/constants/color.dart';
@@ -83,8 +84,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
               case SavedRecord(:final record):
                 Navigator.pop(context, record);
               case ShowSnackBar(:final message):
-                final snackBar = SnackBar(content: Text(message));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                KnittdaSnackBar.show(context, message);
             }
           }
         });
@@ -156,9 +156,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
       });
     } catch(_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('카메라를 사용할 수 없습니다. 설정에서 권한을 확인해 주세요.')),
-      );
+      KnittdaSnackBar.show(context, '카메라를 사용할 수 없습니다. 설정에서 권한을 확인해 주세요.', tone: KnittdaSnackTone.error);
     }
   }
 
@@ -172,15 +170,11 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
     final comment = _commentController.text.trim();
 
     if (recordStatus == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('진행 상태를 선택해주세요.')));
+      KnittdaSnackBar.show(context, '진행 상태를 선택해주세요.', tone: KnittdaSnackTone.info);
       return;
     }
     if (comment.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('기록을 남겨주세요.')));
+      KnittdaSnackBar.show(context, '기록을 남겨주세요.', tone: KnittdaSnackTone.info);
       return;
     }
 

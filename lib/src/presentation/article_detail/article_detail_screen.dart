@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/data/data_sources/analytics_service.dart';
@@ -291,25 +292,13 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
               aspectRatio: 4 / 3,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadius.button),
-                child: Image.network(
-                  viewModel.getAssetUrl(article.coverImage!),
-                  fit: BoxFit.cover,
+                child: KnittdaNetworkImage(
+                  url: viewModel.getAssetUrl(article.coverImage!),
                   width: double.infinity,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.grey100,
-                        borderRadius: BorderRadius.circular(AppRadius.button),
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.image_not_supported_outlined,
-                          color: AppColors.grey400,
-                          size: AppIconSize.lg,
-                        ),
-                      ),
-                    );
-                  },
+                  backgroundColor: AppColors.grey100,
+                  placeholderIcon: Icons.image_not_supported_outlined,
+                  iconSize: AppIconSize.lg,
+                  showLoading: false,
                 ),
               ),
             ),

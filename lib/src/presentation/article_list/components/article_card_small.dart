@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
 import 'package:knittda/src/domain/model/article/article.dart';
 import 'package:knittda/src/core/theme/theme.dart';
 
@@ -25,28 +26,13 @@ class ArticleCardSmall extends StatelessWidget {
             child: SizedBox(
               width: imageWidth,
               height: imageWidth * 10 / 9,
-              child: imageUrl != null
-                  ? Image.network(
-                      imageUrl!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: AppColors.grey100,
-                          child: const Icon(
-                            Icons.image_not_supported,
-                            color: AppColors.grey400,
-                          ),
-                        );
-                      },
-                    )
-                  : Container(
-                      alignment: Alignment.center,
-                      color: AppColors.grey100,
-                      child: const Text(
-                        '이미지 준비 중',
-                        style: TextStyle(fontSize: AppFontSize.sm),
-                      ),
-                    ),
+              child: KnittdaNetworkImage(
+                url: imageUrl,
+                backgroundColor: AppColors.grey100,
+                placeholderIcon: Icons.image_not_supported,
+                iconSize: AppIconSize.base,
+                showLoading: false,
+              ),
             ),
           ),
         ),

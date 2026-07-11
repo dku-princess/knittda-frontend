@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/constants/color.dart';
@@ -76,8 +77,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
               case SavedProject(:final project):
                 Navigator.pop(context, project);
               case ShowSnackBar(:final message):
-                final snackBar = SnackBar(content: Text(message));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                KnittdaSnackBar.show(context, message);
             }
           }
         });
@@ -147,21 +147,27 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
     final hasImage = _image != null || (_thumbnailUrl?.isNotEmpty ?? false);
 
     if (!hasImage) {
-      ScaffoldMessenger.of(
+      KnittdaSnackBar.show(
         context,
-      ).showSnackBar(const SnackBar(content: Text('대표 사진을 추가해주세요.')));
+        '대표 사진을 추가해주세요.',
+        tone: KnittdaSnackTone.error,
+      );
       return;
     }
     if (nickname.isEmpty) {
-      ScaffoldMessenger.of(
+      KnittdaSnackBar.show(
         context,
-      ).showSnackBar(const SnackBar(content: Text('작품 이름을 입력해주세요.')));
+        '작품 이름을 입력해주세요.',
+        tone: KnittdaSnackTone.error,
+      );
       return;
     }
     if (_startDate == null || _goalDate == null) {
-      ScaffoldMessenger.of(
+      KnittdaSnackBar.show(
         context,
-      ).showSnackBar(const SnackBar(content: Text('시작일과 목표일을 선택해주세요.')));
+        '시작일과 목표일을 선택해주세요.',
+        tone: KnittdaSnackTone.error,
+      );
       return;
     }
 

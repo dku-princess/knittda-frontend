@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/domain/repository/announcement_repository.dart';
 import 'package:knittda/src/domain/repository/authentication_repository.dart';
@@ -72,8 +73,7 @@ class _MypageScreenState extends State<MypageScreen> {
                   (route) => false,
                 );
               case ShowSnackBar(:final message):
-                final snackBar = SnackBar(content: Text(message));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                KnittdaSnackBar.show(context, message);
             }
           }
         });
@@ -160,17 +160,13 @@ class _MypageScreenState extends State<MypageScreen> {
     try {
       if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('링크를 열 수 없습니다.')));
+          KnittdaSnackBar.show(context, '링크를 열 수 없습니다.', tone: KnittdaSnackTone.error);
         }
       }
     } catch (e) {
       debugPrint('Failed to launch URL: $url, error: $e');
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('링크를 열 수 없습니다.')));
+        KnittdaSnackBar.show(context, '링크를 열 수 없습니다.', tone: KnittdaSnackTone.error);
       }
     }
   }
