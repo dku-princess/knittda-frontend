@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_empty_state.dart';
+import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
 import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
@@ -222,7 +223,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
           final state = viewModel.state;
 
           if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const KnittdaLoadingView();
           }
 
           if (state.errorMessage != null) {

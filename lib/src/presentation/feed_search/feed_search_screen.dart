@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_empty_state.dart';
+import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/repository/record_api_repository.dart';
 import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
@@ -149,7 +150,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
                   index == viewModel.state.feeds.length) {
                 return const Padding(
                   padding: EdgeInsets.all(AppSpacing.space16),
-                  child: Center(child: CircularProgressIndicator()),
+                  child: KnittdaLoadingView(),
                 );
               }
               final feed = viewModel.state.feeds[index];

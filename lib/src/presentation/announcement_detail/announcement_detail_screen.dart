@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_empty_state.dart';
+import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:knittda/src/core/utils/markdown_utils.dart';
 import 'package:knittda/src/presentation/announcement/components/announcement_list_item.dart';
@@ -23,7 +24,7 @@ class AnnouncementDetailScreen extends StatelessWidget {
           final announcement = state.announcement;
 
           if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const KnittdaLoadingView();
           }
 
           if (state.errorMessage != null) {
