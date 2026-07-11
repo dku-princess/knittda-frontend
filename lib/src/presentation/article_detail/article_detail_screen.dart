@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_empty_state.dart';
 import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
@@ -230,7 +231,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
 
           final article = state.article;
           if (article == null) {
-            return Center(child: Text('아티클을 찾을 수 없습니다.'));
+            return const KnittdaEmptyState(message: '아티클을 찾을 수 없습니다.');
           }
 
           return ListView.separated(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_button.dart';
+import 'package:knittda/src/presentation/widgets/knittda_empty_state.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/domain/model/project.dart';
 import 'package:knittda/src/domain/model/records.dart';
@@ -109,16 +110,7 @@ class ProjectsScreen extends StatelessWidget {
 
                     Expanded(
                       child: state.projects.isEmpty
-                          ? const Center(
-                              child: Text(
-                                '작품이 없습니다',
-                                style: TextStyle(
-                                  fontSize: AppFontSize.lg,
-                                  color: AppColors.grey400,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            )
+                          ? const KnittdaEmptyState(message: '작품이 없습니다')
                           : ListView.separated(
                               padding: const EdgeInsets.only(bottom: 80),
                               separatorBuilder: (context, index) =>

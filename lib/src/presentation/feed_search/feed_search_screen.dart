@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_empty_state.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/repository/record_api_repository.dart';
 import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
@@ -133,14 +134,11 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
 
           if (viewModel.state.feeds.isEmpty) {
             if (viewModel.state.keyword.isEmpty) {
-              return const Center(child: Text('검색어를 입력해주세요'));
+              return const KnittdaEmptyState(message: '검색어를 입력해주세요');
             }
 
-            return Center(
-              child: Text(
-                '"${viewModel.state.keyword}" 에 대한 결과가 없습니다.',
-                style: TextStyle(color: AppColors.grey400),
-              ),
+            return KnittdaEmptyState(
+              message: '"${viewModel.state.keyword}" 에 대한 결과가 없습니다.',
             );
           }
 

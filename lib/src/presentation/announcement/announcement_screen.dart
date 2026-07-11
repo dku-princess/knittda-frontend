@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_empty_state.dart';
 import 'package:knittda/src/domain/repository/announcement_repository.dart';
 import 'package:knittda/src/presentation/announcement/announcement_view_model.dart';
 import 'package:knittda/src/presentation/announcement/components/announcement_list_item.dart';
@@ -41,7 +42,7 @@ class AnnouncementScreen extends StatelessWidget {
           }
 
           if (state.announcements.isEmpty) {
-            return const Center(child: Text('등록된 공지가 없습니다'));
+            return const KnittdaEmptyState(message: '등록된 공지가 없습니다');
           }
 
           return RefreshIndicator(

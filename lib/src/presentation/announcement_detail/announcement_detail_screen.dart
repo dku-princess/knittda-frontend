@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_empty_state.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:knittda/src/core/utils/markdown_utils.dart';
 import 'package:knittda/src/presentation/announcement/components/announcement_list_item.dart';
@@ -30,7 +31,7 @@ class AnnouncementDetailScreen extends StatelessWidget {
           }
 
           if (announcement == null) {
-            return const Center(child: Text('공지를 찾을 수 없습니다'));
+            return const KnittdaEmptyState(message: '공지를 찾을 수 없습니다');
           }
 
           return ListView(

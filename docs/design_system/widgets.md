@@ -50,3 +50,39 @@
 
 > 확장 여지: pill 모양·파괴적(error) 스타일·아이콘 동반 버튼이 반복되면
 > `shape`/`tone`/`icon` 옵션 추가를 검토한다(현재는 실사용 근거가 위 예외 소수뿐이라 미도입).
+
+---
+
+## KnittdaEmptyState
+
+`lib/src/presentation/widgets/knittda_empty_state.dart` · Figma `EmptyState`
+
+리스트가 비었거나 대상을 찾지 못했을 때 화면 중앙에 안내. 메시지는 `lg`·`grey400`.
+
+### 옵션
+
+| 옵션 | 타입 | 기본값 | 설명 |
+|---|---|---|---|
+| `message` | `String` | (필수) | 안내 문구. 중앙 정렬. |
+| `icon` | `IconData?` | `null` | 문구 위 아이콘(`grey400`·`AppIconSize.xl`). 생략 시 문구만. |
+| `action` | `Widget?` | `null` | 문구 아래 액션(예: 새로고침 버튼). |
+
+### 사용되는 곳 (7)
+
+| 화면 | 문구 |
+|---|---|
+| `projects_screen` | 작품이 없습니다 |
+| `article_list_screen` | 아티클이 없습니다. |
+| `announcement_screen` | 등록된 공지가 없습니다 |
+| `announcement_detail_screen` | 공지를 찾을 수 없습니다 |
+| `article_detail_screen` | 아티클을 찾을 수 없습니다. |
+| `feed_search_screen` | 검색어를 입력해주세요 / "{키워드}" 에 대한 결과가 없습니다. |
+
+> 현재 사용처는 전부 **아이콘 없이 문구만**(기존 UI 보존). `icon`은 향후 빈
+> 상태를 더 풍부하게 만들 때 사용. Figma 컴포넌트는 아이콘 포함 형태를 제시.
+
+### 사용하지 않은 경우 (예외)
+
+| 위치 | 이유 |
+|---|---|
+| `SnackBar` 오류 메시지("링크를 열 수 없습니다" 등) | 빈 상태가 아니라 **일시적 알림** → `KnittdaSnackBar` 담당. |

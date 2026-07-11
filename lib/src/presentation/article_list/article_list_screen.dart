@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_empty_state.dart';
 import 'package:knittda/src/domain/repository/article_repository.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/use_case/get_article_previews_use_case.dart';
@@ -59,7 +60,7 @@ class ArticleListScreen extends StatelessWidget {
                 children: [
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.7,
-                    child: const Center(child: Text('아티클이 없습니다.')),
+                    child: const KnittdaEmptyState(message: '아티클이 없습니다.'),
                   ),
                 ],
               ),
