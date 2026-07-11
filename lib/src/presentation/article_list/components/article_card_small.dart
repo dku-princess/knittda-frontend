@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
+import 'package:knittda/src/presentation/widgets/knittda_tag.dart';
 import 'package:knittda/src/domain/model/article/article.dart';
 import 'package:knittda/src/core/theme/theme.dart';
 
@@ -46,7 +47,7 @@ class ArticleCardSmall extends StatelessWidget {
                 if (article.category.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.space4),
-                    child: _CategoryTag(category: article.category),
+                    child: KnittdaTag(label: article.category),
                   ),
 
                 if (article.title.isNotEmpty)
@@ -78,23 +79,3 @@ class ArticleCardSmall extends StatelessWidget {
   }
 }
 
-class _CategoryTag extends StatelessWidget {
-  final String category;
-
-  const _CategoryTag({required this.category});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space8, vertical: AppSpacing.space8),
-      decoration: BoxDecoration(
-        color: AppColors.primaryLight,
-        borderRadius: BorderRadius.circular(AppRadius.card),
-      ),
-      child: Text(
-        category,
-        style: const TextStyle(fontSize: AppFontSize.sm, color: AppColors.white),
-      ),
-    );
-  }
-}

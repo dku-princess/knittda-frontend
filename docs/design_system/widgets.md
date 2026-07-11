@@ -201,20 +201,32 @@ Stack(children: [
 
 ---
 
-## KnittdaBadge · KnittdaCard · KnittdaListItem (정의됨)
+## KnittdaTag
 
-세 위젯은 Figma `Badge`/`Card`/`ListItem`과 1:1로 정의돼 있으나, **현재
-코드의 인라인 대상들과 디자인이 달라** 대부분 채택하지 않았다(무리 적용 시 UI 훼손).
+`lib/src/presentation/widgets/knittda_tag.dart` · Figma `Tag`
 
-### KnittdaBadge
+**Outline** 스타일 태그: 투명 배경 + `primary` 테두리 + `primary` 글씨,
+`AppRadius.chip`(**4**) 모서리, `caption` 크기. 혼재하던 3가지 태그를 하나로 통일.
+옵션: `label`(필수).
 
-`knittda_badge.dart` — filled 배지(`primary`/`neutral` 톤, `AppRadius.chip`, caption).
-옵션: `label`, `tone`.
-- **채택 (1)**: `announcement_list_item` 카테고리 라벨.
-- **예외**: `_RecordTags`/`_FeedTags`(**pill 아웃라인**·primary 테두리·투명),
-  `_CategoryTag`(**filled primaryLight**·card 모서리). 셋 다 KnittdaBadge(filled
-  primary·chip)와 형태가 달라 보존. → 통합하려면 KnittdaBadge에 `outline`·`pill`·
-  `primaryLight` 변형 추가 필요(태그 디자인 통일 결정 후 진행 권장).
+### 사용되는 곳 (5)
+
+| 위치 | 대상 |
+|---|---|
+| `record_details_screen`·`record_item` | 기록 태그(`_RecordTags` Wrap 내부 칩) |
+| `feed_item` | 피드 태그(`_FeedTags` Wrap 내부 칩) |
+| `article_card_small` | 아티클 카테고리(`_CategoryTag` 대체·삭제) |
+| `announcement_list_item` | 공지 카테고리(`KnittdaBadge` 대체) |
+
+> **통일 내역**: `_RecordTags`/`_FeedTags`(아웃라인 pill·v8)·`_CategoryTag`
+> (filled primaryLight·card)·`KnittdaBadge`(filled primary·chip) → 전부
+> **Outline chip(4)**. `KnittdaBadge`·`knittda_badge.dart` 삭제, Figma
+> `Badge`→`Tag`(outline) 재구성. `radius/chip` 6→**4**.
+
+## KnittdaCard · KnittdaListItem (정의됨)
+
+두 위젯은 Figma `Card`/`ListItem`과 1:1로 정의돼 있으나, **현재
+코드의 인라인 대상들과 디자인이 달라** 채택하지 않았다(무리 적용 시 UI 훼손).
 
 ### KnittdaListItem
 
