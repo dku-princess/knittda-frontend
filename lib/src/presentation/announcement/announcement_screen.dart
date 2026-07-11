@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_empty_state.dart';
+import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
 import 'package:knittda/src/domain/repository/announcement_repository.dart';
 import 'package:knittda/src/presentation/announcement/announcement_view_model.dart';
 import 'package:knittda/src/presentation/announcement/components/announcement_list_item.dart';
@@ -21,7 +22,7 @@ class AnnouncementScreen extends StatelessWidget {
           final state = viewModel.state;
 
           if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const KnittdaLoadingView();
           }
 
           if (state.errorMessage != null) {
@@ -64,7 +65,7 @@ class AnnouncementScreen extends StatelessWidget {
                   if (index == state.announcements.length) {
                     return const Padding(
                       padding: EdgeInsets.all(AppSpacing.space16),
-                      child: Center(child: CircularProgressIndicator()),
+                      child: KnittdaLoadingView(),
                     );
                   }
 

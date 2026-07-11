@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/repository/record_api_repository.dart';
 import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
@@ -142,7 +143,7 @@ class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
                   const SliverToBoxAdapter(
                     child: Padding(
                       padding: EdgeInsets.symmetric(vertical: AppSpacing.space16),
-                      child: Center(child: CircularProgressIndicator()),
+                      child: KnittdaLoadingView(),
                     ),
                   ),
               ],

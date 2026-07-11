@@ -86,3 +86,77 @@
 | 위치 | 이유 |
 |---|---|
 | `SnackBar` 오류 메시지("링크를 열 수 없습니다" 등) | 빈 상태가 아니라 **일시적 알림** → `KnittdaSnackBar` 담당. |
+
+---
+
+## KnittdaSnackBar
+
+`lib/src/presentation/widgets/knittda_snack_bar.dart` · Figma `Snackbar`
+(Tone=Info/Success/Error)
+
+`ScaffoldMessenger...showSnackBar(SnackBar(...))` 반복을 통합한 **정적 헬퍼**.
+호출 전 `hideCurrentSnackBar`로 중복을 막고, floating·`AppRadius.button`·흰
+`caption` 텍스트로 고정한다.
+
+```dart
+KnittdaSnackBar.show(context, '저장했어요', tone: KnittdaSnackTone.success);
+```
+
+### 옵션
+
+| 옵션 | 타입 | 기본값 | 설명 |
+|---|---|---|---|
+| `context` | `BuildContext` | (필수) | ScaffoldMessenger 조회용. |
+| `message` | `String` | (필수) | 표시 문구. |
+| `tone` | `KnittdaSnackTone` | `info` | `success`→`primary` / `error`→`error` / `info`→`grey800`. |
+
+### 사용되는 곳 (29)
+
+두 갈래로 쓰인다.
+- **직접 호출**: `launchUrl` 실패, 권한 안내 등 화면에서 즉시(purchase_link·note_section·mypage·report·record_add_edit 등).
+- **이벤트 구동**: ViewModel이 `XxxUiEvent.showSnackBar(msg)`를 발행 → 화면
+  `eventStream` 핸들러의 `case ShowSnackBar(:final message)`에서 `KnittdaSnackBar.show(context, message)` 호출(add_edit_project·record_details·project_details·login·feed_search·mypage(_setting_nickname)·add_edit_record).
+
+### 사용하지 않은 경우 (예외)
+
+| 위치 | 이유 |
+|---|---|
+| `ViewModel`의 `UiEvent.showSnackBar(...)` | SnackBar를 만드는 게 아니라 **이벤트 메시지 페이로드**. 화면 핸들러가 받아 `KnittdaSnackBar.show`를 호출하므로 그대로 둔다(아키텍처상 정상). |
+
+---
+
+## KnittdaLoadingView / KnittdaLoadingOverlay
+
+`lib/src/presentation/widgets/knittda_loading.dart` · Figma `Loading`
+(State=Inline/Overlay)
+
+로딩 인디케이터를 `primary` 색으로 통일한다.
+
+### KnittdaLoadingView
+
+중앙 `primary` 스피너. **옵션 없음**(색·정렬 고정).
+
+**사용되는 곳 (10)**: project_previews · announcement(_detail) · feed(_search) ·
+article_detail · article_list · project_details 등의 "화면/영역 로딩" 자리.
+기존 `Center(child: CircularProgressIndicator())`를 대체.
+
+### KnittdaLoadingOverlay
+
+`AbsorbPointer` + `AppColors.scrim` 딤 + 중앙 스피너. **`Stack`의
+`Positioned.fill` 자식**으로 배치.
+
+```dart
+Stack(children: [
+  content,
+  if (state.isLoading) const Positioned.fill(child: KnittdaLoadingOverlay()),
+]);
+```
+
+**사용되는 곳 (3)**: add_edit_project · add_edit_record · login (저장/로그인 처리 중 화면 딤).
+
+### 사용하지 않은 경우 (예외)
+
+| 위치 | 이유 |
+|---|---|
+| record_details "기록 불러오는 중…" + 스피너 컬럼 | **문구 동반 로딩**. LoadingView(스피너만)와 형태가 달라 보존. |
+| 리스트 하단 `isLoadingMore` 인디케이터 | **더 불러오기** 전용(페이지네이션). 화면 로딩과 의미가 달라 별도. |

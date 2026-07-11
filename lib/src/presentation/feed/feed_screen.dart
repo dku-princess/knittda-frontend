@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
 import 'package:knittda/src/domain/repository/feed_api_repository.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/repository/record_api_repository.dart';
@@ -145,7 +146,7 @@ class _FeedScreenState extends State<FeedScreen> {
                     index == viewModel.state.feeds.length) {
                   return const Padding(
                     padding: EdgeInsets.all(AppSpacing.space16),
-                    child: Center(child: CircularProgressIndicator()),
+                    child: KnittdaLoadingView(),
                   );
                 }
                 return FeedItem(

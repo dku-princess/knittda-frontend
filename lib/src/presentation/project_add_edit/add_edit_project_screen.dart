@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_button.dart';
+import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
@@ -471,14 +472,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
         ),
 
         if (viewModel.state.isLoading)
-          Positioned.fill(
-            child: AbsorbPointer(
-              child: Container(
-                color: AppColors.scrim,
-                child: const Center(child: CircularProgressIndicator()),
-              ),
-            ),
-          ),
+          const Positioned.fill(child: KnittdaLoadingOverlay()),
       ],
     );
   }
