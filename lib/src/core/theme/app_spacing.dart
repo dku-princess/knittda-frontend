@@ -37,7 +37,7 @@ class AppRadius {
   static const double none = 0;
 
   /// 태그·칩·작은 배지.
-  static const double chip = 6;
+  static const double chip = 4;
 
   /// 버튼·입력·컨트롤.
   static const double button = 8;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
+import 'package:knittda/src/presentation/widgets/knittda_tag.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/domain/model/images.dart';
@@ -144,17 +145,7 @@ class _RecordTags extends StatelessWidget {
       spacing: 8, // 태그 사이 가로 간격
       runSpacing: 10, // 줄 바뀔 때 세로 간격
       children: tags.map((tag) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space8, vertical: AppSpacing.space8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppRadius.pill), // 완전 둥근 테두리
-            border: Border.all(color: PRIMARY_COLOR, width: 1),
-          ),
-          child: Text(
-            tag,
-            style: const TextStyle(fontSize: AppFontSize.sm, color: PRIMARY_COLOR),
-          ),
-        );
+        return KnittdaTag(label: tag);
       }).toList(),
     );
   }
