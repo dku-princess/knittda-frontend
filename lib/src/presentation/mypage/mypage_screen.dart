@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_dialog.dart';
 import 'package:knittda/src/domain/repository/announcement_repository.dart';
 import 'package:knittda/src/domain/repository/authentication_repository.dart';
 import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
@@ -243,26 +244,12 @@ class _MypageScreenState extends State<MypageScreen> {
                 _buildMenuItem(
                   '회원탈퇴',
                   onTap: () async {
-                    final confirmed = await showDialog<bool>(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text('회원탈퇴'),
-                        content: Text('정말 탈퇴하시겠습니까?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: Text('취소'),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, true),
-
-                            child: Text(
-                              '탈퇴',
-                              style: TextStyle(color: AppColors.error),
-                            ),
-                          ),
-                        ],
-                      ),
+                    final confirmed = await KnittdaDialog.confirm(
+                      context,
+                      title: '회원탈퇴',
+                      message: '정말 탈퇴하시겠습니까?',
+                      confirmLabel: '탈퇴',
+                      destructive: true,
                     );
                     if (confirmed == true) {
                       viewModel.onEvent(MypageEvent.signout());

@@ -233,3 +233,50 @@ Stack(children: [
 - **예외**: 현재 카드형은 대부분 **이미지+그라디언트 오버레이**를 가진 커스텀
   카드(article_card_large 등)라 단순 컨테이너 KnittdaCard와 구조가 다름. 순수
   컨테이너 카드가 생기면 우선 채택.
+
+---
+
+## KnittdaDialog
+
+`lib/src/presentation/widgets/knittda_dialog.dart` · Figma `Dialog`
+
+`showDialog(AlertDialog(...))` 확인 다이얼로그를 통합한 **정적 헬퍼**.
+모서리 `AppRadius.card`, 제목 `heading`, 본문 `body`.
+
+```dart
+final ok = await KnittdaDialog.confirm(context,
+  title: '작품 삭제', message: '정말 삭제하시겠습니까?',
+  confirmLabel: '삭제', destructive: true);
+```
+
+### 옵션 (`confirm`)
+
+| 옵션 | 타입 | 기본값 | 설명 |
+|---|---|---|---|
+| `title` | `String` | (필수) | 제목. |
+| `message` | `String?` | `null` | 본문. |
+| `cancelLabel` | `String` | `'취소'` | 취소 버튼(`textHint`). |
+| `confirmLabel` | `String` | `'확인'` | 확인 버튼. |
+| `destructive` | `bool` | `false` | true면 확인 버튼 `error` 색(삭제·탈퇴). |
+
+**반환**: 확인=`true`, 취소·바깥탭=`false`(non-null).
+
+### 사용되는 곳 (3)
+
+| 위치 | 다이얼로그 |
+|---|---|
+| `popup_menu_section` | 작품 삭제 (destructive) |
+| `edit_delete_menu` | 삭제 (destructive, 제목/본문 파라미터화) |
+| `mypage_screen` | 회원탈퇴 (destructive) |
+
+> Phase 1에서 KnittdaButton 예외로 뒀던 **다이얼로그 액션 버튼(취소/삭제/탈퇴)**을
+> 이 헬퍼가 흡수했다.
+
+---
+
+## 미도입 (저우선 · 근거 부족)
+
+| 후보 | 현황 | 판단 |
+|---|---|---|
+| **KnittDivider** | Divider/Border(bottom) ~10 | 구분선은 이미 대부분 컴포넌트 내부(KnittdaListItem·KnittdaAppBar)에 흡수됨. 남은 것은 화면별 1회성이 많아 위젯화 이득 작음. 반복 근거 쌓이면 도입. |
+| **KnittFab** | FloatingActionButton 2 | 사용 2곳뿐(YAGNI). 3곳 이상 반복 시 도입. |
