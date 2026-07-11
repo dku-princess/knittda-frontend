@@ -249,8 +249,8 @@ class _ReportScreenState extends State<ReportScreen> {
               padding: const EdgeInsets.only(
                 top: AppSpacing.space16,
                 bottom: AppSpacing.space24,
-                right: AppSpacing.space24,
-                left: AppSpacing.space24,
+                right: AppLayout.screenPaddingH,
+                left: AppLayout.screenPaddingH,
               ),
               child: RepaintBoundary(
                 key: _captureKey,
