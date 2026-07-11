@@ -160,3 +160,76 @@ Stack(children: [
 |---|---|
 | record_details "기록 불러오는 중…" + 스피너 컬럼 | **문구 동반 로딩**. LoadingView(스피너만)와 형태가 달라 보존. |
 | 리스트 하단 `isLoadingMore` 인디케이터 | **더 불러오기** 전용(페이지네이션). 화면 로딩과 의미가 달라 별도. |
+
+---
+
+## KnittdaInput
+
+`lib/src/presentation/widgets/knittda_input.dart` · Figma `Input`
+(State=Default/Focused/Error)
+
+`TextFormField` 래퍼. 테두리 상태색(기본 `border`/포커스 `primary`/에러 `error`)을
+토큰으로 고정. `AppRadius.button` 모서리.
+
+### 옵션
+
+| 옵션 | 타입 | 기본값 | 설명 |
+|---|---|---|---|
+| `controller` | `TextEditingController?` | `null` | |
+| `hintText` | `String?` | `null` | 플레이스홀더. |
+| `errorText` | `String?` | `null` | 있으면 에러 테두리. |
+| `onChanged` | `ValueChanged<String>?` | `null` | |
+| `obscureText` | `bool` | `false` | 비밀번호 마스킹. |
+| `keyboardType` | `TextInputType?` | `null` | 멀티라인 등. |
+| `maxLines` | `int` | `1` | |
+| `maxLength` | `int?` | `null` | 글자 수 제한·카운터. |
+| `enabled` | `bool` | `true` | |
+
+### 사용되는 곳 (7)
+
+| 화면 | 필드 |
+|---|---|
+| `add_edit_project_screen` | 작품 이름·도안명·작가·실·바늘 (5) |
+| `mypage_setting_nickname_screen` | 닉네임(`enabled: !isLoading`) |
+| `add_edit_record_screen` | 기록 내용(멀티라인 `maxLines: 8`) |
+
+### 사용하지 않은 경우 (예외)
+
+| 위치 | 이유 |
+|---|---|
+| `feed_search_screen` 검색 필드 | **prefix(검색)·suffix(X) 아이콘** 동반. KnittdaInput은 아이콘 미지원. 아이콘 슬롯 추가 시 흡수 가능. |
+
+---
+
+## KnittdaBadge · KnittdaCard · KnittdaListItem (정의됨)
+
+세 위젯은 Figma `Badge`/`Card`/`ListItem`과 1:1로 정의돼 있으나, **현재
+코드의 인라인 대상들과 디자인이 달라** 대부분 채택하지 않았다(무리 적용 시 UI 훼손).
+
+### KnittdaBadge
+
+`knittda_badge.dart` — filled 배지(`primary`/`neutral` 톤, `AppRadius.chip`, caption).
+옵션: `label`, `tone`.
+- **채택 (1)**: `announcement_list_item` 카테고리 라벨.
+- **예외**: `_RecordTags`/`_FeedTags`(**pill 아웃라인**·primary 테두리·투명),
+  `_CategoryTag`(**filled primaryLight**·card 모서리). 셋 다 KnittdaBadge(filled
+  primary·chip)와 형태가 달라 보존. → 통합하려면 KnittdaBadge에 `outline`·`pill`·
+  `primaryLight` 변형 추가 필요(태그 디자인 통일 결정 후 진행 권장).
+
+### KnittdaListItem
+
+`knittda_list_item.dart` — 썸네일+제목+부제+chevron+하단 divider. 옵션:
+`title`, `subtitle`, `leading`, `onTap`, `showChevron`.
+- **채택 (0)**.
+- **예외**: 현재 `ListTile` 6곳은 전부 **바텀시트 메뉴 행**(제목+onTap만, 썸네일·
+  chevron 없음)이라 KnittdaListItem(썸네일·chevron·divider 강제)과 안 맞음. 시트
+  메뉴용 경량 변형이 필요하면 별도 위젯 검토.
+
+### KnittdaCard
+
+`knittda_card.dart` — 흰 표면·테두리·`AppRadius.card`·선택 그림자. 옵션:
+`child`, `padding`, `onTap`, `elevated`.
+- **채택 (0)**.
+- **예외**: 현재 카드형은 대부분 **이미지+그라디언트 오버레이**를 가진 커스텀
+  카드(article_card_large 등)라 단순 컨테이너 KnittdaCard와 구조가 다름. 순수
+  컨테이너 카드가 생기면 우선 채택.

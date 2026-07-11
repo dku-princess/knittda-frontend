@@ -2,22 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/core/theme/theme.dart';
 
 /// 배지 톤. Figma `Badge` 컴포넌트의 Tone 변형과 1:1.
-enum KnittBadgeTone { primary, neutral }
+enum KnittdaBadgeTone { primary, neutral }
 
 /// Knittda 공통 배지(작은 라벨/칩).
-class KnittBadge extends StatelessWidget {
-  const KnittBadge({
+class KnittdaBadge extends StatelessWidget {
+  const KnittdaBadge({
     super.key,
     required this.label,
-    this.tone = KnittBadgeTone.primary,
+    this.tone = KnittdaBadgeTone.primary,
   });
 
   final String label;
-  final KnittBadgeTone tone;
+  final KnittdaBadgeTone tone;
 
   @override
   Widget build(BuildContext context) {
-    final bool primary = tone == KnittBadgeTone.primary;
+    final bool primary = tone == KnittdaBadgeTone.primary;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.space8,
