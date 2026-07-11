@@ -39,7 +39,7 @@ class AnnouncementDetailScreen extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.space20,
+                  horizontal: AppLayout.screenPaddingH,
                   vertical: AppSpacing.space12,
                 ),
                 child: AnnouncementListItem(announcement: announcement),
@@ -50,7 +50,7 @@ class AnnouncementDetailScreen extends StatelessWidget {
               const SizedBox(height: AppSpacing.space32),
 
               Padding(
-                padding: const EdgeInsets.only(left: AppSpacing.space20, right: AppSpacing.space20, bottom: AppSpacing.space40),
+                padding: const EdgeInsets.only(left: AppLayout.screenPaddingH, right: AppLayout.screenPaddingH, bottom: AppSpacing.space40),
                 child: MarkdownBody(
                   data: normalizeMarkdown(announcement.body),
 

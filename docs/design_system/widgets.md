@@ -10,6 +10,36 @@
 
 ---
 
+## 레이아웃 토큰 (AppLayout)
+
+`lib/src/core/theme/app_layout.dart` (배럴 `theme.dart` export).
+
+원자 간격 토큰 `AppSpacing`("얼마나") 위 계층으로, 화면 레벨 여백/인셋
+**패턴**("어디에 쓰는가")을 의미 단위로 정의한다. 값이 아니라 목적으로 고른다.
+
+| 토큰 | 값 | 용도 |
+|---|---|---|
+| `AppLayout.screenPaddingH` | `AppSpacing.space20`(20) | 화면 좌우 가장자리 표준 여백. (기존 16/20/24 혼재 → 20 통일) |
+| `AppLayout.contentBottomInset` | 48 | 스크롤 콘텐츠 하단 여유(마지막 항목이 화면 끝에 붙지 않게). 편집 폼·아티클 스크롤. (기존 50 → 48 정규화) |
+| `AppLayout.fabBottomInset` | 80 | FAB가 리스트 마지막 항목을 가리지 않게 하는 하단 인셋. (projects) |
+| `AppLayout.actionBottomInset` | 120 | 하단 고정 액션 버튼(로그인 등) 위 여유. |
+
+> **주의**: 스크린 최상위(가장자리) 패딩에만 쓴다. 컴포넌트 내부 여백
+> (`widgets/knittda_*`)이나 섹션 내부 버튼 인셋(예: `purchase_link_section` 버튼
+> `horizontal:24`)은 컴포넌트 자체 여백이므로 건드리지 않는다.
+
+### 채택된 곳
+
+| 화면 | 토큰 |
+|---|---|
+| `add_edit_project_screen` / `add_edit_record_screen` 폼 하단 | `contentBottomInset` |
+| `article_detail_screen` 스크롤 하단·좌우 | `contentBottomInset` / `screenPaddingH` |
+| `projects_screen` 리스트 하단 | `fabBottomInset` |
+| `login_screen` 버튼 영역 하단 | `actionBottomInset` |
+| `announcement_detail_screen` / `record_details_screen` 좌우 가장자리 | `screenPaddingH` |
+
+---
+
 ## KnittdaButton
 
 `lib/src/presentation/widgets/knittda_button.dart` · Figma `Button`

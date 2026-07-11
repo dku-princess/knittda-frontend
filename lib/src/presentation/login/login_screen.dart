@@ -90,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
 
               Padding(
-                padding: const EdgeInsets.only(bottom: 120),
+                padding: const EdgeInsets.only(bottom: AppLayout.actionBottomInset),
                 child: Column(
                   children: [
                     GestureDetector(

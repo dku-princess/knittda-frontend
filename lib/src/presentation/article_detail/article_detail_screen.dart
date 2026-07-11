@@ -236,7 +236,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
           }
 
           return ListView.separated(
-            padding: const EdgeInsets.only(bottom: 50, right: AppSpacing.space20, left: AppSpacing.space20),
+            padding: const EdgeInsets.only(bottom: AppLayout.contentBottomInset, right: AppLayout.screenPaddingH, left: AppLayout.screenPaddingH),
             separatorBuilder: (context, index) {
               if (index == 0) {
                 return const SizedBox(height: AppSpacing.space20);

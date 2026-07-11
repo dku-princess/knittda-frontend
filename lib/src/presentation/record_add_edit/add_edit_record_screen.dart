@@ -245,7 +245,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
               left: AppSpacing.space20,
               right: AppSpacing.space20,
               top: AppSpacing.space20,
-              bottom: 50,
+              bottom: AppLayout.contentBottomInset,
             ),
 
             children: [
