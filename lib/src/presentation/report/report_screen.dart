@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gal/gal.dart';
@@ -100,18 +101,12 @@ class _ReportScreenState extends State<ReportScreen> {
       final granted = await Gal.requestAccess(toAlbum: true);
       if (!granted) {
         if (!mounted) return false;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('사진 접근 권한이 없어 저장할 수 없어요. 설정에서 권한을 허용해 주세요.'),
-          ),
-        );
+        KnittdaSnackBar.show(context, '사진 접근 권한이 없어 저장할 수 없어요. 설정에서 권한을 허용해 주세요.', tone: KnittdaSnackTone.error);
       }
       return granted;
     } catch (e) {
       if (!mounted) return false;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('권한 확인 중 오류가 발생했어요: $e')));
+      KnittdaSnackBar.show(context, '권한 확인 중 오류가 발생했어요: $e', tone: KnittdaSnackTone.error);
       return false;
     }
   }
@@ -149,23 +144,17 @@ class _ReportScreenState extends State<ReportScreen> {
       final bytes = await _capture();
       if (bytes == null) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('이미지 캡처에 실패했어요. 잠시 후 다시 시도해 주세요.')),
-        );
+        KnittdaSnackBar.show(context, '이미지 캡처에 실패했어요. 잠시 후 다시 시도해 주세요.', tone: KnittdaSnackTone.error);
         return;
       }
 
       await Gal.putImageBytes(bytes, album: 'KnittingReport');
 
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('갤러리에 저장되었습니다!')));
+      KnittdaSnackBar.show(context, '갤러리에 저장되었습니다!', tone: KnittdaSnackTone.success);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('저장 중 오류가 발생했어요: $e')));
+      KnittdaSnackBar.show(context, '저장 중 오류가 발생했어요: $e', tone: KnittdaSnackTone.error);
     }
   }
 
@@ -178,9 +167,7 @@ class _ReportScreenState extends State<ReportScreen> {
       final bytes = await _capture();
       if (bytes == null) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('이미지 캡처에 실패했어요. 잠시 후 다시 시도해 주세요.')),
-        );
+        KnittdaSnackBar.show(context, '이미지 캡처에 실패했어요. 잠시 후 다시 시도해 주세요.', tone: KnittdaSnackTone.error);
         return;
       }
 
@@ -199,9 +186,7 @@ class _ReportScreenState extends State<ReportScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('공유 중 오류가 발생했어요: $e')));
+      KnittdaSnackBar.show(context, '공유 중 오류가 발생했어요: $e', tone: KnittdaSnackTone.error);
     }
   }
 

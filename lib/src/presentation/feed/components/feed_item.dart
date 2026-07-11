@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/domain/model/feed.dart';
@@ -36,29 +37,14 @@ class FeedItem extends StatelessWidget {
             children: [
               //프로필 사진
               ClipOval(
-                child:
-                    (feed.profileImageUrl == null ||
-                        feed.profileImageUrl!.isEmpty)
-                    ? Container(
-                        width: 40,
-                        height: 40,
-                        color: AppColors.grey200,
-                        child: Icon(Icons.person, color: AppColors.grey400),
-                      )
-                    : Image.network(
-                        feed.profileImageUrl!,
-                        width: 40,
-                        height: 40,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            width: 40,
-                            height: 40,
-                            color: AppColors.grey200,
-                            child: Icon(Icons.person, color: AppColors.grey400),
-                          );
-                        },
-                      ),
+                child: KnittdaNetworkImage(
+                  url: feed.profileImageUrl,
+                  width: 40,
+                  height: 40,
+                  placeholderIcon: Icons.person,
+                  iconSize: AppIconSize.base,
+                  showLoading: false,
+                ),
               ),
 
               const SizedBox(width: AppSpacing.space12),
@@ -142,28 +128,9 @@ class _FeedImages extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppRadius.card),
           child: AspectRatio(
             aspectRatio: 4 / 3,
-            child: Image.network(
-              images.first.imageUrl,
-              fit: BoxFit.cover,
-
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return const Center(
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                );
-              },
-
-              errorBuilder: (context, exception, stackTrace) {
-                return Container(
-                  color: AppColors.grey200,
-                  alignment: Alignment.center,
-                  child: const Icon(
-                    Icons.broken_image,
-                    color: AppColors.grey400,
-                    size: AppIconSize.xl,
-                  ),
-                );
-              },
+            child: KnittdaNetworkImage(
+              url: images.first.imageUrl,
+              placeholderIcon: Icons.broken_image,
             ),
           ),
         ),
@@ -185,28 +152,9 @@ class _FeedImages extends StatelessWidget {
               padding: const EdgeInsets.only(right: AppSpacing.space8),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadius.card),
-                child: Image.network(
-                  images[index].imageUrl,
-                  fit: BoxFit.cover,
-
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return const Center(
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    );
-                  },
-
-                  errorBuilder: (context, exception, stackTrace) {
-                    return Container(
-                      color: AppColors.grey200,
-                      alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.broken_image,
-                        color: AppColors.grey400,
-                        size: AppIconSize.xl,
-                      ),
-                    );
-                  },
+                child: KnittdaNetworkImage(
+                  url: images[index].imageUrl,
+                  placeholderIcon: Icons.broken_image,
                 ),
               ),
             ),

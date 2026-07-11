@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/domain/model/article/article.dart';
 import 'package:knittda/src/core/theme/theme.dart';
@@ -18,26 +19,14 @@ class ArticleCardLarge extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            if (imageUrl != null)
-              Image.network(
-                imageUrl!,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: AppColors.grey100,
-                    child: const Icon(
-                      Icons.image_not_supported,
-                      color: AppColors.grey400,
-                      size: 36,
-                    ),
-                  );
-                },
-              )
-            else
-              Container(
-                color: AppColors.grey100,
-                child: const Icon(Icons.image, color: AppColors.grey400, size: 36),
-              ),
+            KnittdaNetworkImage(
+              url: imageUrl,
+              fit: BoxFit.cover,
+              backgroundColor: AppColors.grey100,
+              placeholderIcon: Icons.image_not_supported,
+              iconSize: 36,
+              showLoading: false,
+            ),
 
             Positioned.fill(
               child: DecoratedBox(

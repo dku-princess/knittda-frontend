@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
 import 'package:knittda/src/domain/model/project_previews.dart';
 import 'package:knittda/src/core/theme/theme.dart';
 
@@ -35,31 +36,11 @@ class ProjectPreviewsItem extends StatelessWidget {
               child: Container(
                 color: AppColors.grey200,
                 alignment: Alignment.center,
-                child: imageUrl != null
-                    ? Image.network(
-                        imageUrl,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return CircularProgressIndicator(strokeWidth: 2);
-                        },
-
-                        errorBuilder: (context, exception, stackTrace) {
-                          return const Icon(
-                            Icons.broken_image,
-                            color: AppColors.grey400,
-                            size: AppIconSize.xl,
-                          );
-                        },
-                      )
-                    : const Icon(
-                        Icons.image_outlined,
-                        size: AppIconSize.xl,
-                        color: AppColors.grey400,
-                      ),
+                child: KnittdaNetworkImage(
+                  url: imageUrl,
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
               ),
             ),
 

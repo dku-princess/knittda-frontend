@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
 import 'package:knittda/src/domain/model/article/qa_section.dart';
 import 'package:knittda/src/core/theme/theme.dart';
 
@@ -27,22 +28,13 @@ class GalleryWidget extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppRadius.button),
-              child: Image.network(
-                getAssetUrl(items[index].directusFilesId),
+              child: KnittdaNetworkImage(
+                url: getAssetUrl(items[index].directusFilesId),
                 height: 200,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  height: 200,
-                  width: 160,
-                  color: AppColors.grey100,
-                  child: const Center(
-                    child: Icon(
-                      Icons.image_not_supported_outlined,
-                      color: AppColors.grey400,
-                      size: AppIconSize.base,
-                    ),
-                  ),
-                ),
+                backgroundColor: AppColors.grey100,
+                placeholderIcon: Icons.image_not_supported_outlined,
+                iconSize: AppIconSize.base,
+                showLoading: false,
               ),
             ),
           );

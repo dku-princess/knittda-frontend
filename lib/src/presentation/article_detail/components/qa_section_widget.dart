@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/markdown_utils.dart';
@@ -81,22 +82,13 @@ class QaSectionWidget extends StatelessWidget {
                           qaSection.qaItemBlock[i].imageRatio == 'portrait_3_4'
                           ? 3 / 4
                           : 4 / 3,
-                      child: Image.network(
-                        getAssetUrl(qaSection.qaItemBlock[i].image!),
-                        fit: BoxFit.cover,
+                      child: KnittdaNetworkImage(
+                        url: getAssetUrl(qaSection.qaItemBlock[i].image!),
                         width: double.infinity,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: AppColors.grey100,
-                            child: const Center(
-                              child: Icon(
-                                Icons.image_not_supported_outlined,
-                                color: AppColors.grey400,
-                                size: AppIconSize.lg,
-                              ),
-                            ),
-                          );
-                        },
+                        backgroundColor: AppColors.grey100,
+                        placeholderIcon: Icons.image_not_supported_outlined,
+                        iconSize: AppIconSize.lg,
+                        showLoading: false,
                       ),
                     ),
                   ),
