@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_button.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/domain/model/project.dart';
 import 'package:knittda/src/domain/model/records.dart';
@@ -239,7 +240,9 @@ class ProjectsScreen extends StatelessWidget {
                   Positioned(
                     bottom: 16,
                     left: 16,
-                    child: ElevatedButton(
+                    child: KnittdaButton(
+                      style: KnittdaButtonStyle.secondary,
+                      label: '주간 리포트 확인',
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -256,13 +259,6 @@ class ProjectsScreen extends StatelessWidget {
                           ),
                         );
                       },
-                      style: ElevatedButton.styleFrom(
-                        side: BorderSide(color: PRIMARY_COLOR),
-                      ),
-                      child: Text(
-                        '주간 리포트 확인',
-                        style: TextStyle(color: PRIMARY_COLOR),
-                      ),
                     ),
                   ),
               ],

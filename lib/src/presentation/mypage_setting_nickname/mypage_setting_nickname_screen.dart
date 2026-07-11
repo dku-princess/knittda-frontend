@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_button.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_event.dart';
 import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_view_model.dart';
@@ -65,7 +66,8 @@ class _MypageSettingNicknameScreenState
           title: '닉네임 설정',
           actions: [
             //저장버튼
-            TextButton(
+            KnittdaButton(
+              label: '저장',
               onPressed: isLoading
                   ? null
                   : () {
@@ -78,14 +80,6 @@ class _MypageSettingNicknameScreenState
                         SettingNickname(nickname),
                       );
                     },
-              style: TextButton.styleFrom(
-                backgroundColor: PRIMARY_COLOR,
-                foregroundColor: AppColors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.card),
-                ),
-              ),
-              child: const Text('저장', style: TextStyle(fontSize: AppFontSize.lg)),
             ),
             const SizedBox(width: AppSpacing.space8),
           ],

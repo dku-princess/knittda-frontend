@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_button.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/domain/model/images.dart';
@@ -230,16 +231,9 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
             title: widget.record != null ? '기록 수정' : '기록 추가',
             actions: [
               //저장버튼
-              TextButton(
+              KnittdaButton(
+                label: '저장',
                 onPressed: state.isLoading ? null : _saveRecord,
-                style: TextButton.styleFrom(
-                  backgroundColor: PRIMARY_COLOR,
-                  foregroundColor: AppColors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.card),
-                  ),
-                ),
-                child: const Text('저장', style: TextStyle(fontSize: AppFontSize.lg)),
               ),
               const SizedBox(width: AppSpacing.space8),
             ],
