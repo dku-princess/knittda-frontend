@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_button.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
@@ -200,16 +201,9 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
             title: widget.project != null ? '작품 수정' : '작품 추가',
             actions: [
               //저장버튼
-              TextButton(
+              KnittdaButton(
+                label: '저장',
                 onPressed: viewModel.state.isLoading ? null : _saveProject,
-                style: TextButton.styleFrom(
-                  backgroundColor: PRIMARY_COLOR,
-                  foregroundColor: AppColors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.card),
-                  ),
-                ),
-                child: const Text('저장', style: TextStyle(fontSize: AppFontSize.lg)),
               ),
               const SizedBox(width: AppSpacing.space8),
             ],
