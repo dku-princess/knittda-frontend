@@ -163,7 +163,7 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
 
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.space20,
+                      horizontal: AppLayout.screenPaddingH,
                       vertical: AppSpacing.space20,
                     ),
                     child: Column(

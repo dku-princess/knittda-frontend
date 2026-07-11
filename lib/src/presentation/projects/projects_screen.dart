@@ -112,7 +112,7 @@ class ProjectsScreen extends StatelessWidget {
                       child: state.projects.isEmpty
                           ? const KnittdaEmptyState(message: '작품이 없습니다')
                           : ListView.separated(
-                              padding: const EdgeInsets.only(bottom: 80),
+                              padding: const EdgeInsets.only(bottom: AppLayout.fabBottomInset),
                               separatorBuilder: (context, index) =>
                                   const SizedBox(height: AppSpacing.space12),
                               itemBuilder: (context, index) {
