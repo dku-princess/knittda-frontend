@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_button.dart';
+import 'package:knittda/src/presentation/widgets/knittda_input.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_event.dart';
 import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_view_model.dart';
@@ -99,18 +100,10 @@ class _MypageSettingNicknameScreenState
                 ),
               ),
               SizedBox(height: AppSpacing.space12),
-              TextField(
-                maxLines: 1,
-                maxLength: 8,
+              KnittdaInput(
                 controller: _nicknameController,
+                maxLength: 8,
                 enabled: !isLoading,
-                decoration: InputDecoration(
-                  isDense: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.button),
-                  ),
-                ),
-                style: const TextStyle(fontSize: AppFontSize.md),
               ),
             ],
           ),

@@ -5,6 +5,7 @@ import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_button.dart';
 import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
+import 'package:knittda/src/presentation/widgets/knittda_input.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
@@ -307,17 +308,9 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                     ),
                   ),
                   SizedBox(height: AppSpacing.space12),
-                  TextField(
+                  KnittdaInput(
                     controller: _nicknameController,
-                    maxLines: 1,
                     maxLength: 15,
-                    decoration: InputDecoration(
-                      isDense: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppRadius.button),
-                      ),
-                    ),
-                    style: const TextStyle(fontSize: AppFontSize.md),
                   ),
 
                   Text(
@@ -385,17 +378,9 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                 ),
               ),
               SizedBox(height: AppSpacing.space12),
-              TextField(
+              KnittdaInput(
                 controller: _designTitleController,
-                maxLines: 1,
                 maxLength: 15,
-                decoration: InputDecoration(
-                  isDense: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.button),
-                  ),
-                ),
-                style: const TextStyle(fontSize: AppFontSize.md),
               ),
               SizedBox(height: AppSpacing.space16),
 
@@ -408,18 +393,9 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                 ),
               ),
               SizedBox(height: AppSpacing.space12),
-              TextField(
+              KnittdaInput(
                 controller: _designerController,
-                maxLines: 1,
                 maxLength: 15,
-                decoration: InputDecoration(
-                  isDense: true,
-                  fillColor: AppColors.grey100,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.button),
-                  ),
-                ),
-                style: const TextStyle(fontSize: AppFontSize.md),
               ),
               SizedBox(height: AppSpacing.space16),
 
@@ -432,17 +408,9 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                 ),
               ),
               SizedBox(height: AppSpacing.space12),
-              TextField(
+              KnittdaInput(
                 controller: _yarnInfoController,
-                maxLines: 1,
                 maxLength: 15,
-                decoration: InputDecoration(
-                  isDense: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.button),
-                  ),
-                ),
-                style: const TextStyle(fontSize: AppFontSize.md),
               ),
               SizedBox(height: AppSpacing.space16),
 
@@ -455,17 +423,9 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                 ),
               ),
               SizedBox(height: AppSpacing.space12),
-              TextField(
+              KnittdaInput(
                 controller: _needleInfoController,
-                maxLines: 1,
                 maxLength: 15,
-                decoration: InputDecoration(
-                  isDense: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.button),
-                  ),
-                ),
-                style: const TextStyle(fontSize: AppFontSize.md),
               ),
             ],
           ),

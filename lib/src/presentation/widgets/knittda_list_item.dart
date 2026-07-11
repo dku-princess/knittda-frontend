@@ -5,8 +5,8 @@ import 'package:knittda/src/core/theme/theme.dart';
 ///
 /// 썸네일 + 제목([AppTextStyles.body]) + 부제([AppTextStyles.caption]) + 우측 chevron.
 /// 높이/패딩/하단 divider를 디자인 토큰으로 구성.
-class KnittListItem extends StatelessWidget {
-  const KnittListItem({
+class KnittdaListItem extends StatelessWidget {
+  const KnittdaListItem({
     super.key,
     required this.title,
     this.subtitle,

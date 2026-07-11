@@ -5,8 +5,8 @@ import 'package:knittda/src/core/theme/theme.dart';
 ///
 /// 표면·테두리·모서리·그림자·패딩을 디자인 토큰으로 구성한다.
 /// Figma `Card` 컴포넌트와 대응한다.
-class KnittCard extends StatelessWidget {
-  const KnittCard({
+class KnittdaCard extends StatelessWidget {
+  const KnittdaCard({
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(AppSpacing.space16),

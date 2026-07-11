@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_button.dart';
+import 'package:knittda/src/presentation/widgets/knittda_input.dart';
 import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/constants/color.dart';
@@ -415,21 +416,12 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
               ],
               const SizedBox(height: AppSpacing.space20),
               //기록 추가
-              TextField(
+              KnittdaInput(
+                controller: _commentController,
+                hintText: "내용을 입력해주세요",
                 maxLines: 8,
                 maxLength: 300,
                 keyboardType: TextInputType.multiline,
-                controller: _commentController,
-                decoration: InputDecoration(
-                  hintText: "내용을 입력해주세요",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.button),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.space16,
-                    vertical: AppSpacing.space12,
-                  ),
-                ),
               ),
               const SizedBox(height: 50),
             ],
