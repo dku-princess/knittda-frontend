@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
-import 'package:knittda/src/presentation/widgets/knittda_tag.dart';
+import 'package:knittda/src/presentation/widgets/knittda_chip.dart';
 import 'package:knittda/src/domain/model/article/article.dart';
 import 'package:knittda/src/core/theme/theme.dart';
 
@@ -47,7 +47,7 @@ class ArticleCardSmall extends StatelessWidget {
                 if (article.category.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.space4),
-                    child: KnittdaTag(label: article.category),
+                    child: KnittdaChip(label: article.category),
                   ),
 
                 if (article.title.isNotEmpty)

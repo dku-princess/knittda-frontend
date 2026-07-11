@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_tag.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_button.dart';
 import 'package:knittda/src/presentation/widgets/knittda_input.dart';
@@ -275,26 +276,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                         }
                       });
                     },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.space8,
-                        vertical: AppSpacing.space8,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppRadius.pill),
-                        border: Border.all(
-                          color: isSelected ? PRIMARY_COLOR : AppColors.grey400,
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        tag,
-                        style: TextStyle(
-                          fontSize: AppFontSize.sm,
-                          color: isSelected ? PRIMARY_COLOR : AppColors.grey400,
-                        ),
-                      ),
-                    ),
+                    child: KnittdaTag(label: tag, selected: isSelected),
                   );
                 }).toList(),
               ),

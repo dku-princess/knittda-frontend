@@ -231,37 +231,58 @@ Stack(children: [
 
 ---
 
-## KnittdaTag
+## KnittdaTag (뜨개 태그, 2상태)
 
 `lib/src/presentation/widgets/knittda_tag.dart` · Figma `Tag`
-(Style=Outline/Filled/Grey)
+(State=Selected/Disabled)
 
-메타데이터 라벨. `caption` 크기 고정, **스타일 3종 + 모서리 반경 선택**.
+**선택 상태를 갖는** 뜨개 라벨. 아웃라인 2상태 고정, `caption` 크기,
+radius `AppRadius.tag`(**6**). 인터랙션(토글)은 상위에서 `GestureDetector`로 감싼다.
 
 ### 옵션
 
 | 옵션 | 타입 | 기본값 | 설명 |
 |---|---|---|---|
 | `label` | `String` | (필수) | 태그 문구. |
-| `style` | `KnittdaTagStyle` | `outline` | `outline`(투명+primary 테두리) / `filled`(primary 채움+흰 글씨) / `grey`(surfaceAlt 배경+textSecondary). |
-| `radius` | `double` | `AppRadius.chip`(4) | 모서리 반경. |
+| `selected` | `bool` | `true` | 선택 상태. `true`=primary 테두리+글씨 / `false`=grey400 테두리+글씨(미선택). |
 
-### 사용되는 곳 (5)
+### 사용되는 곳 (4)
 
-| 위치 | 스타일 | radius |
+| 위치 | 용도 | selected |
 |---|---|---|
-| `record_details_screen`·`record_item` (뜨개 태그) | outline | **6** |
-| `feed_item` (뜨개 태그) | outline | **6** |
-| `article_card_small` (카테고리) | outline | 4 |
-| `announcement_list_item` (카테고리) | outline | 4 |
+| `record_details_screen`·`record_item` (`_RecordTags`) | 선택된 태그 나열 | 기본 `true` |
+| `feed_item` (`_FeedTags`) | 선택된 태그 나열 | 기본 `true` |
+| `add_edit_record_screen` (태그 피커) | 선택/해제 토글 | `isSelected` |
 
-> **모서리 규칙**: 뜨개 태그(`_RecordTags`/`_FeedTags`)는 `radius: 6`, 카테고리
-> 태그는 기본 `chip`(4). **스타일**은 현재 전부 outline이며, filled/grey는
-> 필요 시 `style:`로 선택.
->
-> **통일 이력**: `_RecordTags`/`_FeedTags`(아웃라인 pill)·`_CategoryTag`
-> (filled primaryLight)·`KnittdaBadge`(filled primary) → KnittdaTag로 통일.
-> `KnittdaBadge`·`knittda_badge.dart` 삭제, Figma `Badge`→`Tag`(3 style). `radius/chip` 6→4.
+> **모서리 규칙**: 뜨개 태그는 `AppRadius.tag`(6). 카테고리는 `KnittdaChip`(radius 4).
+> 표시 전용(이미 선택된 태그 나열)은 기본 `selected: true`, 피커는 `selected: isSelected`.
+
+## KnittdaChip (카테고리, 3스타일)
+
+`lib/src/presentation/widgets/knittda_chip.dart` · Figma `Chip`
+(Style=Outline/Filled/Grey)
+
+**표시 전용** 카테고리 라벨(인터랙션 없음). `caption` 크기 고정,
+radius `AppRadius.chip`(**4**), **스타일 3종**.
+
+### 옵션
+
+| 옵션 | 타입 | 기본값 | 설명 |
+|---|---|---|---|
+| `label` | `String` | (필수) | 칩 문구. |
+| `style` | `KnittdaChipStyle` | `outline` | `outline`(투명+primary 테두리) / `filled`(primary 채움+흰 글씨) / `grey`(surfaceAlt 배경+textSecondary). |
+
+### 사용되는 곳 (2)
+
+| 위치 | 스타일 |
+|---|---|
+| `article_card_small` (카테고리) | outline |
+| `announcement_list_item` (카테고리) | outline |
+
+> **분리 이력**: 기존 `KnittdaTag`(3스타일+radius 옵션)이 성격이 다른 두 용도를
+> 겸하던 것을, 선택형 뜨개 태그(`KnittdaTag`, 2상태) + 표시용 카테고리
+> (`KnittdaChip`, 3스타일)로 분리. `AppRadius.tag`(6) 신설. Figma `Tag`→`Chip` rename,
+> 새 `Tag`(State=Selected/Disabled) 신설.
 
 ## KnittdaCard · KnittdaListItem (정의됨)
 

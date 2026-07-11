@@ -265,7 +265,7 @@ class _RecordTags extends StatelessWidget {
       spacing: 8, // 태그 사이 가로 간격
       runSpacing: 10, // 줄 바뀔 때 세로 간격
       children: tags.map((tag) {
-        return KnittdaTag(label: tag, radius: 6);
+        return KnittdaTag(label: tag);
       }).toList(),
     );
   }
