@@ -13,7 +13,11 @@ class DeviceIdStorage {
     final existing = await _storage.read(_key);
     if (existing != null && existing.isNotEmpty) return existing;
     final newId = _generateUuidV4();
-    await _storage.write(_key, newId);
+    try {
+      await _storage.write(_key, newId);
+    } catch (_) {
+      // 저장 실패해도 앱 부팅을 막지 않음
+    }
     return newId;
   }
 
