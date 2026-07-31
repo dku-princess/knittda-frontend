@@ -251,7 +251,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                             await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                settings: const RouteSettings(name: 'record_detail'),
+                                settings: const RouteSettings(
+                                  name: 'record_detail',
+                                ),
                                 builder: (context) => ChangeNotifierProvider(
                                   create: (context) => RecordDetailsViewModel(
                                     GetRecordUseCase(
@@ -367,11 +369,11 @@ class _ProjectHeader extends StatelessWidget {
                       );
                     },
                   )
-                : Container(
+                : Image.asset(
+                    'assets/image/default_1.png',
+                    fit: BoxFit.cover,
                     width: 115,
                     height: 115,
-                    color: Colors.grey[300],
-                    child: Icon(Icons.image_outlined, color: Colors.grey),
                   ),
           ),
 

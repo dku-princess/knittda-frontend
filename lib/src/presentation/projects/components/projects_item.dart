@@ -50,11 +50,11 @@ class ProjectsItem extends StatelessWidget {
                           );
                         },
                       )
-                    : Container(
+                    : Image.asset(
+                        'assets/image/default_1.png',
+                        fit: BoxFit.cover,
                         width: 60,
                         height: 60,
-                        color: Colors.grey[300],
-                        child: Icon(Icons.image_outlined, color: Colors.grey),
                       ),
               ),
 

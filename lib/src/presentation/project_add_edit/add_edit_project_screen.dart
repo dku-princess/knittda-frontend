@@ -142,12 +142,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
     final designTitle = _designTitleController.text.trim();
     final designer = _designerController.text.trim();
 
-    final hasImage = _image != null || (_thumbnailUrl?.isNotEmpty ?? false);
-
-    if (nickname.isEmpty ||
-        _goalDate == null ||
-        _startDate == null ||
-        !hasImage) {
+    if (nickname.isEmpty || _goalDate == null || _startDate == null) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('기본 정보를 모두 입력해주세요.')));
@@ -259,35 +254,34 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                   GestureDetector(
                     onTap: _pickImage,
                     child:
-                    (_image != null ||
-                        (_thumbnailUrl?.isNotEmpty ?? false))
+                        (_image != null || (_thumbnailUrl?.isNotEmpty ?? false))
                         ? ImageBox(
-                      localImageUrl: _image?.path,
-                      networkImageUrl: _thumbnailUrl,
-                      width: 115,
-                      height: 115,
-                      onRemove: () {
-                        setState(() {
-                          _image = null;
-                          _thumbnailUrl = null;
-                        });
-                      },
-                    )
+                            localImageUrl: _image?.path,
+                            networkImageUrl: _thumbnailUrl,
+                            width: 115,
+                            height: 115,
+                            onRemove: () {
+                              setState(() {
+                                _image = null;
+                                _thumbnailUrl = null;
+                              });
+                            },
+                          )
                         : Container(
-                      width: 115,
-                      height: 115,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.add,
-                          color: Colors.white,
-                          size: 40,
-                        ),
-                      ),
-                    ),
+                            width: 115,
+                            height: 115,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                Icons.add,
+                                color: Colors.white,
+                                size: 40,
+                              ),
+                            ),
+                          ),
                   ),
                   SizedBox(height: 14),
 

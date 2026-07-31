@@ -52,10 +52,11 @@ class ArticlePreviewItem extends StatelessWidget {
                           );
                         },
                       )
-                    : const Icon(
-                        Icons.image_outlined,
-                        size: 40,
-                        color: Colors.grey,
+                    : Image.asset(
+                        'assets/image/default_1.png',
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
                       ),
               ),
             ),
