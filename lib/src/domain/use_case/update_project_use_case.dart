@@ -8,8 +8,16 @@ class UpdateProjectUseCase {
 
   UpdateProjectUseCase(this._repository);
 
-  Future<Result<Project>> call({required Project project, required XFile? file}) async {
-    final result = await _repository.putProject(project: project, file: file);
+  Future<Result<Project>> call({
+    required Project project,
+    required XFile? file,
+    int? defaultThumbnailId,
+  }) async {
+    final result = await _repository.putProject(
+      project: project,
+      file: file,
+      defaultThumbnailId: defaultThumbnailId,
+    );
 
     return switch (result) {
       // Success(:final data) => Result.success(data),
