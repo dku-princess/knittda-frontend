@@ -7,6 +7,7 @@ import 'package:knittda/src/domain/repository/record_api_repository.dart';
 import 'package:knittda/src/domain/repository/report_api_repository.dart';
 import 'package:knittda/src/domain/use_case/add_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_default_thumbnails_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_my_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_report_use_case.dart';
@@ -61,6 +62,9 @@ class ProjectsScreen extends StatelessWidget {
                 create: (context) => AddEditProjectViewModel(
                   AddProjectUseCase(context.read<ProjectApiRepository>()),
                   UpdateProjectUseCase(context.read<ProjectApiRepository>()),
+                  GetDefaultThumbnailsUseCase(
+                    context.read<ProjectApiRepository>(),
+                  ),
                 ),
                 child: const AddEditProjectScreen(),
               ),
@@ -135,7 +139,9 @@ class ProjectsScreen extends StatelessWidget {
                                       await Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          settings: const RouteSettings(name: 'project_detail'),
+                                          settings: const RouteSettings(
+                                            name: 'project_detail',
+                                          ),
                                           builder: (context) => ChangeNotifierProvider(
                                             create: (context) =>
                                                 ProjectDetailsViewModel(
@@ -187,7 +193,9 @@ class ProjectsScreen extends StatelessWidget {
                                       final addRecord = await Navigator.push<Records>(
                                         context,
                                         MaterialPageRoute(
-                                          settings: const RouteSettings(name: 'record_add'),
+                                          settings: const RouteSettings(
+                                            name: 'record_add',
+                                          ),
                                           builder: (context) =>
                                               ChangeNotifierProvider(
                                                 create: (context) =>

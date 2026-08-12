@@ -8,6 +8,7 @@ import 'package:knittda/src/domain/model/records.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/repository/record_api_repository.dart';
 import 'package:knittda/src/domain/use_case/add_project_use_case.dart';
+import 'package:knittda/src/domain/use_case/get_default_thumbnails_use_case.dart';
 import 'package:knittda/src/domain/use_case/update_project_use_case.dart';
 import 'package:knittda/src/domain/use_case/add_record_use_case.dart';
 import 'package:knittda/src/domain/use_case/delete_record_use_case.dart';
@@ -114,6 +115,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                                 context.read<ProjectApiRepository>(),
                               ),
                               UpdateProjectUseCase(
+                                context.read<ProjectApiRepository>(),
+                              ),
+                              GetDefaultThumbnailsUseCase(
                                 context.read<ProjectApiRepository>(),
                               ),
                             ),
@@ -251,7 +255,9 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                             await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                settings: const RouteSettings(name: 'record_detail'),
+                                settings: const RouteSettings(
+                                  name: 'record_detail',
+                                ),
                                 builder: (context) => ChangeNotifierProvider(
                                   create: (context) => RecordDetailsViewModel(
                                     GetRecordUseCase(
