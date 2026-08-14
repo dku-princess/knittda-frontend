@@ -201,14 +201,25 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
     }
 
     try {
-      final List<XFile> files = await _picker.pickMultiImage(
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 80,
-        // limit은 2 이상만 허용(ArgumentError). 남은 슬롯이 1이면 생략하고
-        // 아래 take(remaining)으로 방어한다.
-        limit: remaining >= 2 ? remaining : null,
-      );
+      // pickMultiImage의 limit은 2 이상만 허용(ArgumentError)하고, limit을 생략하면
+      // 무제한 선택이 되어버린다. 따라서 남은 슬롯이 1이면 단일 피커로 선택을 1장으로 제한한다.
+      final List<XFile> files;
+      if (remaining == 1) {
+        final XFile? file = await _picker.pickImage(
+          source: ImageSource.gallery,
+          maxWidth: 1024,
+          maxHeight: 1024,
+          imageQuality: 80,
+        );
+        files = file == null ? const [] : [file];
+      } else {
+        files = await _picker.pickMultiImage(
+          maxWidth: 1024,
+          maxHeight: 1024,
+          imageQuality: 80,
+          limit: remaining,
+        );
+      }
 
       if (files.isEmpty) return;
       if (!mounted) return;
