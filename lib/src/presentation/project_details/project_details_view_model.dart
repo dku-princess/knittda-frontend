@@ -24,6 +24,7 @@ class ProjectDetailsViewModel extends ChangeNotifier {
   final UpdateProjectUseCase _updateProjectUseCase;
   final GetRecordsProjectsUseCase _getRecordsProjectsUseCase;
   final GetUserUseCase _getUserUseCase;
+  final int projectId;
   StreamSubscription? _streamSubscription;
 
   ProjectDetailsState _state = ProjectDetailsState(
@@ -55,7 +56,7 @@ class ProjectDetailsViewModel extends ChangeNotifier {
     this._updateProjectUseCase,
     this._getRecordsProjectsUseCase,
     this._getUserUseCase, {
-    required int projectId,
+    required this.projectId,
     Project? project,
     this.source = 'unknown',
   }) {
@@ -115,7 +116,7 @@ class ProjectDetailsViewModel extends ChangeNotifier {
           );
         case Error():
           _eventController.add(
-            ProjectDetailsUiEvent.showSnackBar("작품을 불러오지 못했어요. 다시 시도해 주세요."),
+            ProjectDetailsUiEvent.showSnackBar("작품 정보를 불러오지 못했습니다. 다시 시도해주세요."),
           );
       }
 

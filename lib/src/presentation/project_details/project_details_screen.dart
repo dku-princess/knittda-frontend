@@ -209,7 +209,12 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                     ),
                   )
                 : state.project == null
-                ? const Center(child: Text("작품 정보를 불러오지 못했어요."))
+                ? const Center(
+                    child: Text(
+                      "작품 정보를 불러오지 못했습니다.",
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  )
                 : NestedScrollView(
                     controller: _scrollController,
                     headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -281,6 +286,13 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                                     },
                                   ),
                                 ),
+                              ),
+                            );
+                          },
+                          onRetry: () {
+                            viewModel.onEvent(
+                              ProjectDetailsEvent.loadRecords(
+                                projectId: viewModel.projectId,
                               ),
                             );
                           },
@@ -449,8 +461,13 @@ class _InfoTap extends StatelessWidget {
 class _DiaryTap extends StatelessWidget {
   final DiaryTapState state;
   final Future<void> Function(Records record) onRecordTap;
+  final VoidCallback onRetry;
 
-  const _DiaryTap({required this.state, required this.onRecordTap});
+  const _DiaryTap({
+    required this.state,
+    required this.onRecordTap,
+    required this.onRetry,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -459,7 +476,10 @@ class _DiaryTap extends StatelessWidget {
     }
 
     if (state.errorMessage != null) {
-      return Center(child: Text(state.errorMessage!));
+      return _ErrorRetry(
+        message: "기록을 불러오지 못했습니다.\n다시 시도해주세요.",
+        onRetry: onRetry,
+      );
     }
 
     if (state.records.isEmpty) {
@@ -664,6 +684,40 @@ class _ReportTap extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ErrorRetry extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const _ErrorRetry({required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
+          ),
+          const SizedBox(height: 16),
+          OutlinedButton(
+            onPressed: onRetry,
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: PRIMARY_COLOR),
+            ),
+            child: const Text(
+              '다시 시도',
+              style: TextStyle(color: PRIMARY_COLOR),
+            ),
           ),
         ],
       ),
