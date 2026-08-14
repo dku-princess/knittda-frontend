@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/data/data_sources/analytics_service.dart';
 import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_user_use_case.dart';
@@ -33,7 +34,19 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.white, //하단 네비게이션 바 배경을 하얗게 설정
         ),
 
-        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFF2F2F7)),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Color(0xFFF2F2F7),
+        ).copyWith(primary: PRIMARY_COLOR), //핵심 색상을 디자인 시스템 녹색으로 지정
+        //로딩 스피너 기본색을 녹색으로 (색 미지정 위젯이 남색으로 표시되던 문제 해결)
+        progressIndicatorTheme: const ProgressIndicatorThemeData(
+          color: PRIMARY_COLOR,
+        ),
+        //탭 라벨/인디케이터 기본색을 녹색으로
+        tabBarTheme: const TabBarThemeData(
+          labelColor: PRIMARY_COLOR,
+          unselectedLabelColor: Colors.grey,
+          indicatorColor: PRIMARY_COLOR,
+        ),
       ),
 
       home: ChangeNotifierProvider(
