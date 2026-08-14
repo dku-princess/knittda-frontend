@@ -50,10 +50,14 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
 
   final _commentController = TextEditingController();
 
+  static const int _maxImages = 5;
+
   final ImagePicker _picker = ImagePicker();
   final List<Images> _existingImages = [];
   final List<int> _deleteImageIds = [];
   final List<XFile> _newImages = [];
+
+  int get _imageCount => _existingImages.length + _newImages.length;
 
   @override
   void initState() {
@@ -96,8 +100,34 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
     super.dispose();
   }
 
+  Future<void> _showMaxImagesAlert() async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text('사진 첨부 제한'),
+          content: Text('사진은 최대 $_maxImages장까지 추가할 수 있어요.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              style: TextButton.styleFrom(foregroundColor: PRIMARY_COLOR),
+              child: const Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _showImageSourceSheet(BuildContext context) async {
-    if (_existingImages.length + _newImages.length >= 5) return;
+    if (_imageCount >= _maxImages) {
+      await _showMaxImagesAlert();
+      return;
+    }
 
     showModalBottomSheet(
       context: context,
@@ -122,7 +152,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                 title: const Text('갤러리에서 선택'),
                 onTap: () async {
                   Navigator.pop(context);
-                  await _pickImage(ImageSource.gallery);
+                  await _pickImagesFromGallery();
                 },
               ),
             ],
@@ -133,7 +163,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    if (_existingImages.length + _newImages.length >= 5) return;
+    if (_imageCount >= _maxImages) return;
 
     try {
       final XFile? file = await _picker.pickImage(
@@ -147,7 +177,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
       if (!mounted) return;
 
       setState(() {
-        if (_existingImages.length + _newImages.length < 5) {
+        if (_imageCount < _maxImages) {
           _newImages.add(file);
         }
       });
@@ -155,6 +185,42 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('카메라를 사용할 수 없습니다. 설정에서 권한을 확인해 주세요.')),
+      );
+    }
+  }
+
+  Future<void> _pickImagesFromGallery() async {
+    final remaining = _maxImages - _imageCount;
+    if (remaining <= 0) {
+      await _showMaxImagesAlert();
+      return;
+    }
+
+    try {
+      final List<XFile> files = await _picker.pickMultiImage(
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 80,
+        limit: remaining,
+      );
+
+      if (files.isEmpty) return;
+      if (!mounted) return;
+
+      // limit이 플랫폼/OS 버전에 따라 강제되지 않을 수 있어, 남은 슬롯만큼만 앞에서부터 담는다.
+      final toAdd = files.take(remaining).toList();
+
+      setState(() {
+        _newImages.addAll(toAdd);
+      });
+
+      if (files.length > remaining) {
+        await _showMaxImagesAlert();
+      }
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('사진을 불러올 수 없습니다. 설정에서 권한을 확인해 주세요.')),
       );
     }
   }
@@ -420,25 +486,24 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                       );
                     }),
 
-                    if (_existingImages.length + _newImages.length < 5)
-                      GestureDetector(
-                        onTap: () => _showImageSourceSheet(context),
-                        child: Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.grey),
-                          ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.add,
-                              size: 32,
-                              color: Colors.grey,
-                            ),
+                    GestureDetector(
+                      onTap: () => _showImageSourceSheet(context),
+                      child: Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.add,
+                            size: 32,
+                            color: Colors.grey,
                           ),
                         ),
                       ),
+                    ),
                   ],
                 ),
               ),
