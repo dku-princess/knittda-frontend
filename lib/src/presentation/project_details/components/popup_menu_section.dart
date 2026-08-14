@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 class PopupMenuSection extends StatelessWidget {
   final VoidCallback onEdit;
   final Future<void> Function() onDelete;
+  final String deleteDialogTitle;
+  final String deleteDialogContent;
   const PopupMenuSection({
     super.key,
     required this.onEdit,
     required this.onDelete,
+    this.deleteDialogTitle = '작품 삭제',
+    this.deleteDialogContent = '정말 삭제하시겠습니까?',
   });
 
   @override
@@ -35,8 +39,8 @@ class PopupMenuSection extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('작품 삭제'),
-          content: const Text('정말 삭제하시겠습니까?'),
+          title: Text(deleteDialogTitle),
+          content: Text(deleteDialogContent),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
