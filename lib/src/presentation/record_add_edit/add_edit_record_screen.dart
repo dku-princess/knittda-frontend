@@ -53,11 +53,13 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
   static const int _maxImages = 5;
 
   final ImagePicker _picker = ImagePicker();
-  final List<Images> _existingImages = [];
+  // 기존 서버 이미지와 새로 추가한 로컬 이미지를 한 리스트에서 순서 관리(드래그 재정렬 지원).
+  final List<_RecordImage> _images = [];
   final List<int> _deleteImageIds = [];
-  final List<XFile> _newImages = [];
 
-  int get _imageCount => _existingImages.length + _newImages.length;
+  int get _imageCount => _images.length;
+  List<XFile> get _newFiles =>
+      _images.where((e) => !e.isExisting).map((e) => e.file!).toList();
 
   @override
   void initState() {
@@ -71,7 +73,9 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
 
       _commentController.text = record.comment ?? '';
 
-      _existingImages.addAll(record.images ?? []);
+      _images.addAll(
+        (record.images ?? []).map((image) => _RecordImage.existing(image)),
+      );
     }
 
     Future.microtask(() {
@@ -178,7 +182,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
 
       setState(() {
         if (_imageCount < _maxImages) {
-          _newImages.add(file);
+          _images.add(_RecordImage.newFile(file));
         }
       });
     } catch(_) {
@@ -211,7 +215,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
       final toAdd = files.take(remaining).toList();
 
       setState(() {
-        _newImages.addAll(toAdd);
+        _images.addAll(toAdd.map((f) => _RecordImage.newFile(f)));
       });
 
       if (files.length > remaining) {
@@ -257,7 +261,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
             comment: comment,
             question: viewModel.state.questionState.question,
           ),
-          files: _newImages,
+          files: _newFiles,
         ),
       );
     } else {
@@ -271,7 +275,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
             comment: comment,
           ),
           deleteImageIds: _deleteImageIds,
-          files: _newImages,
+          files: _newFiles,
         ),
       );
     }
@@ -448,62 +452,52 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
               const SizedBox(height: 20),
               SizedBox(
                 height: 100,
-                child: ListView(
+                // 이미지를 길게 눌러 드래그하면 순서를 재정렬할 수 있다.
+                child: ReorderableListView(
                   scrollDirection: Axis.horizontal,
-                  children: [
-                    ..._existingImages.map((image) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 10.0),
-                        child: ImageBox(
-                          localImageUrl: null,
-                          networkImageUrl: image.imageUrl,
-                          width: 100,
-                          height: 100,
-                          onRemove: () {
-                            setState(() {
-                              _existingImages.remove(image);
-                              _deleteImageIds.add(image.id);
-                            });
-                          },
-                        ),
-                      );
-                    }),
-
-                    ..._newImages.map((file) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 10.0),
-                        child: ImageBox(
-                          localImageUrl: file.path,
-                          networkImageUrl: null,
-                          width: 100,
-                          height: 100,
-                          onRemove: () {
-                            setState(() {
-                              _newImages.remove(file);
-                            });
-                          },
-                        ),
-                      );
-                    }),
-
-                    GestureDetector(
-                      onTap: () => _showImageSourceSheet(context),
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.grey),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.add,
-                            size: 32,
-                            color: Colors.grey,
-                          ),
-                        ),
+                  buildDefaultDragHandles: true,
+                  onReorder: (oldIndex, newIndex) {
+                    setState(() {
+                      if (newIndex > oldIndex) newIndex -= 1;
+                      final item = _images.removeAt(oldIndex);
+                      _images.insert(newIndex, item);
+                    });
+                  },
+                  footer: GestureDetector(
+                    onTap: () => _showImageSourceSheet(context),
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey),
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.add, size: 32, color: Colors.grey),
                       ),
                     ),
+                  ),
+                  children: [
+                    for (final img in _images)
+                      Padding(
+                        key: img.key,
+                        padding: const EdgeInsets.only(right: 10.0),
+                        child: ImageBox(
+                          localImageUrl: img.isExisting ? null : img.file!.path,
+                          networkImageUrl:
+                              img.isExisting ? img.existing!.imageUrl : null,
+                          width: 100,
+                          height: 100,
+                          onRemove: () {
+                            setState(() {
+                              if (img.isExisting) {
+                                _deleteImageIds.add(img.existing!.id);
+                              }
+                              _images.remove(img);
+                            });
+                          },
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -560,4 +554,21 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
       ],
     );
   }
+}
+
+/// 기록 첨부 이미지 한 개를 나타낸다. 기존 서버 이미지(existing)와
+/// 새로 추가한 로컬 파일(newFile)을 한 리스트에서 함께 순서 관리하기 위한 래퍼.
+class _RecordImage {
+  final Images? existing;
+  final XFile? file;
+
+  _RecordImage.existing(this.existing) : file = null;
+
+  _RecordImage.newFile(this.file) : existing = null;
+
+  bool get isExisting => existing != null;
+
+  Key get key => isExisting
+      ? ValueKey('existing_${existing!.id}')
+      : ValueKey('new_${file!.path}');
 }
