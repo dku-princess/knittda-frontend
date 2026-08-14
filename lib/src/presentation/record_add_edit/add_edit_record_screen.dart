@@ -205,7 +205,9 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
         maxWidth: 1024,
         maxHeight: 1024,
         imageQuality: 80,
-        limit: remaining,
+        // limit은 2 이상만 허용(ArgumentError). 남은 슬롯이 1이면 생략하고
+        // 아래 take(remaining)으로 방어한다.
+        limit: remaining >= 2 ? remaining : null,
       );
 
       if (files.isEmpty) return;
@@ -227,6 +229,23 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
         const SnackBar(content: Text('사진을 불러올 수 없습니다. 설정에서 권한을 확인해 주세요.')),
       );
     }
+  }
+
+  Widget _buildImageBox(_RecordImage img) {
+    return ImageBox(
+      localImageUrl: img.isExisting ? null : img.file!.path,
+      networkImageUrl: img.isExisting ? img.existing!.imageUrl : null,
+      width: 100,
+      height: 100,
+      onRemove: () {
+        setState(() {
+          if (img.isExisting) {
+            _deleteImageIds.add(img.existing!.id);
+          }
+          _images.remove(img);
+        });
+      },
+    );
   }
 
   Future<void> _saveRecord() async {
@@ -463,6 +482,13 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                       _images.insert(newIndex, item);
                     });
                   },
+                  // 드래그 중 프록시는 우측 여백을 제외한 이미지(100x100)만 렌더한다.
+                  proxyDecorator: (child, index, animation) {
+                    return Material(
+                      color: Colors.transparent,
+                      child: _buildImageBox(_images[index]),
+                    );
+                  },
                   footer: GestureDetector(
                     onTap: () => _showImageSourceSheet(context),
                     child: Container(
@@ -482,21 +508,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                       Padding(
                         key: img.key,
                         padding: const EdgeInsets.only(right: 10.0),
-                        child: ImageBox(
-                          localImageUrl: img.isExisting ? null : img.file!.path,
-                          networkImageUrl:
-                              img.isExisting ? img.existing!.imageUrl : null,
-                          width: 100,
-                          height: 100,
-                          onRemove: () {
-                            setState(() {
-                              if (img.isExisting) {
-                                _deleteImageIds.add(img.existing!.id);
-                              }
-                              _images.remove(img);
-                            });
-                          },
-                        ),
+                        child: _buildImageBox(img),
                       ),
                   ],
                 ),
