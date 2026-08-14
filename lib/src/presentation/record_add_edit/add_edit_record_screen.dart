@@ -500,20 +500,23 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                       child: _buildImageBox(_images[index]),
                     );
                   },
-                  footer: GestureDetector(
-                    onTap: () => _showImageSourceSheet(context),
-                    child: Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey),
-                      ),
-                      child: const Center(
-                        child: Icon(Icons.add, size: 32, color: Colors.grey),
-                      ),
-                    ),
-                  ),
+                  // 최대 장수를 채우면 추가(+) 버튼을 노출하지 않는다.
+                  footer: _imageCount >= _maxImages
+                      ? null
+                      : GestureDetector(
+                          onTap: () => _showImageSourceSheet(context),
+                          child: Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.grey),
+                            ),
+                            child: const Center(
+                              child: Icon(Icons.add, size: 32, color: Colors.grey),
+                            ),
+                          ),
+                        ),
                   children: [
                     for (final img in _images)
                       Padding(
