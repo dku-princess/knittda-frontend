@@ -45,11 +45,17 @@ class AddEditRecordViewModel extends ChangeNotifier {
 
   Future<void> onEvent(AddEditRecordEvent event) async {
     switch (event) {
-      case SaveRecord(:final record, :final deleteImageIds, :final files):
+      case SaveRecord(
+          :final record,
+          :final deleteImageIds,
+          :final files,
+          :final imageOrder,
+        ):
         await _saveRecord(
           record: record,
           deleteImageIds: deleteImageIds,
           files: files,
+          imageOrder: imageOrder,
         );
     }
   }
@@ -58,6 +64,7 @@ class AddEditRecordViewModel extends ChangeNotifier {
     required Records record,
     List<int>? deleteImageIds,
     required List<XFile>? files,
+    List<Map<String, dynamic>>? imageOrder,
   }) async {
     if (state.isLoading) {
       return;
@@ -74,6 +81,7 @@ class AddEditRecordViewModel extends ChangeNotifier {
         record: record,
         deleteImageIds: deleteImageIds,
         files: files,
+        imageOrder: imageOrder,
       );
     }
 

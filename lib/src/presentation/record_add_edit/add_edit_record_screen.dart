@@ -61,6 +61,22 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
   List<XFile> get _newFiles =>
       _images.where((e) => !e.isExisting).map((e) => e.file!).toList();
 
+  // 최종 표시 순서 배열. 기존 이미지는 {type:existing,id}, 신규는 {type:new,index}
+  // (index는 _newFiles/업로드 files의 인덱스). 서버가 배열 위치대로 imageOrder를 부여한다.
+  List<Map<String, dynamic>> get _imageOrder {
+    final order = <Map<String, dynamic>>[];
+    var newIndex = 0;
+    for (final img in _images) {
+      if (img.isExisting) {
+        order.add({'type': 'existing', 'id': img.existing!.id});
+      } else {
+        order.add({'type': 'new', 'index': newIndex});
+        newIndex++;
+      }
+    }
+    return order;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -306,6 +322,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
           ),
           deleteImageIds: _deleteImageIds,
           files: _newFiles,
+          imageOrder: _imageOrder,
         ),
       );
     }
