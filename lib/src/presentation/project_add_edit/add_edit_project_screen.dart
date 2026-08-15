@@ -144,13 +144,22 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
 
     final hasImage = _image != null || (_thumbnailUrl?.isNotEmpty ?? false);
 
-    if (nickname.isEmpty ||
-        _goalDate == null ||
-        _startDate == null ||
-        !hasImage) {
+    if (!hasImage) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('기본 정보를 모두 입력해주세요.')));
+      ).showSnackBar(const SnackBar(content: Text('대표 사진을 추가해주세요.')));
+      return;
+    }
+    if (nickname.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('작품 이름을 입력해주세요.')));
+      return;
+    }
+    if (_startDate == null || _goalDate == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('시작일과 목표일을 선택해주세요.')));
       return;
     }
 
