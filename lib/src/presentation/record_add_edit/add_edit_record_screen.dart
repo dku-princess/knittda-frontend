@@ -253,11 +253,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
               //태그 선택
               Text(
                 "오늘 뜨개는 어떠셨어요?",
-                style: TextStyle(
-                  color: AppColors.black,
-                  fontSize: AppFontSize.xl,
-                  fontWeight: AppFontWeight.medium,
-                ),
+                style: AppTextStyles.title,
               ),
               const SizedBox(height: AppSpacing.space20),
               Wrap(
@@ -285,11 +281,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
               //select recordStatus
               Text(
                 "얼마나 떴나요?",
-                style: TextStyle(
-                  color: AppColors.black,
-                  fontSize: AppFontSize.xl,
-                  fontWeight: AppFontWeight.medium,
-                ),
+                style: AppTextStyles.title,
               ),
               const SizedBox(height: AppSpacing.space20),
               SizedBox(
@@ -342,11 +334,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
 
               Text(
                 "사진을 추가해주세요.",
-                style: TextStyle(
-                  color: AppColors.black,
-                  fontSize: AppFontSize.xl,
-                  fontWeight: AppFontWeight.medium,
-                ),
+                style: AppTextStyles.title,
               ),
               const SizedBox(height: AppSpacing.space20),
               SizedBox(
@@ -415,17 +403,13 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
 
               Text(
                 "뜨개 기록을 남겨주세요",
-                style: TextStyle(
-                  color: AppColors.black,
-                  fontSize: AppFontSize.xl,
-                  fontWeight: AppFontWeight.medium,
-                ),
+                style: AppTextStyles.title,
               ),
               const SizedBox(height: AppSpacing.space12),
               if (questionText != null) ...[
                 Text(
                   questionText,
-                  style: const TextStyle(color: AppColors.grey400, fontSize: AppFontSize.md),
+                  style: AppTextStyles.body.copyWith(color: AppColors.grey400),
                 ),
                 const SizedBox(height: AppSpacing.space12),
               ],
