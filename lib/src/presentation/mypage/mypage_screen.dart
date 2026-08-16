@@ -307,7 +307,7 @@ Widget _buildSectionHeader(String title) {
     ),
     child: Text(
       title,
-      style: AppTextStyles.bodyStrong.copyWith(color: AppColors.grey800),
+      style: AppTextStyles.bodyStrong.copyWith(color: AppColors.textSecondary),
     ),
   );
 }
@@ -326,7 +326,7 @@ Widget _buildMenuItem(String title, {required VoidCallback onTap}) {
       ),
       child: Text(
         title,
-        style: AppTextStyles.body.copyWith(color: AppColors.grey800),
+        style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
       ),
     ),
   );

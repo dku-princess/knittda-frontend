@@ -10,6 +10,44 @@
 
 ---
 
+## 색 토큰 사용 규칙 (AppColors)
+
+`lib/src/core/theme/app_colors.dart`. 원시 중립색(`greyNNN`)과 **역할 의미 별칭**
+(`textPrimary`/`textSecondary`/`textHint`/`border`/`surfaceAlt`)이 함께 있다.
+
+> **규칙: 화면·컴포넌트는 역할이 맞는 의미 별칭을 쓴다. 원시 `greyNNN`은
+> 별칭으로 표현되지 않는 용도(특정 채움·아이콘·플레이스홀더 배경 등)에만 쓴다.**
+
+목적: `greyNNN`은 스케일이 조정되면 의미가 딸려 흔들린다. 텍스트·테두리·표면은
+**역할 별칭**을 통해 참조하면 스케일 변경이 의미를 깨지 않는다.
+
+| 역할 | 별칭 | 값 |
+|---|---|---|
+| 본문/제목 텍스트 | `textPrimary` | `black` |
+| 보조 텍스트 | `textSecondary` | `grey800` |
+| 힌트·비활성·플레이스홀더 텍스트 | `textHint` | `grey400` |
+| 테두리 | `border` | `grey200` |
+| muted 표면 | `surfaceAlt` | `grey100` |
+
+### 적용 기준 (역할로 고른다)
+
+- **텍스트 색**: `black`→`textPrimary`, `grey800`→`textSecondary`,
+  `grey400`(힌트/비활성/플레이스홀더)→`textHint`. (Text·마크다운 `p`/`a`·TextSpan)
+- **비(非)텍스트**는 별칭 강제 대상이 아니다: `Border`/`BorderSide`는 역할이
+  테두리면 `border`, 그 외 채움·아이콘·배경(`CircleAvatar` bg, 이미지 플레이스홀더
+  `Container` color, `Icon` color, `BottomNavigationBar` 속성 등)은 원시 `greyNNN` 유지.
+- `caption` 프리셋 기본색이 이미 `textHint`이므로, caption 텍스트에 `grey400`을
+  다시 지정하지 않는다(중복).
+
+### 예외 / 미정 (별칭 없음)
+
+| 원시색 | 상황 | 처리 |
+|---|---|---|
+| `grey600` | "보조 텍스트"로 3곳(projects_item·article_card_small)에 텍스트로 쓰이나 | `textSecondary`(800)/`textHint`(400) 어느 쪽도 아님. **텍스트 3단계(secondary/tertiary/hint) 확정 전까지 원시 `grey600` 유지.** 반복되면 `textTertiary` 별칭 신설 검토. |
+| `grey50` | 배경 틴트 1곳 | 표면 계열. 반복되면 `surfaceTint` 등 검토. |
+
+---
+
 ## 타이포그래피 프리셋 (AppTextStyles)
 
 `lib/src/core/theme/app_typography.dart` (배럴 `theme.dart` export).

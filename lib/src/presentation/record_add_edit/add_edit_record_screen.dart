@@ -409,7 +409,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
               if (questionText != null) ...[
                 Text(
                   questionText,
-                  style: AppTextStyles.body.copyWith(color: AppColors.grey400),
+                  style: AppTextStyles.body.copyWith(color: AppColors.textHint),
                 ),
                 const SizedBox(height: AppSpacing.space12),
               ],

@@ -16,7 +16,7 @@ class AnnouncementListItem extends StatelessWidget {
       children: [
         Text(
           announcement.title ?? '',
-          style: AppTextStyles.bodyStrong.copyWith(color: AppColors.grey800),
+          style: AppTextStyles.bodyStrong.copyWith(color: AppColors.textSecondary),
         ),
         const SizedBox(height: AppSpacing.space8),
 
@@ -31,7 +31,7 @@ class AnnouncementListItem extends StatelessWidget {
                   : '',
               style: const TextStyle(
                 fontSize: AppFontSize.xs,
-                color: AppColors.grey400,
+                color: AppColors.textHint,
                 fontWeight: AppFontWeight.regular,
               ),
             ),

@@ -94,7 +94,7 @@ class ProjectsItem extends StatelessWidget {
                   child: Text(
                     '추가',
                     style: AppTextStyles.bodyStrong.copyWith(
-                      color: AppColors.grey400,
+                      color: AppColors.textHint,
                     ),
                   ),
                 ),

@@ -39,7 +39,7 @@ class OrderSection extends StatelessWidget {
             child: Text(
               '뜨고 있어요',
               style: AppTextStyles.bodyStrong.copyWith(
-                color: isInProgressSelected ? PRIMARY_COLOR : AppColors.grey400,
+                color: isInProgressSelected ? PRIMARY_COLOR : AppColors.textHint,
               ),
             ),
           ),
@@ -63,7 +63,7 @@ class OrderSection extends StatelessWidget {
             child: Text(
               '다 떴어요',
               style: AppTextStyles.bodyStrong.copyWith(
-                color: isDoneSelected ? PRIMARY_COLOR : AppColors.grey400,
+                color: isDoneSelected ? PRIMARY_COLOR : AppColors.textHint,
               ),
             ),
           ),
