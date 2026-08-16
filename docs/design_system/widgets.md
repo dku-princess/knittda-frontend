@@ -10,6 +10,47 @@
 
 ---
 
+## 타이포그래피 프리셋 (AppTextStyles)
+
+`lib/src/core/theme/app_typography.dart` (배럴 `theme.dart` export).
+
+화면의 인라인 `TextStyle(fontSize:…, fontWeight:…)` 조립을 **의미 기반 프리셋**으로
+통합한다. 프리셋은 `height: 1.4`(Figma 디자인 시스템 행간)를 포함하므로,
+프리셋을 쓰면 Figma 렌더와 자동으로 정합된다.
+
+| 프리셋 | 크기 | 굵기 | 용도 |
+|---|---|---|---|
+| `display` | 24 | semibold | 대형 히어로 제목(리포트·아티클 타이틀) |
+| `title` | 20 | semibold | 화면/섹션 제목 |
+| `heading` | 16 | semibold | 소제목·필드 라벨 |
+| `body` | 14 | regular | 본문 기본 |
+| `bodyStrong` | 14 | semibold | 강조 본문·리스트 항목명·버튼 |
+| `caption` | 12 | regular | 보조·힌트·메타(기본색 `textHint`) |
+
+### 사용 규칙
+
+- 크기/굵기/행간은 **프리셋 그대로** 두고, 다른 축(색·decoration)만
+  `.copyWith(color: …)`로 덮는다. **`fontSize`를 copyWith로 다시 지정하지 않는다.**
+- 제목/헤딩의 `medium`(w500)은 **DS 표준인 semibold(w600)로 정규화**한다.
+- `color: black`(=`textPrimary`)·`color: grey400`(=caption 기본 `textHint`)처럼
+  프리셋 기본색과 같으면 `copyWith`를 생략한다.
+- **버튼 등 `foregroundColor` 상속 컨텍스트**에서는 프리셋의 기본색이 상속색을
+  덮어쓰므로, 원래 색(예: `white`)을 `copyWith(color:)`로 **명시**한다.
+
+### 사용하지 않은 경우 (예외)
+
+| 위치 | 값 | 이유 |
+|---|---|---|
+| `record_details`·`article_card_large`·`knittda_empty_state` | `lg`(16) regular | 16px **regular 본문**. 프리셋에 16-regular가 없고, `heading`(16 semibold)로 바꾸면 굵어짐 → `AppFontSize.lg` 토큰 유지. |
+| `announcement_list_item` 날짜 | `xs`(10) | 프리셋 최소가 `caption`(12) → `AppFontSize.xs` 토큰 유지. |
+| `report_screen` 히어로 제목 | `display` + **bold**(w700) | 강조 히어로. `display.copyWith(fontWeight: bold)`로 굵기만 덮음. |
+| `Text.rich` 자식 `TextSpan` | 색만 | 부모 프리셋에서 크기·굵기·행간 상속, 색만 재정의(정상). |
+
+> 남은 예외 4곳은 raw 숫자가 아니라 **`AppFontSize` 토큰**을 쓰므로 DS 규약 위반이
+> 아니다. 16-regular·10px 프리셋이 반복 필요해지면 프리셋 신설을 검토한다.
+
+---
+
 ## 레이아웃 토큰 (AppLayout)
 
 `lib/src/core/theme/app_layout.dart` (배럴 `theme.dart` export).
