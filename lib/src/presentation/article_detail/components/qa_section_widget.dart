@@ -27,7 +27,7 @@ class QaSectionWidget extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: AppSpacing.space20),
             child: Text(
               qaSection.title,
-              style: TextStyle(fontSize: AppFontSize.xl, fontWeight: AppFontWeight.semibold),
+              style: AppTextStyles.title,
             ),
           ),
         ],
@@ -39,7 +39,7 @@ class QaSectionWidget extends StatelessWidget {
             child: MarkdownBody(
               data: normalizeMarkdown(qaSection.description!),
               styleSheet: MarkdownStyleSheet(
-                p: const TextStyle(fontSize: AppFontSize.md, color: AppColors.textSecondary),
+                p: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
               ),
             ),
           ),
@@ -67,7 +67,7 @@ class QaSectionWidget extends StatelessWidget {
                     child: MarkdownBody(
                       data: normalizeMarkdown(qaSection.qaItemBlock[i].answer),
                       styleSheet: MarkdownStyleSheet(
-                        p: const TextStyle(fontSize: AppFontSize.md),
+                        p: AppTextStyles.body,
                       ),
                     ),
                   ),
@@ -127,11 +127,7 @@ class _QuestionBubble extends StatelessWidget {
       ),
       child: Text(
         question,
-        style: const TextStyle(
-          fontSize: AppFontSize.lg,
-          fontWeight: AppFontWeight.semibold,
-          color: PRIMARY_COLOR,
-        ),
+        style: AppTextStyles.heading.copyWith(color: PRIMARY_COLOR),
       ),
     );
   }
