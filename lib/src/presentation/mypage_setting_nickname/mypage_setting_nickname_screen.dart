@@ -93,11 +93,7 @@ class _MypageSettingNicknameScreenState
             children: [
               Text(
                 "닉네임",
-                style: TextStyle(
-                  color: AppColors.black,
-                  fontSize: AppFontSize.lg,
-                  fontWeight: AppFontWeight.medium,
-                ),
+                style: AppTextStyles.heading,
               ),
               SizedBox(height: AppSpacing.space12),
               KnittdaInput(

@@ -57,7 +57,7 @@ class FeedItem extends StatelessWidget {
                     //이름, 프로젝트 이름
                     Text(
                       '${feed.userName ?? '알 수 없음'}  |  ${feed.projectName}',
-                      style: const TextStyle(fontSize: AppFontSize.md),
+                      style: AppTextStyles.body,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -66,7 +66,7 @@ class FeedItem extends StatelessWidget {
                     //시간
                     Text(
                       '$dateStr $timeStr',
-                      style: const TextStyle(fontSize: AppFontSize.sm, color: AppColors.grey400),
+                      style: AppTextStyles.caption,
                     ),
                     const SizedBox(height: AppSpacing.space12),
 
@@ -89,7 +89,7 @@ class FeedItem extends StatelessWidget {
                         feed.record.comment!.isNotEmpty) ...[
                       Text(
                         feed.record.comment!,
-                        style: const TextStyle(fontSize: AppFontSize.md),
+                        style: AppTextStyles.body,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                       ),

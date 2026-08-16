@@ -54,17 +54,14 @@ class ProjectPreviewsItem extends StatelessWidget {
                   children: [
                     Text(
                       projectPreviews.projectName,
-                      style: const TextStyle(
-                        fontSize: AppFontSize.md,
-                        fontWeight: AppFontWeight.medium,
-                      ),
+                      style: AppTextStyles.bodyStrong,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: AppSpacing.space8),
                     Text(
                       projectPreviews.userName ?? '알 수 없음',
-                      style: const TextStyle(fontSize: AppFontSize.sm, color: AppColors.grey400),
+                      style: AppTextStyles.caption,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

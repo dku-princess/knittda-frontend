@@ -33,7 +33,7 @@ class PurchaseLinkSectionWidget extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: AppSpacing.space20),
             child: Text(
               purchaseLinkSection.title,
-              style: TextStyle(fontSize: AppFontSize.xl, fontWeight: AppFontWeight.semibold),
+              style: AppTextStyles.title,
             ),
           ),
         ],
@@ -45,7 +45,7 @@ class PurchaseLinkSectionWidget extends StatelessWidget {
             child: MarkdownBody(
               data: normalizeMarkdown(purchaseLinkSection.description!),
               styleSheet: MarkdownStyleSheet(
-                p: const TextStyle(fontSize: AppFontSize.md, color: AppColors.textSecondary),
+                p: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
               ),
             ),
           ),
@@ -93,10 +93,7 @@ class PurchaseLinkSectionWidget extends StatelessWidget {
                 ),
                 child: Text(
                   purchaseLinkSection.buttonText,
-                  style: const TextStyle(
-                    fontSize: AppFontSize.md,
-                    fontWeight: AppFontWeight.semibold,
-                  ),
+                  style: AppTextStyles.bodyStrong.copyWith(color: AppColors.white),
                   textAlign: TextAlign.center,
                 ),
               ),

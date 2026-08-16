@@ -102,7 +102,7 @@ class _ImageViewerState extends State<ImageViewer> {
                     ),
                     child: Text(
                       '${_currentIndex + 1}/${widget.images.length}',
-                      style: const TextStyle(color: AppColors.white, fontSize: AppFontSize.md),
+                      style: AppTextStyles.body.copyWith(color: AppColors.white),
                     ),
                   ),
                 ),

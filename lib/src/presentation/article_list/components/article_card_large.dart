@@ -71,11 +71,7 @@ class ArticleCardLarge extends StatelessWidget {
                   if (article.title.isNotEmpty)
                     Text(
                       article.title,
-                      style: const TextStyle(
-                        fontSize: AppFontSize.xl,
-                        fontWeight: AppFontWeight.semibold,
-                        color: AppColors.white,
-                      ),
+                      style: AppTextStyles.title.copyWith(color: AppColors.white),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
