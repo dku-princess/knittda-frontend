@@ -222,6 +222,19 @@ class _RecordImagesState extends State<_RecordImages> {
   }
 
   @override
+  void didUpdateWidget(covariant _RecordImages oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 편집 등으로 이미지 목록이 바뀌면 인덱스/페이지를 처음으로 리셋
+    // (기존 인덱스가 새 개수를 벗어나 인디케이터가 어긋나거나 범위를 벗어나는 문제 방지)
+    if (oldWidget.images != widget.images) {
+      _currentIndex = 0;
+      if (_pageController.hasClients) {
+        _pageController.jumpToPage(0);
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
