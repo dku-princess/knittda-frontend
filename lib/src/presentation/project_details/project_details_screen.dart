@@ -404,7 +404,7 @@ class _InfoTap extends StatelessWidget {
         Expanded(
           child: Text(
             isEmpty ? '-' : value,
-            style: AppTextStyles.heading.copyWith(color: isEmpty ? AppColors.grey400 : null),
+            style: AppTextStyles.heading.copyWith(color: isEmpty ? AppColors.textHint : null),
           ),
         ),
       ],

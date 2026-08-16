@@ -328,7 +328,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                             style: AppTextStyles.body.copyWith(
                               color: (_startDate != null && _goalDate != null)
                                   ? AppColors.black
-                                  : AppColors.grey400,
+                                  : AppColors.textHint,
                             ),
                           ),
                         ],
