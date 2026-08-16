@@ -369,7 +369,7 @@ class _ProjectHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(project.nickname, style: TextStyle(fontSize: AppFontSize.xl)),
+                Text(project.nickname, style: AppTextStyles.title),
 
                 SizedBox(height: AppSpacing.space16),
 
@@ -399,12 +399,12 @@ class _InfoTap extends StatelessWidget {
       children: [
         SizedBox(
           width: 100,
-          child: Text(label, style: const TextStyle(fontSize: AppFontSize.lg)),
+          child: Text(label, style: AppTextStyles.heading),
         ),
         Expanded(
           child: Text(
             isEmpty ? '-' : value,
-            style: TextStyle(fontSize: AppFontSize.lg, color: isEmpty ? AppColors.grey400 : null),
+            style: AppTextStyles.heading.copyWith(color: isEmpty ? AppColors.grey400 : null),
           ),
         ),
       ],
@@ -551,7 +551,7 @@ class _ReportTap extends StatelessWidget {
         children: [
           Text(
             "나의 진행도",
-            style: TextStyle(fontSize: AppFontSize.xl, fontWeight: AppFontWeight.medium),
+            style: AppTextStyles.title,
           ),
 
           SizedBox(height: AppSpacing.space24),
@@ -587,8 +587,7 @@ class _ReportTap extends StatelessWidget {
                         Center(
                           child: Text(
                             '$percent%',
-                            style: const TextStyle(
-                              fontSize: AppFontSize.xl,
+                            style: AppTextStyles.title.copyWith(
                               fontWeight: AppFontWeight.bold,
                               color: PRIMARY_COLOR,
                             ),
@@ -615,36 +614,26 @@ class _ReportTap extends StatelessWidget {
                     children: [
                       Text(
                         dPlusText,
-                        style: const TextStyle(
-                          fontSize: AppFontSize.xl,
-                          fontWeight: AppFontWeight.medium,
+                        style: AppTextStyles.title.copyWith(
                           color: PRIMARY_COLOR,
                         ),
                       ),
                       Text(
                         startDateText,
-                        style: const TextStyle(
-                          fontSize: AppFontSize.sm,
-                          color: AppColors.grey400,
-                        ),
+                        style: AppTextStyles.caption,
                       ),
 
                       const SizedBox(height: AppSpacing.space12),
 
                       Text(
                         dMinusText,
-                        style: const TextStyle(
-                          fontSize: AppFontSize.xl,
-                          fontWeight: AppFontWeight.medium,
+                        style: AppTextStyles.title.copyWith(
                           color: PRIMARY_COLOR,
                         ),
                       ),
                       Text(
                         goalDateText,
-                        style: const TextStyle(
-                          fontSize: AppFontSize.sm,
-                          color: AppColors.grey400,
-                        ),
+                        style: AppTextStyles.caption,
                       ),
                     ],
                   ),
