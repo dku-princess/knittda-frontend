@@ -270,8 +270,7 @@ class _ReportScreenState extends State<ReportScreen> {
                       Text.rich(
                         textAlign: TextAlign.center,
                         TextSpan(
-                          style: TextStyle(
-                            fontSize: AppFontSize.display,
+                          style: AppTextStyles.display.copyWith(
                             fontWeight: AppFontWeight.bold,
                           ),
                           children: [
@@ -309,10 +308,7 @@ class _ReportScreenState extends State<ReportScreen> {
                               children: [
                                 Text(
                                   "주간 기록",
-                                  style: TextStyle(
-                                    fontSize: AppFontSize.md,
-                                    fontWeight: AppFontWeight.semibold,
-                                  ),
+                                  style: AppTextStyles.bodyStrong,
                                 ),
                                 Text('${report.weeklyKnittingCount}개'),
                               ],
@@ -324,10 +320,7 @@ class _ReportScreenState extends State<ReportScreen> {
                               children: [
                                 Text(
                                   "남긴 사진",
-                                  style: TextStyle(
-                                    fontSize: AppFontSize.md,
-                                    fontWeight: AppFontWeight.semibold,
-                                  ),
+                                  style: AppTextStyles.bodyStrong,
                                 ),
                                 Text('${report.weeklyKnittingPhotoCount}개'),
                               ],
@@ -339,10 +332,7 @@ class _ReportScreenState extends State<ReportScreen> {
                               children: [
                                 Text(
                                   "주간 진행도",
-                                  style: TextStyle(
-                                    fontSize: AppFontSize.md,
-                                    fontWeight: AppFontWeight.semibold,
-                                  ),
+                                  style: AppTextStyles.bodyStrong,
                                 ),
                                 Text('${report.weeklyProgress}%'),
                               ],
@@ -357,10 +347,7 @@ class _ReportScreenState extends State<ReportScreen> {
                         SizedBox(height: AppSpacing.space16),
                         Text(
                           "이번 주 가장 많이 사용한 태그",
-                          style: TextStyle(
-                            fontSize: AppFontSize.lg,
-                            fontWeight: AppFontWeight.semibold,
-                          ),
+                          style: AppTextStyles.heading,
                         ),
                         SizedBox(height: AppSpacing.space16),
                         Wrap(
@@ -380,10 +367,9 @@ class _ReportScreenState extends State<ReportScreen> {
                                   ),
                                   child: Text(
                                     tag,
-                                    style: TextStyle(
+                                    style: AppTextStyles.caption.copyWith(
                                       color: PRIMARY_COLOR,
                                       fontWeight: AppFontWeight.medium,
-                                      fontSize: AppFontSize.sm,
                                     ),
                                   ),
                                 ),
@@ -398,10 +384,7 @@ class _ReportScreenState extends State<ReportScreen> {
                         SizedBox(height: AppSpacing.space16),
                         Text(
                           "이번 주 해시태그 요약",
-                          style: TextStyle(
-                            fontSize: AppFontSize.lg,
-                            fontWeight: AppFontWeight.semibold,
-                          ),
+                          style: AppTextStyles.heading,
                         ),
                         SizedBox(height: AppSpacing.space16),
                         Padding(
@@ -414,15 +397,12 @@ class _ReportScreenState extends State<ReportScreen> {
                                 children: [
                                   Text(
                                     '${tag.hashtag}',
-                                    style: const TextStyle(
-                                      fontSize: AppFontSize.lg,
-                                      fontWeight: AppFontWeight.semibold,
-                                    ),
+                                    style: AppTextStyles.heading,
                                   ),
                                   const SizedBox(height: AppSpacing.space4),
                                   Text(
                                     '${tag.description}',
-                                    style: TextStyle(fontSize: AppFontSize.md),
+                                    style: AppTextStyles.body,
                                   ),
                                   const SizedBox(height: AppSpacing.space16),
                                 ],
