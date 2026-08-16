@@ -172,10 +172,7 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
                         //날짜 시간
                         Text(
                           '$dateStr $timeStr',
-                          style: const TextStyle(
-                            fontSize: AppFontSize.sm,
-                            color: AppColors.grey400,
-                          ),
+                          style: AppTextStyles.caption,
                         ),
                         const SizedBox(height: AppSpacing.space20),
 

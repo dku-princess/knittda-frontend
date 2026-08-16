@@ -52,17 +52,14 @@ class ArticlePreviewItem extends StatelessWidget {
                   children: [
                     Text(
                       articlePreview.projectName,
-                      style: const TextStyle(
-                        fontSize: AppFontSize.md,
-                        fontWeight: AppFontWeight.medium,
-                      ),
+                      style: AppTextStyles.bodyStrong,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: AppSpacing.space8),
                     Text(
                       articlePreview.nickname ?? '알 수 없음',
-                      style: const TextStyle(fontSize: AppFontSize.sm, color: AppColors.grey400),
+                      style: AppTextStyles.caption,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

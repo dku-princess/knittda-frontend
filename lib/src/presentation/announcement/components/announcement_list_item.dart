@@ -16,11 +16,7 @@ class AnnouncementListItem extends StatelessWidget {
       children: [
         Text(
           announcement.title ?? '',
-          style: const TextStyle(
-            fontSize: AppFontSize.md,
-            color: AppColors.grey800,
-            fontWeight: AppFontWeight.semibold,
-          ),
+          style: AppTextStyles.bodyStrong.copyWith(color: AppColors.grey800),
         ),
         const SizedBox(height: AppSpacing.space8),
 

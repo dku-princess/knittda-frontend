@@ -53,11 +53,7 @@ class ArticleCardSmall extends StatelessWidget {
                 if (article.title.isNotEmpty)
                   Text(
                     article.title,
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: AppFontSize.lg,
-                      fontWeight: AppFontWeight.semibold,
-                    ),
+                    style: AppTextStyles.heading,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -65,7 +61,7 @@ class ArticleCardSmall extends StatelessWidget {
                 if (article.interviewee.isNotEmpty) ...[
                   Text(
                     article.interviewee,
-                    style: TextStyle(fontSize: AppFontSize.md, color: AppColors.grey600),
+                    style: AppTextStyles.body.copyWith(color: AppColors.grey600),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
