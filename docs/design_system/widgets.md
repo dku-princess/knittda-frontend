@@ -306,7 +306,7 @@ Stack(children: [
 
 | 위치 | 이유 |
 |---|---|
-| `feed_search_screen` 검색 필드 | **prefix(검색)·suffix(X) 아이콘** 동반. KnittdaInput은 아이콘 미지원. 아이콘 슬롯 추가 시 흡수 가능. |
+| `feed_search_screen` 검색 필드 | **별개 패턴**이라 유지. KnittdaInput(흰 채움·가시 테두리 3상태·카운터/에러, 폼 필드)과 달리 이쪽은 `grey100` 채움·**테두리 없음**(`BorderSide.none`)·prefix(검색)/suffix(X) 아이콘·앱바 내 `onSubmitted` 검색바다. 아이콘 슬롯만 더해도 채움·테두리·동작이 달라 흡수되지 않는다. **검색바는 앱 전체 1곳뿐(YAGNI)** — 2번째 검색 필드가 생기면 그때 `KnittdaSearchField`(grey 채움·borderless·검색/클리어 아이콘) 신설을 검토한다. |
 
 ---
 
