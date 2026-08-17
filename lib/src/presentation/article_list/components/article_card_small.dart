@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
+import 'package:knittda/src/presentation/widgets/knittda_chip.dart';
 import 'package:knittda/src/domain/model/article/article.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class ArticleCardSmall extends StatelessWidget {
   final Article article;
@@ -18,34 +21,19 @@ class ArticleCardSmall extends StatelessWidget {
     return Row(
       children: [
         Padding(
-          padding: const EdgeInsets.only(right: 12),
+          padding: const EdgeInsets.only(right: AppSpacing.space12),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(AppRadius.card),
             child: SizedBox(
               width: imageWidth,
               height: imageWidth * 10 / 9,
-              child: imageUrl != null
-                  ? Image.network(
-                      imageUrl!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey[200],
-                          child: const Icon(
-                            Icons.image_not_supported,
-                            color: Colors.grey,
-                          ),
-                        );
-                      },
-                    )
-                  : Container(
-                      alignment: Alignment.center,
-                      color: Colors.grey[200],
-                      child: const Text(
-                        '이미지 준비 중',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
+              child: KnittdaNetworkImage(
+                url: imageUrl,
+                backgroundColor: AppColors.grey100,
+                placeholderIcon: Icons.image_not_supported,
+                iconSize: AppIconSize.base,
+                showLoading: false,
+              ),
             ),
           ),
         ),
@@ -58,18 +46,14 @@ class ArticleCardSmall extends StatelessWidget {
               children: [
                 if (article.category.isNotEmpty)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: _CategoryTag(category: article.category),
+                    padding: const EdgeInsets.only(bottom: AppSpacing.space4),
+                    child: KnittdaChip(label: article.category),
                   ),
 
                 if (article.title.isNotEmpty)
                   Text(
                     article.title,
-                    style: const TextStyle(
-                      color: Colors.black87,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: AppTextStyles.heading,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -77,7 +61,7 @@ class ArticleCardSmall extends StatelessWidget {
                 if (article.interviewee.isNotEmpty) ...[
                   Text(
                     article.interviewee,
-                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    style: AppTextStyles.body.copyWith(color: AppColors.grey600),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -91,23 +75,3 @@ class ArticleCardSmall extends StatelessWidget {
   }
 }
 
-class _CategoryTag extends StatelessWidget {
-  final String category;
-
-  const _CategoryTag({required this.category});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: Color(0xFF7ECDC0),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Text(
-        category,
-        style: const TextStyle(fontSize: 12, color: Colors.white),
-      ),
-    );
-  }
-}
