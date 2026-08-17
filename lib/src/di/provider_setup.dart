@@ -6,7 +6,9 @@ import 'package:knittda/src/data/data_sources/analytics_service.dart';
 import 'package:knittda/src/data/data_sources/announcement_api.dart';
 import 'package:knittda/src/data/data_sources/article_api.dart';
 import 'package:knittda/src/data/data_sources/authentication_api.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:knittda/src/data/data_sources/banner_local_storage.dart';
+import 'package:knittda/src/data/data_sources/device_id_storage.dart';
 import 'package:knittda/src/data/data_sources/directus_dio.dart';
 import 'package:knittda/src/data/data_sources/feed_api.dart';
 import 'package:knittda/src/data/data_sources/in_app_banner_api.dart';
@@ -72,6 +74,19 @@ Future<List<SingleChildWidget>> getProviders() async {
   final packageInfo = await PackageInfo.fromPlatform();
   final appVersion = packageInfo.version;
 
+  final deviceId = await DeviceIdStorage(secureStorage).getOrCreate();
+  final osVersion = await _osVersion();
+  final staticHeaders = <String, String>{
+    'X-App-Version': appVersion,
+    'X-App-Build': packageInfo.buildNumber,
+    'X-App-Channel': AppConfig.appChannel,
+    'X-Platform': Platform.isIOS ? 'ios' : 'android',
+    'X-OS-Version': osVersion,
+    'X-Device-Id': deviceId,
+    'X-Timezone': _timezoneOffset(),
+    'Accept-Language': _acceptLanguage(),
+  };
+
   // GA4 공통 파라미터(environment / app_version) 1회 설정
   AnalyticsService.instance.configure(
     environment: AppConfig.appChannel,
@@ -87,7 +102,8 @@ Future<List<SingleChildWidget>> getProviders() async {
           receiveTimeout: const Duration(seconds: 30),
           sendTimeout: const Duration(seconds: 30),
         ));
-        dio.interceptors.add(AuthInterceptor(tokenStorage));
+        dio.interceptors
+            .add(AuthInterceptor(tokenStorage, staticHeaders: staticHeaders));
         dio.addSentry();
         return dio;
       },
@@ -100,7 +116,8 @@ Future<List<SingleChildWidget>> getProviders() async {
           receiveTimeout: const Duration(seconds: 30),
           sendTimeout: const Duration(seconds: 30),
         ));
-        dio.interceptors.add(AuthInterceptor(tokenStorage));
+        dio.interceptors
+            .add(AuthInterceptor(tokenStorage, staticHeaders: staticHeaders));
         dio.addSentry();
         return DirectusDio(dio);
       },
@@ -211,4 +228,33 @@ Future<List<SingleChildWidget>> getProviders() async {
       update: (context, api, _) => AnnouncementRepositoryImpl(api),
     ),
   ];
+}
+
+String _acceptLanguage() {
+  final raw = Platform.localeName;
+  final base = raw.split('.').first;
+  return base.replaceAll('_', '-');
+}
+
+String _timezoneOffset() {
+  final offset = DateTime.now().timeZoneOffset;
+  final sign = offset.isNegative ? '-' : '+';
+  final h = offset.inHours.abs().toString().padLeft(2, '0');
+  final m = (offset.inMinutes.abs() % 60).toString().padLeft(2, '0');
+  return '$sign$h:$m';
+}
+
+Future<String> _osVersion() async {
+  final info = DeviceInfoPlugin();
+  try {
+    if (Platform.isIOS) {
+      final ios = await info.iosInfo;
+      return 'iOS ${ios.systemVersion}';
+    }
+    if (Platform.isAndroid) {
+      final android = await info.androidInfo;
+      return 'Android ${android.version.release}';
+    }
+  } catch (_) {}
+  return Platform.operatingSystemVersion;
 }

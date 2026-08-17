@@ -1,6 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
+import 'package:knittda/src/presentation/widgets/knittda_tag.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/domain/model/images.dart';
@@ -16,6 +20,7 @@ import 'package:knittda/src/presentation/record_details/record_details_ui_event.
 import 'package:knittda/src/presentation/record_details/record_details_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_viewer.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 import '../../domain/use_case/update_record_use_case.dart';
 
@@ -45,8 +50,7 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
               case DeletedRecord():
                 Navigator.pop(context);
               case ShowSnackBar(:final message):
-                final snackBar = SnackBar(content: Text(message));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                KnittdaSnackBar.show(context, message);
             }
           }
         });
@@ -77,8 +81,7 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          scrolledUnderElevation: 0,
+        appBar: KnittdaAppBar(
           actions: [
             if (!state.isLoading && state.isOwner)
               PopupMenuSection(
@@ -136,7 +139,7 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("기록 불러오는 중..."),
-                    SizedBox(height: 24),
+                    SizedBox(height: AppSpacing.space24),
                     CircularProgressIndicator(),
                   ],
                 ),
@@ -162,8 +165,8 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
 
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 20,
+                      horizontal: AppLayout.screenPaddingH,
+                      vertical: AppSpacing.space20,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,26 +175,26 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
                         Text(
                           '$dateStr $timeStr',
                           style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
+                            fontSize: AppFontSize.sm,
+                            color: AppColors.grey400,
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: AppSpacing.space20),
 
                         //기록
                         if (record.comment != null &&
                             record.comment!.isNotEmpty) ...[
                           Text(
                             record.comment!,
-                            style: const TextStyle(fontSize: 16),
+                            style: const TextStyle(fontSize: AppFontSize.lg),
                           ),
-                          const SizedBox(height: 40),
+                          const SizedBox(height: AppSpacing.space40),
                         ],
 
                         //태그
                         if (record.tags != null && record.tags!.isNotEmpty) ...[
                           _RecordTags(tags: record.tags!),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: AppSpacing.space16),
                         ],
                       ],
                     ),
@@ -203,46 +206,63 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
   }
 }
 
-class _RecordImages extends StatelessWidget {
+class _RecordImages extends StatefulWidget {
   final List<Images> images;
   final void Function(int index, List<Images> images)? onImageTap;
 
   const _RecordImages({required this.images, this.onImageTap});
 
   @override
+  State<_RecordImages> createState() => _RecordImagesState();
+}
+
+class _RecordImagesState extends State<_RecordImages> {
+  late final PageController _pageController;
+  int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 1);
+  }
+
+  @override
+  void didUpdateWidget(covariant _RecordImages oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 편집 등으로 이미지 목록이 바뀌면 인덱스/페이지를 처음으로 리셋
+    // (기존 인덱스가 새 개수를 벗어나 인디케이터가 어긋나거나 범위를 벗어나는 문제 방지)
+    if (oldWidget.images != widget.images) {
+      _currentIndex = 0;
+      if (_pageController.hasClients) {
+        _pageController.jumpToPage(0);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final images = widget.images;
+    final onImageTap = widget.onImageTap;
+
+    // 기록 상세 이미지는 디자인 시스템의 둥근 모서리(ClipRRect) 적용 예외 —
+    // 모서리 제거 결정(#124)을 유지하고, 색상만 디자인 토큰을 반영한다.
     if (images.length == 1) {
       return GestureDetector(
         onTap: () {
           onImageTap?.call(0, images);
         },
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(6),
-          child: AspectRatio(
-            aspectRatio: 4 / 3,
-            child: Image.network(
-              images.first.imageUrl,
-              fit: BoxFit.cover,
-
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return const Center(
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                );
-              },
-
-              errorBuilder: (context, exception, stackTrace) {
-                return Container(
-                  color: Colors.grey.shade300,
-                  alignment: Alignment.center,
-                  child: const Icon(
-                    Icons.broken_image,
-                    color: Colors.grey,
-                    size: 40,
-                  ),
-                );
-              },
-            ),
+        child: AspectRatio(
+          aspectRatio: 4 / 3,
+          // borderRadius 미지정 — 이 화면은 모서리 제거 예외 유지
+          child: KnittdaNetworkImage(
+            url: images.first.imageUrl,
+            placeholderIcon: Icons.broken_image,
           ),
         ),
       );
@@ -251,43 +271,71 @@ class _RecordImages extends StatelessWidget {
     // 여러 장일 경우
     return AspectRatio(
       aspectRatio: 4 / 3,
-      child: PageView.builder(
-        controller: PageController(viewportFraction: 1),
-        itemCount: images.length,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              onImageTap?.call(index, images);
+      child: Stack(
+        children: [
+          PageView.builder(
+            controller: _pageController,
+            itemCount: images.length,
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
             },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                images[index].imageUrl,
-                fit: BoxFit.cover,
-
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  );
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  onImageTap?.call(index, images);
                 },
+                // borderRadius 미지정 — 이 화면은 모서리 제거 예외 유지
+                child: KnittdaNetworkImage(
+                  url: images[index].imageUrl,
+                  placeholderIcon: Icons.broken_image,
+                ),
+              );
+            },
+          ),
 
-                errorBuilder: (context, exception, stackTrace) {
-                  return Container(
-                    color: Colors.grey.shade300,
-                    alignment: Alignment.center,
-                    child: const Icon(
-                      Icons.broken_image,
-                      color: Colors.grey,
-                      size: 40,
-                    ),
-                  );
-                },
-              ),
+          // 페이지 인디케이터 (좌우 스와이프 가능 여부 안내)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 12,
+            child: _PageIndicator(
+              count: images.length,
+              currentIndex: _currentIndex,
             ),
-          );
-        },
+          ),
+        ],
       ),
+    );
+  }
+}
+
+class _PageIndicator extends StatelessWidget {
+  final int count;
+  final int currentIndex;
+
+  const _PageIndicator({required this.count, required this.currentIndex});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(count, (index) {
+        final isActive = index == currentIndex;
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          margin: const EdgeInsets.symmetric(horizontal: 3),
+          width: isActive ? 8 : 6,
+          height: isActive ? 8 : 6,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isActive
+                ? Colors.white
+                : Colors.white.withValues(alpha: 0.5),
+          ),
+        );
+      }),
     );
   }
 }
@@ -302,17 +350,7 @@ class _RecordTags extends StatelessWidget {
       spacing: 8, // 태그 사이 가로 간격
       runSpacing: 10, // 줄 바뀔 때 세로 간격
       children: tags.map((tag) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20), // 완전 둥근 테두리
-            border: Border.all(color: PRIMARY_COLOR, width: 1),
-          ),
-          child: Text(
-            tag,
-            style: const TextStyle(fontSize: 12, color: PRIMARY_COLOR),
-          ),
-        );
+        return KnittdaTag(label: tag);
       }).toList(),
     );
   }

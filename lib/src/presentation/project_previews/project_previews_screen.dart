@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/repository/record_api_repository.dart';
 import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
@@ -14,6 +16,7 @@ import 'package:knittda/src/presentation/project_previews/components/project_pre
 import 'package:knittda/src/presentation/project_previews/project_previews_event.dart';
 import 'package:knittda/src/presentation/project_previews/project_previews_view_model.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class ProjectPreviewsScreen extends StatefulWidget {
   const ProjectPreviewsScreen({super.key});
@@ -55,14 +58,10 @@ class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        scrolledUnderElevation: 0,
-        title: const Text(
-          '작품',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-        ),
-        titleSpacing: 30,
+      appBar: const KnittdaAppBar(
+        title: '작품',
+        large: true,
+        showBack: false,
       ),
 
       body: Consumer<ProjectPreviewsViewModel>(
@@ -85,7 +84,7 @@ class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("작품 불러오는 중..."),
-                  SizedBox(height: 24),
+                  SizedBox(height: AppSpacing.space24),
                   CircularProgressIndicator(),
                 ],
               ),
@@ -123,8 +122,8 @@ class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
               slivers: [
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 30,
-                    vertical: 20,
+                    horizontal: AppSpacing.space32,
+                    vertical: AppSpacing.space20,
                   ),
                   sliver: SliverGrid(
                     gridDelegate:
@@ -143,8 +142,8 @@ class _ProjectPreviewsScreenState extends State<ProjectPreviewsScreen> {
                 if (viewModel.state.isLoadingMore)
                   const SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Center(child: CircularProgressIndicator()),
+                      padding: EdgeInsets.symmetric(vertical: AppSpacing.space16),
+                      child: KnittdaLoadingView(),
                     ),
                   ),
               ],

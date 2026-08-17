@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_dialog.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class PopupMenuSection extends StatelessWidget {
   final VoidCallback onEdit;

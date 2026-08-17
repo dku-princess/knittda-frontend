@@ -1,6 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_tag.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_button.dart';
+import 'package:knittda/src/presentation/widgets/knittda_input.dart';
+import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/domain/model/images.dart';
@@ -9,7 +15,9 @@ import 'package:knittda/src/presentation/record_add_edit/add_edit_record_event.d
 import 'package:knittda/src/presentation/record_add_edit/add_edit_record_ui_event.dart';
 import 'package:knittda/src/presentation/record_add_edit/add_edit_record_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
+import 'package:knittda/src/presentation/widgets/progress_stage_slider.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class AddEditRecordScreen extends StatefulWidget {
   final int projectId;
@@ -80,8 +88,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
               case SavedRecord(:final record):
                 Navigator.pop(context, record);
               case ShowSnackBar(:final message):
-                final snackBar = SnackBar(content: Text(message));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                KnittdaSnackBar.show(context, message);
             }
           }
         });
@@ -153,9 +160,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
       });
     } catch(_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('카메라를 사용할 수 없습니다. 설정에서 권한을 확인해 주세요.')),
-      );
+      KnittdaSnackBar.show(context, '카메라를 사용할 수 없습니다. 설정에서 권한을 확인해 주세요.', tone: KnittdaSnackTone.error);
     }
   }
 
@@ -169,15 +174,11 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
     final comment = _commentController.text.trim();
 
     if (recordStatus == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('진행 상태를 선택해주세요.')));
+      KnittdaSnackBar.show(context, '진행 상태를 선택해주세요.', tone: KnittdaSnackTone.info);
       return;
     }
     if (comment.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('기록을 남겨주세요.')));
+      KnittdaSnackBar.show(context, '기록을 남겨주세요.', tone: KnittdaSnackTone.info);
       return;
     }
 
@@ -229,36 +230,24 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
     return Stack(
       children: [
         Scaffold(
-          appBar: AppBar(
-            scrolledUnderElevation: 0,
-            title: Text(
-              widget.record != null ? '기록 수정' : '기록 추가',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-            ),
-            centerTitle: true,
+          appBar: KnittdaAppBar(
+            title: widget.record != null ? '기록 수정' : '기록 추가',
             actions: [
               //저장버튼
-              TextButton(
+              KnittdaButton(
+                label: '저장',
                 onPressed: state.isLoading ? null : _saveRecord,
-                style: TextButton.styleFrom(
-                  backgroundColor: PRIMARY_COLOR,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Text('저장', style: TextStyle(fontSize: 16)),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.space8),
             ],
           ),
 
           body: ListView(
             padding: const EdgeInsets.only(
-              left: 20.0,
-              right: 20.0,
-              top: 20,
-              bottom: 50,
+              left: AppSpacing.space20,
+              right: AppSpacing.space20,
+              top: AppSpacing.space20,
+              bottom: AppLayout.contentBottomInset,
             ),
 
             children: [
@@ -266,12 +255,12 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
               Text(
                 "오늘 뜨개는 어떠셨어요?",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: AppFontSize.xl,
+                  fontWeight: AppFontWeight.medium,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.space20),
               Wrap(
                 spacing: 8,
                 runSpacing: 10,
@@ -288,26 +277,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                         }
                       });
                     },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: isSelected ? PRIMARY_COLOR : Colors.grey,
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        tag,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isSelected ? PRIMARY_COLOR : Colors.grey,
-                        ),
-                      ),
-                    ),
+                    child: KnittdaTag(label: tag, selected: isSelected),
                   );
                 }).toList(),
               ),
@@ -317,56 +287,22 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
               Text(
                 "얼마나 떴나요?",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: AppFontSize.xl,
+                  fontWeight: AppFontWeight.medium,
                 ),
               ),
-              const SizedBox(height: 20),
-              SizedBox(
-                height: 50,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Positioned(
-                      left: 20,
-                      right: 20,
-                      child: Container(height: 2, color: Colors.grey[300]),
-                    ),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: _statusValues.map((status) {
-                        final bool isSelected = _recordStatus == status;
-
-                        return GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: () {
-                            setState(() {
-                              _recordStatus = status;
-                            });
-                          },
-                          child: SizedBox(
-                            width: 44,
-                            height: 44,
-                            child: Center(
-                              child: Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: isSelected
-                                      ? PRIMARY_COLOR
-                                      : Colors.grey[300],
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
+              const SizedBox(height: AppSpacing.space20),
+              ProgressStageSlider(
+                labels: const ['시작 전', '시작', '진행 중', '거의 완성', '완성'],
+                selectedIndex: _recordStatus == null
+                    ? null
+                    : _statusValues.indexOf(_recordStatus!),
+                onChanged: (index) {
+                  setState(() {
+                    _recordStatus = _statusValues[index];
+                  });
+                },
               ),
 
               const SizedBox(height: 50),
@@ -374,12 +310,12 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
               Text(
                 "사진을 추가해주세요.",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: AppFontSize.xl,
+                  fontWeight: AppFontWeight.medium,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.space20),
               SizedBox(
                 height: 100,
                 child: ListView(
@@ -387,7 +323,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                   children: [
                     ..._existingImages.map((image) {
                       return Padding(
-                        padding: const EdgeInsets.only(right: 10.0),
+                        padding: const EdgeInsets.only(right: AppSpacing.space8),
                         child: ImageBox(
                           localImageUrl: null,
                           networkImageUrl: image.imageUrl,
@@ -405,7 +341,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
 
                     ..._newImages.map((file) {
                       return Padding(
-                        padding: const EdgeInsets.only(right: 10.0),
+                        padding: const EdgeInsets.only(right: AppSpacing.space8),
                         child: ImageBox(
                           localImageUrl: file.path,
                           networkImageUrl: null,
@@ -427,14 +363,14 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                           width: 100,
                           height: 100,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(AppRadius.button),
+                            border: Border.all(color: AppColors.grey400),
                           ),
                           child: const Center(
                             child: Icon(
                               Icons.add,
-                              size: 32,
-                              color: Colors.grey,
+                              size: AppIconSize.lg,
+                              color: AppColors.grey400,
                             ),
                           ),
                         ),
@@ -447,36 +383,27 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
               Text(
                 "뜨개 기록을 남겨주세요",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: AppFontSize.xl,
+                  fontWeight: AppFontWeight.medium,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.space12),
               if (questionText != null) ...[
                 Text(
                   questionText,
-                  style: const TextStyle(color: Colors.grey, fontSize: 14),
+                  style: const TextStyle(color: AppColors.grey400, fontSize: AppFontSize.md),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.space12),
               ],
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.space20),
               //기록 추가
-              TextField(
+              KnittdaInput(
+                controller: _commentController,
+                hintText: "내용을 입력해주세요",
                 maxLines: 8,
                 maxLength: 300,
                 keyboardType: TextInputType.multiline,
-                controller: _commentController,
-                decoration: InputDecoration(
-                  hintText: "내용을 입력해주세요",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                ),
               ),
               const SizedBox(height: 50),
             ],
@@ -484,14 +411,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
         ),
 
         if (state.isLoading)
-          Positioned.fill(
-            child: AbsorbPointer(
-              child: Container(
-                color: Colors.black26,
-                child: const Center(child: CircularProgressIndicator()),
-              ),
-            ),
-          ),
+          const Positioned.fill(child: KnittdaLoadingOverlay()),
       ],
     );
   }
