@@ -40,7 +40,7 @@ class RecordItem extends StatelessWidget {
               //날짜 시간
               Text(
                 '$dateStr $timeStr',
-                style: const TextStyle(fontSize: AppFontSize.sm, color: AppColors.grey400),
+                style: AppTextStyles.caption,
               ),
               const SizedBox(height: AppSpacing.space12),
 
@@ -61,7 +61,7 @@ class RecordItem extends StatelessWidget {
               if (record.comment != null && record.comment!.isNotEmpty) ...[
                 Text(
                   record.comment!,
-                  style: const TextStyle(fontSize: AppFontSize.md),
+                  style: AppTextStyles.body,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),

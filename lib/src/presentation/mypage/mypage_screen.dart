@@ -211,10 +211,7 @@ class _MypageScreenState extends State<MypageScreen> {
                 const SizedBox(width: AppSpacing.space20),
                 Text(
                   user?.nickname ?? '알 수 없는 사용자',
-                  style: const TextStyle(
-                    fontSize: AppFontSize.md,
-                    fontWeight: AppFontWeight.semibold,
-                  ),
+                  style: AppTextStyles.bodyStrong,
                 ),
               ],
             ),
@@ -310,11 +307,7 @@ Widget _buildSectionHeader(String title) {
     ),
     child: Text(
       title,
-      style: const TextStyle(
-        fontSize: AppFontSize.md,
-        fontWeight: AppFontWeight.semibold,
-        color: AppColors.grey800,
-      ),
+      style: AppTextStyles.bodyStrong.copyWith(color: AppColors.textSecondary),
     ),
   );
 }
@@ -333,11 +326,7 @@ Widget _buildMenuItem(String title, {required VoidCallback onTap}) {
       ),
       child: Text(
         title,
-        style: const TextStyle(
-          fontSize: AppFontSize.md,
-          fontWeight: AppFontWeight.regular,
-          color: AppColors.grey800,
-        ),
+        style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
       ),
     ),
   );

@@ -318,7 +318,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
               ),
               child: Text(
                 article.category,
-                style: const TextStyle(fontSize: AppFontSize.sm, color: PRIMARY_COLOR),
+                style: AppTextStyles.caption.copyWith(color: PRIMARY_COLOR),
               ),
             ),
           ),
@@ -328,7 +328,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
             padding: const EdgeInsets.only(bottom: AppSpacing.space16),
             child: Text(
               article.title,
-              style: TextStyle(fontSize: AppFontSize.display, fontWeight: AppFontWeight.bold),
+              style: AppTextStyles.display.copyWith(fontWeight: AppFontWeight.bold),
             ),
           ),
 
@@ -337,7 +337,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
             padding: const EdgeInsets.only(bottom: AppSpacing.space16),
             child: Text(
               article.subtitle,
-              style: TextStyle(fontSize: AppFontSize.lg, color: AppColors.textSecondary),
+              style: AppTextStyles.heading.copyWith(color: AppColors.textSecondary),
             ),
           ),
 
@@ -347,7 +347,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
               if (article.interviewee.isNotEmpty)
                 Text(
                   article.interviewee,
-                  style: TextStyle(fontSize: AppFontSize.sm, color: AppColors.grey400),
+                  style: AppTextStyles.caption,
                 ),
               if (article.interviewee.isNotEmpty &&
                   article.publishedAt.isNotEmpty)
@@ -355,7 +355,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen>
               if (article.publishedAt.isNotEmpty)
                 Text(
                   DateUtilsHelper.toKoreanFormat(article.publishedAt),
-                  style: TextStyle(fontSize: AppFontSize.sm, color: AppColors.grey400),
+                  style: AppTextStyles.caption,
                 ),
             ],
           ),

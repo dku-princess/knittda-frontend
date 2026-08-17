@@ -39,9 +39,8 @@ class NoteSectionWidget extends StatelessWidget {
                 }
               },
               styleSheet: MarkdownStyleSheet(
-                p: const TextStyle(fontSize: AppFontSize.md),
-                a: const TextStyle(
-                  fontSize: AppFontSize.md,
+                p: AppTextStyles.body,
+                a: AppTextStyles.body.copyWith(
                   color: AppColors.black,
                   decoration: TextDecoration.underline,
                 ),
@@ -74,9 +73,8 @@ class NoteSectionWidget extends StatelessWidget {
               }
             },
             styleSheet: MarkdownStyleSheet(
-              p: const TextStyle(fontSize: AppFontSize.sm, color: AppColors.textSecondary),
-              a: const TextStyle(
-                fontSize: AppFontSize.sm,
+              p: AppTextStyles.caption.copyWith(color: AppColors.textSecondary),
+              a: AppTextStyles.caption.copyWith(
                 color: AppColors.textSecondary,
                 decoration: TextDecoration.underline,
               ),

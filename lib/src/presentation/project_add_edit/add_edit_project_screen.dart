@@ -242,11 +242,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                 contentPadding: EdgeInsets.zero,
                 title: Text(
                   "기본 정보",
-                  style: TextStyle(
-                    color: AppColors.black,
-                    fontSize: AppFontSize.xl,
-                    fontWeight: AppFontWeight.medium,
-                  ),
+                  style: AppTextStyles.title,
                 ),
               ),
               SizedBox(height: AppSpacing.space12),
@@ -257,11 +253,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                   // 대표 사진
                   Text(
                     "대표 사진",
-                    style: TextStyle(
-                      color: AppColors.black,
-                      fontSize: AppFontSize.lg,
-                      fontWeight: AppFontWeight.medium,
-                    ),
+                    style: AppTextStyles.heading,
                   ),
                   SizedBox(height: AppSpacing.space12),
                   GestureDetector(
@@ -301,11 +293,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
 
                   Text(
                     "작품 이름",
-                    style: TextStyle(
-                      color: AppColors.black,
-                      fontSize: AppFontSize.lg,
-                      fontWeight: AppFontWeight.medium,
-                    ),
+                    style: AppTextStyles.heading,
                   ),
                   SizedBox(height: AppSpacing.space12),
                   KnittdaInput(
@@ -315,11 +303,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
 
                   Text(
                     "시작일 ~ 목표일",
-                    style: TextStyle(
-                      color: AppColors.black,
-                      fontSize: AppFontSize.lg,
-                      fontWeight: AppFontWeight.medium,
-                    ),
+                    style: AppTextStyles.heading,
                   ),
                   SizedBox(height: AppSpacing.space12),
                   GestureDetector(
@@ -341,11 +325,10 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                             (_startDate != null && _goalDate != null)
                                 ? '${DateUtilsHelper.toHyphenFormat(_startDate!)} ~ ${DateUtilsHelper.toHyphenFormat(_goalDate!)}'
                                 : 'yyyy-mm-dd ~ yyyy-mm-dd',
-                            style: TextStyle(
-                              fontSize: AppFontSize.md,
+                            style: AppTextStyles.body.copyWith(
                               color: (_startDate != null && _goalDate != null)
                                   ? AppColors.black
-                                  : AppColors.grey400,
+                                  : AppColors.textHint,
                             ),
                           ),
                         ],
@@ -360,22 +343,14 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                 contentPadding: EdgeInsets.zero,
                 title: Text(
                   "디자인",
-                  style: TextStyle(
-                    color: AppColors.black,
-                    fontSize: AppFontSize.xl,
-                    fontWeight: AppFontWeight.medium,
-                  ),
+                  style: AppTextStyles.title,
                 ),
               ),
               SizedBox(height: AppSpacing.space12),
 
               Text(
                 "도안명",
-                style: TextStyle(
-                  color: AppColors.black,
-                  fontSize: AppFontSize.lg,
-                  fontWeight: AppFontWeight.medium,
-                ),
+                style: AppTextStyles.heading,
               ),
               SizedBox(height: AppSpacing.space12),
               KnittdaInput(
@@ -386,11 +361,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
 
               Text(
                 "작가",
-                style: TextStyle(
-                  color: AppColors.black,
-                  fontSize: AppFontSize.lg,
-                  fontWeight: AppFontWeight.medium,
-                ),
+                style: AppTextStyles.heading,
               ),
               SizedBox(height: AppSpacing.space12),
               KnittdaInput(
@@ -401,11 +372,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
 
               Text(
                 "실",
-                style: TextStyle(
-                  color: AppColors.black,
-                  fontSize: AppFontSize.lg,
-                  fontWeight: AppFontWeight.medium,
-                ),
+                style: AppTextStyles.heading,
               ),
               SizedBox(height: AppSpacing.space12),
               KnittdaInput(
@@ -416,11 +383,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
 
               Text(
                 "바늘",
-                style: TextStyle(
-                  color: AppColors.black,
-                  fontSize: AppFontSize.lg,
-                  fontWeight: AppFontWeight.medium,
-                ),
+                style: AppTextStyles.heading,
               ),
               SizedBox(height: AppSpacing.space12),
               KnittdaInput(

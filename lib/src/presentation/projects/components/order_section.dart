@@ -38,10 +38,8 @@ class OrderSection extends StatelessWidget {
                 : null,
             child: Text(
               '뜨고 있어요',
-              style: TextStyle(
-                fontSize: AppFontSize.md,
-                fontWeight: AppFontWeight.medium,
-                color: isInProgressSelected ? PRIMARY_COLOR : AppColors.grey400,
+              style: AppTextStyles.bodyStrong.copyWith(
+                color: isInProgressSelected ? PRIMARY_COLOR : AppColors.textHint,
               ),
             ),
           ),
@@ -64,10 +62,8 @@ class OrderSection extends StatelessWidget {
                 : null,
             child: Text(
               '다 떴어요',
-              style: TextStyle(
-                fontSize: AppFontSize.md,
-                fontWeight: AppFontWeight.medium,
-                color: isDoneSelected ? PRIMARY_COLOR : AppColors.grey400,
+              style: AppTextStyles.bodyStrong.copyWith(
+                color: isDoneSelected ? PRIMARY_COLOR : AppColors.textHint,
               ),
             ),
           ),

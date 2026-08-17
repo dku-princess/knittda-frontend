@@ -26,7 +26,7 @@ class PatternSectionWidget extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: AppSpacing.space20),
             child: Text(
               patternSection.title,
-              style: const TextStyle(fontSize: AppFontSize.xl, fontWeight: AppFontWeight.semibold),
+              style: AppTextStyles.title,
             ),
           ),
         ],
@@ -38,7 +38,7 @@ class PatternSectionWidget extends StatelessWidget {
             child: MarkdownBody(
               data: normalizeMarkdown(patternSection.description!),
               styleSheet: MarkdownStyleSheet(
-                p: const TextStyle(fontSize: AppFontSize.md, color: AppColors.textSecondary),
+                p: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
               ),
             ),
           ),
@@ -61,9 +61,7 @@ class PatternSectionWidget extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: AppSpacing.space12),
                     child: Text(
                       patternSection.patternItemBlock[i].title,
-                      style: const TextStyle(
-                        fontSize: AppFontSize.md,
-                        fontWeight: AppFontWeight.semibold,
+                      style: AppTextStyles.bodyStrong.copyWith(
                         color: _PatternColors.accent,
                       ),
                     ),
@@ -81,8 +79,7 @@ class PatternSectionWidget extends StatelessWidget {
                         patternSection.patternItemBlock[i].description,
                       ),
                       styleSheet: MarkdownStyleSheet(
-                        p: const TextStyle(
-                          fontSize: AppFontSize.md,
+                        p: AppTextStyles.body.copyWith(
                           color: _PatternColors.body,
                         ),
                       ),

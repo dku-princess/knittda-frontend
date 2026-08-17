@@ -32,7 +32,7 @@ class ProjectSectionWidget extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: AppSpacing.space20),
             child: Text(
               projectSection.title,
-              style: TextStyle(fontSize: AppFontSize.xl, fontWeight: AppFontWeight.semibold),
+              style: AppTextStyles.title,
             ),
           ),
         ],
@@ -46,8 +46,7 @@ class ProjectSectionWidget extends StatelessWidget {
                 projectSection.description,
               ),
               styleSheet: MarkdownStyleSheet(
-                p: const TextStyle(
-                  fontSize: AppFontSize.md,
+                p: AppTextStyles.body.copyWith(
                   color: AppColors.textSecondary,
                 ),
               ),

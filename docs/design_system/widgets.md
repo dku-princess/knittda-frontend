@@ -10,6 +10,85 @@
 
 ---
 
+## 색 토큰 사용 규칙 (AppColors)
+
+`lib/src/core/theme/app_colors.dart`. 원시 중립색(`greyNNN`)과 **역할 의미 별칭**
+(`textPrimary`/`textSecondary`/`textHint`/`border`/`surfaceAlt`)이 함께 있다.
+
+> **규칙: 화면·컴포넌트는 역할이 맞는 의미 별칭을 쓴다. 원시 `greyNNN`은
+> 별칭으로 표현되지 않는 용도(특정 채움·아이콘·플레이스홀더 배경 등)에만 쓴다.**
+
+목적: `greyNNN`은 스케일이 조정되면 의미가 딸려 흔들린다. 텍스트·테두리·표면은
+**역할 별칭**을 통해 참조하면 스케일 변경이 의미를 깨지 않는다.
+
+| 역할 | 별칭 | 값 |
+|---|---|---|
+| 본문/제목 텍스트 | `textPrimary` | `black` |
+| 보조 텍스트 | `textSecondary` | `grey800` |
+| 힌트·비활성·플레이스홀더 텍스트 | `textHint` | `grey400` |
+| 테두리 | `border` | `grey200` |
+| muted 표면 | `surfaceAlt` | `grey100` |
+
+### 적용 기준 (역할로 고른다)
+
+- **텍스트 색**: `black`→`textPrimary`, `grey800`→`textSecondary`,
+  `grey400`(힌트/비활성/플레이스홀더)→`textHint`. (Text·마크다운 `p`/`a`·TextSpan)
+- **비(非)텍스트**는 별칭 강제 대상이 아니다: `Border`/`BorderSide`는 역할이
+  테두리면 `border`, 그 외 채움·아이콘·배경(`CircleAvatar` bg, 이미지 플레이스홀더
+  `Container` color, `Icon` color, `BottomNavigationBar` 속성 등)은 원시 `greyNNN` 유지.
+- `caption` 프리셋 기본색이 이미 `textHint`이므로, caption 텍스트에 `grey400`을
+  다시 지정하지 않는다(중복).
+
+### 예외 / 미정 (별칭 없음)
+
+| 원시색 | 상황 | 처리 |
+|---|---|---|
+| `grey600` | "보조 텍스트"로 3곳(projects_item·article_card_small)에 텍스트로 쓰이나 | `textSecondary`(800)/`textHint`(400) 어느 쪽도 아님. **텍스트 3단계(secondary/tertiary/hint) 확정 전까지 원시 `grey600` 유지.** 반복되면 `textTertiary` 별칭 신설 검토. |
+| `grey50` | 배경 틴트 1곳 | 표면 계열. 반복되면 `surfaceTint` 등 검토. |
+
+---
+
+## 타이포그래피 프리셋 (AppTextStyles)
+
+`lib/src/core/theme/app_typography.dart` (배럴 `theme.dart` export).
+
+화면의 인라인 `TextStyle(fontSize:…, fontWeight:…)` 조립을 **의미 기반 프리셋**으로
+통합한다. 프리셋은 `height: 1.4`(Figma 디자인 시스템 행간)를 포함하므로,
+프리셋을 쓰면 Figma 렌더와 자동으로 정합된다.
+
+| 프리셋 | 크기 | 굵기 | 용도 |
+|---|---|---|---|
+| `display` | 24 | semibold | 대형 히어로 제목(리포트·아티클 타이틀) |
+| `title` | 20 | semibold | 화면/섹션 제목 |
+| `heading` | 16 | semibold | 소제목·필드 라벨 |
+| `body` | 14 | regular | 본문 기본 |
+| `bodyStrong` | 14 | semibold | 강조 본문·리스트 항목명·버튼 |
+| `caption` | 12 | regular | 보조·힌트·메타(기본색 `textHint`) |
+
+### 사용 규칙
+
+- 크기/굵기/행간은 **프리셋 그대로** 두고, 다른 축(색·decoration)만
+  `.copyWith(color: …)`로 덮는다. **`fontSize`를 copyWith로 다시 지정하지 않는다.**
+- 제목/헤딩의 `medium`(w500)은 **DS 표준인 semibold(w600)로 정규화**한다.
+- `color: black`(=`textPrimary`)·`color: grey400`(=caption 기본 `textHint`)처럼
+  프리셋 기본색과 같으면 `copyWith`를 생략한다.
+- **버튼 등 `foregroundColor` 상속 컨텍스트**에서는 프리셋의 기본색이 상속색을
+  덮어쓰므로, 원래 색(예: `white`)을 `copyWith(color:)`로 **명시**한다.
+
+### 사용하지 않은 경우 (예외)
+
+| 위치 | 값 | 이유 |
+|---|---|---|
+| `record_details`·`article_card_large`·`knittda_empty_state` | `lg`(16) regular | 16px **regular 본문**. 프리셋에 16-regular가 없고, `heading`(16 semibold)로 바꾸면 굵어짐 → `AppFontSize.lg` 토큰 유지. |
+| `announcement_list_item` 날짜 | `xs`(10) | 프리셋 최소가 `caption`(12) → `AppFontSize.xs` 토큰 유지. |
+| `report_screen` 히어로 제목 | `display` + **bold**(w700) | 강조 히어로. `display.copyWith(fontWeight: bold)`로 굵기만 덮음. |
+| `Text.rich` 자식 `TextSpan` | 색만 | 부모 프리셋에서 크기·굵기·행간 상속, 색만 재정의(정상). |
+
+> 남은 예외 4곳은 raw 숫자가 아니라 **`AppFontSize` 토큰**을 쓰므로 DS 규약 위반이
+> 아니다. 16-regular·10px 프리셋이 반복 필요해지면 프리셋 신설을 검토한다.
+
+---
+
 ## 레이아웃 토큰 (AppLayout)
 
 `lib/src/core/theme/app_layout.dart` (배럴 `theme.dart` export).
@@ -227,7 +306,7 @@ Stack(children: [
 
 | 위치 | 이유 |
 |---|---|
-| `feed_search_screen` 검색 필드 | **prefix(검색)·suffix(X) 아이콘** 동반. KnittdaInput은 아이콘 미지원. 아이콘 슬롯 추가 시 흡수 가능. |
+| `feed_search_screen` 검색 필드 | **별개 패턴**이라 유지. KnittdaInput(흰 채움·가시 테두리 3상태·카운터/에러, 폼 필드)과 달리 이쪽은 `grey100` 채움·**테두리 없음**(`BorderSide.none`)·prefix(검색)/suffix(X) 아이콘·앱바 내 `onSubmitted` 검색바다. 아이콘 슬롯만 더해도 채움·테두리·동작이 달라 흡수되지 않는다. **검색바는 앱 전체 1곳뿐(YAGNI)** — 2번째 검색 필드가 생기면 그때 `KnittdaSearchField`(grey 채움·borderless·검색/클리어 아이콘) 신설을 검토한다. |
 
 ---
 

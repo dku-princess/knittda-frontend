@@ -52,10 +52,7 @@ class ProjectsItem extends StatelessWidget {
                   children: [
                     Text(
                       project.nickname,
-                      style: TextStyle(
-                        fontSize: AppFontSize.lg,
-                        fontWeight: AppFontWeight.medium,
-                      ),
+                      style: AppTextStyles.heading,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -66,16 +63,14 @@ class ProjectsItem extends StatelessWidget {
                       children: [
                         Text(
                           "기록일",
-                          style: TextStyle(
-                            fontSize: AppFontSize.sm,
+                          style: AppTextStyles.caption.copyWith(
                             color: AppColors.grey600,
                           ),
                         ),
                         SizedBox(width: AppSpacing.space4),
                         Text(
                           lastRecordAt,
-                          style: TextStyle(
-                            fontSize: AppFontSize.sm,
+                          style: AppTextStyles.caption.copyWith(
                             color: AppColors.grey600,
                           ),
                         ),
@@ -98,10 +93,8 @@ class ProjectsItem extends StatelessWidget {
                   alignment: Alignment.center,
                   child: Text(
                     '추가',
-                    style: TextStyle(
-                      color: AppColors.grey400,
-                      fontSize: AppFontSize.md,
-                      fontWeight: AppFontWeight.medium,
+                    style: AppTextStyles.bodyStrong.copyWith(
+                      color: AppColors.textHint,
                     ),
                   ),
                 ),
