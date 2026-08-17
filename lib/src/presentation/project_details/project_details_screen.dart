@@ -1,6 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
+import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/domain/model/project.dart';
@@ -28,6 +32,7 @@ import 'package:knittda/src/presentation/record_details/record_details_screen.da
 import 'package:knittda/src/presentation/record_details/record_details_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_viewer.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 import '../../domain/use_case/update_record_use_case.dart';
 
@@ -57,8 +62,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
               case DeletedProject():
                 Navigator.pop(context, true);
               case ShowSnackBar(:final message):
-                final snackBar = SnackBar(content: Text(message));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                KnittdaSnackBar.show(context, message);
               case NotFound():
                 Navigator.pop(context, false);
             }
@@ -98,8 +102,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
           final tabController = DefaultTabController.of(context);
 
           return Scaffold(
-            appBar: AppBar(
-              scrolledUnderElevation: 0,
+            appBar: KnittdaAppBar(
               actions: [
                 if (!state.isLoading && state.project != null && state.isOwner)
                   PopupMenuSection(
@@ -191,7 +194,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                           }
                         },
                         backgroundColor: PRIMARY_COLOR,
-                        child: const Icon(Icons.add, color: Colors.white),
+                        child: const Icon(Icons.add, color: AppColors.white),
                       )
                     : const SizedBox.shrink();
               },
@@ -203,13 +206,18 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text("작품 불러오는 중..."),
-                        SizedBox(height: 24),
+                        SizedBox(height: AppSpacing.space24),
                         CircularProgressIndicator(),
                       ],
                     ),
                   )
                 : state.project == null
-                ? const Center(child: Text("작품 정보를 불러오지 못했어요."))
+                ? const Center(
+                    child: Text(
+                      "작품 정보를 불러오지 못했습니다.",
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  )
                 : NestedScrollView(
                     controller: _scrollController,
                     headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -284,6 +292,13 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
                               ),
                             );
                           },
+                          onRetry: () {
+                            viewModel.onEvent(
+                              ProjectDetailsEvent.loadRecords(
+                                projectId: viewModel.projectId,
+                              ),
+                            );
+                          },
                         ),
                         _ReportTap(
                           project: state.project!,
@@ -343,48 +358,32 @@ class _ProjectHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 0, right: 20, left: 20, bottom: 10),
+      padding: const EdgeInsets.only(top: AppSpacing.space0, right: AppSpacing.space20, left: AppSpacing.space20, bottom: AppSpacing.space8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 작품 대표 사진
           ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child:
-                (project.thumbnailUrl != null &&
-                    project.thumbnailUrl!.isNotEmpty)
-                ? Image.network(
-                    project.thumbnailUrl!,
-                    width: 115,
-                    height: 115,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: 115,
-                        height: 115,
-                        color: Colors.grey[300],
-                        child: Icon(Icons.broken_image, color: Colors.grey),
-                      );
-                    },
-                  )
-                : Container(
-                    width: 115,
-                    height: 115,
-                    color: Colors.grey[300],
-                    child: Icon(Icons.image_outlined, color: Colors.grey),
-                  ),
+            borderRadius: BorderRadius.circular(AppRadius.chip),
+            child: KnittdaNetworkImage(
+              url: project.thumbnailUrl,
+              width: 115,
+              height: 115,
+              iconSize: AppIconSize.base,
+              showLoading: false,
+            ),
           ),
 
-          SizedBox(width: 26),
+          SizedBox(width: AppSpacing.space24),
 
           //작품 이름, 작품 상태 버튼
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(project.nickname, style: TextStyle(fontSize: 20)),
+                Text(project.nickname, style: AppTextStyles.title),
 
-                SizedBox(height: 16),
+                SizedBox(height: AppSpacing.space16),
 
                 if (isOwner)
                   ProgressSection(
@@ -412,12 +411,12 @@ class _InfoTap extends StatelessWidget {
       children: [
         SizedBox(
           width: 100,
-          child: Text(label, style: const TextStyle(fontSize: 16)),
+          child: Text(label, style: AppTextStyles.heading),
         ),
         Expanded(
           child: Text(
             isEmpty ? '-' : value,
-            style: TextStyle(fontSize: 16, color: isEmpty ? Colors.grey : null),
+            style: AppTextStyles.heading.copyWith(color: isEmpty ? AppColors.textHint : null),
           ),
         ),
       ],
@@ -427,20 +426,20 @@ class _InfoTap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+      padding: EdgeInsets.symmetric(horizontal: AppSpacing.space40, vertical: AppSpacing.space20),
 
       children: [
         _infoRow('도안', project.design?.title),
-        SizedBox(height: 20),
+        SizedBox(height: AppSpacing.space20),
 
         _infoRow('작가', project.design?.designer),
-        SizedBox(height: 20),
+        SizedBox(height: AppSpacing.space20),
 
         _infoRow('실', project.design?.yarnInfo),
-        SizedBox(height: 20),
+        SizedBox(height: AppSpacing.space20),
 
         _infoRow('바늘', project.design?.needleInfo),
-        SizedBox(height: 20),
+        SizedBox(height: AppSpacing.space20),
       ],
     );
   }
@@ -449,17 +448,25 @@ class _InfoTap extends StatelessWidget {
 class _DiaryTap extends StatelessWidget {
   final DiaryTapState state;
   final Future<void> Function(Records record) onRecordTap;
+  final VoidCallback onRetry;
 
-  const _DiaryTap({required this.state, required this.onRecordTap});
+  const _DiaryTap({
+    required this.state,
+    required this.onRecordTap,
+    required this.onRetry,
+  });
 
   @override
   Widget build(BuildContext context) {
     if (state.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const KnittdaLoadingView();
     }
 
     if (state.errorMessage != null) {
-      return Center(child: Text(state.errorMessage!));
+      return _ErrorRetry(
+        message: "기록을 불러오지 못했습니다.\n다시 시도해주세요.",
+        onRetry: onRetry,
+      );
     }
 
     if (state.records.isEmpty) {
@@ -467,7 +474,7 @@ class _DiaryTap extends StatelessWidget {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.only(bottom: AppSpacing.space20),
       itemCount: state.records.length,
       itemBuilder: (context, index) {
         return RecordItem(
@@ -558,16 +565,16 @@ class _ReportTap extends StatelessWidget {
         : '목표일 정보 없음';
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+      padding: EdgeInsets.symmetric(horizontal: AppSpacing.space32, vertical: AppSpacing.space20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             "나의 진행도",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+            style: AppTextStyles.title,
           ),
 
-          SizedBox(height: 26),
+          SizedBox(height: AppSpacing.space24),
 
           Row(
             children: [
@@ -575,10 +582,10 @@ class _ReportTap extends StatelessWidget {
                 child: SizedBox(
                   height: 130,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.card),
                     child: Stack(
                       children: [
-                        Container(color: Colors.grey[200]),
+                        Container(color: AppColors.grey100),
 
                         Align(
                           alignment: Alignment.bottomCenter,
@@ -590,7 +597,7 @@ class _ReportTap extends StatelessWidget {
                                 gradient: LinearGradient(
                                   begin: Alignment.bottomCenter,
                                   end: Alignment.topCenter,
-                                  colors: [PRIMARY_COLOR, Color(0xFFEEEEEE)],
+                                  colors: [PRIMARY_COLOR, AppColors.grey100],
                                 ),
                               ),
                             ),
@@ -600,9 +607,8 @@ class _ReportTap extends StatelessWidget {
                         Center(
                           child: Text(
                             '$percent%',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                            style: AppTextStyles.title.copyWith(
+                              fontWeight: AppFontWeight.bold,
                               color: PRIMARY_COLOR,
                             ),
                           ),
@@ -613,57 +619,81 @@ class _ReportTap extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(width: 26),
+              const SizedBox(width: AppSpacing.space24),
 
               Expanded(
                 child: Container(
                   height: 130,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.grey100,
+                    borderRadius: BorderRadius.circular(AppRadius.card),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         dPlusText,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
+                        style: AppTextStyles.title.copyWith(
                           color: PRIMARY_COLOR,
                         ),
                       ),
                       Text(
                         startDateText,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
+                        style: AppTextStyles.caption,
                       ),
 
-                      const SizedBox(height: 10),
+                      const SizedBox(height: AppSpacing.space12),
 
                       Text(
                         dMinusText,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
+                        style: AppTextStyles.title.copyWith(
                           color: PRIMARY_COLOR,
                         ),
                       ),
                       Text(
                         goalDateText,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
+                        style: AppTextStyles.caption,
                       ),
                     ],
                   ),
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ErrorRetry extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const _ErrorRetry({required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
+          ),
+          const SizedBox(height: 16),
+          OutlinedButton(
+            onPressed: onRetry,
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: PRIMARY_COLOR),
+            ),
+            child: const Text(
+              '다시 시도',
+              style: TextStyle(color: PRIMARY_COLOR),
+            ),
           ),
         ],
       ),

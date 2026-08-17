@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
 import 'package:knittda/src/domain/model/article/qa_section.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class GalleryWidget extends StatelessWidget {
   final List<GalleryItem> items;
@@ -18,30 +20,21 @@ class GalleryWidget extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: items.length,
-        separatorBuilder: (context, index) => const SizedBox(width: 8),
+        separatorBuilder: (context, index) => const SizedBox(width: AppSpacing.space8),
         itemBuilder: (context, index) {
           return ConstrainedBox(
             constraints: BoxConstraints(
               maxWidth: MediaQuery.of(context).size.width * 0.77,
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                getAssetUrl(items[index].directusFilesId),
+              borderRadius: BorderRadius.circular(AppRadius.button),
+              child: KnittdaNetworkImage(
+                url: getAssetUrl(items[index].directusFilesId),
                 height: 200,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  height: 200,
-                  width: 160,
-                  color: Colors.grey.shade200,
-                  child: const Center(
-                    child: Icon(
-                      Icons.image_not_supported_outlined,
-                      color: Colors.grey,
-                      size: 24,
-                    ),
-                  ),
-                ),
+                backgroundColor: AppColors.grey100,
+                placeholderIcon: Icons.image_not_supported_outlined,
+                iconSize: AppIconSize.base,
+                showLoading: false,
               ),
             ),
           );

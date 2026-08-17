@@ -33,7 +33,6 @@ class AddEditRecordViewModel extends ChangeNotifier {
     questionState: QuestionState(
       question: '',
       isLoading: false,
-      errorMessage: null,
     ),
   );
 
@@ -105,7 +104,6 @@ class AddEditRecordViewModel extends ChangeNotifier {
     _state = state.copyWith(
       questionState: state.questionState.copyWith(
         isLoading: true,
-        errorMessage: null,
       ),
     );
     notifyListeners();
@@ -119,11 +117,11 @@ class AddEditRecordViewModel extends ChangeNotifier {
         _state = state.copyWith(
           questionState: state.questionState.copyWith(question: data),
         );
-      case Error():
-        _state = state.copyWith(
-          questionState: state.questionState.copyWith(errorMessage: "질문을 불러오지 못했어요."),
-        );
-        _eventController.add(AddEditRecordUiEvent.showSnackBar("질문을 불러오지 못했어요."));
+      case Error(:final e):
+        // 질문 조회 실패는 기록 작성 동작에 영향이 없으므로
+        // 사용자에게 별도 안내(에러 메시지/스낵바)를 하지 않는다.
+        // 다만 운영 중 조회 실패를 추적할 수 있도록 디버그 로그는 남긴다.
+        debugPrint('질문 조회 실패: $e');
     }
 
     _state = state.copyWith(
