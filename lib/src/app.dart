@@ -34,9 +34,8 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.white, //하단 네비게이션 바 배경을 하얗게 설정
         ),
 
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Color(0xFFF2F2F7),
-        ).copyWith(primary: PRIMARY_COLOR), //핵심 색상을 디자인 시스템 녹색으로 지정
+        //디자인 시스템 녹색을 시드로 사용해 onPrimary/surfaceTint 등 파생 색상까지 일관되게 생성
+        colorScheme: ColorScheme.fromSeed(seedColor: PRIMARY_COLOR),
         //로딩 스피너 기본색을 녹색으로 (색 미지정 위젯이 남색으로 표시되던 문제 해결)
         progressIndicatorTheme: const ProgressIndicatorThemeData(
           color: PRIMARY_COLOR,
