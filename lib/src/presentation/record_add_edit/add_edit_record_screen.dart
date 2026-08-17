@@ -9,6 +9,7 @@ import 'package:knittda/src/presentation/record_add_edit/add_edit_record_event.d
 import 'package:knittda/src/presentation/record_add_edit/add_edit_record_ui_event.dart';
 import 'package:knittda/src/presentation/record_add_edit/add_edit_record_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
+import 'package:knittda/src/presentation/widgets/progress_stage_slider.dart';
 import 'package:provider/provider.dart';
 
 class AddEditRecordScreen extends StatefulWidget {
@@ -323,50 +324,16 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              SizedBox(
-                height: 50,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Positioned(
-                      left: 20,
-                      right: 20,
-                      child: Container(height: 2, color: Colors.grey[300]),
-                    ),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: _statusValues.map((status) {
-                        final bool isSelected = _recordStatus == status;
-
-                        return GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: () {
-                            setState(() {
-                              _recordStatus = status;
-                            });
-                          },
-                          child: SizedBox(
-                            width: 44,
-                            height: 44,
-                            child: Center(
-                              child: Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: isSelected
-                                      ? PRIMARY_COLOR
-                                      : Colors.grey[300],
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
+              ProgressStageSlider(
+                labels: const ['시작 전', '시작', '진행 중', '거의 완성', '완성'],
+                selectedIndex: _recordStatus == null
+                    ? null
+                    : _statusValues.indexOf(_recordStatus!),
+                onChanged: (index) {
+                  setState(() {
+                    _recordStatus = _statusValues[index];
+                  });
+                },
               ),
 
               const SizedBox(height: 50),
