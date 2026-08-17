@@ -80,11 +80,13 @@ class RecordApiRepositoryImpl implements RecordApiRepository {
     required Records record,
     required List<int>? deleteImageIds,
     required List<XFile>? files,
+    List<Map<String, dynamic>>? imageOrder,
   }) async {
     final Result<Map<String, dynamic>> result = await _api.putRecord(
       record: record,
       deleteImageIds: deleteImageIds,
       files: files,
+      imageOrder: imageOrder,
     );
 
     return switch (result) {
