@@ -11,10 +11,10 @@ class AppTheme {
         fontFamily: AppTextStyles.fontFamily,
         splashColor: AppColors.transparent, // 클릭 시 퍼지는 효과 제거
         scaffoldBackgroundColor: AppColors.white,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.surfaceAlt,
-          primary: AppColors.primary,
-        ),
+        // primary만 override하면 onPrimary/primaryContainer/surfaceTint는
+        // 여전히 seedColor(surfaceAlt) 기준으로 계산되어 색조가 어긋난다.
+        // seedColor 자체를 브랜드 그린으로 지정해 파생 색상을 일관되게 생성.
+        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
         appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.white,
           elevation: AppElevation.none,
