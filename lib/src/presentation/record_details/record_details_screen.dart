@@ -201,46 +201,79 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
   }
 }
 
-class _RecordImages extends StatelessWidget {
+class _RecordImages extends StatefulWidget {
   final List<Images> images;
   final void Function(int index, List<Images> images)? onImageTap;
 
   const _RecordImages({required this.images, this.onImageTap});
 
   @override
+  State<_RecordImages> createState() => _RecordImagesState();
+}
+
+class _RecordImagesState extends State<_RecordImages> {
+  late final PageController _pageController;
+  int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 1);
+  }
+
+  @override
+  void didUpdateWidget(covariant _RecordImages oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 편집 등으로 이미지 목록이 바뀌면 인덱스/페이지를 처음으로 리셋
+    // (기존 인덱스가 새 개수를 벗어나 인디케이터가 어긋나거나 범위를 벗어나는 문제 방지)
+    if (oldWidget.images != widget.images) {
+      _currentIndex = 0;
+      if (_pageController.hasClients) {
+        _pageController.jumpToPage(0);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final images = widget.images;
+    final onImageTap = widget.onImageTap;
+
     if (images.length == 1) {
       return GestureDetector(
         onTap: () {
           onImageTap?.call(0, images);
         },
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(6),
-          child: AspectRatio(
-            aspectRatio: 4 / 3,
-            child: Image.network(
-              images.first.imageUrl,
-              fit: BoxFit.cover,
+        child: AspectRatio(
+          aspectRatio: 4 / 3,
+          child: Image.network(
+            images.first.imageUrl,
+            fit: BoxFit.cover,
 
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return const Center(
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                );
-              },
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return const Center(
+                child: CircularProgressIndicator(strokeWidth: 2),
+              );
+            },
 
-              errorBuilder: (context, exception, stackTrace) {
-                return Container(
-                  color: Colors.grey.shade300,
-                  alignment: Alignment.center,
-                  child: const Icon(
-                    Icons.broken_image,
-                    color: Colors.grey,
-                    size: 40,
-                  ),
-                );
-              },
-            ),
+            errorBuilder: (context, exception, stackTrace) {
+              return Container(
+                color: Colors.grey.shade300,
+                alignment: Alignment.center,
+                child: const Icon(
+                  Icons.broken_image,
+                  color: Colors.grey,
+                  size: 40,
+                ),
+              );
+            },
           ),
         ),
       );
@@ -249,43 +282,89 @@ class _RecordImages extends StatelessWidget {
     // 여러 장일 경우
     return AspectRatio(
       aspectRatio: 4 / 3,
-      child: PageView.builder(
-        controller: PageController(viewportFraction: 1),
-        itemCount: images.length,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              onImageTap?.call(index, images);
+      child: Stack(
+        children: [
+          PageView.builder(
+            controller: _pageController,
+            itemCount: images.length,
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
             },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                images[index].imageUrl,
-                fit: BoxFit.cover,
-
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  );
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  onImageTap?.call(index, images);
                 },
+                child: Image.network(
+                  images[index].imageUrl,
+                  fit: BoxFit.cover,
 
-                errorBuilder: (context, exception, stackTrace) {
-                  return Container(
-                    color: Colors.grey.shade300,
-                    alignment: Alignment.center,
-                    child: const Icon(
-                      Icons.broken_image,
-                      color: Colors.grey,
-                      size: 40,
-                    ),
-                  );
-                },
-              ),
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    );
+                  },
+
+                  errorBuilder: (context, exception, stackTrace) {
+                    return Container(
+                      color: Colors.grey.shade300,
+                      alignment: Alignment.center,
+                      child: const Icon(
+                        Icons.broken_image,
+                        color: Colors.grey,
+                        size: 40,
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+
+          // 페이지 인디케이터 (좌우 스와이프 가능 여부 안내)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 12,
+            child: _PageIndicator(
+              count: images.length,
+              currentIndex: _currentIndex,
             ),
-          );
-        },
+          ),
+        ],
       ),
+    );
+  }
+}
+
+class _PageIndicator extends StatelessWidget {
+  final int count;
+  final int currentIndex;
+
+  const _PageIndicator({required this.count, required this.currentIndex});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(count, (index) {
+        final isActive = index == currentIndex;
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          margin: const EdgeInsets.symmetric(horizontal: 3),
+          width: isActive ? 8 : 6,
+          height: isActive ? 8 : 6,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isActive
+                ? Colors.white
+                : Colors.white.withValues(alpha: 0.5),
+          ),
+        );
+      }),
     );
   }
 }
