@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_empty_state.dart';
+import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
 import 'package:knittda/src/domain/repository/article_repository.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/use_case/get_article_previews_use_case.dart';
@@ -9,6 +12,7 @@ import 'package:knittda/src/presentation/article_list/article_list_view_model.da
 import 'package:knittda/src/presentation/article_list/components/article_card_large.dart';
 import 'package:knittda/src/presentation/article_list/components/article_card_small.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class ArticleListScreen extends StatelessWidget {
   const ArticleListScreen({super.key});
@@ -16,14 +20,10 @@ class ArticleListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        scrolledUnderElevation: 0,
-        title: const Text(
-          '뜨다 아티클',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-        ),
-        titleSpacing: 30,
+      appBar: const KnittdaAppBar(
+        title: '뜨다 아티클',
+        large: true,
+        showBack: false,
       ),
 
       body: Consumer<ArticleListViewModel>(
@@ -31,7 +31,7 @@ class ArticleListScreen extends StatelessWidget {
           final state = viewModel.state;
 
           if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const KnittdaLoadingView();
           }
 
           if (state.errorMessage != null) {
@@ -61,7 +61,7 @@ class ArticleListScreen extends StatelessWidget {
                 children: [
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.7,
-                    child: const Center(child: Text('아티클이 없습니다.')),
+                    child: const KnittdaEmptyState(message: '아티클이 없습니다.'),
                   ),
                 ],
               ),
@@ -82,7 +82,7 @@ class ArticleListScreen extends StatelessWidget {
                 return false;
               },
               child: ListView.builder(
-                padding: const EdgeInsets.only(top: 20),
+                padding: const EdgeInsets.only(top: AppSpacing.space20),
                 physics: const AlwaysScrollableScrollPhysics(),
                 itemCount:
                     state.articles.length + (state.isLoadingMore ? 1 : 0),
@@ -90,8 +90,8 @@ class ArticleListScreen extends StatelessWidget {
                   // 마지막 아이템이면 로딩 인디케이터
                   if (index == state.articles.length) {
                     return const Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Center(child: CircularProgressIndicator()),
+                      padding: EdgeInsets.all(AppSpacing.space16),
+                      child: KnittdaLoadingView(),
                     );
                   }
 
@@ -100,10 +100,10 @@ class ArticleListScreen extends StatelessWidget {
                   if (index == 0) {
                     return Padding(
                       padding: const EdgeInsets.only(
-                        left: 30,
-                        right: 30,
-                        top: 0,
-                        bottom: 40,
+                        left: AppSpacing.space32,
+                        right: AppSpacing.space32,
+                        top: AppSpacing.space0,
+                        bottom: AppSpacing.space40,
                       ),
                       child: GestureDetector(
                         onTap: () {
@@ -142,10 +142,10 @@ class ArticleListScreen extends StatelessWidget {
 
                   return Padding(
                     padding: const EdgeInsets.only(
-                      left: 30,
-                      right: 30,
-                      top: 0,
-                      bottom: 24,
+                      left: AppSpacing.space32,
+                      right: AppSpacing.space32,
+                      top: AppSpacing.space0,
+                      bottom: AppSpacing.space24,
                     ),
                     child: GestureDetector(
                       onTap: () {

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_button.dart';
+import 'package:knittda/src/presentation/widgets/knittda_empty_state.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/domain/model/project.dart';
 import 'package:knittda/src/domain/model/records.dart';
@@ -29,6 +32,7 @@ import 'package:knittda/src/presentation/record_add_edit/add_edit_record_view_mo
 import 'package:knittda/src/presentation/report/report_screen.dart';
 import 'package:knittda/src/presentation/report/report_view_model.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class ProjectsScreen extends StatelessWidget {
   const ProjectsScreen({super.key});
@@ -39,15 +43,11 @@ class ProjectsScreen extends StatelessWidget {
     final state = viewModel.state;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: const KnittdaAppBar(
+        title: '나의\n뜨개 작품',
+        large: true,
+        showBack: false,
         toolbarHeight: kToolbarHeight + 30,
-        centerTitle: false,
-        scrolledUnderElevation: 0,
-        title: const Text(
-          '나의\n뜨개 작품',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-        ),
-        titleSpacing: 30,
       ),
 
       floatingActionButton: FloatingActionButton(
@@ -67,7 +67,7 @@ class ProjectsScreen extends StatelessWidget {
             ),
           );
         },
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: AppColors.white),
       ),
 
       body: state.isLoading
@@ -76,7 +76,7 @@ class ProjectsScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("작품 불러오는 중..."),
-                  SizedBox(height: 24),
+                  SizedBox(height: AppSpacing.space24),
                   CircularProgressIndicator(),
                 ],
               ),
@@ -87,14 +87,14 @@ class ProjectsScreen extends StatelessWidget {
               children: [
                 Column(
                   children: [
-                    const SizedBox(height: 30),
+                    const SizedBox(height: AppSpacing.space32),
 
                     Padding(
                       padding: const EdgeInsets.only(
-                        top: 12,
+                        top: AppSpacing.space12,
                         bottom: 15,
-                        left: 30,
-                        right: 30,
+                        left: AppSpacing.space32,
+                        right: AppSpacing.space32,
                       ),
                       child: OrderSection(
                         projectOrder: state.projectOrder,
@@ -106,28 +106,19 @@ class ProjectsScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: AppSpacing.space20),
 
                     Expanded(
                       child: state.projects.isEmpty
-                          ? const Center(
-                              child: Text(
-                                '작품이 없습니다',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            )
+                          ? const KnittdaEmptyState(message: '작품이 없습니다')
                           : ListView.separated(
-                              padding: const EdgeInsets.only(bottom: 80),
+                              padding: const EdgeInsets.only(bottom: AppLayout.fabBottomInset),
                               separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 10),
+                                  const SizedBox(height: AppSpacing.space12),
                               itemBuilder: (context, index) {
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 30,
+                                    horizontal: AppSpacing.space32,
                                   ),
                                   child: ProjectsItem(
                                     project: state.projects[index],
@@ -241,7 +232,9 @@ class ProjectsScreen extends StatelessWidget {
                   Positioned(
                     bottom: 16,
                     left: 16,
-                    child: ElevatedButton(
+                    child: KnittdaButton(
+                      style: KnittdaButtonStyle.secondary,
+                      label: '주간 리포트 확인',
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -258,13 +251,6 @@ class ProjectsScreen extends StatelessWidget {
                           ),
                         );
                       },
-                      style: ElevatedButton.styleFrom(
-                        side: BorderSide(color: PRIMARY_COLOR),
-                      ),
-                      child: Text(
-                        '주간 리포트 확인',
-                        style: TextStyle(color: PRIMARY_COLOR),
-                      ),
                     ),
                   ),
               ],

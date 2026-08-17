@@ -1,11 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_button.dart';
+import 'package:knittda/src/presentation/widgets/knittda_input.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_event.dart';
 import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_nickname_ui_event.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class MypageSettingNicknameScreen extends StatefulWidget {
   const MypageSettingNicknameScreen({super.key});
@@ -35,8 +40,7 @@ class _MypageSettingNicknameScreenState
               case SetNickname():
                 Navigator.pop(context);
               case ShowSnackBar(:final message):
-                final snackBar = SnackBar(content: Text(message));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                KnittdaSnackBar.show(context, message);
             }
           }
         });
@@ -59,69 +63,47 @@ class _MypageSettingNicknameScreenState
     return PopScope(
       canPop: !isLoading,
       child: Scaffold(
-        appBar: AppBar(
-          scrolledUnderElevation: 0,
-          title: Text(
-            '닉네임 설정',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-          ),
-          centerTitle: true,
+        appBar: KnittdaAppBar(
+          title: '닉네임 설정',
           actions: [
             //저장버튼
-            TextButton(
+            KnittdaButton(
+              label: '저장',
               onPressed: isLoading
                   ? null
                   : () {
                       final nickname = _nicknameController.text.trim();
                       if (nickname.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('닉네임을 입력해주세요.')),
-                        );
+                        KnittdaSnackBar.show(context, '닉네임을 입력해주세요.', tone: KnittdaSnackTone.info);
                         return;
                       }
                       context.read<MypageSettingNicknameViewModel>().onEvent(
                         SettingNickname(nickname),
                       );
                     },
-              style: TextButton.styleFrom(
-                backgroundColor: PRIMARY_COLOR,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: const Text('저장', style: TextStyle(fontSize: 16)),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.space8),
           ],
         ),
 
         body: Padding(
-          padding: EdgeInsets.all(20),
+          padding: EdgeInsets.all(AppSpacing.space20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 "닉네임",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: AppFontSize.lg,
+                  fontWeight: AppFontWeight.medium,
                 ),
               ),
-              SizedBox(height: 12),
-              TextField(
-                maxLines: 1,
-                maxLength: 8,
+              SizedBox(height: AppSpacing.space12),
+              KnittdaInput(
                 controller: _nicknameController,
+                maxLength: 8,
                 enabled: !isLoading,
-                decoration: InputDecoration(
-                  isDense: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                style: const TextStyle(fontSize: 14),
               ),
             ],
           ),

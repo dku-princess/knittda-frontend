@@ -1,6 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_button.dart';
+import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
+import 'package:knittda/src/presentation/widgets/knittda_input.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
@@ -10,6 +15,7 @@ import 'package:knittda/src/presentation/project_add_edit/add_edit_project_ui_ev
 import 'package:knittda/src/presentation/project_add_edit/add_edit_project_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_box.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class AddEditProjectScreen extends StatefulWidget {
   final Project? project;
@@ -74,8 +80,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
               case SavedProject(:final project):
                 Navigator.pop(context, project);
               case ShowSnackBar(:final message):
-                final snackBar = SnackBar(content: Text(message));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                KnittdaSnackBar.show(context, message);
             }
           }
         });
@@ -145,21 +150,27 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
     final hasImage = _image != null || (_thumbnailUrl?.isNotEmpty ?? false);
 
     if (!hasImage) {
-      ScaffoldMessenger.of(
+      KnittdaSnackBar.show(
         context,
-      ).showSnackBar(const SnackBar(content: Text('대표 사진을 추가해주세요.')));
+        '대표 사진을 추가해주세요.',
+        tone: KnittdaSnackTone.error,
+      );
       return;
     }
     if (nickname.isEmpty) {
-      ScaffoldMessenger.of(
+      KnittdaSnackBar.show(
         context,
-      ).showSnackBar(const SnackBar(content: Text('작품 이름을 입력해주세요.')));
+        '작품 이름을 입력해주세요.',
+        tone: KnittdaSnackTone.error,
+      );
       return;
     }
     if (_startDate == null || _goalDate == null) {
-      ScaffoldMessenger.of(
+      KnittdaSnackBar.show(
         context,
-      ).showSnackBar(const SnackBar(content: Text('시작일과 목표일을 선택해주세요.')));
+        '시작일과 목표일을 선택해주세요.',
+        tone: KnittdaSnackTone.error,
+      );
       return;
     }
 
@@ -205,36 +216,24 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
     return Stack(
       children: [
         Scaffold(
-          appBar: AppBar(
-            scrolledUnderElevation: 0,
-            title: Text(
-              widget.project != null ? '작품 수정' : '작품 추가',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-            ),
-            centerTitle: true,
+          appBar: KnittdaAppBar(
+            title: widget.project != null ? '작품 수정' : '작품 추가',
             actions: [
               //저장버튼
-              TextButton(
+              KnittdaButton(
+                label: '저장',
                 onPressed: viewModel.state.isLoading ? null : _saveProject,
-                style: TextButton.styleFrom(
-                  backgroundColor: PRIMARY_COLOR,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Text('저장', style: TextStyle(fontSize: 16)),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.space8),
             ],
           ),
 
           body: ListView(
             padding: const EdgeInsets.only(
-              left: 20.0,
-              right: 20.0,
-              top: 20,
-              bottom: 50,
+              left: AppSpacing.space20,
+              right: AppSpacing.space20,
+              top: AppSpacing.space20,
+              bottom: AppLayout.contentBottomInset,
             ),
 
             //keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -244,13 +243,13 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                 title: Text(
                   "기본 정보",
                   style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
+                    color: AppColors.black,
+                    fontSize: AppFontSize.xl,
+                    fontWeight: AppFontWeight.medium,
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: AppSpacing.space12),
 
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,12 +258,12 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                   Text(
                     "대표 사진",
                     style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      color: AppColors.black,
+                      fontSize: AppFontSize.lg,
+                      fontWeight: AppFontWeight.medium,
                     ),
                   ),
-                  SizedBox(height: 12),
+                  SizedBox(height: AppSpacing.space12),
                   GestureDetector(
                     onTap: _pickImage,
                     child:
@@ -286,75 +285,67 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                       width: 115,
                       height: 115,
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(6),
+                        color: AppColors.grey200,
+                        borderRadius: BorderRadius.circular(AppRadius.chip),
                       ),
                       child: const Center(
                         child: Icon(
                           Icons.add,
-                          color: Colors.white,
-                          size: 40,
+                          color: AppColors.white,
+                          size: AppIconSize.xl,
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(height: 14),
+                  SizedBox(height: AppSpacing.space16),
 
                   Text(
                     "작품 이름",
                     style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      color: AppColors.black,
+                      fontSize: AppFontSize.lg,
+                      fontWeight: AppFontWeight.medium,
                     ),
                   ),
-                  SizedBox(height: 12),
-                  TextField(
+                  SizedBox(height: AppSpacing.space12),
+                  KnittdaInput(
                     controller: _nicknameController,
-                    maxLines: 1,
                     maxLength: 15,
-                    decoration: InputDecoration(
-                      isDense: true,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    style: const TextStyle(fontSize: 14),
                   ),
 
                   Text(
                     "시작일 ~ 목표일",
                     style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      color: AppColors.black,
+                      fontSize: AppFontSize.lg,
+                      fontWeight: AppFontWeight.medium,
                     ),
                   ),
-                  SizedBox(height: 12),
+                  SizedBox(height: AppSpacing.space12),
                   GestureDetector(
                     onTap: () => _pickDateRange(context),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
+                        horizontal: AppSpacing.space16,
+                        vertical: AppSpacing.space12,
                       ),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black54),
-                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColors.border),
+                        borderRadius: BorderRadius.circular(AppRadius.button),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.calendar_today, size: 20),
-                          const SizedBox(width: 10),
+                          Icon(Icons.calendar_today, size: AppIconSize.md),
+                          const SizedBox(width: AppSpacing.space12),
                           Text(
                             (_startDate != null && _goalDate != null)
                                 ? '${DateUtilsHelper.toHyphenFormat(_startDate!)} ~ ${DateUtilsHelper.toHyphenFormat(_goalDate!)}'
                                 : 'yyyy-mm-dd ~ yyyy-mm-dd',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: AppFontSize.md,
                               color: (_startDate != null && _goalDate != null)
-                                  ? Colors.black
-                                  : Colors.grey,
+                                  ? AppColors.black
+                                  : AppColors.grey400,
                             ),
                           ),
                         ],
@@ -363,125 +354,85 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 40),
+              SizedBox(height: AppSpacing.space40),
 
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text(
                   "디자인",
                   style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
+                    color: AppColors.black,
+                    fontSize: AppFontSize.xl,
+                    fontWeight: AppFontWeight.medium,
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: AppSpacing.space12),
 
               Text(
                 "도안명",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: AppFontSize.lg,
+                  fontWeight: AppFontWeight.medium,
                 ),
               ),
-              SizedBox(height: 12),
-              TextField(
+              SizedBox(height: AppSpacing.space12),
+              KnittdaInput(
                 controller: _designTitleController,
-                maxLines: 1,
                 maxLength: 15,
-                decoration: InputDecoration(
-                  isDense: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                style: const TextStyle(fontSize: 14),
               ),
-              SizedBox(height: 14),
+              SizedBox(height: AppSpacing.space16),
 
               Text(
                 "작가",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: AppFontSize.lg,
+                  fontWeight: AppFontWeight.medium,
                 ),
               ),
-              SizedBox(height: 12),
-              TextField(
+              SizedBox(height: AppSpacing.space12),
+              KnittdaInput(
                 controller: _designerController,
-                maxLines: 1,
                 maxLength: 15,
-                decoration: InputDecoration(
-                  isDense: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                style: const TextStyle(fontSize: 14),
               ),
-              SizedBox(height: 14),
+              SizedBox(height: AppSpacing.space16),
 
               Text(
                 "실",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: AppFontSize.lg,
+                  fontWeight: AppFontWeight.medium,
                 ),
               ),
-              SizedBox(height: 12),
-              TextField(
+              SizedBox(height: AppSpacing.space12),
+              KnittdaInput(
                 controller: _yarnInfoController,
-                maxLines: 1,
                 maxLength: 15,
-                decoration: InputDecoration(
-                  isDense: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                style: const TextStyle(fontSize: 14),
               ),
-              SizedBox(height: 14),
+              SizedBox(height: AppSpacing.space16),
 
               Text(
                 "바늘",
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                  fontSize: AppFontSize.lg,
+                  fontWeight: AppFontWeight.medium,
                 ),
               ),
-              SizedBox(height: 12),
-              TextField(
+              SizedBox(height: AppSpacing.space12),
+              KnittdaInput(
                 controller: _needleInfoController,
-                maxLines: 1,
                 maxLength: 15,
-                decoration: InputDecoration(
-                  isDense: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                style: const TextStyle(fontSize: 14),
               ),
             ],
           ),
         ),
 
         if (viewModel.state.isLoading)
-          Positioned.fill(
-            child: AbsorbPointer(
-              child: Container(
-                color: Colors.black26,
-                child: const Center(child: CircularProgressIndicator()),
-              ),
-            ),
-          ),
+          const Positioned.fill(child: KnittdaLoadingOverlay()),
       ],
     );
   }
