@@ -85,6 +85,8 @@ class _RecordDetailsScreenState extends State<RecordDetailsScreen> {
           actions: [
             if (!state.isLoading && state.isOwner)
               PopupMenuSection(
+                deleteDialogTitle: '기록 삭제',
+                deleteDialogContent: '이 기록을 삭제하시겠습니까?\n삭제된 기록은 복구할 수 없습니다.',
                 onEdit: () async {
                   final editedRecord = await Navigator.push<Records>(
                     context,
