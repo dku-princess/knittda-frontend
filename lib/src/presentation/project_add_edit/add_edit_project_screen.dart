@@ -144,15 +144,22 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
 
     final hasImage = _image != null || (_thumbnailUrl?.isNotEmpty ?? false);
 
-    final missingFields = <String>[];
-    if (!hasImage) missingFields.add('대표 사진');
-    if (nickname.isEmpty) missingFields.add('작품 이름');
-    if (_startDate == null || _goalDate == null) missingFields.add('시작일과 목표일');
-
-    if (missingFields.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${missingFields.join(', ')}을 입력해주세요.')),
-      );
+    if (!hasImage) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('대표 사진을 추가해주세요.')));
+      return;
+    }
+    if (nickname.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('작품 이름을 입력해주세요.')));
+      return;
+    }
+    if (_startDate == null || _goalDate == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('시작일과 목표일을 선택해주세요.')));
       return;
     }
 
