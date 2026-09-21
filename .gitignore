@@ -92,3 +92,5 @@ ios/Runner/GoogleService-Info-Beta.plist
 # google-services.json (Android, 사용자 직접 배치)
 android/app/src/prod/google-services.json
 android/app/src/beta/google-services.json
+# Widget Preview related
+.widget_preview/
