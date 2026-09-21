@@ -63,6 +63,8 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
   final List<int> _deleteImageIds = [];
   final List<XFile> _newImages = [];
 
+  int get _remainingSlots => 5 - (_existingImages.length + _newImages.length);
+
   @override
   void initState() {
     super.initState();
@@ -104,7 +106,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
   }
 
   Future<void> _showImageSourceSheet(BuildContext context) async {
-    if (_existingImages.length + _newImages.length >= 5) return;
+    if (_remainingSlots <= 0) return;
 
     showModalBottomSheet(
       context: context,
@@ -129,7 +131,11 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                 title: const Text('갤러리에서 선택'),
                 onTap: () async {
                   Navigator.pop(context);
-                  await _pickImage(ImageSource.gallery);
+                  if (_remainingSlots < 2) {
+                    await _pickImage(ImageSource.gallery);
+                  } else {
+                    await _pickMultiImage();
+                  }
                 },
               ),
             ],
@@ -140,7 +146,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    if (_existingImages.length + _newImages.length >= 5) return;
+    if (_remainingSlots <= 0) return;
 
     try {
       final XFile? file = await _picker.pickImage(
@@ -154,13 +160,45 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
       if (!mounted) return;
 
       setState(() {
-        if (_existingImages.length + _newImages.length < 5) {
+        if (_remainingSlots > 0) {
           _newImages.add(file);
         }
       });
-    } catch(_) {
+    } catch (_) {
       if (!mounted) return;
       KnittdaSnackBar.show(context, '카메라를 사용할 수 없습니다. 설정에서 권한을 확인해 주세요.', tone: KnittdaSnackTone.error);
+    }
+  }
+
+  Future<void> _pickMultiImage() async {
+    final remaining = _remainingSlots;
+    if (remaining <= 0) return;
+
+    try {
+      final List<XFile> files = await _picker.pickMultiImage(
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 80,
+        limit: remaining,
+      );
+
+      if (files.isEmpty) return;
+      if (!mounted) return;
+
+      setState(() {
+        _newImages.addAll(files.take(remaining));
+      });
+
+      if (files.length > remaining && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('사진은 최대 5장까지만 첨부할 수 있습니다.')),
+        );
+      }
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('사진을 불러올 수 없습니다. 설정에서 권한을 확인해 주세요.')),
+      );
     }
   }
 
