@@ -58,10 +58,32 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
 
   final _commentController = TextEditingController();
 
+  static const int _maxImages = 5;
+
   final ImagePicker _picker = ImagePicker();
-  final List<Images> _existingImages = [];
+  // 기존 서버 이미지와 새로 추가한 로컬 이미지를 한 리스트에서 순서 관리(드래그 재정렬 지원).
+  final List<_RecordImage> _images = [];
   final List<int> _deleteImageIds = [];
-  final List<XFile> _newImages = [];
+
+  int get _imageCount => _images.length;
+  List<XFile> get _newFiles =>
+      _images.where((e) => !e.isExisting).map((e) => e.file!).toList();
+
+  // 최종 표시 순서 배열. 기존 이미지는 {type:existing,id}, 신규는 {type:new,index}
+  // (index는 _newFiles/업로드 files의 인덱스). 서버가 배열 위치대로 imageOrder를 부여한다.
+  List<Map<String, dynamic>> get _imageOrder {
+    final order = <Map<String, dynamic>>[];
+    var newIndex = 0;
+    for (final img in _images) {
+      if (img.isExisting) {
+        order.add({'type': 'existing', 'id': img.existing!.id});
+      } else {
+        order.add({'type': 'new', 'index': newIndex});
+        newIndex++;
+      }
+    }
+    return order;
+  }
 
   @override
   void initState() {
@@ -75,7 +97,9 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
 
       _commentController.text = record.comment ?? '';
 
-      _existingImages.addAll(record.images ?? []);
+      _images.addAll(
+        (record.images ?? []).map((image) => _RecordImage.existing(image)),
+      );
     }
 
     Future.microtask(() {
@@ -103,8 +127,34 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
     super.dispose();
   }
 
+  Future<void> _showMaxImagesAlert() async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text('사진 첨부 제한'),
+          content: Text('사진은 최대 $_maxImages장까지 추가할 수 있어요.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              style: TextButton.styleFrom(foregroundColor: PRIMARY_COLOR),
+              child: const Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _showImageSourceSheet(BuildContext context) async {
-    if (_existingImages.length + _newImages.length >= 5) return;
+    if (_imageCount >= _maxImages) {
+      await _showMaxImagesAlert();
+      return;
+    }
 
     showModalBottomSheet(
       context: context,
@@ -129,7 +179,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
                 title: const Text('갤러리에서 선택'),
                 onTap: () async {
                   Navigator.pop(context);
-                  await _pickImage(ImageSource.gallery);
+                  await _pickImagesFromGallery();
                 },
               ),
             ],
@@ -140,7 +190,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    if (_existingImages.length + _newImages.length >= 5) return;
+    if (_imageCount >= _maxImages) return;
 
     try {
       final XFile? file = await _picker.pickImage(
@@ -154,14 +204,80 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
       if (!mounted) return;
 
       setState(() {
-        if (_existingImages.length + _newImages.length < 5) {
-          _newImages.add(file);
+        if (_imageCount < _maxImages) {
+          _images.add(_RecordImage.newFile(file));
         }
       });
     } catch(_) {
       if (!mounted) return;
       KnittdaSnackBar.show(context, '카메라를 사용할 수 없습니다. 설정에서 권한을 확인해 주세요.', tone: KnittdaSnackTone.error);
     }
+  }
+
+  Future<void> _pickImagesFromGallery() async {
+    final remaining = _maxImages - _imageCount;
+    if (remaining <= 0) {
+      await _showMaxImagesAlert();
+      return;
+    }
+
+    try {
+      // pickMultiImage의 limit은 2 이상만 허용(ArgumentError)하고, limit을 생략하면
+      // 무제한 선택이 되어버린다. 따라서 남은 슬롯이 1이면 단일 피커로 선택을 1장으로 제한한다.
+      final List<XFile> files;
+      if (remaining == 1) {
+        final XFile? file = await _picker.pickImage(
+          source: ImageSource.gallery,
+          maxWidth: 1024,
+          maxHeight: 1024,
+          imageQuality: 80,
+        );
+        files = file == null ? const [] : [file];
+      } else {
+        files = await _picker.pickMultiImage(
+          maxWidth: 1024,
+          maxHeight: 1024,
+          imageQuality: 80,
+          limit: remaining,
+        );
+      }
+
+      if (files.isEmpty) return;
+      if (!mounted) return;
+
+      // limit이 플랫폼/OS 버전에 따라 강제되지 않을 수 있어, 남은 슬롯만큼만 앞에서부터 담는다.
+      final toAdd = files.take(remaining).toList();
+
+      setState(() {
+        _images.addAll(toAdd.map((f) => _RecordImage.newFile(f)));
+      });
+
+      if (files.length > remaining) {
+        await _showMaxImagesAlert();
+      }
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('사진을 불러올 수 없습니다. 설정에서 권한을 확인해 주세요.')),
+      );
+    }
+  }
+
+  Widget _buildImageBox(_RecordImage img) {
+    return ImageBox(
+      localImageUrl: img.isExisting ? null : img.file!.path,
+      networkImageUrl: img.isExisting ? img.existing!.imageUrl : null,
+      width: 100,
+      height: 100,
+      onRemove: () {
+        setState(() {
+          if (img.isExisting) {
+            _deleteImageIds.add(img.existing!.id);
+          }
+          _images.remove(img);
+        });
+      },
+    );
   }
 
   Future<void> _saveRecord() async {
@@ -192,7 +308,7 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
             comment: comment,
             question: viewModel.state.questionState.question,
           ),
-          files: _newImages,
+          files: _newFiles,
         ),
       );
     } else {
@@ -206,7 +322,8 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
             comment: comment,
           ),
           deleteImageIds: _deleteImageIds,
-          files: _newImages,
+          files: _newFiles,
+          imageOrder: _imageOrder,
         ),
       );
     }
@@ -306,62 +423,47 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
               const SizedBox(height: AppSpacing.space20),
               SizedBox(
                 height: 100,
-                child: ListView(
+                // 이미지를 길게 눌러 드래그하면 순서를 재정렬할 수 있다.
+                child: ReorderableListView(
                   scrollDirection: Axis.horizontal,
-                  children: [
-                    ..._existingImages.map((image) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: AppSpacing.space8),
-                        child: ImageBox(
-                          localImageUrl: null,
-                          networkImageUrl: image.imageUrl,
-                          width: 100,
-                          height: 100,
-                          onRemove: () {
-                            setState(() {
-                              _existingImages.remove(image);
-                              _deleteImageIds.add(image.id);
-                            });
-                          },
-                        ),
-                      );
-                    }),
-
-                    ..._newImages.map((file) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: AppSpacing.space8),
-                        child: ImageBox(
-                          localImageUrl: file.path,
-                          networkImageUrl: null,
-                          width: 100,
-                          height: 100,
-                          onRemove: () {
-                            setState(() {
-                              _newImages.remove(file);
-                            });
-                          },
-                        ),
-                      );
-                    }),
-
-                    if (_existingImages.length + _newImages.length < 5)
-                      GestureDetector(
-                        onTap: () => _showImageSourceSheet(context),
-                        child: Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(AppRadius.button),
-                            border: Border.all(color: AppColors.grey400),
-                          ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.add,
-                              size: AppIconSize.lg,
-                              color: AppColors.grey400,
+                  buildDefaultDragHandles: true,
+                  onReorder: (oldIndex, newIndex) {
+                    setState(() {
+                      if (newIndex > oldIndex) newIndex -= 1;
+                      final item = _images.removeAt(oldIndex);
+                      _images.insert(newIndex, item);
+                    });
+                  },
+                  // 드래그 중 프록시는 우측 여백을 제외한 이미지(100x100)만 렌더한다.
+                  proxyDecorator: (child, index, animation) {
+                    return Material(
+                      color: Colors.transparent,
+                      child: _buildImageBox(_images[index]),
+                    );
+                  },
+                  // 최대 장수를 채우면 추가(+) 버튼을 노출하지 않는다.
+                  footer: _imageCount >= _maxImages
+                      ? null
+                      : GestureDetector(
+                          onTap: () => _showImageSourceSheet(context),
+                          child: Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.grey),
+                            ),
+                            child: const Center(
+                              child: Icon(Icons.add, size: 32, color: Colors.grey),
                             ),
                           ),
                         ),
+                  children: [
+                    for (final img in _images)
+                      Padding(
+                        key: img.key,
+                        padding: const EdgeInsets.only(right: 10.0),
+                        child: _buildImageBox(img),
                       ),
                   ],
                 ),
@@ -399,4 +501,21 @@ class _AddEditRecordScreenState extends State<AddEditRecordScreen> {
       ],
     );
   }
+}
+
+/// 기록 첨부 이미지 한 개를 나타낸다. 기존 서버 이미지(existing)와
+/// 새로 추가한 로컬 파일(newFile)을 한 리스트에서 함께 순서 관리하기 위한 래퍼.
+class _RecordImage {
+  final Images? existing;
+  final XFile? file;
+
+  _RecordImage.existing(this.existing) : file = null;
+
+  _RecordImage.newFile(this.file) : existing = null;
+
+  bool get isExisting => existing != null;
+
+  Key get key => isExisting
+      ? ValueKey('existing_${existing!.id}')
+      : ValueKey('new_${file!.path}');
 }
