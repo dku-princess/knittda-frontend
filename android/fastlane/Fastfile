@@ -25,7 +25,7 @@ platform :android do
       track: "internal",
       json_key_data: json_key_data
     )
-    build_number = version_codes.max + 1
+    build_number = version_codes.max.to_i + 1
 
     Dir.chdir("../..") do
       sh(
