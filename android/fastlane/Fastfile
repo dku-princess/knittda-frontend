@@ -17,12 +17,30 @@ require "base64"
 default_platform(:android)
 
 platform :android do
-  desc "Upload beta app bundle to Google Play internal testing"
+  desc "Build and upload beta app bundle to Google Play internal testing"
   lane :beta do
+    json_key_data = Base64.decode64(ENV['PLAY_STORE_SERVICE_ACCOUNT_JSON_BASE64'])
+
+    version_codes = google_play_track_version_codes(
+      track: "internal",
+      json_key_data: json_key_data
+    )
+    build_number = version_codes.max + 1
+
+    Dir.chdir("../..") do
+      sh(
+        "flutter", "build", "appbundle",
+        "--release",
+        "--flavor", "beta",
+        "--dart-define-from-file=config/beta.release.json",
+        "--build-number=#{build_number}"
+      )
+    end
+
     upload_to_play_store(
       track: "internal",
       aab: "../build/app/outputs/bundle/betaRelease/app-beta-release.aab",
-      json_key_data: Base64.decode64(ENV['PLAY_STORE_SERVICE_ACCOUNT_JSON_BASE64']),
+      json_key_data: json_key_data,
       skip_upload_metadata: true,
       skip_upload_changelogs: true,
       skip_upload_images: true,
