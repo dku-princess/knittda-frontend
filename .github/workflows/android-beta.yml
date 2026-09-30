@@ -5,6 +5,9 @@ on:
     tags:
       - 'android-beta-v*'
 
+permissions:
+  contents: read
+
 jobs:
   build_and_upload:
     runs-on: ubuntu-latest
