@@ -47,6 +47,7 @@ dev_dependencies:
   build_runner: ^2.10.3
   json_serializable: ^6.11.1
   freezed: ^3.2.3
+  sentry_dart_plugin: ^3.4.0
 
 dependency_overrides:
   path_provider_foundation: 2.5.1
@@ -82,3 +83,7 @@ flutter:
         - asset: assets/font/Pretendard-Black.otf
           weight: 900
 
+sentry:
+  project: flutter
+  org: knittda
+  dart_symbol_map_path: build/app/obfuscation.map.json
