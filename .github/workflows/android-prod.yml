@@ -1,9 +1,9 @@
-name: Android Beta Deploy
+name: Android Prod Deploy
 
 on:
   push:
     tags:
-      - 'android-beta-v*'
+      - 'android-prod-v*'
 
 permissions:
   contents: read
@@ -11,8 +11,8 @@ permissions:
 jobs:
   build_and_upload:
     runs-on: ubuntu-latest
-    environment: beta
-    concurrency: android-beta
+    environment: prod
+    concurrency: android-prod
     env:
       LC_ALL: en_US.UTF-8
       LANG: en_US.UTF-8
@@ -52,8 +52,8 @@ jobs:
           ANDROID_GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON_BASE64 }}
         run: |
           echo "$ANDROID_UPLOAD_KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
-          mkdir -p android/app/src/beta
-          echo "$ANDROID_GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > android/app/src/beta/google-services.json
+          mkdir -p android/app/src/prod
+          echo "$ANDROID_GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > android/app/src/prod/google-services.json
 
       - name: Create key.properties
         env:
@@ -68,7 +68,7 @@ jobs:
           storeFile=upload-keystore.jks
           EOF
 
-      - name: Create config/beta.release.json and local.properties
+      - name: Create config/prod.release.json and local.properties
         env: 
           APP_CHANNEL: ${{ secrets.APP_CHANNEL }}
           KAKAO_NATIVE_APP_KEY: ${{ secrets.KAKAO_NATIVE_APP_KEY }}
@@ -79,7 +79,7 @@ jobs:
           SENTRY_ENVIRONMENT: ${{ secrets.SENTRY_ENVIRONMENT }}
         run: |
           mkdir -p config
-          cat > config/beta.release.json <<EOF
+          cat > config/prod.release.json <<EOF
           {
             "APP_CHANNEL": "$APP_CHANNEL",
             "KAKAO_NATIVE_APP_KEY": "$KAKAO_NATIVE_APP_KEY",
@@ -103,4 +103,4 @@ jobs:
         env: 
           PLAY_STORE_SERVICE_ACCOUNT_JSON_BASE64: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON_BASE64 }}
           SENTRY_AUTH_TOKEN: ${{ secrets.ANDROID_SENTRY_AUTH_TOKEN }}
-        run: bundle exec fastlane beta
+        run: bundle exec fastlane prod
