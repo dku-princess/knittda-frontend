@@ -87,3 +87,4 @@ sentry:
   project: flutter
   org: knittda
   dart_symbol_map_path: build/app/obfuscation.map.json
+  ignore_missing: true
