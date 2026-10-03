@@ -102,4 +102,5 @@ jobs:
         working-directory: android
         env: 
           PLAY_STORE_SERVICE_ACCOUNT_JSON_BASE64: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON_BASE64 }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.ANDROID_SENTRY_AUTH_TOKEN }}
         run: bundle exec fastlane beta
