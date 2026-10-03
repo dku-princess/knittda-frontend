@@ -1,0 +1,7 @@
+package_name("com.tteuda.app.beta") # e.g. com.krausefx.app
+
+for_platform :android do
+  for_lane :prod do
+    package_name("com.tteuda.app")
+  end
+end
