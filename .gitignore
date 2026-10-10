@@ -94,3 +94,22 @@ android/app/src/prod/google-services.json
 android/app/src/beta/google-services.json
 # Widget Preview related
 .widget_preview/
+
+# fastlane specific
+**/fastlane/report.xml
+
+# deliver temporary files
+**/fastlane/Preview.html
+
+# snapshot generated screenshots
+**/fastlane/screenshots
+
+# scan temporary files
+**/fastlane/test_output
+
+# Secret 등록용 base64 임시 파일
+*.base64
+
+# Play Console 서비스 계정 키 
+*service-account*.json
+
