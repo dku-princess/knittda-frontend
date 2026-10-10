@@ -12,11 +12,13 @@ class UpdateRecordUseCase {
     required Records record,
     required List<int>? deleteImageIds,
     required List<XFile>? files,
+    List<Map<String, dynamic>>? imageOrder,
   }) async {
     final result = await _repository.putRecord(
       record: record,
       deleteImageIds: deleteImageIds,
       files: files,
+      imageOrder: imageOrder,
     );
 
     return switch (result) {
