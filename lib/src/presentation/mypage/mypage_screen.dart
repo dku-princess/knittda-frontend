@@ -189,31 +189,37 @@ class _MypageScreenState extends State<MypageScreen> {
         children: [
           SizedBox(height: AppSpacing.space20),
 
-          Container(
-            padding: EdgeInsets.only(top: AppSpacing.space8, bottom: AppSpacing.space24, left: AppSpacing.space32, right: AppSpacing.space32),
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: AppColors.grey50, width: 3),
+          InkWell(
+            onTap: () {
+              if (user == null) return;
+              _showSettingProfileSheet();
+            },
+            child: Container(
+              padding: EdgeInsets.only(top: AppSpacing.space8, bottom: AppSpacing.space24, left: AppSpacing.space32, right: AppSpacing.space32),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: AppColors.grey50, width: 3),
+                ),
               ),
-            ),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundImage: state.previewImage != null
-                      ? FileImage(File(state.previewImage!.path)) // 미리보기 우선
-                      : (user?.profileImageUrl != null &&
-                            user!.profileImageUrl!.isNotEmpty)
-                      ? NetworkImage(user.profileImageUrl!)
-                      : null,
-                  backgroundColor: AppColors.grey400,
-                ),
-                const SizedBox(width: AppSpacing.space20),
-                Text(
-                  user?.nickname ?? '알 수 없는 사용자',
-                  style: AppTextStyles.bodyStrong,
-                ),
-              ],
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 24,
+                    backgroundImage: state.previewImage != null
+                        ? FileImage(File(state.previewImage!.path)) // 미리보기 우선
+                        : (user?.profileImageUrl != null &&
+                              user!.profileImageUrl!.isNotEmpty)
+                        ? NetworkImage(user.profileImageUrl!)
+                        : null,
+                    backgroundColor: AppColors.grey400,
+                  ),
+                  const SizedBox(width: AppSpacing.space20),
+                  Text(
+                    user?.nickname ?? '알 수 없는 사용자',
+                    style: AppTextStyles.bodyStrong,
+                  ),
+                ],
+              ),
             ),
           ),
 
