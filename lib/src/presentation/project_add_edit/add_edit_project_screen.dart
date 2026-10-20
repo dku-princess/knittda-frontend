@@ -27,6 +27,9 @@ class AddEditProjectScreen extends StatefulWidget {
 }
 
 class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
+  static const _shortFieldMaxLength = 30;
+  static const _infoFieldMaxLength = 100;
+
   final _nicknameController = TextEditingController();
   final _designTitleController = TextEditingController();
   final _designerController = TextEditingController();
@@ -136,6 +139,14 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
         _goalDate = picked.end;
       });
     }
+  }
+
+  void _showMaxLengthSnack(int maxLength) {
+    KnittdaSnackBar.show(
+      context,
+      '최대 $maxLength자까지 입력할 수 있어요.',
+      tone: KnittdaSnackTone.error,
+    );
   }
 
   Future<void> _saveProject() async {
@@ -298,7 +309,9 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                   SizedBox(height: AppSpacing.space12),
                   KnittdaInput(
                     controller: _nicknameController,
-                    maxLength: 15,
+                    maxLength: _shortFieldMaxLength,
+                    onMaxLengthExceeded: () =>
+                        _showMaxLengthSnack(_shortFieldMaxLength),
                   ),
 
                   Text(
@@ -355,7 +368,9 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
               SizedBox(height: AppSpacing.space12),
               KnittdaInput(
                 controller: _designTitleController,
-                maxLength: 15,
+                maxLength: _shortFieldMaxLength,
+                onMaxLengthExceeded: () =>
+                    _showMaxLengthSnack(_shortFieldMaxLength),
               ),
               SizedBox(height: AppSpacing.space16),
 
@@ -366,7 +381,9 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
               SizedBox(height: AppSpacing.space12),
               KnittdaInput(
                 controller: _designerController,
-                maxLength: 15,
+                maxLength: _shortFieldMaxLength,
+                onMaxLengthExceeded: () =>
+                    _showMaxLengthSnack(_shortFieldMaxLength),
               ),
               SizedBox(height: AppSpacing.space16),
 
@@ -377,7 +394,9 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
               SizedBox(height: AppSpacing.space12),
               KnittdaInput(
                 controller: _yarnInfoController,
-                maxLength: 15,
+                maxLength: _infoFieldMaxLength,
+                onMaxLengthExceeded: () =>
+                    _showMaxLengthSnack(_infoFieldMaxLength),
               ),
               SizedBox(height: AppSpacing.space16),
 
@@ -388,7 +407,9 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
               SizedBox(height: AppSpacing.space12),
               KnittdaInput(
                 controller: _needleInfoController,
-                maxLength: 15,
+                maxLength: _infoFieldMaxLength,
+                onMaxLengthExceeded: () =>
+                    _showMaxLengthSnack(_infoFieldMaxLength),
               ),
             ],
           ),

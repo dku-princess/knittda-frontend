@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:knittda/src/core/theme/theme.dart';
 
 /// Knittda 공통 입력 필드. Figma `Input` 컴포넌트와 대응.
@@ -15,7 +16,8 @@ import 'package:knittda/src/core/theme/theme.dart';
 /// | [obscureText] | 비밀번호 마스킹. |
 /// | [keyboardType] | 키보드 타입(멀티라인 등). |
 /// | [maxLines] | 최대 줄 수(기본 1). |
-/// | [maxLength] | 최대 글자 수(카운터 표시). |
+/// | [maxLength] | 최대 글자 수(기본은 카운터 표시, [onMaxLengthExceeded]를 주면 카운터 대신 입력만 제한). |
+/// | [onMaxLengthExceeded] | 최대 글자 수를 넘겨 입력을 시도했을 때 호출(알림창 등). 지정하면 카운터를 숨긴다. |
 /// | [enabled] | false면 비활성. |
 ///
 /// 아이콘(prefix/suffix)이 필요한 검색창 등은 이 위젯 대신 로컬 구성한다.
@@ -30,6 +32,7 @@ class KnittdaInput extends StatelessWidget {
     this.keyboardType,
     this.maxLines = 1,
     this.maxLength,
+    this.onMaxLengthExceeded,
     this.enabled = true,
   });
 
@@ -41,6 +44,7 @@ class KnittdaInput extends StatelessWidget {
   final TextInputType? keyboardType;
   final int maxLines;
   final int? maxLength;
+  final VoidCallback? onMaxLengthExceeded;
   final bool enabled;
 
   OutlineInputBorder _border(Color color, [double width = 1]) {
@@ -59,6 +63,9 @@ class KnittdaInput extends StatelessWidget {
       keyboardType: keyboardType,
       maxLines: obscureText ? 1 : maxLines,
       maxLength: maxLength,
+      inputFormatters: maxLength == null
+          ? null
+          : [_MaxLengthExceededFormatter(maxLength!, onMaxLengthExceeded)],
       enabled: enabled,
       cursorColor: AppColors.primary,
       style: AppTextStyles.body,
@@ -70,6 +77,7 @@ class KnittdaInput extends StatelessWidget {
         hintStyle: AppTextStyles.body.copyWith(color: AppColors.textHint),
         errorText: errorText,
         errorStyle: AppTextStyles.caption.copyWith(color: AppColors.error),
+        counterText: onMaxLengthExceeded != null ? '' : null,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.space16,
           vertical: AppSpacing.space12,
@@ -80,5 +88,27 @@ class KnittdaInput extends StatelessWidget {
         focusedErrorBorder: _border(AppColors.error, 1.5),
       ),
     );
+  }
+}
+
+/// 최대 글자 수를 넘겨 입력을 시도하면 [onExceeded]를 호출한다.
+///
+/// 실제 길이 제한(truncation)은 [TextField.maxLength]가 담당하므로,
+/// 여기서는 넘침 여부만 감지해 알림을 띄우는 역할만 한다.
+class _MaxLengthExceededFormatter extends TextInputFormatter {
+  _MaxLengthExceededFormatter(this.maxLength, this.onExceeded);
+
+  final int maxLength;
+  final VoidCallback? onExceeded;
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.length > maxLength) {
+      onExceeded?.call();
+    }
+    return newValue;
   }
 }
