@@ -89,5 +89,31 @@ void main() {
 
       expect(exceededCount, 0);
     });
+
+    testWidgets(
+      '서로게이트 페어(코드 유닛 2개)로 이뤄진 글자는 grapheme 기준으로 세어 '
+      '한도 이내면 onMaxLengthExceeded가 호출되지 않는다',
+      (tester) async {
+        var exceededCount = 0;
+        final controller = TextEditingController();
+        // '😀'는 grapheme 1개지만 UTF-16 코드 유닛은 2개다.
+        final fiveEmoji = '😀' * 5;
+
+        await tester.pumpWidget(
+          _wrap(
+            KnittdaInput(
+              controller: controller,
+              maxLength: 5,
+              onMaxLengthExceeded: () => exceededCount++,
+            ),
+          ),
+        );
+
+        await tester.enterText(find.byType(TextFormField), fiveEmoji);
+        await tester.pump();
+
+        expect(exceededCount, 0);
+      },
+    );
   });
 }
