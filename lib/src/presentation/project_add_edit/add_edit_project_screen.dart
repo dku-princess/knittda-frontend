@@ -141,6 +141,9 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
     }
   }
 
+  // 한도 초과 상태에서 키 연타/붙여넣기로 onMaxLengthExceeded가 연속 호출돼도,
+  // KnittdaSnackBar.show가 매번 hideCurrentSnackBar() 후 showSnackBar()를 호출하므로
+  // 스낵바가 큐에 쌓이지는 않는다(계속 같은 스낵바로 즉시 교체됨).
   void _showMaxLengthSnack(int maxLength) {
     KnittdaSnackBar.show(
       context,

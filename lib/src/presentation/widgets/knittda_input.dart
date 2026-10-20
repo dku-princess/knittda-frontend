@@ -106,6 +106,11 @@ class _MaxLengthExceededFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
+    // TextField(maxLength: ...)가 자동으로 붙이는 LengthLimitingTextInputFormatter는
+    // 사용자가 지정한 inputFormatters 뒤에 실행된다(Flutter 내부 동작, 공개 계약은 아님).
+    // 그래서 여기서는 아직 잘리지 않은 newValue를 보고 초과 여부를 판단할 수 있다.
+    // 이 순서가 바뀌면 onExceeded가 조용히 호출되지 않게 되는데,
+    // knittda_input_test.dart의 "초과 시 콜백이 호출된다" 테스트가 이를 감지한다.
     if (newValue.text.length > maxLength) {
       onExceeded?.call();
     }
