@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_dialog.dart';
 import 'package:knittda/src/domain/repository/announcement_repository.dart';
 import 'package:knittda/src/domain/repository/authentication_repository.dart';
 import 'package:knittda/src/domain/use_case/auto_login_use_case.dart';
@@ -21,6 +24,7 @@ import 'package:knittda/src/presentation/mypage_setting_nickname/mypage_setting_
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class MypageScreen extends StatefulWidget {
   const MypageScreen({super.key});
@@ -70,8 +74,7 @@ class _MypageScreenState extends State<MypageScreen> {
                   (route) => false,
                 );
               case ShowSnackBar(:final message):
-                final snackBar = SnackBar(content: Text(message));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                KnittdaSnackBar.show(context, message);
             }
           }
         });
@@ -158,17 +161,13 @@ class _MypageScreenState extends State<MypageScreen> {
     try {
       if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('링크를 열 수 없습니다.')));
+          KnittdaSnackBar.show(context, '링크를 열 수 없습니다.', tone: KnittdaSnackTone.error);
         }
       }
     } catch (e) {
       debugPrint('Failed to launch URL: $url, error: $e');
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('링크를 열 수 없습니다.')));
+        KnittdaSnackBar.show(context, '링크를 열 수 없습니다.', tone: KnittdaSnackTone.error);
       }
     }
   }
@@ -180,25 +179,21 @@ class _MypageScreenState extends State<MypageScreen> {
     final user = state.user;
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        scrolledUnderElevation: 0,
-        title: const Text(
-          '마이페이지',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-        ),
-        titleSpacing: 30,
+      appBar: const KnittdaAppBar(
+        title: '마이페이지',
+        large: true,
+        showBack: false,
       ),
 
       body: ListView(
         children: [
-          SizedBox(height: 20),
+          SizedBox(height: AppSpacing.space20),
 
           Container(
-            padding: EdgeInsets.only(top: 8, bottom: 24, left: 30, right: 30),
+            padding: EdgeInsets.only(top: AppSpacing.space8, bottom: AppSpacing.space24, left: AppSpacing.space32, right: AppSpacing.space32),
             decoration: BoxDecoration(
               border: Border(
-                bottom: BorderSide(color: Color(0xFFF5F7F8), width: 3),
+                bottom: BorderSide(color: AppColors.grey50, width: 3),
               ),
             ),
             child: Row(
@@ -211,15 +206,12 @@ class _MypageScreenState extends State<MypageScreen> {
                             user!.profileImageUrl!.isNotEmpty)
                       ? NetworkImage(user.profileImageUrl!)
                       : null,
-                  backgroundColor: Colors.grey,
+                  backgroundColor: AppColors.grey400,
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(width: AppSpacing.space20),
                 Text(
                   user?.nickname ?? '알 수 없는 사용자',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTextStyles.bodyStrong,
                 ),
               ],
             ),
@@ -228,7 +220,7 @@ class _MypageScreenState extends State<MypageScreen> {
           SizedBox(height: 28),
 
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space32),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -249,26 +241,12 @@ class _MypageScreenState extends State<MypageScreen> {
                 _buildMenuItem(
                   '회원탈퇴',
                   onTap: () async {
-                    final confirmed = await showDialog<bool>(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text('회원탈퇴'),
-                        content: Text('정말 탈퇴하시겠습니까?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: Text('취소'),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, true),
-
-                            child: Text(
-                              '탈퇴',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ),
-                        ],
-                      ),
+                    final confirmed = await KnittdaDialog.confirm(
+                      context,
+                      title: '회원탈퇴',
+                      message: '정말 탈퇴하시겠습니까?',
+                      confirmLabel: '탈퇴',
+                      destructive: true,
                     );
                     if (confirmed == true) {
                       viewModel.onEvent(MypageEvent.signout());
@@ -276,7 +254,7 @@ class _MypageScreenState extends State<MypageScreen> {
                   },
                 ),
 
-                SizedBox(height: 40),
+                SizedBox(height: AppSpacing.space40),
 
                 _buildSectionHeader('문의'),
                 _buildMenuItem(
@@ -323,17 +301,13 @@ class _MypageScreenState extends State<MypageScreen> {
 Widget _buildSectionHeader(String title) {
   return Container(
     width: double.infinity,
-    padding: const EdgeInsets.only(bottom: 12),
+    padding: const EdgeInsets.only(bottom: AppSpacing.space12),
     decoration: const BoxDecoration(
-      border: Border(bottom: BorderSide(color: Color(0xFF4D4D4D), width: 1)),
+      border: Border(bottom: BorderSide(color: AppColors.grey800, width: 1)),
     ),
     child: Text(
       title,
-      style: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: Color(0xFF4D4D4D),
-      ),
+      style: AppTextStyles.bodyStrong.copyWith(color: AppColors.textSecondary),
     ),
   );
 }
@@ -344,19 +318,15 @@ Widget _buildMenuItem(String title, {required VoidCallback onTap}) {
     onTap: onTap,
     child: Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.space12),
       decoration: const BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: Color(0xFFE6E6E6), width: 0.5),
+          bottom: BorderSide(color: AppColors.grey200, width: 0.5),
         ),
       ),
       child: Text(
         title,
-        style: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          color: Color(0xFF4D4D4D),
-        ),
+        style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
       ),
     ),
   );

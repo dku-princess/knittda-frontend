@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class ProgressSection extends StatelessWidget {
   final String status;
@@ -23,10 +24,10 @@ class ProgressSection extends StatelessWidget {
       onPressed: onPressed,
       style: TextButton.styleFrom(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.pill),
           side: BorderSide(color: PRIMARY_COLOR),
         ),
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: AppSpacing.space16),
       ),
       child: Text(label, style: TextStyle(color: PRIMARY_COLOR)),
     );

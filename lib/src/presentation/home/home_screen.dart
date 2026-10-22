@@ -31,6 +31,7 @@ import 'package:knittda/src/presentation/projects/projects_screen.dart';
 import 'package:knittda/src/presentation/projects/projects_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 // 바텀네비게이션 리스트
 final List<BottomNavigationBarItem> myTabs = <BottomNavigationBarItem>[
@@ -134,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Scaffold(
               bottomNavigationBar: BottomNavigationBar(
                 selectedItemColor: PRIMARY_COLOR,
-                unselectedItemColor: Colors.grey,
+                unselectedItemColor: AppColors.grey400,
                 type: BottomNavigationBarType.fixed,
                 items: myTabs,
                 currentIndex: _selectedIndex,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knittda/src/domain/model/in_app_banner.dart';
 import 'package:knittda/src/domain/util/banner_dismiss_type.dart';
 import 'package:knittda/src/performance/banner_load_tracker.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class BottomBannerOverlay extends StatefulWidget {
   final InAppBanner banner;
@@ -38,7 +39,7 @@ class _BottomBannerOverlayState extends State<BottomBannerOverlay> {
   Widget build(BuildContext context) {
     return Positioned.fill(
       child: Container(
-        color: Colors.black.withValues(alpha: 0.5),
+        color: AppColors.black.withValues(alpha: 0.5),
         child: SafeArea(
           child: Column(
             children: [
@@ -50,11 +51,11 @@ class _BottomBannerOverlayState extends State<BottomBannerOverlay> {
               ),
               // 배너 이미지
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space16),
                 child: GestureDetector(
                   onTap: widget.banner.actionType == 'none' ? null : widget.onTapBanner,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.card),
                     child: AspectRatio(
                       aspectRatio: 3 / 2,
                       child: widget.imageUrl != null
@@ -74,18 +75,18 @@ class _BottomBannerOverlayState extends State<BottomBannerOverlay> {
                                   _imageMeasured = true;
                                   BannerLoadTracker.instance.markT5ImageError();
                                 }
-                                return Container(color: Colors.grey.shade300);
+                                return Container(color: AppColors.grey200);
                               },
                             )
-                          : Container(color: Colors.grey.shade300),
+                          : Container(color: AppColors.grey200),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.space12),
               // 하단 버튼
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -93,20 +94,20 @@ class _BottomBannerOverlayState extends State<BottomBannerOverlay> {
                       onPressed: () => widget.onDismiss(BannerDismissType.dismissForToday),
                       child: const Text(
                         '하루 동안 보지 않기',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: AppColors.white),
                       ),
                     ),
                     TextButton(
                       onPressed: () => widget.onDismiss(BannerDismissType.close),
                       child: const Text(
                         '닫기',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: AppColors.white),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.space32),
             ],
           ),
         ),

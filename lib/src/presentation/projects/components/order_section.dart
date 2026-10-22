@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/domain/util/project_order.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class OrderSection extends StatelessWidget {
   final ProjectOrder projectOrder;
@@ -37,15 +38,13 @@ class OrderSection extends StatelessWidget {
                 : null,
             child: Text(
               '뜨고 있어요',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: isInProgressSelected ? PRIMARY_COLOR : Colors.grey,
+              style: AppTextStyles.bodyStrong.copyWith(
+                color: isInProgressSelected ? PRIMARY_COLOR : AppColors.textHint,
               ),
             ),
           ),
         ),
-        const SizedBox(width: 32),
+        const SizedBox(width: AppSpacing.space32),
         GestureDetector(
           onTap: () {
             if (!isDoneSelected) {
@@ -63,10 +62,8 @@ class OrderSection extends StatelessWidget {
                 : null,
             child: Text(
               '다 떴어요',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: isDoneSelected ? PRIMARY_COLOR : Colors.grey,
+              style: AppTextStyles.bodyStrong.copyWith(
+                color: isDoneSelected ? PRIMARY_COLOR : AppColors.textHint,
               ),
             ),
           ),

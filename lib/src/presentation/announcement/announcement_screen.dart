@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_empty_state.dart';
+import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
 import 'package:knittda/src/domain/repository/announcement_repository.dart';
 import 'package:knittda/src/presentation/announcement/announcement_view_model.dart';
 import 'package:knittda/src/presentation/announcement/components/announcement_list_item.dart';
 import 'package:knittda/src/presentation/announcement_detail/announcement_detail_screen.dart';
 import 'package:knittda/src/presentation/announcement_detail/announcement_detail_view_model.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class AnnouncementScreen extends StatelessWidget {
   const AnnouncementScreen({super.key});
@@ -12,13 +16,13 @@ class AnnouncementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(scrolledUnderElevation: 0),
+      appBar: const KnittdaAppBar(),
       body: Consumer<AnnouncementViewModel>(
         builder: (context, viewModel, _) {
           final state = viewModel.state;
 
           if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const KnittdaLoadingView();
           }
 
           if (state.errorMessage != null) {
@@ -39,7 +43,7 @@ class AnnouncementScreen extends StatelessWidget {
           }
 
           if (state.announcements.isEmpty) {
-            return const Center(child: Text('등록된 공지가 없습니다'));
+            return const KnittdaEmptyState(message: '등록된 공지가 없습니다');
           }
 
           return RefreshIndicator(
@@ -60,8 +64,8 @@ class AnnouncementScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   if (index == state.announcements.length) {
                     return const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Center(child: CircularProgressIndicator()),
+                      padding: EdgeInsets.all(AppSpacing.space16),
+                      child: KnittdaLoadingView(),
                     );
                   }
 
@@ -88,8 +92,8 @@ class AnnouncementScreen extends StatelessWidget {
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 12,
+                        horizontal: AppSpacing.space32,
+                        vertical: AppSpacing.space12,
                       ),
                       child: AnnouncementListItem(announcement: announcement),
                     ),
@@ -101,8 +105,8 @@ class AnnouncementScreen extends StatelessWidget {
                     return const SizedBox.shrink();
                   }
                   return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
-                    child: Divider(height: 0.5, color: Color(0xFFE6E6E6)),
+                    padding: EdgeInsets.symmetric(vertical: AppSpacing.space8),
+                    child: Divider(height: 0.5, color: AppColors.grey200),
                   );
                 },
                 itemCount:

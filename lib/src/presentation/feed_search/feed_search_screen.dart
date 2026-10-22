@@ -1,6 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_empty_state.dart';
+import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/repository/record_api_repository.dart';
 import 'package:knittda/src/domain/use_case/delete_project_use_case.dart';
@@ -17,6 +21,7 @@ import 'package:knittda/src/presentation/project_details/project_details_screen.
 import 'package:knittda/src/presentation/project_details/project_details_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_viewer.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class FeedSearchScreen extends StatefulWidget {
   const FeedSearchScreen({super.key});
@@ -59,8 +64,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
           switch (event) {
             case ShowSnackBar(:final message):
               if (mounted) {
-                final snackBar = SnackBar(content: Text(message));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                KnittdaSnackBar.show(context, message);
               }
           }
         });
@@ -91,19 +95,18 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        scrolledUnderElevation: 0,
-        title: TextField(
+      appBar: KnittdaAppBar(
+        titleWidget: TextField(
           controller: _controller,
           textInputAction: TextInputAction.search,
           onSubmitted: (_) => _onSearch(),
           decoration: InputDecoration(
             hintText: '검색',
             filled: true,
-            fillColor: Colors.grey[200],
-            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            fillColor: AppColors.grey100,
+            contentPadding: EdgeInsets.symmetric(vertical: AppSpacing.space0, horizontal: AppSpacing.space8),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppRadius.button),
               borderSide: BorderSide.none,
             ),
             prefixIcon: Icon(Icons.search),
@@ -123,7 +126,7 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("검색 하는 중..."),
-                  SizedBox(height: 24),
+                  SizedBox(height: AppSpacing.space24),
                   CircularProgressIndicator(),
                 ],
               ),
@@ -132,14 +135,11 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
 
           if (viewModel.state.feeds.isEmpty) {
             if (viewModel.state.keyword.isEmpty) {
-              return const Center(child: Text('검색어를 입력해주세요'));
+              return const KnittdaEmptyState(message: '검색어를 입력해주세요');
             }
 
-            return Center(
-              child: Text(
-                '"${viewModel.state.keyword}" 에 대한 결과가 없습니다.',
-                style: TextStyle(color: Colors.grey),
-              ),
+            return KnittdaEmptyState(
+              message: '"${viewModel.state.keyword}" 에 대한 결과가 없습니다.',
             );
           }
 
@@ -149,8 +149,8 @@ class _FeedSearchScreenState extends State<FeedSearchScreen> {
               if (viewModel.state.isLoadingMore &&
                   index == viewModel.state.feeds.length) {
                 return const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Center(child: CircularProgressIndicator()),
+                  padding: EdgeInsets.all(AppSpacing.space16),
+                  child: KnittdaLoadingView(),
                 );
               }
               final feed = viewModel.state.feeds[index];

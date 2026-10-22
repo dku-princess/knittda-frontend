@@ -4,6 +4,7 @@ import 'package:knittda/src/core/utils/markdown_utils.dart';
 import 'package:knittda/src/domain/model/article/article_preview.dart';
 import 'package:knittda/src/domain/model/article/project_section.dart';
 import 'package:knittda/src/presentation/article_detail/components/article_preview_item.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class ProjectSectionWidget extends StatelessWidget {
   final ProjectSection projectSection;
@@ -28,26 +29,25 @@ class ProjectSectionWidget extends StatelessWidget {
       children: [
         if (projectSection.title.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.only(bottom: 20),
+            padding: const EdgeInsets.only(bottom: AppSpacing.space20),
             child: Text(
               projectSection.title,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              style: AppTextStyles.title,
             ),
           ),
         ],
 
         if (projectSection.description.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.only(bottom: 20),
+            padding: const EdgeInsets.only(bottom: AppSpacing.space20),
             child:
             MarkdownBody(
               data: normalizeMarkdown(
                 projectSection.description,
               ),
               styleSheet: MarkdownStyleSheet(
-                p: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
+                p: AppTextStyles.body.copyWith(
+                  color: AppColors.textSecondary,
                 ),
               ),
             ),
@@ -60,7 +60,7 @@ class ProjectSectionWidget extends StatelessWidget {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: validBlocks.length,
-              separatorBuilder: (context, index) => const SizedBox(width: 12),
+              separatorBuilder: (context, index) => const SizedBox(width: AppSpacing.space12),
               itemBuilder: (context, index) {
                 final block = validBlocks[index];
                 final preview = getArticlePreview(block.projectId)!;

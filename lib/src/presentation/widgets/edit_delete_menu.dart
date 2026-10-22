@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_dialog.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class EditDeleteMenu extends StatelessWidget {
   final VoidCallback onEdit;
@@ -17,7 +19,7 @@ class EditDeleteMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton <String>(
-      icon: const Icon(Icons.more_vert, color: Colors.black),
+      icon: const Icon(Icons.more_vert, color: AppColors.black),
 
       itemBuilder: (context) => [
         const PopupMenuItem(
@@ -34,22 +36,12 @@ class EditDeleteMenu extends StatelessWidget {
         if(val == 'edit'){
           onEdit();
         } else if (val == 'delete') {
-          final confirmed = await showDialog<bool>(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text(deleteDialogTitle),
-              content: Text(deleteDialogContent),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text('취소'),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  child: Text('삭제', style: TextStyle(color: Colors.red)),
-                ),
-              ],
-            ),
+          final confirmed = await KnittdaDialog.confirm(
+            context,
+            title: deleteDialogTitle,
+            message: deleteDialogContent,
+            confirmLabel: '삭제',
+            destructive: true,
           );
           if (confirmed == true) {
             await onDelete();

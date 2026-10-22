@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
 import 'package:knittda/src/domain/repository/feed_api_repository.dart';
 import 'package:knittda/src/domain/repository/project_api_repository.dart';
 import 'package:knittda/src/domain/repository/record_api_repository.dart';
@@ -19,6 +21,7 @@ import 'package:knittda/src/presentation/project_details/project_details_screen.
 import 'package:knittda/src/presentation/project_details/project_details_view_model.dart';
 import 'package:knittda/src/presentation/widgets/image_viewer.dart';
 import 'package:provider/provider.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
@@ -56,14 +59,10 @@ class _FeedScreenState extends State<FeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        scrolledUnderElevation: 0,
-        title: const Text(
-          '피드',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-        ),
-        titleSpacing: 30,
+      appBar: KnittdaAppBar(
+        title: '피드',
+        large: true,
+        showBack: false,
         actions: [
           IconButton(
             onPressed: () {
@@ -110,7 +109,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("피드 불러오는 중..."),
-                  SizedBox(height: 24),
+                  SizedBox(height: AppSpacing.space24),
                   CircularProgressIndicator(),
                 ],
               ),
@@ -146,8 +145,8 @@ class _FeedScreenState extends State<FeedScreen> {
                 if (viewModel.state.isLoadingMore &&
                     index == viewModel.state.feeds.length) {
                   return const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Center(child: CircularProgressIndicator()),
+                    padding: EdgeInsets.all(AppSpacing.space16),
+                    child: KnittdaLoadingView(),
                   );
                 }
                 return FeedItem(

@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_empty_state.dart';
+import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:knittda/src/core/utils/markdown_utils.dart';
 import 'package:knittda/src/presentation/announcement/components/announcement_list_item.dart';
 import 'package:knittda/src/presentation/announcement_detail/announcement_detail_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class AnnouncementDetailScreen extends StatelessWidget {
   const AnnouncementDetailScreen({super.key});
@@ -12,14 +17,14 @@ class AnnouncementDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(scrolledUnderElevation: 0),
+      appBar: const KnittdaAppBar(),
       body: Consumer<AnnouncementDetailViewModel>(
         builder: (context, viewModel, _) {
           final state = viewModel.state;
           final announcement = state.announcement;
 
           if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const KnittdaLoadingView();
           }
 
           if (state.errorMessage != null) {
@@ -27,25 +32,25 @@ class AnnouncementDetailScreen extends StatelessWidget {
           }
 
           if (announcement == null) {
-            return const Center(child: Text('공지를 찾을 수 없습니다'));
+            return const KnittdaEmptyState(message: '공지를 찾을 수 없습니다');
           }
 
           return ListView(
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
+                  horizontal: AppLayout.screenPaddingH,
+                  vertical: AppSpacing.space12,
                 ),
                 child: AnnouncementListItem(announcement: announcement),
               ),
 
-              const SizedBox(height: 8),
-              const Divider(height: 0.5, color: Color(0xFFE6E6E6)),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.space8),
+              const Divider(height: 0.5, color: AppColors.grey200),
+              const SizedBox(height: AppSpacing.space32),
 
               Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 40),
+                padding: const EdgeInsets.only(left: AppLayout.screenPaddingH, right: AppLayout.screenPaddingH, bottom: AppSpacing.space40),
                 child: MarkdownBody(
                   data: normalizeMarkdown(announcement.body),
 
@@ -58,17 +63,13 @@ class AnnouncementDetailScreen extends StatelessWidget {
                         mode: LaunchMode.externalApplication,
                       )) {
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('링크를 열 수 없습니다.')),
-                          );
+                          KnittdaSnackBar.show(context, '링크를 열 수 없습니다.', tone: KnittdaSnackTone.error);
                         }
                       }
                     } catch (e) {
                       debugPrint('Failed to launch URL: $href, error: $e');
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('링크를 열 수 없습니다.')),
-                        );
+                        KnittdaSnackBar.show(context, '링크를 열 수 없습니다.', tone: KnittdaSnackTone.error);
                       }
                     }
                   },

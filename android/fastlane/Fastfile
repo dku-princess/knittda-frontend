@@ -1,0 +1,108 @@
+require "base64"
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+  desc "Build and upload beta app bundle to Google Play internal testing"
+  lane :beta do
+    json_key_data = Base64.decode64(ENV['PLAY_STORE_SERVICE_ACCOUNT_JSON_BASE64'])
+
+    version_codes = google_play_track_version_codes(
+      track: "internal",
+      json_key_data: json_key_data
+    )
+    build_number = version_codes.max.to_i + 1
+
+    Dir.chdir("../..") do
+      version_name = File.read("pubspec.yaml")[/^version:\s*([^+\s]+)/, 1]
+      raise "pubspec.yaml에서 version을 찾지 못했습니다" if version_name.nil?
+      sentry_release = "knittda@#{version_name}+#{build_number}"
+
+      sh(
+        "flutter", "build", "appbundle",
+        "--release",
+        "--obfuscate",
+        "--split-debug-info=build/app/outputs/symbols",
+        "--extra-gen-snapshot-options=--save-obfuscation-map=build/app/obfuscation.map.json",
+        "--flavor", "beta",
+        "--dart-define-from-file=config/beta.release.json",
+        "--dart-define=SENTRY_RELEASE=#{sentry_release}",
+        "--build-number=#{build_number}"
+      )
+
+      sh(
+        "dart", "run", "sentry_dart_plugin",
+        "--sentry-define=release=#{sentry_release}",
+        "--sentry-define=dist=#{build_number}"
+      )
+    end
+
+    upload_to_play_store(
+      track: "internal",
+      aab: "../build/app/outputs/bundle/betaRelease/app-beta-release.aab",
+      json_key_data: json_key_data,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Build and upload prod app bundle to Google Play internal testing"
+  lane :prod do
+    json_key_data = Base64.decode64(ENV['PLAY_STORE_SERVICE_ACCOUNT_JSON_BASE64'])
+
+    version_codes = ["production", "beta", "alpha", "internal"].flat_map do |track|
+      Array(google_play_track_version_codes(track: track, json_key_data: json_key_data))
+    end
+    build_number = version_codes.max.to_i + 1
+
+    Dir.chdir("../..") do
+      version_name = File.read("pubspec.yaml")[/^version:\s*([^+\s]+)/, 1]
+      raise "pubspec.yaml에서 version을 찾지 못했습니다" if version_name.nil?
+      sentry_release = "knittda@#{version_name}+#{build_number}"
+
+      sh(
+        "flutter", "build", "appbundle",
+        "--release",
+        "--obfuscate",
+        "--split-debug-info=build/app/outputs/symbols",
+        "--extra-gen-snapshot-options=--save-obfuscation-map=build/app/obfuscation.map.json",
+        "--flavor", "prod",
+        "--dart-define-from-file=config/prod.release.json",
+        "--dart-define=SENTRY_RELEASE=#{sentry_release}",
+        "--build-number=#{build_number}"
+      )
+
+      sh(
+        "dart", "run", "sentry_dart_plugin",
+        "--sentry-define=release=#{sentry_release}",
+        "--sentry-define=dist=#{build_number}"
+      )
+    end
+
+    upload_to_play_store(
+      track: "internal",
+      aab: "../build/app/outputs/bundle/prodRelease/app-prod-release.aab",
+      json_key_data: json_key_data,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end

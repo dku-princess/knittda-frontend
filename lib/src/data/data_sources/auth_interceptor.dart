@@ -3,8 +3,12 @@ import 'package:knittda/src/data/data_sources/token_storage.dart';
 
 class AuthInterceptor extends Interceptor {
   final TokenStorage _storage;
+  final Map<String, String> _staticHeaders;
 
-  AuthInterceptor(this._storage);
+  AuthInterceptor(
+    this._storage, {
+    Map<String, String> staticHeaders = const {},
+  }) : _staticHeaders = staticHeaders;
 
   @override
   void onRequest(
@@ -12,6 +16,7 @@ class AuthInterceptor extends Interceptor {
     RequestInterceptorHandler handler,
   ) async {
     options.headers['X-Request-Id'] = _buildRequestId();
+    _staticHeaders.forEach((k, v) => options.headers[k] = v);
 
     if (options.headers['accessToken'] == 'true') {
       options.headers.remove('accessToken');

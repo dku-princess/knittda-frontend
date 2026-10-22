@@ -1,3 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:knittda/src/core/theme/app_colors.dart';
 
-const PRIMARY_COLOR = Color(0xff0ABE8C);
+/// 하위 호환 별칭. 신규 코드는 [AppColors.primary]를 직접 사용한다.
+const PRIMARY_COLOR = AppColors.primary;

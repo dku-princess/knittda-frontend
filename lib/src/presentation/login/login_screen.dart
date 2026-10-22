@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
+import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
 import 'package:knittda/src/domain/repository/in_app_banner_repository.dart';
 import 'package:knittda/src/domain/use_case/dismiss_banner_use_case.dart';
 import 'package:knittda/src/domain/use_case/get_active_banner_use_case.dart';
@@ -12,6 +14,7 @@ import 'package:knittda/src/presentation/login/login_view_model.dart';
 import 'package:knittda/src/presentation/home/home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:knittda/src/presentation/login/login_ui_event.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -52,8 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 );
               case ShowSnackBar(:final message):
-                final snackBar = SnackBar(content: Text(message));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                KnittdaSnackBar.show(context, message);
             }
           }
         });
@@ -88,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
 
               Padding(
-                padding: const EdgeInsets.only(bottom: 120),
+                padding: const EdgeInsets.only(bottom: AppLayout.actionBottomInset),
                 child: Column(
                   children: [
                     GestureDetector(
@@ -104,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
 
                     if (Platform.isIOS) ...[
-                      const SizedBox(height: 10),
+                      const SizedBox(height: AppSpacing.space12),
                       GestureDetector(
                         onTap: () async {
                           await viewModel.onEvent(
@@ -126,14 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
 
           if (state.isLoading)
-            Positioned.fill(
-              child: AbsorbPointer(
-                child: Container(
-                  color: Colors.black26,
-                  child: const Center(child: CircularProgressIndicator()),
-                ),
-              ),
-            ),
+            const Positioned.fill(child: KnittdaLoadingOverlay()),
         ],
       ),
     );

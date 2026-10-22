@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/widgets/knittda_network_image.dart';
 import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/domain/model/article/article.dart';
+import 'package:knittda/src/core/theme/theme.dart';
 
 class ArticleCardLarge extends StatelessWidget {
   final Article article;
@@ -11,32 +13,20 @@ class ArticleCardLarge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(AppRadius.card),
       child: AspectRatio(
         aspectRatio: 8 / 9,
         child: Stack(
           fit: StackFit.expand,
           children: [
-            if (imageUrl != null)
-              Image.network(
-                imageUrl!,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: Colors.grey[200],
-                    child: const Icon(
-                      Icons.image_not_supported,
-                      color: Colors.grey,
-                      size: 36,
-                    ),
-                  );
-                },
-              )
-            else
-              Container(
-                color: Colors.grey[200],
-                child: const Icon(Icons.image, color: Colors.grey, size: 36),
-              ),
+            KnittdaNetworkImage(
+              url: imageUrl,
+              fit: BoxFit.cover,
+              backgroundColor: AppColors.grey100,
+              placeholderIcon: Icons.image_not_supported,
+              iconSize: 36,
+              showLoading: false,
+            ),
 
             Positioned.fill(
               child: DecoratedBox(
@@ -45,8 +35,8 @@ class ArticleCardLarge extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.transparent,
-                      Colors.transparent,
+                      AppColors.transparent,
+                      AppColors.transparent,
                       PRIMARY_COLOR,
                     ],
                     stops: const [0.0, 0.4, 1.0],
@@ -65,12 +55,12 @@ class ArticleCardLarge extends StatelessWidget {
                 children: [
                   if (article.interviewee.isNotEmpty) ...[
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.only(bottom: AppSpacing.space8),
                       child: Text(
                         article.interviewee,
                         style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
+                          fontSize: AppFontSize.lg,
+                          color: AppColors.white,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -81,11 +71,7 @@ class ArticleCardLarge extends StatelessWidget {
                   if (article.title.isNotEmpty)
                     Text(
                       article.title,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
+                      style: AppTextStyles.title.copyWith(color: AppColors.white),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
