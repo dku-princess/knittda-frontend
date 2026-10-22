@@ -143,8 +143,10 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
     setState(() {
       _galleryImage = null;
       _thumbnailUrl = null;
-      _defaultThumbnailId = null;
-      _focusedSource = null;
+      if (_focusedSource == _ThumbnailSource.galleryImage) {
+        _focusedSource = null;
+        _defaultThumbnailId = null;
+      }
     });
   }
 
@@ -461,10 +463,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
             children: [
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Text(
-                  "기본 정보",
-                  style: AppTextStyles.title,
-                ),
+                title: Text("기본 정보", style: AppTextStyles.title),
               ),
               SizedBox(height: AppSpacing.space12),
 
@@ -472,30 +471,18 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // 대표 사진
-                  Text(
-                    "대표 사진",
-                    style: AppTextStyles.heading,
-                  ),
+                  Text("대표 사진", style: AppTextStyles.heading),
                   SizedBox(height: AppSpacing.space12),
 
                   _buildThumbnailList(viewModel.state.defaultThumbnails),
 
                   SizedBox(height: AppSpacing.space16),
 
-                  Text(
-                    "작품 이름",
-                    style: AppTextStyles.heading,
-                  ),
+                  Text("작품 이름", style: AppTextStyles.heading),
                   SizedBox(height: AppSpacing.space12),
-                  KnittdaInput(
-                    controller: _nicknameController,
-                    maxLength: 15,
-                  ),
+                  KnittdaInput(controller: _nicknameController, maxLength: 15),
 
-                  Text(
-                    "시작일 ~ 목표일",
-                    style: AppTextStyles.heading,
-                  ),
+                  Text("시작일 ~ 목표일", style: AppTextStyles.heading),
                   SizedBox(height: AppSpacing.space12),
                   GestureDetector(
                     onTap: () => _pickDateRange(context),
@@ -532,55 +519,28 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
 
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Text(
-                  "디자인",
-                  style: AppTextStyles.title,
-                ),
+                title: Text("디자인", style: AppTextStyles.title),
               ),
               SizedBox(height: AppSpacing.space12),
 
-              Text(
-                "도안명",
-                style: AppTextStyles.heading,
-              ),
+              Text("도안명", style: AppTextStyles.heading),
               SizedBox(height: AppSpacing.space12),
-              KnittdaInput(
-                controller: _designTitleController,
-                maxLength: 15,
-              ),
+              KnittdaInput(controller: _designTitleController, maxLength: 15),
               SizedBox(height: AppSpacing.space16),
 
-              Text(
-                "작가",
-                style: AppTextStyles.heading,
-              ),
+              Text("작가", style: AppTextStyles.heading),
               SizedBox(height: AppSpacing.space12),
-              KnittdaInput(
-                controller: _designerController,
-                maxLength: 15,
-              ),
+              KnittdaInput(controller: _designerController, maxLength: 15),
               SizedBox(height: AppSpacing.space16),
 
-              Text(
-                "실",
-                style: AppTextStyles.heading,
-              ),
+              Text("실", style: AppTextStyles.heading),
               SizedBox(height: AppSpacing.space12),
-              KnittdaInput(
-                controller: _yarnInfoController,
-                maxLength: 15,
-              ),
+              KnittdaInput(controller: _yarnInfoController, maxLength: 15),
               SizedBox(height: AppSpacing.space16),
 
-              Text(
-                "바늘",
-                style: AppTextStyles.heading,
-              ),
+              Text("바늘", style: AppTextStyles.heading),
               SizedBox(height: AppSpacing.space12),
-              KnittdaInput(
-                controller: _needleInfoController,
-                maxLength: 15,
-              ),
+              KnittdaInput(controller: _needleInfoController, maxLength: 15),
             ],
           ),
         ),
