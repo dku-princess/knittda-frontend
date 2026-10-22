@@ -95,7 +95,7 @@ class AddEditProjectViewModel extends ChangeNotifier {
         _eventController.add(AddEditProjectUiEvent.savedProject(data));
       case Error():
         _eventController.add(
-          AddEditProjectUiEvent.showSnackBar("작품 저장을 저장하지 못했어요. 다시 시도해 주세요."),
+          AddEditProjectUiEvent.showSnackBar("작품을 저장하지 못했어요. 다시 시도해 주세요."),
         );
     }
 
