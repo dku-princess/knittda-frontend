@@ -8,6 +8,7 @@ abstract class RecordApiRepository {
     required Records record,
     required List<int>? deleteImageIds,
     required List<XFile>? files,
+    List<Map<String, dynamic>>? imageOrder,
   });
   Future<Result<Records>> postRecord({
     required Records record,

@@ -42,11 +42,18 @@ class RecordApi {
     required Records record,
     required List<int>? deleteImageIds,
     required List<XFile>? files,
+    List<Map<String, dynamic>>? imageOrder,
   }) async {
     try {
       final formData = FormData();
 
-      formData.fields.add(MapEntry('record', jsonEncode(record.toJson())));
+      final recordJson = record.toJson();
+      // 최종 표시 순서를 전달하면 record.images를 순서 배열로 대체한다.
+      // (기존: {type:existing,id}, 신규: {type:new,index}. 서버가 배열 위치로 imageOrder 부여)
+      if (imageOrder != null) {
+        recordJson['images'] = imageOrder;
+      }
+      formData.fields.add(MapEntry('record', jsonEncode(recordJson)));
 
       if (deleteImageIds != null && deleteImageIds.isNotEmpty) {
         formData.fields.add(
