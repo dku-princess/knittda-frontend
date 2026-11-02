@@ -9,5 +9,6 @@ sealed class AddEditProjectEvent with _$AddEditProjectEvent {
   const factory AddEditProjectEvent.saveProject({
     required Project project,
     required XFile? file,
+    int? defaultThumbnailId,
   }) = SaveProject;
 }
