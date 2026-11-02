@@ -8,7 +8,6 @@ import 'package:knittda/src/presentation/widgets/knittda_button.dart';
 import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
 import 'package:knittda/src/presentation/widgets/knittda_input.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:knittda/src/core/constants/color.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/domain/model/default_thumbnail.dart';
 import 'package:knittda/src/domain/model/project.dart';
@@ -46,6 +45,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
   int? _defaultThumbnailId;
 
   // 갤러리 이미지와 기본 이미지 중 어디에 포커싱 되어있는지
+  // null: 아직 선택 안 함 (수정 화면이면 기존 썸네일인 _thumbnailUrl 기준으로 표시)
   _ThumbnailSource? _focusedSource;
 
   static const double _thumbnailBoxSize = 100;
@@ -132,13 +132,15 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
     }
   }
 
+  // 반투명한 gallery-box를 탭 -> 갤러리 이미지를 다시 포커싱 상태로 전환
   void _focusGalleryImage() {
     setState(() {
       _focusedSource = _ThumbnailSource.galleryImage;
     });
   }
 
-  // gallery-box의 X 버튼 -> 전체 초기화
+  // gallery-box의 X 버튼 -> 갤러리 이미지 초기화
+  // 갤러리 이미지가 포커싱 상태였다면 기본 이미지 선택까지 초기화 (처음 상태로)
   void _clearGalleryImage() {
     setState(() {
       _galleryImage = null;
@@ -278,7 +280,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
 
   Widget _buildThumbnailList(List<DefaultThumbnail> defaultThumbnails) {
     // 기존 썸네일이 기본 이미지 중 하나와 URL이 일치하는지 확인
-    // 일치하면 해당 기본 이미지를 포커싱
+    // 일치하고 아직 다른 선택이 없으면(_focusedSource == null) 해당 기본 이미지를 포커싱
     final matchedExistingDefault = (_thumbnailUrl?.isNotEmpty ?? false)
         ? _findDefaultThumbnailByUrl(defaultThumbnails, _thumbnailUrl!)
         : null;
