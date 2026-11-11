@@ -18,4 +18,13 @@ class ProjectFormTextStyles {
     height: AppTextStyles.lineHeight,
     color: AppColors.textPrimary,
   );
+
+  /// 17px semibold. 입력 줄 제목(작품명, 시작일 등)에 사용.
+  static const TextStyle label = TextStyle(
+    fontFamily: AppTextStyles.fontFamily,
+    fontSize: _fontSize,
+    fontWeight: AppFontWeight.semibold,
+    height: AppTextStyles.lineHeight,
+    color: AppColors.textSecondary,
+  );
 }
