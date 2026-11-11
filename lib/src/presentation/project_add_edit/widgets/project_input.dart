@@ -82,7 +82,7 @@ class ProjectInput extends StatelessWidget {
   final String? value;
   final VoidCallback? onTap;
 
-  static const double _height = 28;
+  static const double height = 28;
 
   static const Color _underlineColor = AppColors.border;
   static const double _underlineWidth = 1;
@@ -147,7 +147,7 @@ class ProjectInput extends StatelessWidget {
     final trailing = _trailing;
 
     final frame = Container(
-      height: _height,
+      height: height,
       alignment: Alignment.centerLeft,
       // 밑줄은 덧그린다(17px 글자 공간 유지).
       foregroundDecoration: BoxDecoration(
