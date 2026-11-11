@@ -21,9 +21,10 @@ typedef _TrailingIcon = ({IconData icon, double size, double slotWidth});
 /// | 옵션 | 설명 |
 /// |---|---|
 /// | [placeholder] | 플레이스홀더. |
-/// | [error] | 에러 문구. null이면 Default 상태. |
+/// | [error] | 에러 문구. null이면 Default 상태, 빈 문자열이면 문구 없이 밑줄만 빨갛게 한다. |
 /// | [controller] | text 전용. 입력값. |
 /// | [onChanged] | text 전용. 입력 변경 콜백. |
+/// | [keyboardType] | text 전용. 키보드 종류. |
 /// | [maxLength] | text 전용. 최대 글자 수. |
 /// | [onMaxLengthExceeded] | text 전용. 최대 글자 수를 넘겨 입력하려 할 때 호출. |
 /// | [onRemove] | text 전용. 있으면 오른쪽에 삭제(×) 버튼을 표시. |
@@ -36,6 +37,7 @@ class ProjectInput extends StatelessWidget {
     this.placeholder,
     this.error,
     this.onChanged,
+    this.keyboardType,
     this.maxLength,
     this.onMaxLengthExceeded,
     this.onRemove,
@@ -52,6 +54,7 @@ class ProjectInput extends StatelessWidget {
   }) : type = ProjectInputType.date,
        controller = null,
        onChanged = null,
+       keyboardType = null,
        maxLength = null,
        onMaxLengthExceeded = null,
        onRemove = null;
@@ -65,6 +68,7 @@ class ProjectInput extends StatelessWidget {
   }) : type = ProjectInputType.dropdown,
        controller = null,
        onChanged = null,
+       keyboardType = null,
        maxLength = null,
        onMaxLengthExceeded = null,
        onRemove = null;
@@ -75,6 +79,7 @@ class ProjectInput extends StatelessWidget {
 
   final TextEditingController? controller;
   final ValueChanged<String>? onChanged;
+  final TextInputType? keyboardType;
   final int? maxLength;
   final VoidCallback? onMaxLengthExceeded;
   final VoidCallback? onRemove;
@@ -82,6 +87,7 @@ class ProjectInput extends StatelessWidget {
   final String? value;
   final VoidCallback? onTap;
 
+  /// 입력 줄 높이. ProjectDropdown이 목록 위치를 맞출 때도 쓴다.
   static const double height = 28;
 
   static const Color _underlineColor = AppColors.border;
@@ -127,15 +133,17 @@ class ProjectInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final error = this.error;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildFrame(),
-        if (_hasError) ...[
+        if (error != null && error.isNotEmpty) ...[
           const SizedBox(height: _errorMessageGap),
           Text(
-            error!,
+            error,
             style: AppTextStyles.body.copyWith(color: _errorTextColor),
           ),
         ],
@@ -202,10 +210,13 @@ class ProjectInput extends StatelessWidget {
     return TextField(
       controller: controller,
       onChanged: onChanged,
+      keyboardType: keyboardType,
       maxLength: maxLength,
       inputFormatters: maxLength == null
           ? null
           : [MaxLengthExceededFormatter(maxLength!, onMaxLengthExceeded)],
+      // 입력칸 바깥을 탭하면 키보드를 내린다.
+      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       cursorColor: _valueTextColor,
       style: ProjectFormTextStyles.body.copyWith(color: _valueTextColor),
       // 기본 테두리와 여백을 없애고, 글자 수 표시도 숨긴다.

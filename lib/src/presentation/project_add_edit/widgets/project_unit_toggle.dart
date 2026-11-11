@@ -33,8 +33,8 @@ class ProjectUnitToggle extends StatelessWidget {
   static const double _tabWidth = 48;
   static const double _height = 24;
 
-  // 시각 높이(24)와 별개로 확보하는 터치 높이(48).
-  static const double _touchHeight = kMinInteractiveDimension;
+  // 보이는 높이(24)보다 넓게 누를 수 있게 한다. 바늘 행 입력칸 높이(28)와 맞춘다.
+  static const double _touchHeight = 28;
 
   static const Color _selectedTextColor = AppColors.textSecondary;
   static const Color _unselectedTextColor = AppColors.grey600;
