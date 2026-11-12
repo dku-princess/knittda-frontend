@@ -2,11 +2,14 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/project_add_edit/widgets/project_dropdown.dart';
+import 'package:knittda/src/presentation/project_add_edit/widgets/project_field.dart';
+import 'package:knittda/src/presentation/project_add_edit/widgets/project_form_section.dart';
+import 'package:knittda/src/presentation/project_add_edit/widgets/project_form_text_styles.dart';
+import 'package:knittda/src/presentation/project_add_edit/widgets/project_input.dart';
 import 'package:knittda/src/presentation/widgets/knittda_snack_bar.dart';
 import 'package:knittda/src/presentation/widgets/knittda_app_bar.dart';
-import 'package:knittda/src/presentation/widgets/knittda_button.dart';
 import 'package:knittda/src/presentation/widgets/knittda_loading.dart';
-import 'package:knittda/src/presentation/widgets/knittda_input.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knittda/src/core/utils/date_utils.dart';
 import 'package:knittda/src/domain/model/default_thumbnail.dart';
@@ -19,6 +22,18 @@ import 'package:knittda/src/core/theme/theme.dart';
 
 enum _ThumbnailSource { galleryImage, defaultImage }
 
+// 서버 값(value)과 화면 문구(label).
+// TODO(api): 상태 저장은 API 연동 단계에서 반영
+enum _ProjectStatus {
+  inProgress('IN_PROGRESS', '뜨고 있어요'),
+  done('DONE', '다 떴어요');
+
+  const _ProjectStatus(this.value, this.label);
+
+  final String value;
+  final String label;
+}
+
 class AddEditProjectScreen extends StatefulWidget {
   final Project? project;
 
@@ -29,16 +44,26 @@ class AddEditProjectScreen extends StatefulWidget {
 }
 
 class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
+  // 상수
   static const _shortFieldMaxLength = 30;
   static const _infoFieldMaxLength = 100;
+  static const double _thumbnailBoxSize = 100;
+  static const double _screenPaddingH = AppSpacing.space16;
+  static const double _screenPaddingTop = AppSpacing.space16;
 
+  // 입력값
   final _nicknameController = TextEditingController();
   final _designTitleController = TextEditingController();
   final _designerController = TextEditingController();
   final _needleInfoController = TextEditingController();
   final _yarnInfoController = TextEditingController();
 
-  final ImagePicker picker = ImagePicker();
+  DateTime? _goalDate;
+  DateTime? _startDate;
+  _ProjectStatus? _status;
+
+  // 썸네일
+  final ImagePicker _picker = ImagePicker();
 
   // _thumbnailUrl: 작품 썸네일. 수정 화면 진입 시 서버의 기존 값으로 채워짐.
   // _galleryImage: 갤러리 이미지. 이번 세션에 갤러리에서 새로 고른 로컬 파일.
@@ -51,40 +76,30 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
   // null: 아직 선택 안 함 (수정 화면이면 기존 썸네일인 _thumbnailUrl 기준으로 표시)
   _ThumbnailSource? _focusedSource;
 
-  static const double _thumbnailBoxSize = 100;
-
-  DateTime? _goalDate;
-  DateTime? _startDate;
-
   StreamSubscription? _subscription;
 
   @override
   void initState() {
     super.initState();
 
-    if (widget.project != null) {
-      _nicknameController.text = widget.project!.nickname;
+    final project = widget.project;
+    if (project != null) {
+      _nicknameController.text = project.nickname;
+      _designTitleController.text = project.design?.title ?? '';
+      _designerController.text = project.design?.designer ?? '';
+      _yarnInfoController.text = project.design?.yarnInfo ?? '';
+      _needleInfoController.text = project.design?.needleInfo ?? '';
 
-      final design = widget.project!.design;
-      if (design != null) {
-        _designTitleController.text = design.title ?? '';
-        _designerController.text = design.designer ?? '';
-        _yarnInfoController.text = design.yarnInfo ?? '';
-        _needleInfoController.text = design.needleInfo ?? '';
+      _startDate = DateTime.tryParse(project.startDate);
+      _goalDate = DateTime.tryParse(project.goalDate);
+
+      if (project.thumbnailUrl?.isNotEmpty ?? false) {
+        _thumbnailUrl = project.thumbnailUrl;
       }
 
-      if (widget.project!.thumbnailUrl != null &&
-          widget.project!.thumbnailUrl!.isNotEmpty) {
-        _thumbnailUrl = widget.project!.thumbnailUrl;
-      }
-
-      _goalDate = widget.project?.goalDate != null
-          ? DateTime.tryParse(widget.project!.goalDate)
-          : null;
-
-      _startDate = widget.project?.startDate != null
-          ? DateTime.tryParse(widget.project!.startDate)
-          : null;
+      _status = _ProjectStatus.values
+          .where((s) => s.value == project.status)
+          .firstOrNull;
     }
 
     Future.microtask(() {
@@ -118,7 +133,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
 
   // 갤러리에서 사진을 선택 -> 갤러리 이미지를 포커싱 상태로 전환
   Future<void> _pickGalleryImage() async {
-    final picked = await picker.pickImage(
+    final picked = await _picker.pickImage(
       source: ImageSource.gallery,
       maxWidth: 512,
       maxHeight: 512,
@@ -334,27 +349,31 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
     );
   }
 
-  Future<void> _pickDateRange(BuildContext context) async {
-    final DateTimeRange? picked = await showDateRangePicker(
+  // 시작일이 목표일보다 늦어지지 않게 선택 범위로 막는다.
+  Future<void> _pickStartDate() async {
+    final picked = await showDatePicker(
       context: context,
-      initialDateRange: (_startDate != null && _goalDate != null)
-          ? DateTimeRange(start: _startDate!, end: _goalDate!)
-          : null,
+      initialDate: _startDate ?? _goalDate ?? DateTime.now(),
       firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-      helpText: '시작일과 목표일 선택',
-      saveText: '확인',
+      lastDate: _goalDate ?? DateTime(2100),
     );
-
-    if (!mounted) return;
-
-    if (picked != null) {
-      setState(() {
-        _startDate = picked.start;
-        _goalDate = picked.end;
-      });
-    }
+    if (!mounted || picked == null) return;
+    setState(() => _startDate = picked);
   }
+
+  Future<void> _pickGoalDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _goalDate ?? _startDate ?? DateTime.now(),
+      firstDate: _startDate ?? DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (!mounted || picked == null) return;
+    setState(() => _goalDate = picked);
+  }
+
+  String? _formatDate(DateTime? date) =>
+      date == null ? null : DateUtilsHelper.toSpacedDotFormat(date);
 
   // 한도 초과 상태에서 키 연타/붙여넣기로 onMaxLengthExceeded가 연속 호출돼도,
   // KnittdaSnackBar.show가 매번 hideCurrentSnackBar() 후 showSnackBar()를 호출하므로
@@ -455,132 +474,122 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
     return Stack(
       children: [
         Scaffold(
+          backgroundColor: AppColors.grey50,
           appBar: KnittdaAppBar(
             title: widget.project != null ? '작품 수정' : '작품 추가',
+            centerTitle: true,
             actions: [
-              //저장버튼
-              KnittdaButton(
-                label: '저장',
+              // KnittdaButton은 글자 크기·색이 고정이라 로컬로 둔다.
+              TextButton(
                 onPressed: viewModel.state.isLoading ? null : _saveProject,
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.textSecondary,
+                  disabledForegroundColor: AppColors.textHint,
+                  textStyle: ProjectFormTextStyles.label,
+                ),
+                child: const Text('저장'),
               ),
               const SizedBox(width: AppSpacing.space8),
             ],
           ),
 
           body: ListView(
-            padding: const EdgeInsets.only(
-              left: AppSpacing.space20,
-              right: AppSpacing.space20,
-              top: AppSpacing.space20,
-              bottom: AppLayout.contentBottomInset,
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+
+            padding: const EdgeInsets.fromLTRB(
+              _screenPaddingH,
+              _screenPaddingTop,
+              _screenPaddingH,
+              AppLayout.contentBottomInset,
             ),
 
-            //keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             children: [
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text("기본 정보", style: AppTextStyles.title),
-              ),
-              SizedBox(height: AppSpacing.space12),
+              _buildThumbnailList(viewModel.state.defaultThumbnails),
+              const SizedBox(height: AppSpacing.space16),
 
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              ProjectFormSection(
+                title: '기본 정보',
                 children: [
-                  // 대표 사진
-                  Text("대표 사진", style: AppTextStyles.heading),
-                  SizedBox(height: AppSpacing.space12),
-
-                  _buildThumbnailList(viewModel.state.defaultThumbnails),
-
-                  SizedBox(height: AppSpacing.space16),
-
-                  Text("작품 이름", style: AppTextStyles.heading),
-                  SizedBox(height: AppSpacing.space12),
-                  KnittdaInput(
-                    controller: _nicknameController,
-                    maxLength: _shortFieldMaxLength,
-                    onMaxLengthExceeded: () =>
-                        _showMaxLengthSnack(_shortFieldMaxLength),
+                  ProjectField(
+                    label: '작품명',
+                    child: ProjectInput.text(
+                      controller: _nicknameController,
+                      placeholder: '작품명을 입력해주세요',
+                      maxLength: _shortFieldMaxLength,
+                      onMaxLengthExceeded: () =>
+                          _showMaxLengthSnack(_shortFieldMaxLength),
+                    ),
                   ),
-
-                  Text("시작일 ~ 목표일", style: AppTextStyles.heading),
-                  SizedBox(height: AppSpacing.space12),
-                  GestureDetector(
-                    onTap: () => _pickDateRange(context),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.space16,
-                        vertical: AppSpacing.space12,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.border),
-                        borderRadius: BorderRadius.circular(AppRadius.button),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.calendar_today, size: AppIconSize.md),
-                          const SizedBox(width: AppSpacing.space12),
-                          Text(
-                            (_startDate != null && _goalDate != null)
-                                ? '${DateUtilsHelper.toHyphenFormat(_startDate!)} ~ ${DateUtilsHelper.toHyphenFormat(_goalDate!)}'
-                                : 'yyyy-mm-dd ~ yyyy-mm-dd',
-                            style: AppTextStyles.body.copyWith(
-                              color: (_startDate != null && _goalDate != null)
-                                  ? AppColors.black
-                                  : AppColors.textHint,
-                            ),
-                          ),
-                        ],
-                      ),
+                  ProjectField(
+                    label: '시작일',
+                    child: ProjectInput.date(
+                      value: _formatDate(_startDate),
+                      placeholder: '날짜를 선택해주세요',
+                      onTap: _pickStartDate,
+                    ),
+                  ),
+                  ProjectField(
+                    label: '목표일',
+                    child: ProjectInput.date(
+                      value: _formatDate(_goalDate),
+                      placeholder: '날짜를 선택해주세요',
+                      onTap: _pickGoalDate,
+                    ),
+                  ),
+                  ProjectField(
+                    label: '상태',
+                    child: ProjectDropdown<_ProjectStatus>(
+                      options: _ProjectStatus.values,
+                      value: _status,
+                      labelOf: (s) => s.label,
+                      placeholder: '선택해주세요',
+                      onChanged: (s) => setState(() => _status = s),
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: AppSpacing.space40),
 
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text("디자인", style: AppTextStyles.title),
-              ),
-              SizedBox(height: AppSpacing.space12),
+              const SizedBox(height: AppSpacing.space16),
 
-              Text("도안명", style: AppTextStyles.heading),
-              SizedBox(height: AppSpacing.space12),
-              KnittdaInput(
-                controller: _designTitleController,
-                maxLength: _shortFieldMaxLength,
-                onMaxLengthExceeded: () =>
-                    _showMaxLengthSnack(_shortFieldMaxLength),
-              ),
-              SizedBox(height: AppSpacing.space16),
-
-              Text("작가", style: AppTextStyles.heading),
-              SizedBox(height: AppSpacing.space12),
-              KnittdaInput(
-                controller: _designerController,
-                maxLength: _shortFieldMaxLength,
-                onMaxLengthExceeded: () =>
-                    _showMaxLengthSnack(_shortFieldMaxLength),
-              ),
-              SizedBox(height: AppSpacing.space16),
-
-              Text("실", style: AppTextStyles.heading),
-              SizedBox(height: AppSpacing.space12),
-              KnittdaInput(
-                controller: _yarnInfoController,
-                maxLength: _infoFieldMaxLength,
-                onMaxLengthExceeded: () =>
-                    _showMaxLengthSnack(_infoFieldMaxLength),
-              ),
-              SizedBox(height: AppSpacing.space16),
-
-              Text("바늘", style: AppTextStyles.heading),
-              SizedBox(height: AppSpacing.space12),
-              KnittdaInput(
-                controller: _needleInfoController,
-                maxLength: _infoFieldMaxLength,
-                onMaxLengthExceeded: () =>
-                    _showMaxLengthSnack(_infoFieldMaxLength),
+              ProjectFormSection(
+                title: '디자인',
+                children: [
+                  ProjectField(
+                    label: '도안',
+                    child: ProjectInput.text(
+                      controller: _designTitleController,
+                      placeholder: '도안을 입력해주세요',
+                      maxLength: _shortFieldMaxLength,
+                      onMaxLengthExceeded: () =>
+                          _showMaxLengthSnack(_shortFieldMaxLength),
+                    ),
+                  ),
+                  ProjectField(
+                    label: '작가',
+                    child: ProjectInput.text(
+                      controller: _designerController,
+                      placeholder: '작가를 입력해주세요',
+                      maxLength: _shortFieldMaxLength,
+                      onMaxLengthExceeded: () =>
+                          _showMaxLengthSnack(_shortFieldMaxLength),
+                    ),
+                  ),
+                  // TODO: 실 / 바늘 목록으로 교체
+                  Text('실', style: ProjectFormTextStyles.label),
+                  ProjectInput.text(
+                    controller: _yarnInfoController,
+                    maxLength: _infoFieldMaxLength,
+                    onMaxLengthExceeded: () =>
+                        _showMaxLengthSnack(_infoFieldMaxLength),
+                  ),
+                  Text('바늘', style: ProjectFormTextStyles.label),
+                  ProjectInput.text(
+                    controller: _needleInfoController,
+                    maxLength: _infoFieldMaxLength,
+                    onMaxLengthExceeded: () =>
+                        _showMaxLengthSnack(_infoFieldMaxLength),
+                  ),
+                ],
               ),
             ],
           ),
