@@ -16,11 +16,13 @@ abstract class ProjectApiRepository {
     required Project project,
     required XFile? file,
     int? defaultThumbnailId,
+    bool v2 = false,
   });
   Future<Result<Project>> postProject({
     required Project project,
     required XFile? file,
     int? defaultThumbnailId,
+    bool v2 = false,
   });
   Future<Result<Project>> getProject({required int projectId});
   Future<Result<void>> deleteProject({required int projectId});
@@ -28,7 +30,10 @@ abstract class ProjectApiRepository {
     int page = 0,
     int size = 50,
   });
-  Future<Result<Project>> getMyProject({required int projectId});
+  Future<Result<Project>> getMyProject({
+    required int projectId,
+    bool v2 = false,
+  });
 
   Future<List<ArticlePreview>> getArticlePreviews({required List<int> ids});
 }

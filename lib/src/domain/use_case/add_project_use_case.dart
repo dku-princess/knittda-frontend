@@ -12,11 +12,13 @@ class AddProjectUseCase {
     required Project project,
     required XFile? file,
     int? defaultThumbnailId,
+    bool v2 = false,
   }) async {
     final result = await _repository.postProject(
       project: project,
       file: file,
       defaultThumbnailId: defaultThumbnailId,
+      v2: v2,
     );
 
     return switch (result) {

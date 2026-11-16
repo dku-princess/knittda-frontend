@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/theme/theme.dart';
+import 'package:knittda/src/domain/model/needle.dart';
 import 'package:knittda/src/presentation/project_add_edit/widgets/project_dropdown.dart';
 import 'package:knittda/src/presentation/project_add_edit/widgets/project_input.dart';
 import 'package:knittda/src/presentation/project_add_edit/widgets/project_unit_toggle.dart';

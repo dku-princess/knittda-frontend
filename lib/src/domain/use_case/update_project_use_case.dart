@@ -12,11 +12,13 @@ class UpdateProjectUseCase {
     required Project project,
     required XFile? file,
     int? defaultThumbnailId,
+    bool v2 = false,
   }) async {
     final result = await _repository.putProject(
       project: project,
       file: file,
       defaultThumbnailId: defaultThumbnailId,
+      v2: v2,
     );
 
     return switch (result) {

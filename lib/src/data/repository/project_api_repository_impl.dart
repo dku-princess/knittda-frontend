@@ -57,11 +57,13 @@ class ProjectApiRepositoryImpl implements ProjectApiRepository {
     required Project project,
     required XFile? file,
     int? defaultThumbnailId,
+    bool v2 = false,
   }) async {
     final Result<Map<String, dynamic>> result = await _api.postProject(
       project: project,
       file: file,
       defaultThumbnailId: defaultThumbnailId,
+      v2: v2,
     );
 
     switch (result) {
@@ -81,11 +83,13 @@ class ProjectApiRepositoryImpl implements ProjectApiRepository {
     required Project project,
     required XFile? file,
     int? defaultThumbnailId,
+    bool v2 = false,
   }) async {
     final Result<Map<String, dynamic>> result = await _api.putProject(
       project: project,
       file: file,
       defaultThumbnailId: defaultThumbnailId,
+      v2: v2,
     );
 
     switch (result) {
@@ -150,9 +154,13 @@ class ProjectApiRepositoryImpl implements ProjectApiRepository {
   }
 
   @override
-  Future<Result<Project>> getMyProject({required int projectId}) async {
+  Future<Result<Project>> getMyProject({
+    required int projectId,
+    bool v2 = false,
+  }) async {
     final Result<Map<String, dynamic>> result = await _api.getMyProject(
       projectId: projectId,
+      v2: v2,
     );
 
     switch (result) {

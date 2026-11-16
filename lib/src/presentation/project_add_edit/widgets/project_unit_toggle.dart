@@ -1,16 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knittda/src/core/theme/theme.dart';
+import 'package:knittda/src/domain/model/needle.dart';
 import 'package:knittda/src/presentation/project_add_edit/widgets/project_form_text_styles.dart';
-
-/// 바늘 굵기 단위.
-enum NeedleSizeUnit {
-  mm('mm'),
-  ho('호');
-
-  const NeedleSizeUnit(this.label);
-
-  final String label;
-}
 
 /// 작품 입력 화면의 단위 토글.
 ///
