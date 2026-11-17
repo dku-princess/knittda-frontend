@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/presentation/project_add_edit/widgets/project_add_button.dart';
 import 'package:knittda/src/presentation/project_add_edit/widgets/project_dropdown.dart';
 import 'package:knittda/src/presentation/project_add_edit/widgets/project_field.dart';
 import 'package:knittda/src/presentation/project_add_edit/widgets/project_form_section.dart';
@@ -50,13 +51,15 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
   static const double _thumbnailBoxSize = 100;
   static const double _screenPaddingH = AppSpacing.space16;
   static const double _screenPaddingTop = AppSpacing.space16;
+  static const double _listGap = AppSpacing.space8;
 
   // 입력값
   final _nicknameController = TextEditingController();
   final _designTitleController = TextEditingController();
   final _designerController = TextEditingController();
   final _needleInfoController = TextEditingController();
-  final _yarnInfoController = TextEditingController();
+  // 실 한 개당 컨트롤러 하나. 행을 추가,삭제할 때 함께 만들고 정리한다.
+  final List<TextEditingController> _yarnControllers = [];
 
   DateTime? _goalDate;
   DateTime? _startDate;
@@ -87,8 +90,13 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
       _nicknameController.text = project.nickname;
       _designTitleController.text = project.design?.title ?? '';
       _designerController.text = project.design?.designer ?? '';
-      _yarnInfoController.text = project.design?.yarnInfo ?? '';
       _needleInfoController.text = project.design?.needleInfo ?? '';
+
+      // TODO: v2로 실 목록을 채운다. 지금은 v1 문자열을 한 줄로 넣는다.
+      final yarnInfo = project.design?.yarnInfo ?? '';
+      if (yarnInfo.isNotEmpty) {
+        _yarnControllers.add(TextEditingController(text: yarnInfo));
+      }
 
       _startDate = DateTime.tryParse(project.startDate);
       _goalDate = DateTime.tryParse(project.goalDate);
@@ -125,8 +133,10 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
     _nicknameController.dispose();
     _designTitleController.dispose();
     _designerController.dispose();
-    _yarnInfoController.dispose();
     _needleInfoController.dispose();
+    for (final controller in _yarnControllers) {
+      controller.dispose();
+    }
     _subscription?.cancel();
     super.dispose();
   }
@@ -375,6 +385,36 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
   String? _formatDate(DateTime? date) =>
       date == null ? null : DateUtilsHelper.toSpacedDotFormat(date);
 
+  Widget _buildYarnSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: _listGap,
+      children: [
+        Text('실', style: ProjectFormTextStyles.label),
+        for (final controller in _yarnControllers)
+          ProjectInput.text(
+            key: ObjectKey(controller),
+            controller: controller,
+            placeholder: '실을 입력해주세요',
+            maxLength: _infoFieldMaxLength,
+            onMaxLengthExceeded: () => _showMaxLengthSnack(_infoFieldMaxLength),
+            onRemove: () => _removeYarn(controller),
+          ),
+        ProjectAddButton(label: '실 추가', onPressed: _addYarn),
+      ],
+    );
+  }
+
+  void _addYarn() {
+    setState(() => _yarnControllers.add(TextEditingController()));
+  }
+
+  void _removeYarn(TextEditingController controller) {
+    setState(() => _yarnControllers.remove(controller));
+    // 지운 행의 입력칸이 화면에서 빠진 뒤에 정리해야 오류가 나지 않는다.
+    WidgetsBinding.instance.addPostFrameCallback((_) => controller.dispose());
+  }
+
   // 한도 초과 상태에서 키 연타/붙여넣기로 onMaxLengthExceeded가 연속 호출돼도,
   // KnittdaSnackBar.show가 매번 hideCurrentSnackBar() 후 showSnackBar()를 호출하므로
   // 스낵바가 큐에 쌓이지는 않는다(계속 같은 스낵바로 즉시 교체됨).
@@ -390,7 +430,11 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
     final viewModel = context.read<AddEditProjectViewModel>();
 
     final nickname = _nicknameController.text.trim();
-    final customYarnInfo = _yarnInfoController.text.trim();
+    // TODO: v2로 바꾸면 yarns 목록으로 보낸다.
+    final customYarnInfo = _yarnControllers
+        .map((controller) => controller.text.trim())
+        .where((name) => name.isNotEmpty)
+        .join(', ');
     final customNeedleInfo = _needleInfoController.text.trim();
     final designTitle = _designTitleController.text.trim();
     final designer = _designerController.text.trim();
@@ -574,14 +618,8 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
                           _showMaxLengthSnack(_shortFieldMaxLength),
                     ),
                   ),
-                  // TODO: 실 / 바늘 목록으로 교체
-                  Text('실', style: ProjectFormTextStyles.label),
-                  ProjectInput.text(
-                    controller: _yarnInfoController,
-                    maxLength: _infoFieldMaxLength,
-                    onMaxLengthExceeded: () =>
-                        _showMaxLengthSnack(_infoFieldMaxLength),
-                  ),
+                  _buildYarnSection(),
+                  // TODO: 바늘 목록으로 교체
                   Text('바늘', style: ProjectFormTextStyles.label),
                   ProjectInput.text(
                     controller: _needleInfoController,
