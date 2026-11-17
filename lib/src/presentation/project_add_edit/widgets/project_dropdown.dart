@@ -5,8 +5,12 @@ import 'package:knittda/src/presentation/project_add_edit/widgets/project_input.
 
 /// 작품 입력 화면의 드롭다운.
 ///
-/// 입력칸을 탭하면 바로 아래로 선택 목록이 펼쳐지고, 그 아래의 밑줄·에러 문구를 덮는다.
+/// 입력칸을 탭하면 바로 아래로 선택 목록이 펼쳐지고, 입력칸 밑줄을 덮는다.
+/// 아래 공간이 부족하면 입력칸 바로 위로 펼쳐진다.
 /// 목록 폭은 입력칸 폭과 같고, 선택된 항목은 배경색으로만 표시한다.
+///
+/// 에러 문구가 필요하면 [error]에 빈 문자열(밑줄만)을 넘기고, 문구는 바깥에서 그린다.
+/// 문구를 안에서 그리면 목록이 문구 아래에서 열린다.
 ///
 /// | 옵션 | 설명 |
 /// |---|---|
@@ -58,11 +62,9 @@ class ProjectDropdown<T> extends StatelessWidget {
         final width = constraints.maxWidth;
 
         return MenuAnchor(
-          // 목록을 입력 줄 위쪽 기준으로 붙이고, 줄 높이만큼 내려 밑줄과 1px 겹치게 한다.
-          // 그래서 아래에 에러 문구가 있어도 펼쳐진 목록이 밑줄과 문구를 덮는다.
-          alignmentOffset: const Offset(0, ProjectInput.height - 1),
+          // 목록 위 테두리를 입력칸 밑줄과 1px 겹쳐 밑줄을 덮는다.
+          alignmentOffset: const Offset(0, -1),
           style: MenuStyle(
-            alignment: AlignmentDirectional.topStart,
             backgroundColor: const WidgetStatePropertyAll(AppColors.white),
             surfaceTintColor: const WidgetStatePropertyAll(
               AppColors.transparent,

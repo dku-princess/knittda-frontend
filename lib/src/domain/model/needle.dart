@@ -30,6 +30,8 @@ enum NeedleSizeUnit {
 /// 종류/단위/굵기는 각각 비어 있을 수 있다.
 @freezed
 abstract class Needle with _$Needle {
+  const Needle._();
+
   factory Needle({
     @JsonKey(unknownEnumValue: JsonKey.nullForUndefinedEnumValue)
     NeedleType? type,
@@ -41,4 +43,22 @@ abstract class Needle with _$Needle {
   }) = _Needle;
 
   factory Needle.fromJson(Map<String, dynamic> json) => _$NeedleFromJson(json);
+
+  /// 화면 표시용 문자열.
+  /// 바늘 항목마다 있는 값만 "{종류} {값}{단위}"로 만든다. rawText가 있으면 원문 그대로.
+  String get displayText {
+    final raw = rawText;
+    if (raw != null) return raw;
+
+    final value = this.value;
+    final size = value == null
+        ? null
+        : '${_formatValue(value)}${unit?.label ?? ''}';
+    return [type?.label, size].whereType<String>().join(' ');
+  }
+
+  // 끝자리 0을 붙이지 않는다. 4.50 → 4.5, 7.0 → 7
+  static String _formatValue(double value) => value == value.truncateToDouble()
+      ? value.toInt().toString()
+      : value.toString();
 }
