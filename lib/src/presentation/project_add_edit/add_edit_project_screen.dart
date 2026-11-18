@@ -55,6 +55,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
   static const double _screenPaddingH = AppSpacing.space16;
   static const double _screenPaddingTop = AppSpacing.space16;
   static const double _listGap = AppSpacing.space8;
+  static const Duration _scrollDuration = Duration(milliseconds: 300);
 
   // 입력값
   final _nicknameController = TextEditingController();
@@ -420,13 +421,20 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
           ),
         for (final needle in _needles)
           ProjectNeedleRow(
-            key: ObjectKey(needle),
+            key: needle.key,
             type: needle.type,
-            onTypeChanged: (type) => setState(() => needle.type = type),
+            onTypeChanged: (type) => setState(() {
+              needle.type = type;
+              needle.error = null;
+            }),
             sizeController: needle.sizeController,
+            onSizeChanged: (_) {
+              if (needle.error != null) setState(() => needle.error = null);
+            },
             unit: needle.unit,
             onUnitChanged: (unit) => setState(() => needle.unit = unit),
             onRemove: () => _removeNeedle(needle),
+            error: needle.error,
           ),
         ProjectAddButton(label: '바늘 추가', onPressed: _addNeedle),
       ],
@@ -468,6 +476,30 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
     setState(() => _needles.remove(needle));
     // 지운 행의 입력칸이 화면에서 빠진 뒤에 정리해야 오류가 나지 않는다.
     WidgetsBinding.instance.addPostFrameCallback((_) => needle.dispose());
+  }
+
+  // 바늘 행을 모두 검사해 에러를 표시하고, 첫 에러 행을 화면 가운데로 스크롤한다.
+  bool _validateNeedles() {
+    setState(() {
+      for (final needle in _needles) {
+        needle.error = needle.validate();
+      }
+    });
+
+    final firstError = _needles.where((n) => n.error != null).firstOrNull;
+    if (firstError == null) return true;
+
+    // 에러 문구가 그려진 뒤에 위치를 재야 문구까지 화면에 들어온다.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final rowContext = firstError.key.currentContext;
+      if (rowContext == null) return;
+      Scrollable.ensureVisible(
+        rowContext,
+        duration: _scrollDuration,
+        alignment: 0.5,
+      );
+    });
+    return false;
   }
 
   // 한도 초과 상태에서 키 연타/붙여넣기로 onMaxLengthExceeded가 연속 호출돼도,
@@ -525,6 +557,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
       );
       return;
     }
+    if (!_validateNeedles()) return;
 
     final file = _focusedSource == _ThumbnailSource.galleryImage
         ? _galleryImage
@@ -722,11 +755,32 @@ class _NeedleRowData {
   NeedleSizeUnit unit;
   final sizeController = TextEditingController();
 
+  /// 첫 에러 행으로 스크롤할 때 행 위치를 찾는다.
+  final key = GlobalKey();
+
+  /// 저장할 때 검사한 에러. 칸을 고치면 지운다.
+  NeedleRowError? error;
+
+  // 0 이상 9999.99 이하, 소수 둘째 자리까지.
+  static final _sizePattern = RegExp(r'^\d{1,4}(\.\d{1,2})?$');
+
+  String get _sizeText => sizeController.text.trim();
+
   /// 종류와 굵기가 모두 비어 있는 행. 저장할 때 뺀다.
-  bool get isEmpty => type == null && sizeController.text.trim().isEmpty;
+  bool get isEmpty => type == null && _sizeText.isEmpty;
+
+  /// 행 에러. 빈 행은 검사하지 않는다.
+  /// TODO: 현재 규칙은 종류·굵기 필수, 검증 규칙 확인 필요
+  NeedleRowError? validate() {
+    if (isEmpty) return null;
+    if (type == null) return NeedleRowError.missingType;
+    if (_sizeText.isEmpty) return NeedleRowError.missingSize;
+    if (!_sizePattern.hasMatch(_sizeText)) return NeedleRowError.invalidSize;
+    return null;
+  }
 
   Needle toNeedle() {
-    final value = double.tryParse(sizeController.text.trim());
+    final value = double.tryParse(_sizeText);
     // 굵기가 없으면 단위도 보내지 않는다.
     return Needle(type: type, unit: value == null ? null : unit, value: value);
   }

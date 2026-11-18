@@ -29,6 +29,7 @@ enum NeedleRowError {
 /// | [type] | 선택된 종류. null이면 미선택. |
 /// | [onTypeChanged] | 종류를 고를 때 호출. |
 /// | [sizeController] | 굵기 입력값. |
+/// | [onSizeChanged] | 굵기를 입력할 때 호출. |
 /// | [unit] | 굵기 단위. |
 /// | [onUnitChanged] | 단위를 바꿀 때 호출. |
 /// | [error] | 행 에러. null이면 정상. |
@@ -42,12 +43,14 @@ class ProjectNeedleRow extends StatelessWidget {
     required this.unit,
     required this.onUnitChanged,
     required this.onRemove,
+    this.onSizeChanged,
     this.error,
   });
 
   final NeedleType? type;
   final ValueChanged<NeedleType> onTypeChanged;
   final TextEditingController sizeController;
+  final ValueChanged<String>? onSizeChanged;
   final NeedleSizeUnit unit;
   final ValueChanged<NeedleSizeUnit> onUnitChanged;
   final NeedleRowError? error;
@@ -58,7 +61,7 @@ class ProjectNeedleRow extends StatelessWidget {
   static const double _removeSlotWidth = 48;
 
   static const String _typePlaceholder = '종류';
-  static const int _sizeMaxLength = 5;
+  static const int _sizeMaxLength = 7;
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +92,7 @@ class ProjectNeedleRow extends StatelessWidget {
             Expanded(
               child: ProjectInput.text(
                 controller: sizeController,
+                onChanged: onSizeChanged,
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
