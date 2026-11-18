@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:knittda/src/domain/model/design.dart';
 import 'package:knittda/src/domain/model/needle.dart';
+import 'package:knittda/src/domain/model/yarn.dart';
 import 'package:knittda/src/presentation/project_add_edit/widgets/project_add_button.dart';
 import 'package:knittda/src/presentation/project_add_edit/widgets/project_dropdown.dart';
 import 'package:knittda/src/presentation/project_add_edit/widgets/project_field.dart';
@@ -26,7 +28,6 @@ import 'package:knittda/src/core/theme/theme.dart';
 enum _ThumbnailSource { galleryImage, defaultImage }
 
 // 서버 값(value)과 화면 문구(label).
-// TODO(api): 상태 저장은 API 연동 단계에서 반영
 enum _ProjectStatus {
   inProgress('IN_PROGRESS', '뜨고 있어요'),
   done('DONE', '다 떴어요');
@@ -59,12 +60,12 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
   final _nicknameController = TextEditingController();
   final _designTitleController = TextEditingController();
   final _designerController = TextEditingController();
-  // 실 한 개당 컨트롤러 하나. 행을 추가,삭제할 때 함께 만들고 정리한다.
+  // 실 한 개당 컨트롤러 하나. 행을 추가·삭제할 때 함께 만들고 정리한다.
   final List<TextEditingController> _yarnControllers = [];
   final List<_NeedleRowData> _needles = [];
 
-  // TODO: v2 조회로 바꾸면 rawText 안내로 교체. 지금은 기존 v1 바늘 문자열을 보여준다.
-  String? _previousNeedleInfo;
+  // 서버가 해석하지 못한 기존 바늘 원문.
+  final List<String> _needleRawTexts = [];
 
   DateTime? _goalDate;
   DateTime? _startDate;
@@ -95,16 +96,7 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
       _nicknameController.text = project.nickname;
       _designTitleController.text = project.design?.title ?? '';
       _designerController.text = project.design?.designer ?? '';
-
-      // TODO: v2로 실 목록을 채운다. 지금은 v1 문자열을 한 줄로 넣는다.
-      final yarnInfo = project.design?.yarnInfo ?? '';
-      if (yarnInfo.isNotEmpty) {
-        _yarnControllers.add(TextEditingController(text: yarnInfo));
-      }
-
-      // 기존 바늘은 v1 문자열이라 행으로 나눌 수 없어 안내로 보여준다.
-      final needleInfo = project.design?.needleInfo ?? '';
-      if (needleInfo.isNotEmpty) _previousNeedleInfo = needleInfo;
+      _initYarnAndNeedleRows(project.design);
 
       _startDate = DateTime.tryParse(project.startDate);
       _goalDate = DateTime.tryParse(project.goalDate);
@@ -416,13 +408,16 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
   }
 
   Widget _buildNeedleList() {
-    final previousNeedleInfo = _previousNeedleInfo;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: _listGap,
       children: [
         Text('바늘', style: ProjectFormTextStyles.label),
+        if (_needleRawTexts.isNotEmpty)
+          Text(
+            '기존 입력: ${_needleRawTexts.join(', ')} · 다시 입력해 주세요',
+            style: AppTextStyles.body.copyWith(color: AppColors.textHint),
+          ),
         for (final needle in _needles)
           ProjectNeedleRow<NeedleType>(
             key: ObjectKey(needle),
@@ -435,14 +430,26 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
             onUnitChanged: (unit) => setState(() => needle.unit = unit),
             onRemove: () => _removeNeedle(needle),
           ),
-        if (previousNeedleInfo != null)
-          Text(
-            '기존 입력: $previousNeedleInfo · 다시 입력해 주세요',
-            style: AppTextStyles.body.copyWith(color: AppColors.textHint),
-          ),
         ProjectAddButton(label: '바늘 추가', onPressed: _addNeedle),
       ],
     );
+  }
+
+  // 작품의 실·바늘 목록으로 입력 행을 만든다.
+  // 해석하지 못한 기존 바늘(rawText)은 입력 행 대신 안내 문구로 보여준다.
+  // TODO: 상세 화면이 v1으로 조회해서 넘겨받은 작품에 실·바늘 목록(yarns, needles)이 없어 행이 비어 보인다. 상세 화면을 v2로 바꾸면 채워진다.
+  void _initYarnAndNeedleRows(Design? design) {
+    for (final yarn in design?.yarns ?? const <Yarn>[]) {
+      _yarnControllers.add(TextEditingController(text: yarn.name));
+    }
+    for (final needle in design?.needles ?? const <Needle>[]) {
+      final rawText = needle.rawText;
+      if (rawText != null) {
+        _needleRawTexts.add(rawText);
+      } else {
+        _needles.add(_NeedleRowData.fromNeedle(needle));
+      }
+    }
   }
 
   void _addYarn() {
@@ -480,21 +487,16 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
     final viewModel = context.read<AddEditProjectViewModel>();
 
     final nickname = _nicknameController.text.trim();
-    // TODO: v2로 바꾸면 yarns 목록으로 보낸다.
-    final customYarnInfo = _yarnControllers
+    // 빈 행은 빼고, 화면에 있는 목록 전체를 보낸다.
+    final yarns = _yarnControllers
         .map((controller) => controller.text.trim())
         .where((name) => name.isNotEmpty)
-        .join(', ');
-
-    // TODO: v2로 바꾸면 needles 목록으로 보낸다.
-    // 바늘 행이 없으면 null로 보내 기존 값을 그대로 둔다.
-    final needleTexts = _needles
+        .map((name) => Yarn(name: name))
+        .toList();
+    final needles = _needles
         .where((needle) => !needle.isEmpty)
-        .map((needle) => needle.toNeedle().displayText)
-        .where((text) => text.isNotEmpty);
-    final customNeedleInfo = needleTexts.isEmpty
-        ? null
-        : needleTexts.join(', ');
+        .map((needle) => needle.toNeedle())
+        .toList();
     final designTitle = _designTitleController.text.trim();
     final designer = _designerController.text.trim();
 
@@ -533,6 +535,17 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
         ? _defaultThumbnailId
         : null;
 
+    // 상태를 고르지 않았으면 기존 상태와 종료일을 그대로 둔다.
+    final status = _status?.value ?? widget.project?.status;
+    final endDate = switch (_status) {
+      null => widget.project?.endDate,
+      // 다 떴어요(DONE): 기존 종료일이 있으면 그대로 두고, 없으면 오늘 날짜로 저장한다.
+      _ProjectStatus.done =>
+        widget.project?.endDate ??
+            DateUtilsHelper.toHyphenFormat(DateTime.now()),
+      _ProjectStatus.inProgress => null,
+    };
+
     if (widget.project == null) {
       viewModel.onEvent(
         AddEditProjectEvent.saveProject(
@@ -540,8 +553,10 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
             nickname: nickname,
             startDate: DateUtilsHelper.toHyphenFormat(_startDate!),
             goalDate: DateUtilsHelper.toHyphenFormat(_goalDate!),
-            needleInfo: customNeedleInfo,
-            yarnInfo: customYarnInfo,
+            endDate: endDate,
+            status: status,
+            yarns: yarns,
+            needles: needles,
             designTitle: designTitle,
             designer: designer,
             visible: false,
@@ -558,8 +573,10 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
             nickname: nickname,
             startDate: DateUtilsHelper.toHyphenFormat(_startDate!),
             goalDate: DateUtilsHelper.toHyphenFormat(_goalDate!),
-            needleInfo: customNeedleInfo,
-            yarnInfo: customYarnInfo,
+            endDate: endDate,
+            status: status,
+            yarns: yarns,
+            needles: needles,
             designTitle: designTitle,
             designer: designer,
           ),
@@ -694,8 +711,17 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
 
 /// 화면에서 편집 중인 바늘 한 줄. 새 행은 종류 미선택 | 굵기 빈칸 | mm로 시작한다.
 class _NeedleRowData {
+  _NeedleRowData() : unit = NeedleSizeUnit.mm;
+
+  /// 받은 바늘로 행을 만든다. 단위가 비어 있으면 mm로 둔다.
+  _NeedleRowData.fromNeedle(Needle needle)
+    : type = needle.type,
+      unit = needle.unit ?? NeedleSizeUnit.mm {
+    sizeController.text = needle.valueText ?? '';
+  }
+
   NeedleType? type;
-  NeedleSizeUnit unit = NeedleSizeUnit.mm;
+  NeedleSizeUnit unit;
   final sizeController = TextEditingController();
 
   /// 종류와 굵기가 모두 비어 있는 행. 저장할 때 뺀다.
@@ -703,7 +729,7 @@ class _NeedleRowData {
 
   Needle toNeedle() {
     final value = double.tryParse(sizeController.text.trim());
-    // 굵기가 없으면 단위도 보내지 않는다
+    // 굵기가 없으면 단위도 보내지 않는다.
     return Needle(type: type, unit: value == null ? null : unit, value: value);
   }
 

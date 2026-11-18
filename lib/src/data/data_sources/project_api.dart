@@ -67,7 +67,6 @@ class ProjectApi {
     required Project project,
     required XFile? file,
     int? defaultThumbnailId,
-    bool v2 = false,
   }) async {
     try {
       final formData = FormData.fromMap({
@@ -80,7 +79,7 @@ class ProjectApi {
       });
 
       final response = await _dio.put(
-        '/api/${v2 ? 'v2' : 'v1'}/projects/',
+        '/api/v2/projects/',
         data: formData,
         options: Options(headers: {'accessToken': 'true'}),
       );
@@ -108,7 +107,6 @@ class ProjectApi {
     required Project project,
     required XFile? file,
     int? defaultThumbnailId,
-    bool v2 = false,
   }) async {
     try {
       final formData = FormData.fromMap({
@@ -125,7 +123,7 @@ class ProjectApi {
       });
 
       final response = await _dio.post(
-        '/api/${v2 ? 'v2' : 'v1'}/projects/',
+        '/api/v2/projects/',
         data: formData,
         options: Options(headers: {'accessToken': 'true'}),
       );
@@ -233,11 +231,10 @@ class ProjectApi {
 
   Future<Result<Map<String, dynamic>>> getMyProject({
     required int projectId,
-    bool v2 = false,
   }) async {
     try {
       final response = await _dio.get(
-        '/api/${v2 ? 'v2' : 'v1'}/projects/my/$projectId',
+        '/api/v1/projects/my/$projectId',
         options: Options(headers: {'accessToken': 'true'}),
       );
 

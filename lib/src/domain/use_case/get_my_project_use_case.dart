@@ -7,11 +7,8 @@ class GetMyProjectUseCase {
 
   GetMyProjectUseCase(this._repository);
 
-  Future<Result<Project>> call({
-    required int projectId,
-    bool v2 = false,
-  }) async {
-    final result = await _repository.getMyProject(projectId: projectId, v2: v2);
+  Future<Result<Project>> call({required int projectId}) async {
+    final result = await _repository.getMyProject(projectId: projectId);
 
     return switch (result) {
       Success<Project>() => Result.success(result.data),

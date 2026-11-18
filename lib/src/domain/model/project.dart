@@ -24,9 +24,7 @@ abstract class Project with _$Project {
 
     int? projectId,
 
-    String? yarnInfo,
-    String? needleInfo,
-    // v2 생성 수정 요청용, null이면 서버가 기존 목록을 유지한다.
+    // v2 생성·수정 요청용, null이면 서버가 기존 목록을 유지한다.
     List<Yarn>? yarns,
     List<Needle>? needles,
 
