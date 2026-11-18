@@ -44,7 +44,8 @@
 | 원시색 | 상황 | 처리 |
 |---|---|---|
 | `grey600` | "보조 텍스트"로 3곳(projects_item·article_card_small)에 텍스트로 쓰이나 | `textSecondary`(800)/`textHint`(400) 어느 쪽도 아님. **텍스트 3단계(secondary/tertiary/hint) 확정 전까지 원시 `grey600` 유지.** 반복되면 `textTertiary` 별칭 신설 검토. |
-| `grey50` | 배경 틴트 1곳 | 표면 계열. 반복되면 `surfaceTint` 등 검토. |
+| `grey50` | 배경 틴트 2곳(+ `add_edit_project_screen` 화면 배경) | 표면 계열. 반복되면 `surfaceTint` 등 검토. |
+| `grey200` | `ProjectInput` 플레이스홀더 텍스트 | 작품 입력 handoff(Figma) 값. `textHint`(grey400)보다 연함. 디자인 확정 전까지 원시 `grey200` 유지. |
 
 ---
 
@@ -83,9 +84,10 @@
 | `announcement_list_item` 날짜 | `xs`(10) | 프리셋 최소가 `caption`(12) → `AppFontSize.xs` 토큰 유지. |
 | `report_screen` 히어로 제목 | `display` + **bold**(w700) | 강조 히어로. `display.copyWith(fontWeight: bold)`로 굵기만 덮음. |
 | `Text.rich` 자식 `TextSpan` | 색만 | 부모 프리셋에서 크기·굵기·행간 상속, 색만 재정의(정상). |
+| `add_edit_project_screen` 입력 폼 전체 | 17 regular / semibold | 작품 입력 handoff 17px. 프리셋에 없어 화면 로컬 `ProjectFormTextStyles`(body·label)로 정의(`AppTextStyles.fontFamily`·`lineHeight` 재사용). 17px이 확정·반복되면 프리셋으로 승격. |
 
-> 남은 예외 4곳은 raw 숫자가 아니라 **`AppFontSize` 토큰**을 쓰므로 DS 규약 위반이
-> 아니다. 16-regular·10px 프리셋이 반복 필요해지면 프리셋 신설을 검토한다.
+> `AppFontSize` 토큰 예외(16-regular·10px)는 DS 규약 위반이 아니다.
+> 17px은 handoff 전용 로컬 스타일이다. 반복 필요해지면 프리셋 신설을 검토한다.
 
 ---
 
@@ -117,6 +119,12 @@
 | `login_screen` 버튼 영역 하단 | `actionBottomInset` |
 | `announcement_detail_screen` / `record_details_screen` 좌우 가장자리 | `screenPaddingH` |
 
+### 사용하지 않은 경우 (예외)
+
+| 위치 | 값 | 이유 |
+|---|---|---|
+| `add_edit_project_screen` 좌우·상단 | `AppSpacing.space16`(16) | 작품 입력 handoff grey50 배경 위 흰 카드. 카드 안 여백(20)과 합쳐 콘텐츠 시작선이 정해져 `screenPaddingH`(20) 대신 16. |
+
 ---
 
 ## KnittdaButton
@@ -139,12 +147,11 @@
 **상태별 색(자동)**: primary 비활성 → 배경 `grey400`. secondary/text 비활성 →
 글씨 `textHint`, secondary 테두리 `grey200`.
 
-### 사용되는 곳 (4)
+### 사용되는 곳 (3)
 
 | 화면 | style | 비고 |
 |---|---|---|
-| `add_edit_project_screen` 저장 | primary | 앱바 액션. `onPressed: isLoading ? null : _save` 로 비활성 연동 |
-| `add_edit_record_screen` 저장 | primary | 동일 패턴 |
+| `add_edit_record_screen` 저장 | primary | 앱바 액션. `onPressed: isLoading ? null : _save` 로 비활성 연동 |
 | `mypage_setting_nickname_screen` 저장 | primary | 인라인 검증 후 저장 |
 | `projects_screen` 주간 리포트 확인 | secondary | 기존 primary 테두리 → DS 표준 `border`(grey)로 통일 |
 
@@ -156,6 +163,7 @@
 | `purchase_link_section_widget` 구매 CTA | **pill 모양 풀폭 강조 버튼**(`AppRadius.pill`). KnittdaButton은 button 모서리(8) 고정. pill 강조 의도 보존. |
 | `progress_section` 진행 토글 | **pill 아웃라인 + primary 테두리**. secondary(grey 테두리·button 모서리)와 형태가 달라 보존. |
 | 다이얼로그 액션 6곳 (`mypage`·`popup_menu_section`·`edit_delete_menu`의 취소/삭제/탈퇴) | **AlertDialog 액션**. "삭제/탈퇴"는 error 색 파괴적 액션이라 별도 처리. → 향후 **KnittDialog** 위젯이 흡수 예정. |
+| `add_edit_project_screen` 앱바 저장 | 작품 입력 handoff **앱바 텍스트 버튼**(17 semibold·`textSecondary`, 비활성 `textHint`). KnittdaButton.text는 초록·`bodyStrong`(14) 고정이라 로컬 `TextButton` 사용. |
 
 > 확장 여지: pill 모양·파괴적(error) 스타일·아이콘 동반 버튼이 반복되면
 > `shape`/`tone`/`icon` 옵션 추가를 검토한다(현재는 실사용 근거가 위 예외 소수뿐이라 미도입).
@@ -294,11 +302,10 @@ Stack(children: [
 | `maxLength` | `int?` | `null` | 글자 수 제한·카운터. |
 | `enabled` | `bool` | `true` | |
 
-### 사용되는 곳 (7)
+### 사용되는 곳 (2)
 
 | 화면 | 필드 |
 |---|---|
-| `add_edit_project_screen` | 작품 이름·도안명·작가·실·바늘 (5) |
 | `mypage_setting_nickname_screen` | 닉네임(`enabled: !isLoading`) |
 | `add_edit_record_screen` | 기록 내용(멀티라인 `maxLines: 8`) |
 
@@ -307,6 +314,7 @@ Stack(children: [
 | 위치 | 이유 |
 |---|---|
 | `feed_search_screen` 검색 필드 | **별개 패턴**이라 유지. KnittdaInput(흰 채움·가시 테두리 3상태·카운터/에러, 폼 필드)과 달리 이쪽은 `grey100` 채움·**테두리 없음**(`BorderSide.none`)·prefix(검색)/suffix(X) 아이콘·앱바 내 `onSubmitted` 검색바다. 아이콘 슬롯만 더해도 채움·테두리·동작이 달라 흡수되지 않는다. **검색바는 앱 전체 1곳뿐(YAGNI)** — 2번째 검색 필드가 생기면 그때 `KnittdaSearchField`(grey 채움·borderless·검색/클리어 아이콘) 신설을 검토한다. |
+| `add_edit_project_screen` 입력 전체 | 작품 입력 handoff **밑줄형 입력**(높이 28·17px·에러 시 밑줄만 빨강). KnittdaInput(테두리 박스형)과 형태가 달라 로컬 `ProjectInput`으로 분리. 아래 "작품 입력 화면 로컬 위젯" 참고. |
 
 ---
 
@@ -423,6 +431,37 @@ final ok = await KnittdaDialog.confirm(context,
 
 > Phase 1에서 KnittdaButton 예외로 뒀던 **다이얼로그 액션 버튼(취소/삭제/탈퇴)**을
 > 이 헬퍼가 흡수했다.
+
+---
+
+## 작품 입력 화면 로컬 위젯 (Project*)
+
+`lib/src/presentation/project_add_edit/widgets/` · Figma "작품 입력 UI · Frontend handoff"
+
+handoff 페이지 전용 컴포넌트라 DS 페이지에 없고, 작품 입력 화면 한 곳에서만 쓴다.
+그래서 `Knittda*` 공용 위젯이 아니라 **화면 로컬 `Project*`** 로 둔다.
+토큰과 공용 위젯 (KnittdaAppBar·KnittdaSnackBar·KnittdaLoadingOverlay)은 DS 것을 그대로 쓴다.
+
+> DS 페이지에 올라가거나 다른 화면에서 반복되면 `widgets/knittda_*`로 승격한다.
+
+| 위젯 | 역할 |
+|---|---|
+| `ProjectFormSection` | 흰 카드 섹션(제목 + 행 목록). `AppRadius.card`, 여백 20. |
+| `ProjectField` | 라벨(고정 폭 48) + 입력칸 한 줄. |
+| `ProjectInput` | 밑줄형 입력(`.text` / `.date` / `.dropdown`). 높이 28. |
+| `ProjectDropdown` | `MenuAnchor` 기반 선택 목록. 입력칸 폭과 같고 밑줄을 덮음. |
+| `ProjectNeedleRow` | 바늘 한 줄(종류 · 굵기 · 단위 · ×) + 행 에러 문구. |
+| `ProjectUnitToggle` | mm / 호 단위 토글. |
+| `ProjectAddButton` | `+ 항목 추가` 텍스트 버튼(높이 48). |
+| `ProjectFormTextStyles` | 17px body·label 글자 스타일. |
+
+### 토큰에 없는 로컬 값
+
+| 위치 | 값 | 이유 |
+|---|---|---|
+| `ProjectDropdown` 목록 모서리 | 2 | handoff 값. `AppRadius`에 2 없음. |
+| `ProjectInput` / `ProjectDropdown` 높이·항목 높이 | 28 / 48 | handoff 고정 크기. |
+| `ProjectField` 라벨 폭, `ProjectNeedleRow` 종류 폭 | 48 / 88 | handoff 고정 폭. |
 
 ---
 
