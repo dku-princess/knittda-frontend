@@ -8,6 +8,10 @@ class DateUtilsHelper {
   static String toDotFormat(DateTime date) =>
       "${date.year}.${date.month.toString().padLeft(2, '0')}.${date.day.toString().padLeft(2, '0')}";
 
+  // 예: 2026. 10. 21 (작품 입력 화면 날짜 표시)
+  static String toSpacedDotFormat(DateTime date) =>
+      "${date.year}. ${date.month.toString().padLeft(2, '0')}. ${date.day.toString().padLeft(2, '0')}";
+
   static DateTime fromDotFormat(String date) {
     final parts = date.split('.');
     return DateTime(

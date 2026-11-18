@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:knittda/src/domain/model/design.dart';
+import 'package:knittda/src/domain/model/needle.dart';
+import 'package:knittda/src/domain/model/yarn.dart';
 
 part 'project.freezed.dart';
 
@@ -21,12 +23,16 @@ abstract class Project with _$Project {
     required String goalDate,
 
     int? projectId,
-    String? yarnInfo,
-    String? needleInfo,
+
+    // v2 생성·수정 요청용, null이면 서버가 기존 목록을 유지한다.
+    List<Yarn>? yarns,
+    List<Needle>? needles,
+
     String? designTitle,
     String? designer,
     bool? visible,
-}) = _Project;
+  }) = _Project;
 
-  factory Project.fromJson(Map<String, dynamic> json) => _$ProjectFromJson(json);
+  factory Project.fromJson(Map<String, dynamic> json) =>
+      _$ProjectFromJson(json);
 }

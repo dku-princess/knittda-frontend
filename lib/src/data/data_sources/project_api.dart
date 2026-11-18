@@ -79,7 +79,7 @@ class ProjectApi {
       });
 
       final response = await _dio.put(
-        '/api/v1/projects/',
+        '/api/v2/projects/',
         data: formData,
         options: Options(headers: {'accessToken': 'true'}),
       );
@@ -123,7 +123,7 @@ class ProjectApi {
       });
 
       final response = await _dio.post(
-        '/api/v1/projects/',
+        '/api/v2/projects/',
         data: formData,
         options: Options(headers: {'accessToken': 'true'}),
       );
