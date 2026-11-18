@@ -19,7 +19,6 @@ import 'package:knittda/src/presentation/project_add_edit/widgets/project_input.
 /// | [labelOf] | 항목을 화면에 보여줄 문구로 바꾼다. |
 /// | [onChanged] | 항목을 고를 때 호출. |
 /// | [placeholder] | 플레이스홀더. |
-/// | [loading] | true면 목록을 열지 않고 불러오는 중 문구를 보여준다. |
 /// | [error] | 에러 문구. |
 class ProjectDropdown<T> extends StatelessWidget {
   const ProjectDropdown({
@@ -29,7 +28,6 @@ class ProjectDropdown<T> extends StatelessWidget {
     required this.labelOf,
     required this.onChanged,
     this.placeholder,
-    this.loading = false,
     this.error,
   });
 
@@ -38,7 +36,6 @@ class ProjectDropdown<T> extends StatelessWidget {
   final String Function(T option) labelOf;
   final ValueChanged<T> onChanged;
   final String? placeholder;
-  final bool loading;
   final String? error;
 
   static const double _itemHeight = 48;
@@ -48,9 +45,6 @@ class ProjectDropdown<T> extends StatelessWidget {
   static const Color _selectedItemColor = AppColors.primaryLight;
 
   static const double _itemPaddingH = AppSpacing.space16;
-
-  // TODO(design): 불러오는 중 문구
-  static const String _loadingText = '불러오는 중';
 
   @override
   Widget build(BuildContext context) {
@@ -84,11 +78,11 @@ class ProjectDropdown<T> extends StatelessWidget {
           ],
           builder: (context, controller, child) {
             return ProjectInput.dropdown(
-              value: loading || value == null ? null : labelOf(value),
-              placeholder: loading ? _loadingText : placeholder,
+              value: value == null ? null : labelOf(value),
+              placeholder: placeholder,
               error: error,
               onTap: () {
-                if (loading || options.isEmpty) return;
+                if (options.isEmpty) return;
                 controller.isOpen ? controller.close() : controller.open();
               },
             );

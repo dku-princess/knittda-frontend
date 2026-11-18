@@ -419,11 +419,9 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
             style: AppTextStyles.body.copyWith(color: AppColors.textHint),
           ),
         for (final needle in _needles)
-          ProjectNeedleRow<NeedleType>(
+          ProjectNeedleRow(
             key: ObjectKey(needle),
-            types: NeedleType.values,
             type: needle.type,
-            typeLabelOf: (type) => type.label,
             onTypeChanged: (type) => setState(() => needle.type = type),
             sizeController: needle.sizeController,
             unit: needle.unit,
