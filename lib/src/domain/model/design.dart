@@ -12,14 +12,10 @@ abstract class Design with _$Design {
     int? id,
     required String? title,
     required String? designer,
-    required String? needleInfo,
-    required String? yarnInfo,
     required String? description,
-    DateTime? createdAt,
-
-    // v2 응답에만 있다. v1 응답(상세 화면)에서는 null.
     List<Yarn>? yarns,
     List<Needle>? needles,
+    DateTime? createdAt,
   }) = _Design;
 
   factory Design.fromJson(Map<String, dynamic> json) => _$DesignFromJson(json);
