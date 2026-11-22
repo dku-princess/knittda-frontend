@@ -17,7 +17,7 @@ class ProjectApi {
   Future<Result<Iterable>> getMyProjects() async {
     try {
       final response = await _dio.get(
-        '/api/v1/projects/my',
+        '/api/v2/projects/my',
         options: Options(headers: {'accessToken': 'true'}),
       );
 
