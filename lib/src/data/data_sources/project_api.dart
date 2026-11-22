@@ -17,7 +17,7 @@ class ProjectApi {
   Future<Result<Iterable>> getMyProjects() async {
     try {
       final response = await _dio.get(
-        '/api/v1/projects/my',
+        '/api/v2/projects/my',
         options: Options(headers: {'accessToken': 'true'}),
       );
 
@@ -150,7 +150,7 @@ class ProjectApi {
     required int projectId,
   }) async {
     try {
-      final response = await _dio.get('/api/v1/projects/$projectId');
+      final response = await _dio.get('/api/v2/projects/$projectId');
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -234,7 +234,7 @@ class ProjectApi {
   }) async {
     try {
       final response = await _dio.get(
-        '/api/v1/projects/my/$projectId',
+        '/api/v2/projects/my/$projectId',
         options: Options(headers: {'accessToken': 'true'}),
       );
 

@@ -443,7 +443,6 @@ class _AddEditProjectScreenState extends State<AddEditProjectScreen> {
 
   // 작품의 실·바늘 목록으로 입력 행을 만든다.
   // 해석하지 못한 기존 바늘(rawText)은 입력 행 대신 안내 문구로 보여준다.
-  // TODO: 상세 화면이 v1으로 조회해서 넘겨받은 작품에 실·바늘 목록(yarns, needles)이 없어 행이 비어 보인다. 상세 화면을 v2로 바꾸면 채워진다.
   void _initYarnAndNeedleRows(Design? design) {
     for (final yarn in design?.yarns ?? const <Yarn>[]) {
       _yarnControllers.add(TextEditingController(text: yarn.name));

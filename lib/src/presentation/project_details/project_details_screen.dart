@@ -364,7 +364,12 @@ class _ProjectHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.space0, right: AppSpacing.space20, left: AppSpacing.space20, bottom: AppSpacing.space8),
+      padding: const EdgeInsets.only(
+        top: AppSpacing.space0,
+        right: AppSpacing.space20,
+        left: AppSpacing.space20,
+        bottom: AppSpacing.space8,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -414,15 +419,15 @@ class _InfoTap extends StatelessWidget {
     final isEmpty = value == null || value.isEmpty;
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: 100,
-          child: Text(label, style: AppTextStyles.heading),
-        ),
+        SizedBox(width: 100, child: Text(label, style: AppTextStyles.heading)),
         Expanded(
           child: Text(
             isEmpty ? '-' : value,
-            style: AppTextStyles.heading.copyWith(color: isEmpty ? AppColors.textHint : null),
+            style: AppTextStyles.heading.copyWith(
+              color: isEmpty ? AppColors.textHint : null,
+            ),
           ),
         ),
       ],
@@ -432,7 +437,10 @@ class _InfoTap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: EdgeInsets.symmetric(horizontal: AppSpacing.space40, vertical: AppSpacing.space20),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.space40,
+        vertical: AppSpacing.space20,
+      ),
 
       children: [
         _infoRow('도안', project.design?.title),
@@ -441,10 +449,13 @@ class _InfoTap extends StatelessWidget {
         _infoRow('작가', project.design?.designer),
         SizedBox(height: AppSpacing.space20),
 
-        _infoRow('실', project.design?.yarnInfo),
+        _infoRow('실', project.design?.yarns?.map((y) => y.name).join('\n')),
         SizedBox(height: AppSpacing.space20),
 
-        _infoRow('바늘', project.design?.needleInfo),
+        _infoRow(
+          '바늘',
+          project.design?.needles?.map((n) => n.displayText).join('\n'),
+        ),
         SizedBox(height: AppSpacing.space20),
       ],
     );
@@ -571,14 +582,14 @@ class _ReportTap extends StatelessWidget {
         : '목표일 정보 없음';
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: AppSpacing.space32, vertical: AppSpacing.space20),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.space32,
+        vertical: AppSpacing.space20,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "나의 진행도",
-            style: AppTextStyles.title,
-          ),
+          Text("나의 진행도", style: AppTextStyles.title),
 
           SizedBox(height: AppSpacing.space24),
 
@@ -644,10 +655,7 @@ class _ReportTap extends StatelessWidget {
                           color: PRIMARY_COLOR,
                         ),
                       ),
-                      Text(
-                        startDateText,
-                        style: AppTextStyles.caption,
-                      ),
+                      Text(startDateText, style: AppTextStyles.caption),
 
                       const SizedBox(height: AppSpacing.space12),
 
@@ -657,10 +665,7 @@ class _ReportTap extends StatelessWidget {
                           color: PRIMARY_COLOR,
                         ),
                       ),
-                      Text(
-                        goalDateText,
-                        style: AppTextStyles.caption,
-                      ),
+                      Text(goalDateText, style: AppTextStyles.caption),
                     ],
                   ),
                 ),
@@ -696,10 +701,7 @@ class _ErrorRetry extends StatelessWidget {
             style: OutlinedButton.styleFrom(
               side: const BorderSide(color: PRIMARY_COLOR),
             ),
-            child: const Text(
-              '다시 시도',
-              style: TextStyle(color: PRIMARY_COLOR),
-            ),
+            child: const Text('다시 시도', style: TextStyle(color: PRIMARY_COLOR)),
           ),
         ],
       ),
