@@ -8,12 +8,20 @@ class AddProjectUseCase {
 
   AddProjectUseCase(this._repository);
 
-  Future<Result<Project>> call({required Project project, required XFile? file}) async {
-    final result = await _repository.postProject(project: project, file: file);
+  Future<Result<Project>> call({
+    required Project project,
+    required XFile? file,
+    int? defaultThumbnailId,
+  }) async {
+    final result = await _repository.postProject(
+      project: project,
+      file: file,
+      defaultThumbnailId: defaultThumbnailId,
+    );
 
     return switch (result) {
-    // Success(:final data) => Result.success(data),
-    // Error(:final e) => Result.error(e),
+      // Success(:final data) => Result.success(data),
+      // Error(:final e) => Result.error(e),
       Success<Project>() => Result.success(result.data),
       Error<Project>() => Result.error(result.e),
     };

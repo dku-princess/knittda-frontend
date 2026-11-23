@@ -39,14 +39,41 @@ class ProjectApi {
     }
   }
 
+  //기본 이미지 목록 조회
+  Future<Result<Iterable>> getDefaultThumbnails() async {
+    try {
+      final response = await _dio.get('/api/v1/projects/default-thumbnails');
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        final Iterable hits = data['data'];
+        return Result.success(hits);
+      } else {
+        final error = '서버 오류: ${response.statusCode}';
+        Sentry.captureException(error, stackTrace: StackTrace.current);
+        return Result.error(error);
+      }
+    } on DioException catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
+      return Result.error('네트워크 에러: ${e.message}');
+    } catch (e, stack) {
+      Sentry.captureException(e, stackTrace: stack);
+      return Result.error('알 수 없는 에러');
+    }
+  }
+
   // 프로젝트 수정
   Future<Result<Map<String, dynamic>>> putProject({
     required Project project,
     required XFile? file,
+    int? defaultThumbnailId,
   }) async {
     try {
       final formData = FormData.fromMap({
-        'project': jsonEncode(project.toJson()),
+        'project': jsonEncode({
+          ...project.toJson(),
+          'defaultThumbnailId': ?defaultThumbnailId,
+        }),
         if (file != null)
           'file': await MultipartFile.fromFile(file.path, filename: file.name),
       });
@@ -79,10 +106,14 @@ class ProjectApi {
   Future<Result<Map<String, dynamic>>> postProject({
     required Project project,
     required XFile? file,
+    int? defaultThumbnailId,
   }) async {
     try {
       final formData = FormData.fromMap({
-        'project': jsonEncode(project.toJson()),
+        'project': jsonEncode({
+          ...project.toJson(),
+          'defaultThumbnailId': ?defaultThumbnailId,
+        }),
         if (file != null)
           'file': await MultipartFile.fromFile(
             file.path,
@@ -181,8 +212,8 @@ class ProjectApi {
 
       if (response.statusCode == 200) {
         final data = response.data;
-        final Map<String, dynamic> hits =
-            (data['data'] as Map).cast<String, dynamic>();
+        final Map<String, dynamic> hits = (data['data'] as Map)
+            .cast<String, dynamic>();
         return Result.success(hits);
       } else {
         final error = '서버 오류: ${response.statusCode}';
